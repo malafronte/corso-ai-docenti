@@ -89,3 +89,24 @@
     flex: 1 1 auto !important;
   }
 }
+
+/* Mantieni il layout “mobile” fino a 1024px (64rem) */
+@media (max-width: 64rem) {
+  :root {
+    /* Non riservare spazio alla sidebar a sinistra sotto i 1024px */
+    --sl-sidebar-width: 0rem;
+  }
+  /* Nascondi la colonna sinistra (sidebar) e lascia che il main occupi tutto lo spazio */
+  .left-sidebar-container,
+  .left-sidebar-panel,
+  .sidebar {
+    display: none !important;
+  }
+  [data-has-sidebar] .main-pane {
+    /* Assicurati che il contenuto principale si espanda a tutta larghezza */
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 auto !important;
+    --sl-content-margin-inline: auto;
+  }
+}

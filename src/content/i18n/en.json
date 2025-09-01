@@ -1,0 +1,15 @@
+{
+  "search.label": "Search",
+  "search.cancelLabel": "Cancel",
+  "themeSelect.accessibleLabel": "Select theme",
+  "themeSelect.dark": "Dark",
+  "themeSelect.light": "Light",
+  "themeSelect.auto": "Auto",
+  "languageSelect.accessibleLabel": "Select language",
+  "tableOfContents.onThisPage": "On this page",
+  "tableOfContents.overview": "Overview",
+  "page.editLink": "Edit page",
+  "page.lastUpdated": "Last updated:",
+  "page.previousLink": "Previous",
+  "page.nextLink": "Next"
+}
