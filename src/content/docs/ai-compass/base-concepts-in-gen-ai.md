@@ -19,7 +19,7 @@ Ogni token viene convertito in un vettore numerico a lunghezza fissa chiamato "e
 
 ![Esempio di operazioni matematiche sui vettori che rappresentano parole mediante embedding](vector-composition-visual-2.png)*Un esempio di operazioni matematiche sui vettori che rappresentano parole mediante embedding [^1]*
 
-![Esempio di proiezione di parole su riferimenti in uno spazio di embedding](embedding-projection-example.png.png)*Un esempio di proiezione di parole su riferimenti in uno spazio di embedding [^1]*
+![Esempio di proiezione di parole su riferimenti in uno spazio di embedding](embedding-projection-example.png)*Un esempio di proiezione di parole su riferimenti in uno spazio di embedding [^1]*
 
 ### Reti Neurali: I Mattoni dell'Apprendimento
 
@@ -43,7 +43,21 @@ Ogni connessione tra neuroni ha un **peso**, un parametro numerico che il modell
 
 Dopo aver calcolato la somma pesata degli input, ogni neurone applica una **funzione di attivazione**[^2]. Questa funzione introduce la **non-linearità** nel modello, permettendogli di apprendere relazioni complesse nei dati che un modello puramente lineare non potrebbe catturare. Funzioni comuni includono Sigmoid, Tanh e, molto diffusamente, **ReLU (Rectified Linear Unit)** [^3].
 
-![Funzione di attivazione di una rete neurale](neural-network-activation-function.png.png)*Immagine tratta da [^2]*
+![Funzione di attivazione di una rete neurale](neural-network-activation-function.png)*Immagine tratta da [^2]*
+
+#### Analogia con i neuroni cerebrali
+
+Un neurone cerebrale può essere visto come un'unità che **riceve molti segnali in ingresso, ma ne produce uno solo in uscita**.
+
+- **Ingressi multipli, un'uscita singola:** Il neurone riceve segnali da molti altri neuroni attraverso le sue "antenne" (i dendriti).
+
+- **Decisione "tutto o niente":** L'uscita del neurone può essere solo di due tipi: o si "attiva" (spara un impulso) o "non si attiva". Non ci sono vie di mezzo.
+
+- **Soglia di attivazione:** Il neurone somma tutti i segnali che riceve. Se la somma totale di questi segnali supera una certa soglia, il neurone "spara" il suo segnale in uscita. Altrimenti, rimane inattivo.
+
+- **Le sinapsi come "regolatori":** I segnali in ingresso non sono tutti uguali. Le **sinapsi**, che sono i punti di connessione tra i neuroni, possono attenuare o rafforzare questi segnali, agendo come dei regolatori.
+
+![Cerebral neuron](cerebral-neuron.png)
 
 #### Addestramento di una rete neurale
 
@@ -83,6 +97,8 @@ Il pretraining su grandi corpora usa obiettivi come causal language modeling (au
 - Residual connections e layer normalization: stabilità e profondità del training.
 - Mascheramento causale: impedisce di vedere token futuri nei modelli generativi.
 - Autoregressione: generazione token-per-token condizionata sul contesto.
+
+![Transformer architecture](transformer-architecture.png)*Immagine riportata in [^4] e ripresa in  [^10] e [^11]*
 
 #### Un simulatore visuale di Transformer - transformer-explainer
 
@@ -327,11 +343,11 @@ Tecniche di fine-tuning più avanzate includono:
 
 - **Instruction Tuning**: Il modello viene addestrato su esempi di "istruzioni" e relative risposte corrette, per insegnargli a seguire meglio le richieste dell'utente.
 - **Reinforcement Learning from Human Feedback (RLHF)**[^9]: Questa è la tecnica più diffusa per l'allineamento etico. È un processo in più fasi:
-    1.  Dei revisori umani scrivono risposte di alta qualità a una serie di prompt.
-    2.  Questi dati vengono usati per un primo fine-tuning supervisionato del modello.
-    3.  Successivamente, il modello genera più risposte per lo stesso prompt e i revisori umani le classificano dalla migliore alla peggiore.
-    4.  Queste classifiche vengono usate per addestrare un secondo modello, chiamato **modello di ricompensa (reward model)**, il cui scopo è imparare a prevedere quale tipo di risposta un umano preferirebbe.
-    5.  Infine, il modello di ricompensa viene usato per automatizzare il processo, fornendo un segnale di feedback al LLM originale per guidarlo a produrre risposte sempre più allineate con le preferenze umane.
+    1. Dei revisori umani scrivono risposte di alta qualità a una serie di prompt.
+    2. Questi dati vengono usati per un primo fine-tuning supervisionato del modello.
+    3. Successivamente, il modello genera più risposte per lo stesso prompt e i revisori umani le classificano dalla migliore alla peggiore.
+    4. Queste classifiche vengono usate per addestrare un secondo modello, chiamato **modello di ricompensa (reward model)**, il cui scopo è imparare a prevedere quale tipo di risposta un umano preferirebbe.
+    5. Infine, il modello di ricompensa viene usato per automatizzare il processo, fornendo un segnale di feedback al LLM originale per guidarlo a produrre risposte sempre più allineate con le preferenze umane.
 
 ### Riferimenti per approfondimenti
 
@@ -350,9 +366,11 @@ Tecniche di fine-tuning più avanzate includono:
 [^1]: [A Beginner’s Guide to Tokens, Vectors, and Embeddings in NLP](https://medium.com/@saschametzger/what-are-tokens-vectors-and-embeddings-how-do-you-create-them-e2a3e698e037)
 [^2]: [A Quick Introduction to Neural Networks](https://ujjwalkarn.me/2016/08/09/quick-intro-neural-networks/) (un'introduzione testuale chiara e concisa sulle reti neurali).
 [^3]: [Funzioni di attivazione](https://it.wikipedia.org/wiki/Funzioni_di_attivazione)
-[^4]: [Paper originale: Attention Is All You Need (Vaswani et al., 2017)](https://arxiv.org/abs/1706.03762)
+[^4]: [Attention Is All You Need (Vaswani et al., 2017)](https://arxiv.org/abs/1706.03762)
 [^5]: [Transformer explainer](https://poloclub.github.io/transformer-explainer/)
 [^6]: [Long short-term memory](https://en.wikipedia.org/wiki/Long_short-term_memory)
 [^7]: [Gated recurrent unit](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
 [^8]: [Stanford University - AI Index Report 2023](https://aiindex.stanford.edu/wp-content/uploads/2023/04/HAI_AI-Index-Report-2023_CH2.pdf) (Vedi pag. 34 per i costi di addestramento)
 [^9]: [OpenAI - Aligning language models to follow instructions](https://openai.com/research/instruction-following) (Spiegazione del processo di RLHF)
+[^10]: [Transformer Model Tutorial in PyTorch: From Theory to Code](https://www.datacamp.com/tutorial/building-a-transformer-with-py-torch)
+[^11]: [How Transformers Work: A Detailed Exploration of Transformer Architecture](https://www.datacamp.com/tutorial/how-transformers-work)

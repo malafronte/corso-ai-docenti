@@ -1,18 +1,18 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
+import remarkEmoji from "remark-emoji";
 import mermaid from "astro-mermaid";
 import plantuml from "astro-plantuml";
 
 // https://astro.build/config
 export default defineConfig({
-  
   integrations: [
     plantuml(),
     mermaid({
-      theme: 'forest',
-      autoTheme: true
-    }), 
+      theme: "forest",
+      autoTheme: true,
+    }),
     starlight({
       title: {
         it: "AI per Docenti 2025",
@@ -66,15 +66,19 @@ export default defineConfig({
           ],
         },
         {
-          label: "Riferimenti",
-          translations: { en: "Reference" },
+          label: " 🧭 Bussola dell'AI",
+          translations: { en: " 🧭 AI compass" },
           collapsed: true,
-          autogenerate: { directory: "reference" },
+          autogenerate: { directory: "ai-compass" },
         },
       ],
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 4 },
     }),
   ],
+  // Enable remark plugin to convert emoji shortcodes like :tent: into unicode
+  markdown: {
+    remarkPlugins: [remarkEmoji],
+  },
   site: "https://malafronte.github.io",
   base: "/corso-ai-docenti/",
 });
