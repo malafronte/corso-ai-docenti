@@ -29,7 +29,7 @@ export default defineConfig({
         {
           icon: "github",
           label: "GitHub",
-          href: "https://github.com/withastro/starlight",
+          href: "https://github.com/malafronte/corso-ai-docenti",
         },
       ],
       sidebar: [
@@ -49,6 +49,20 @@ export default defineConfig({
                 en: "What is Generative AI and How Does It Work?",
               },
               slug: "corso/what-is-gen-ai",
+            },
+            {
+              label: "Principi di Prompt Engineering per la Didattica",
+              translations: {
+                en: "Principles of Prompt Engineering for Education",
+              },
+              slug: "corso/prompt-engineering-basics",
+            },
+            {
+              label: "Prompt Avanzati e Progettazione Didattica",
+              translations: {
+                en: "Advanced Prompts and Educational Design",
+              },
+              slug: "corso/prompt-engineering-advanced",
             },
           ],
         },

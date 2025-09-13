@@ -3,11 +3,11 @@ title: Cos’è l’IA generativa e come funziona?
 description: Una introduzione all'intelligenza artificiale generativa in generale e una panoramica dei principali modelli di frontiera (Gemini, ChatGPT, Copilot, Claude, etc.) 
 ---
 
-## Un passo indietro nel tempo: Classic vs Generative AI
+## 1. Un passo indietro nel tempo: Classic vs Generative AI
 
 ![Classic vs Generative AI](classic-vs-generative-ai-768.png)
 
-### L'Intelligenza Artificiale "Classica": un castello di regole
+### 1.1 L'Intelligenza Artificiale "Classica": un castello di regole
 
 L'idea di creare una macchina "intelligente" non è nuova. Per decenni, l'approccio dominante è stato quello che oggi chiamiamo **AI basata su regole** o **sistemi esperti**.
 
@@ -24,13 +24,13 @@ L'idea di creare una macchina "intelligente" non è nuova. Per decenni, l'approc
 
 Questi sistemi erano potenti in contesti molto specifici e chiusi, come giocare a scacchi (dove le regole sono fisse) o gestire i processi di una fabbrica. Ma mostravano un limite invalicabile.
 
-### Perché le regole hanno fallito? La fragilità della logica
+### 1.2 Perché le regole hanno fallito? La fragilità della logica
 
 Il problema fondamentale di questo approccio è la sua **fragilità**. Il mondo reale è ambiguo, complesso e infinitamente sfumato. Cosa succede se un paziente descrive la sua tosse come "un leggero solletico in gola"? O se usa un'espressione dialettale? Il sistema, basato su regole rigide, non sa come interpretare queste sfumature.
 
 L'intelligenza umana non è un manuale di istruzioni. Noi non ragioniamo solo per regole logiche, ma anche per intuizione, per analogia, per esperienza. L'AI basata su regole non poteva scrivere una poesia, capire il sarcasmo o riassumere un testo cogliendone il significato profondo. Per fare questo, serviva un cambio di paradigma totale.
 
-### Il cambio di paradigma: dall'istruire al mostrare
+### 1.3 Il cambio di paradigma: dall'istruire al mostrare
 
 Intorno agli anni 2010, una "tempesta perfetta" ha reso possibile la rivoluzione: da una parte l'esplosione dei **Big Data** (la disponibilità di enormi quantità di dati digitali), dall'altra un enorme aumento della **potenza di calcolo** grazie alle **schede grafiche (GPU)**. Questo ha aperto la porta a un nuovo approccio: invece di *insegnare* al computer le regole, abbiamo iniziato a *mostrargli* miliardi di esempi. Questo passaggio è segnato da quattro tappe fondamentali:
 
@@ -46,11 +46,11 @@ Intorno agli anni 2010, una "tempesta perfetta" ha reso possibile la rivoluzione
 
 Questi momenti chiave hanno consolidato il passaggio da un'AI deterministica (basata su regole certe) a un'**AI probabilistica** (basata sui dati). Questo è il cuore della rivoluzione che stiamo vivendo.
 
-## I due assunti fondamentali dell'AI moderna
+## 2. I due assunti fondamentali dell'AI moderna
 
 Per capire come funzionano i modelli di oggi, come Gemini o ChatGPT, dobbiamo accettare due concetti controintuitivi ma fondamentali.
 
-### Assunto n.1: I dati sono il mondo
+### 2.1 I dati sono il mondo
 
 I modelli di AI generativa non nascono con una conoscenza innata. La loro "conoscenza" del mondo deriva interamente dai dati con cui sono stati addestrati. Questi dati includono:
 
@@ -66,7 +66,7 @@ I modelli di AI generativa non nascono con una conoscenza innata. La loro "conos
 
 Questo è un punto cruciale: l'AI non "sa", ma **replica e rielabora schemi** presenti nei dati.
 
-### Assunto n.2: Non si "ragiona", si "prevede"
+### 2.2 Non si "ragiona", si "prevede"
 
 Questa è forse l'idea più difficile da accettare. Quando poniamo una domanda a un'AI, non stiamo attivando un processo di ragionamento simile a quello umano. L'AI non "pensa" alla risposta. Non applica regole di inferenza come faceva un "sistema esperto" (vecchia AI), applicando deduzioni, semplicemente calcola la cosa più probabile da fare.
 
@@ -90,7 +90,7 @@ Sceglie la parola più probabile ("tetto") e la aggiunge alla frase. Ora la fras
 
 ![Come funziona l'AI generativa](assunti-fondamentali-ai-moderna-visual.svg)
 
-### Cosa "ritiene" l'AI della sua capacità di ragionamento?
+### 2.3 Cosa "ritiene" l'AI della sua capacità di ragionamento?
 
 Chiediamo a chatGPT5 la seguente domanda: ***i modelli come chatGPT ragionano?***
 
@@ -112,11 +112,11 @@ In ricerca si parla di **reasoning simulato**: non è pensiero consapevole, ma u
 
 👉 Una buona analogia: il modello è come una **calcolatrice di linguaggio**. Non "capisce" i numeri, ma produce risultati utili seguendo regole implicite.
 
-## Cos'è un Large Language Model (LLM)
+## 3. Cos'è un Large Language Model (LLM)
 
 Ora che abbiamo le basi, possiamo entrare nel cuore della tecnologia: i **Large Language Model** (Modelli Linguistici di Grandi Dimensioni), o LLM.
 
-### Un'origine inaspettata: la traduzione automatica
+### 3.1 Un'origine inaspettata: la traduzione automatica
 
 I Large Language Models (LLM), come ChatGPT, Gemini, Claude, Copilot, etc., sono i discendenti diretti dei sistemi di traduzione automatica. Per anni, tradurre una frase come "I have a green car" era difficile. I primi sistemi traducevano parola per parola ("Io ho un verde macchina"), con risultati pessimi.
 
@@ -124,7 +124,7 @@ La svolta è arrivata quando, grazie a nuove architetture come il **Transformer*
 
 ![Transformer nati per la traduzione automatica](transformer-per-traduzione-automatica.svg)
 
-### Il "Token": l'atomo del linguaggio
+### 3.2 Il "Token": l'atomo del linguaggio
 
 Abbiamo parlato di "parola successiva", ma è una semplificazione. I modelli non lavorano su parole intere, ma su **token**. Un token può essere una parola intera, un pezzo di parola, o anche solo un segno di punteggiatura.
 
@@ -138,7 +138,7 @@ Lavorare con i token permette al modello di gestire parole che non ha mai visto 
 
 ![Concetto di token](concetto-di-token.svg)
 
-### L'architettura: i Transformer e la magia dell'"Attenzione"
+### 3.3 L'architettura dell'AI generativa - i Transformer e la magia dell'"Attenzione"
 
 La vera rivoluzione tecnologica dietro gli LLM si chiama **Transformer**, un'architettura introdotta nel 2017 [^1]. Il suo superpotere è il **meccanismo di attenzione (Attention Mechanism)**.
 
@@ -160,7 +160,7 @@ Questo meccanismo permette al modello di mantenere la coerenza su testi lunghi e
 
 Una descrizione più accurata del meccanismo di attenzione richiederebbe approfondimenti tecnici molto complessi. Nella sezione [*Bussola dell'AI*](../../ai-compass/base-concepts-in-gen-ai#la-svolta-nellera-dellai-generativa---architettura-transformers) è riportata una trattazione più approfondita dell'argomento.
 
-### La natura probabilistica e il "caos controllato"
+### 3.4 La natura probabilistica e il "caos controllato"
 
 Come abbiamo detto, il modello prevede una lista di parole possibili con diverse probabilità. Di solito, sceglie la più probabile, ma non sempre. A volte, per rendere il testo meno prevedibile e più "creativo", può scegliere una parola con una probabilità leggermente inferiore.
 
@@ -172,7 +172,7 @@ Questo parametro, spesso chiamato **"temperatura"**, controlla il livello di "ri
 
 ![Concetto di temperatura](concetto-di-temperatura.svg)
 
-## Panoramica delle piattaforme attuali
+## 4. Panoramica delle piattaforme attuali
 
 Vediamo ora i principali attori in campo e le loro caratteristiche distintive. Non sono tutti uguali.
 
@@ -188,7 +188,7 @@ Vediamo ora i principali attori in campo e le loro caratteristiche distintive. N
 
 - **[M365 Copilot (Microsoft)](https://m365.cloud.microsoft/):** La versione di Copilot per chi ha una sottoscrizione Office 365, come quella dell'Istituto Greppi. Al momento in cui si scrivono queste note, M365 Copilot dà la possibilità di utilizzare ChatGPT5 nelle risposte con anche la [protezione dei dati aziendali](https://learn.microsoft.com/en-us/copilot/microsoft-365/enterprise-data-protection) e la possibilità di personalizzare Copilot sia con istruzioni personalizzate che con la possibilità di configurare la memoria storia delle chat. Nella versione inclusa con l'abbonamento presente al Greppi c'è anche la possibilità di creare agenti AI.
 
-### Applicazioni pratiche per la didattica
+### 4.1 Applicazioni pratiche per la didattica
 
 Come possiamo usare questi strumenti?
 
@@ -202,7 +202,7 @@ Come possiamo usare questi strumenti?
 
 5. **Valutazione:** "Crea una griglia di valutazione per un tema argomentativo sulla Divina Commedia, includendo criteri come pertinenza, coerenza, lessico e analisi critica."
 
-## Conclusione e Q&A
+## 4.2 Conclusione e Q&A
 
 **L'Intelligenza Artificiale generativa non è una scatola magica né un'entità pensante. È uno strumento potentissimo, basato su principi statistici e probabilistici, la cui intelligenza è un riflesso dei dati sconfinati su cui è stato addestrato.**
 

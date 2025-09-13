@@ -5,7 +5,7 @@ description: Una pagina con approfondimenti, schemi e link a risorse esterne rel
 
 ## Concetti Fondamentali
 
-Per comprendere come funzionano i modelli di AI generativa come GPT, è essenziale familiarizzare con alcuni concetti chiave. Questi concetti sono i mattoni fondamentali su cui si basano architetture complesse come i Transformer. Di seguito, esploreremo i passaggi principali che trasformano il testo in un formato che una macchina può capire e utilizzare per generare nuovo testo.
+**Per comprendere come funzionano i modelli di AI generativa come GPT, è essenziale familiarizzare con alcuni concetti chiave. Questi concetti sono i mattoni fondamentali su cui si basano architetture complesse come i Transformer. Di seguito, esploreremo i passaggi principali che trasformano il testo in un formato che una macchina può capire e utilizzare per generare nuovo testo.**
 
 ### Tokenizzazione
 
