@@ -112,11 +112,162 @@ In ricerca si parla di **reasoning simulato**: non è pensiero consapevole, ma u
 
 👉 Una buona analogia: il modello è come una **calcolatrice di linguaggio**. Non "capisce" i numeri, ma produce risultati utili seguendo regole implicite.
 
-## 3. Cos'è un Large Language Model (LLM)
+## 3. Concetti fondamentali: AI, Machine Learning, Deep Learning, Reti Neurali e i livelli (ANI, AGI, ASI)
+
+Per orientarsi nel panorama dell’Intelligenza Artificiale è utile immaginare una serie di matrioske: ogni bambola ne contiene una più piccola, più specializzata. All’esterno c’è l’**Artificial Intelligence (AI)**, poi una più piccola chiamata **Machine Learning (ML)**, dentro ancora **Deep Learning (DL)**. Sia il Machine Learning (ML) che il Deep Learning (DL) utilizzano [**Reti Neurali Artificiali**](../../ai-compass/base-concepts-in-gen-ai#reti-neurali-i-mattoni-dellapprendimento) per funzionare, ma esistono forme di intelligenza artificiale che non sono basate su reti neurali artificiali. Comprendere questa stratificazione evita confusioni e rende più chiaro perché la rivoluzione attuale è possibile.
+
+### Artificial Intelligence (AI)
+
+**Per “Intelligenza Artificiale” si intende l’insieme di tecniche progettate per permettere alle macchine di svolgere compiti che, se eseguiti da esseri umani, richiederebbero forme di intelligenza: percepire, classificare, pianificare, tradurre, risolvere problemi, generare contenuti**. Storicamente include:
+
+- Approcci simbolici (regole, logica, sistemi esperti)
+- Metodi statistici classici
+- Ricerca e pianificazione automatica
+- Apprendimento dai dati (Machine Learning)
+
+In questa definizione coesistono tanto i modelli simbolici degli anni '80 (Sistemi Esperti) quanto un moderno modello di AI generativa.
+
+### Machine Learning (ML) – Insegnare per esempi
+
+**Il Machine Learning è un sottoinsieme dell’AI che rinuncia a codificare tutte le regole di un ambiente e “impara” automaticamente modelli a partire dai dati**. Il processo tipico comprende:
+
+1. Raccolta dati
+2. Pulizia e preparazione (normalizzazione, gestione valori mancanti, etichettatura se serve)
+3. Scelta del modello
+4. Addestramento (ottimizzazione dei parametri per ridurre l’errore)
+5. Valutazione su dati non visti (generalizzazione)
+6. Deployment e monitoraggio (verificare degrado nel tempo)
+
+Concetti chiave:
+
+- Dato di addestramento: l’esperienza “passata”
+- Generalizzazione: la capacità di funzionare su dati nuovi
+- Overfitting: quando il modello “impara a memoria” rumore e dettagli irrilevanti perdendo efficacia nel mondo reale
+- Bias: distorsioni introdotte dai dati (se i dati sono sbilanciati, anche le previsioni lo saranno)
+- Iterazione continua: i modelli non sono “finiti”, vanno aggiornati
+
+#### Supervised, Unsupervised and Reinforcement Learning
+
+Per capire “come” il modello impara è utile distinguere i paradigmi fondamentali:
+
+##### Apprendimento supervisionato (Supervised Learning)
+
+Nell'apprendimento supervisionato (Supervised Learning) ogni esempio di addestramento è accompagnato da un’etichetta (output corretto). Il modello impara a mappare input → output minimizzando l’errore tra previsione e risposta attesa. Esempi tipici:
+
+- Classificazione email (spam / non spam)
+- Riconoscimento di cifre scritte a mano
+- Predizione di un prezzo (regressione)
+
+Il modello apprende perché impara da dati etichettati. Ad esempio vengono mostrati al modello immagini di cifre scritte a mano e per ognuna di queste viene fornita una etichetta che corrisponde al valore da associare all'immagine della cifra scritta a mano. Si tratta di un tipo di apprendimento molto costoso perché tipicamente richiede la supervisione umana per la creazione delle etichette nei dati di addestramento.
+
+Metafora: è come uno studente che fa esercizi che vengono subito corretti dall’insegnante in rosso. Il feedback esplicito accelera l’apprendimento.
+
+![Immagine dello schema del ciclo di apprendimento supervisionato](apprendimento-supervisionato.svg)
+
+##### Apprendimento non supervisionato (Unsupervised Learning)
+
+Nell'apprendimento non supervisionato (Unsupervised Learning) i dati non hanno etichette. Il modello cerca strutture interne: gruppi (cluster), riduzione dimensionale, anomalie. Esempi:
+
+- Segmentazione di studenti per stili di apprendimento
+- Raggruppamento di articoli simili
+- Individuazione di transazioni anomale
+
+Metafora: è come esplorare una biblioteca senza catalogo e creare spontaneamente scaffali tematici osservando ricorrenze nei temi trattati nei libri.
+
+Nel supervisionato la “direzione” è chiara (ottimizzare una funzione di errore definita). Nel non supervisionato il valore emerge dalla scoperta di pattern utili che poi possono alimentare fasi successive (es. etichettare gruppi per strategie didattiche mirate).
+
+![Immagine dello schema del ciclo di apprendimento non supervisionato](apprendimento-non-supervisionato.svg)
+
+##### Apprendimento Semi-supervisionato
+
+L'apprendimento Semi-supervisionato mescola pochi dati etichettati con molti non etichettati per ridurre costi di annotazione.
+  
+##### Reinforcement Learning (RL)
+
+Nel Reinforcement Learning (RL) l’agente interagisce con un **ambiente** in una sequenza ciclica: osserva uno stato (state), compie un’azione (action) seguendo una strategia (policy), riceve una ricompensa (reward) e un nuovo stato. L’obiettivo non è massimizzare il premio immediato, ma la ricompensa cumulativa futura (valore). Differenze chiave rispetto al supervisionato:
+  
+Esempi applicativi: giochi (AlphaGo), robotica, ottimizzazione di traffico o consumi energetici, sistemi di raccomandazione adattivi, gestione automatica di risorse cloud.
+
+![Immagine del ciclo di apprendimento per reinforcement learning](reinforcement-learning.svg)
+
+**Collegamento ai modelli linguistici**: nei Large Language Models moderni viene impiegato il **RLHF (Reinforcement Learning from Human Feedback)**:
+
+1. Pre-training generico su grandi corpora.
+2. Supervised fine-tuning iniziale con esempi di “buone” risposte.
+3. Raccolta di confronti umani (comparisons) tra due risposte del modello.
+4. Addestramento di un modello di reward che stima quale risposta sarebbe preferita.
+5. Ottimizzazione della policy del modello con algoritmi come PPO (Proximal Policy Optimization) per massimizzare il reward allineato a preferenze umane (sicurezza, utilità, tono).
+
+Limiti e sfide: stabilità dell’addestramento, rischio di over-optimizing sul reward proxy, potenziale perdita di diversità (mode collapse), difficoltà nel catturare valori etici complessi.
+Metafora didattica: è come uno studente che non riceve correzioni puntuali per ogni passaggio, ma un voto globale alla fine; deve inferire quali strategie adottate durante lo studio hanno portato al risultato.
+
+Questi paradigmi possono anche combinarsi in pipeline più complesse (es. clustering preliminare + modello supervisionato).
+
+### Deep Learning (DL)
+
+**Il Deep Learning è un sottoinsieme del Machine Learning che utilizza **reti neurali profonde**, cioè architetture con molti strati (almeno 3 layer)**. Diventa dominante quando:
+
+- I dati crescono enormemente
+- La potenza di calcolo (soprattutto GPU/TPU) esplode
+- I modelli più profondi riescono ad estrarre autonomamente rappresentazioni (feature) sofisticate, riducendo la necessità di progettare manualmente le caratteristiche rilevanti
+
+Differenza pratica rispetto ad altri metodi ML tradizionali (es. alberi decisionali, regressioni, etc.): in DL il modello apprende da sé strutture gerarchiche di astrazione (dai bordi alle forme agli oggetti nelle immagini; da caratteri a parole a frasi nel testo).
+
+### Dati, parametri e rappresentazioni
+
+**Elemento cruciale: le reti non memorizzano frasi come in un archivio testuale, ma comprimono pattern statistici in milioni o miliardi di parametri. Ciò consente**:
+
+- **Generalizzazione (rispondere a nuove combinazioni)**
+- **Ricomposizione creativa (testo coerente, codice plausibile)**
+
+**Limite implicito: possono “allucinare” (produrre contenuti inventati ma verosimili) perché operano su relazioni probabilistiche, non su una comprensione semantica profonda.**
+
+![Immagine che rappresenta la gerarchia delle tecnologie dell'AI](gerarchia-tecnologie-ai.svg)
+
+### Le categorie di Intelligenza: ANI, AGI, ASI
+
+Per inquadrare lo stadio attuale, viene spesso usata una tassonomia concettuale:
+
+1. **Artificial Narrow Intelligence (ANI)**  
+   **Intelligenza specializzata: eccelle in compiti circoscritti** (tradurre, riconoscere volti, generare testo). Non trasferisce spontaneamente abilità da un dominio all’altro senza un adattamento (fine-tuning, prompt engineering, chaining, strumenti esterni). **L’AI generativa attuale appartiene a questa categoria, anche se appare “general-purpose” perché il linguaggio è un’interfaccia universale**.
+
+2. **Artificial General Intelligence (AGI)**  
+  **Un’ipotetica intelligenza capace di apprendere, ragionare e adattarsi in modo flessibile a molteplici domini **come (o meglio di) un essere umano medio****: trasferimento robusto di conoscenza, comprensione contestuale profonda, pianificazione strategica autonoma, consapevolezza operativa dei propri limiti. **Al momento non esistono evidenze che i modelli attuali abbiano raggiunto questo livello**.
+
+3. **Artificial Super Intelligence (ASI)**  
+   **Un livello oltre le capacità cognitive umane in praticamente ogni dimensione** (scientifica, sociale, creativa). **Rimane speculativo; discussioni su etica, governance, sicurezza derivano da scenari futuri**.
+
+### Dove si colloca l’AI generativa odierna?
+
+I modelli come ChatGPT, Gemini, Claude ed altri:
+
+- Operano con straordinaria ampiezza linguistica (riassunto, stile, brainstorming, codice, spiegazioni)
+- Presentano capacità emergenti (composizione di passi logici, astrazione, tool use mediato da integrazioni)
+- Restano però vincolati a:
+  - Dipendenza dal prompt (non iniziativa autonoma prolungata senza orchestrazione esterna)
+  - Fragilità in ragionamenti compositi lunghi se non assistiti da tecniche come chain-of-thought strutturata o strumenti esterni
+  - Mancanza di modelli interni del mondo basati su esperienza sensoriale diretta
+  - Assenza di obiettivi intrinseci
+
+Quindi, pur sembrando “generali” perché il linguaggio è un mezzo trasversale, sono ancora **ANI avanzata**: potenti, estensibili, ma non dotati di comprensione situata o adattività aperta paragonabile a un’intelligenza generale.
+
+![Immagine che rappresenta la classificazione delle diverse tipologie di AI](confronto-livelli-ai.svg)
+
+Dal momento che l'attuale intelligenza artificiale rientra ancora nell'ambito dell'**ANI (Artificial Narrow Intelligence)**, essa può diventare in contesto didattico uno strumento prezioso per:
+
+- **Potenziarne l'uso** come supporto alla produzione di materiali, senza però attribuirle autorità epistemica.
+
+- **Sviluppare il pensiero critico** attraverso la verifica delle allucinazioni e il controllo delle fonti.
+
+- **Progettare attività mirate** a valorizzare ciò che la macchina non possiede: esperienza incarnata, empatia, giudizio etico contestuale.
+
+- **Evitare gli estremi**: né rifiuto acritico, né entusiasmo ingenuo.
+
+## 4. Cos'è un Large Language Model (LLM)
 
 Ora che abbiamo le basi, possiamo entrare nel cuore della tecnologia: i **Large Language Model** (Modelli Linguistici di Grandi Dimensioni), o LLM.
 
-### 3.1 Un'origine inaspettata: la traduzione automatica
+### 4.1 Un'origine inaspettata: la traduzione automatica
 
 I Large Language Models (LLM), come ChatGPT, Gemini, Claude, Copilot, etc., sono i discendenti diretti dei sistemi di traduzione automatica. Per anni, tradurre una frase come "I have a green car" era difficile. I primi sistemi traducevano parola per parola ("Io ho un verde macchina"), con risultati pessimi.
 
@@ -124,7 +275,7 @@ La svolta è arrivata quando, grazie a nuove architetture come il **Transformer*
 
 ![Transformer nati per la traduzione automatica](transformer-per-traduzione-automatica.svg)
 
-### 3.2 Il "Token": l'atomo del linguaggio
+### 4.2 Il "Token": l'atomo del linguaggio
 
 Abbiamo parlato di "parola successiva", ma è una semplificazione. I modelli non lavorano su parole intere, ma su **token**. Un token può essere una parola intera, un pezzo di parola, o anche solo un segno di punteggiatura.
 
@@ -138,7 +289,7 @@ Lavorare con i token permette al modello di gestire parole che non ha mai visto 
 
 ![Concetto di token](concetto-di-token.svg)
 
-### 3.3 L'architettura dell'AI generativa - i Transformer e la magia dell'"Attenzione"
+### 4.3 L'architettura dell'AI generativa - i Transformer e la magia dell'"Attenzione"
 
 La vera rivoluzione tecnologica dietro gli LLM si chiama **Transformer**, un'architettura introdotta nel 2017 [^1]. Il suo superpotere è il **meccanismo di attenzione (Attention Mechanism)**.
 
@@ -160,7 +311,7 @@ Questo meccanismo permette al modello di mantenere la coerenza su testi lunghi e
 
 Una descrizione più accurata del meccanismo di attenzione richiederebbe approfondimenti tecnici molto complessi. Nella sezione [*Bussola dell'AI*](../../ai-compass/base-concepts-in-gen-ai#la-svolta-nellera-dellai-generativa---architettura-transformers) è riportata una trattazione più approfondita dell'argomento.
 
-### 3.4 La natura probabilistica e il "caos controllato"
+### 4.4 La natura probabilistica e il "caos controllato"
 
 Come abbiamo detto, il modello prevede una lista di parole possibili con diverse probabilità. Di solito, sceglie la più probabile, ma non sempre. A volte, per rendere il testo meno prevedibile e più "creativo", può scegliere una parola con una probabilità leggermente inferiore.
 
@@ -172,7 +323,7 @@ Questo parametro, spesso chiamato **"temperatura"**, controlla il livello di "ri
 
 ![Concetto di temperatura](concetto-di-temperatura.svg)
 
-## 4. Panoramica delle piattaforme attuali
+## 5. Panoramica delle piattaforme attuali
 
 Vediamo ora i principali attori in campo e le loro caratteristiche distintive. Non sono tutti uguali.
 
@@ -188,7 +339,7 @@ Vediamo ora i principali attori in campo e le loro caratteristiche distintive. N
 
 - **[M365 Copilot (Microsoft)](https://m365.cloud.microsoft/):** La versione di Copilot per chi ha una sottoscrizione Office 365, come quella dell'Istituto Greppi. Al momento in cui si scrivono queste note, M365 Copilot dà la possibilità di utilizzare ChatGPT5 nelle risposte con anche la [protezione dei dati aziendali](https://learn.microsoft.com/en-us/copilot/microsoft-365/enterprise-data-protection) e la possibilità di personalizzare Copilot sia con istruzioni personalizzate che con la possibilità di configurare la memoria storia delle chat. Nella versione inclusa con l'abbonamento presente al Greppi c'è anche la possibilità di creare agenti AI.
 
-### 4.1 Applicazioni pratiche per la didattica
+### 5.1 Applicazioni pratiche per la didattica
 
 Come possiamo usare questi strumenti?
 
@@ -202,7 +353,7 @@ Come possiamo usare questi strumenti?
 
 5. **Valutazione:** "Crea una griglia di valutazione per un tema argomentativo sulla Divina Commedia, includendo criteri come pertinenza, coerenza, lessico e analisi critica."
 
-## 4.2 Conclusione e Q&A
+## 5.2 Conclusione
 
 **L'Intelligenza Artificiale generativa non è una scatola magica né un'entità pensante. È uno strumento potentissimo, basato su principi statistici e probabilistici, la cui intelligenza è un riflesso dei dati sconfinati su cui è stato addestrato.**
 

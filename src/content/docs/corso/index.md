@@ -61,7 +61,7 @@ Il corso adotta un approccio teorico-pratico. Ogni lezione sarà suddivisa in du
   - creazione e utilizzo di assistenti personalizzati (GPTs, Gems)
   - analisi critica dei risultati: riconoscere e gestire errori, bias e "allucinazioni" dell'IA.
 
-#### Lezione 4: "AI che elabora i tuoi contenuti": NotebookLM e oltre
+#### Lezione 4: Strumenti di AI che elaborano i contenuti dell'utente: NotebookLM e altri
 
 - **Contenuti principali**:
   - introduzione a piattaforme di IA "source-grounded" come NotebookLM

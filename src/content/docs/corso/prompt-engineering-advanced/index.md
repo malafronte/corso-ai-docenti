@@ -1,6 +1,6 @@
 ---
 title: Prompt Avanzati e Progettazione Didattica
-description: Utilizzare l'IA come partner nella progettazione (es. Project Based Learning, debate, role-playing). Creazione e utilizzo di assistenti personalizzati (GPTs, Gems)Analisi critica dei risultati - riconoscere e gestire errori, bias e "allucinazioni" dell'IA. 
+description: Utilizzare l'IA come partner nella progettazione (es. Project Based Learning, debate, role-playing). Creazione e utilizzo di assistenti personalizzati (GPTs, Gems). Analisi critica dei risultati - riconoscere e gestire errori, bias e "allucinazioni" dell'IA. 
 ---
 
 ## Introduzione: Dall'Istruzione all'Interazione Complessa
@@ -10,7 +10,7 @@ Questo articolo si addentra nelle tecniche avanzate di interazione con i Modelli
 
 1. **L'utilizzo dell'IA come partner nella progettazione di metodologie didattiche attive**. Saranno presentate strategie avanzate di prompting al servizio di metodologie attive (Project Based Learning, Debate, Role‑Playing, Challenge Based Learning, Inquiry‑Based Learning e Flipped Classroom), ciascuna con scenari realistici e prompt completi (persona/ruolo, contesto, compito, formato, vincoli, esempi few‑shot e scaffolding del ragionamento).
 
-2. **La creazione e l'impiego di assistenti personalizzati** (noti come GPTs o Gems), veri e propri tutor virtuali specializzati che possono supportare la didattica quotidiana e favorire l'inclusione.
+2. **La creazione e l'impiego di assistenti personalizzati** veri e propri tutor virtuali specializzati che possono supportare la didattica quotidiana e favorire l'inclusione.
 
 3. **L'analisi critica degli output dell'IA**, un aspetto cruciale per trasformare i limiti tecnologici (errori, bias, "allucinazioni") in preziose opportunità di apprendimento per sviluppare il pensiero critico negli studenti.
 
@@ -18,9 +18,11 @@ Questo articolo si addentra nelle tecniche avanzate di interazione con i Modelli
 
 L'obiettivo è fornire ai docenti strumenti e strategie per un utilizzo maturo e consapevole dell'intelligenza artificiale, trasformandola in un potente alleato per innovare la didattica e preparare gli studenti alle sfide di un mondo sempre più interconnesso con la tecnologia.
 
-L’articolo integra riferimenti a cornici riconosciute (PBL “Gold Standard”[^1], UDL 3.0[^2], SAC/Structured Academic Controversy[^3], NIST AI RMF[^4], EU AI Act[^5]) e alla letteratura su tecniche avanzate (Chain‑of‑Thought[^6], Self‑Consistency[^7], Tree‑of‑Thoughts[^8], Reflexion[^9], RAG[^10]).
+L’articolo integra riferimenti a cornici riconosciute (**PBL “Gold Standard”**[^1], **UDL 3.0**[^2], **SAC/Structured Academic Controversy**[^3], **NIST AI RMF**[^4], **EU AI Act**[^5]) e alla letteratura su tecniche avanzate (**Chain‑of‑Thought**[^6], **Self‑Consistency**[^7], **Tree‑of‑Thoughts**[^8], **Reflexion**[^9], **RAG**[^10]).
 
-## 1. Oltre le basi - perché servono tecniche **avanzate** di prompting nella progettazione
+![Schema dell'IA come partner di progettazione didattica](ia-nella-progettazione-didattica.svg)
+
+## 1. Oltre le basi - perché servono tecniche avanzate di prompting nella progettazione
 
 Nella progettazione di attività didattiche complesse, gli LLM possono fungere da **co-progettisti**: aiutano a generare e rifinire consegne, rubriche, materiali multimodali, scenari di simulazione, strumenti per l'autovalutazione e percorsi personalizzati. L'efficacia, tuttavia, dipende dalla **qualità del prompting**: quando si richiedono compiti con ragionamento non banale, tecniche come **Chain‑of‑Thought** (CoT)[^6], **Self‑Consistency**[^7], **Tree‑of‑Thoughts** (ToT)[^8], **Self‑Reflection/Reflexion**[^9] e **RAG**[^10] aumentano accuratezza, trasparenza e robustezza dei risultati
 
@@ -31,7 +33,7 @@ Nella progettazione di attività didattiche complesse, gli LLM possono fungere d
 - **Few‑shot + CoT[^6]**: fornire 2--4 esempi modello con spiegazione passo‑passo ("mostrare come pensare" prima di chiedere di pensare)
 - **Self‑Consistency[^7]**: generare 3--5 catene di ragionamento diverse e **selezionare** la risposta maggioritaria o "più coerente" (utile in problemi matematici, logici, analitici)
 - **Tree‑of‑Thoughts (ToT)[^8]**: esplorare più percorsi decisionali "a ramo", con criteri di valutazione locale e globale (utile in pianificazione, creatività vincolata, puzzle)
-- **Reflexion (self‑critique)[^9]**: dopo un primo output, chiedere all'IA di riflettere sugli errori, annotare "lezioni apprese" e **riprovare** con le correzioni.arxiv
+- **Reflexion (self‑critique)[^9]**: dopo un primo output, chiedere all'IA di riflettere sugli errori, annotare "lezioni apprese" e **riprovare** con le correzioni.
 - **RAG**[^10] (Retrieval‑Augmented Generation): ancorare la generazione a **fonti esterne** (es. Wikipedia, materiali di corso), ottenendo maggiore specificità e **provenienza**
 
 ### 1.2 Pattern riutilizzabili di prompt (template)
@@ -81,7 +83,7 @@ Un elemento caratterizzante è l'**autenticità**: i progetti sono collegati a c
 
 Dal punto di vista pedagogico, il PBL trova fondamento nel **costruttivismo**, in particolare nelle teorie di John Dewey e Lev Vygotskij, che sottolineano l'importanza dell'esperienza attiva e dell'apprendimento situato.
 
-La letteratura PBL “Gold Standard”[^1] individua sette Essential Project Design Elements (problema sfidante, indagine sostenuta, autenticità, voce/scelta, riflessione, critica/revisione, prodotto pubblico), affiancati da pratiche di insegnamento specifiche. Tali elementi sono un'ottima “checklist” per progettare con l’IA.
+La letteratura PBL “Gold Standard”[^1] individua sette Essential Project Design Elements (**problema sfidante**, **indagine sostenuta**, **autenticità**, **voce/scelta**, **riflessione**, **critica/revisione**, **prodotto pubblico**), affiancati da pratiche di insegnamento specifiche. Tali elementi sono un'ottima “checklist” per progettare con l’IA.
 
 #### Scenario Umanistico (Italiano/Storia) - esempio 1
 
@@ -229,7 +231,7 @@ Sebbene CBL e PBL condividano la centralità dello studente, il lavoro collabora
 
 **Pianificazione della Soluzione**: Proposte realistiche (limitazioni traffico negli orari punta, micro‑interventi su sosta, comunicazione su social, etc.)
 
-**Risorse da allegare al prompt per la RAG**: OMS/ARPA Lombardia...ad esempio:
+**Risorse da allegare al prompt per la RAG**: ad esempio dati di OMS e ARPA Lombardia:
 
 - [i dati pubblicati nel 2025 da Arpa Lombardia](https://www.arpalombardia.it/agenda/notizie/2025/qualita-dell-aria-dati-certificati-per-il-2024/).
 
@@ -406,7 +408,7 @@ La Flipped Classroom, pur non essendo una metodologia completamente nuova, rappr
 
 - **Formato di Output:** Un documento strutturato in due sezioni chiare: "Fase a Casa" e "Fase in Classe", con contenuti pronti all'uso.
 
-#### **Esempio STEM (Chimica)**
+#### Esempio STEM (Chimica)
 
 **Prompt:**
 
@@ -460,7 +462,7 @@ Il dibattito è uno strumento eccezionale per sviluppare competenze argomentativ
 
 - **Ruolo:** Vesti i panni di un bioeticista e consulente scientifico. Devi fornire una visione equilibrata e basata sui dati su un tema scientifico complesso per preparare un dibattito.
 
-- **Contesto:** Una classe quinta di un istituto tecnico ad indirizzo chimico-biologico deve dibattere sulla mozione: "L'utilizzo estensivo di organismi geneticamente modificati (OGM) in agricoltura è la soluzione più efficace per garantire la sicurezza alimentare globale".
+- **Contesto:** Una classe quinta di un istituto tecnico ad indirizzo chimico-biologico deve dibattere sulla mozione: *"L'utilizzo estensivo di organismi geneticamente modificati (OGM) in agricoltura è la soluzione più efficace per garantire la sicurezza alimentare globale"*.
 
 - **Compito:** Esegui i seguenti passaggi:
 
@@ -523,7 +525,7 @@ Sia il **debate** che la **SAC (Structured Academic Controversy)** sono metodolo
 
   - **Risultato**: sviluppa empatia cognitiva, capacità di analizzare temi complessi e di negoziare.
 
-- ✅ **Differenza chiave:**
+- **Differenza chiave:**
 
   - **Debate** → confronto competitivo per vincere un'argomentazione.
 
@@ -608,7 +610,7 @@ Il gioco di ruolo (role-playing) permette agli studenti di "vivere" situazioni s
 
 ## 3. Creare Assistenti Didattici Personalizzati (GPTs di ChatGPT, Gems di Google Gemini, Agenti di Copilot)
 
-Se i prompt complessi sono come impartire istruzioni dettagliate a un assistente generico, la creazione di un **assistente personalizzato** (offerto da piattaforme come OpenAI con i "GPTs" o Google con "Gems") è come formare uno specialista. Questi strumenti permettono al docente di configurare un'istanza dell'IA con istruzioni, conoscenze e capacità specifiche, creando un chatbot su misura per un determinato scopo didattico.
+Se i prompt complessi sono come impartire istruzioni dettagliate a un assistente generico, la creazione di un **assistente personalizzato** ("GPTs" di ChatGPT, "Gems" di Gemini, Agenti di Copilot) è come formare uno specialista. Questi strumenti permettono al docente di configurare un'istanza dell'IA con istruzioni, conoscenze e capacità specifiche, creando un chatbot su misura per un determinato scopo didattico.
 > :warning: Si noti bene che i vari provider di intelligenza artificiale (OpenAI, Google, etc.) forniscono la possibilità di creare assistenti personalizzati solo nelle versioni a pagamento, oppure limitano drasticamente le potenzialità degli assistenti nelle versioni gratuite degli abbonamenti.
 
 ### 3.1 I Vantaggi degli Assistenti Personalizzati
@@ -1226,7 +1228,7 @@ L'integrazione dell'intelligenza artificiale nella didattica sta evolvendo rapid
 
 ## Riferimenti e Approfondimenti
 
-[^1]: [PBL (Gold Standard): PBLWorks, Essential Project Design Elements (2015/2023).](https://www.pblworks.org/blog/gold-standard-pbl-essential-project-design-elements)
+[^1]: [PBL (Gold Standard): PBLWorks, Essential Project Design Elements (2015/2023)](https://www.pblworks.org/blog/gold-standard-pbl-essential-project-design-elements)
 [^2]: [CAST UDL - Universal Design for Learning Guidelines](https://udlguidelines.cast.org/)
 [^3]: [SAC - Structured Academic Controversy - TDPV IRIS NRC](https://irisnrc.wisc.edu/wp-content/uploads/sites/1577/2021/11/Structured-Academic-Controversy_-TDPV-.pdf)
 [^4]: [Artificial Intelligence Risk Management Framework - AI RMF 1 - NIST](https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf)
