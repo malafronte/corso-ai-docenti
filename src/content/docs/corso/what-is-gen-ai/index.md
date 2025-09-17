@@ -329,7 +329,7 @@ Vediamo ora i principali attori in campo e le loro caratteristiche distintive. N
 
 - **[ChatGPT (OpenAI)](https://chatgpt.com/):** È il modello che ha reso popolare l'AI generativa. Nato come un chatbot conversazionale, è eccellente nella generazione di testo creativo, nel dialogo e nelle attività di scrittura. È il "grande comunicatore".
 
-- **[Gemini (Google)](https://gemini.google.com/app/):** È il concorrente diretto di ChatGPT. Il suo punto di forza è l'integrazione con l'ecosistema Google e la sua natura **multimodale** nativa. È stato progettato fin dall'inizio per comprendere non solo testo, ma anche immagini, video e codice in modo integrato. È il "tuttologo digitale".
+- **[Gemini (Google)](https://gemini.google.com/):** È il concorrente diretto di ChatGPT. Il suo punto di forza è l'integrazione con l'ecosistema Google e la sua natura **multimodale** nativa. È stato progettato fin dall'inizio per comprendere non solo testo, ma anche immagini, video e codice in modo integrato. È il "tuttologo digitale".
 
 - **[Google AI Studio](https://aistudio.google.com/):** Può essere utile per sperimentare nuove funzionalità dell'intelligenza artificiale di Google. Si tratta principalmente di uno strumento per sviluppatori.
 

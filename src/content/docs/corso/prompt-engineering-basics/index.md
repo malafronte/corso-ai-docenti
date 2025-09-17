@@ -49,7 +49,7 @@ In conclusione, il Prompt Engineering non è solo una tecnica, ma un nuovo parad
 
 ## 2. L'Anatomia di un Prompt Efficace
 
-Un prompt efficace non è una semplice frase, ma un'architettura di informazioni progettata per guidare un modello linguistico. Sebbene non esista una formula universale, i prompt di maggior successo condividono una struttura comune che include elementi chiave. Basandosi sulle migliori pratiche delineate da Google e OpenAI, è possibile identificare quattro componenti fondamentali che costituiscono l'anatomia di un prompt di alta qualità: **Ruolo**, **Contesto**, **Compito** e **Formato di Output**.
+Un prompt efficace non è una semplice frase, ma un'architettura di informazioni progettata per guidare un modello linguistico. Sebbene non esista una formula universale, i prompt di maggior successo condividono una struttura comune che include elementi chiave. Basandosi sulle migliori pratiche delineate da Google[^1] e OpenAI[^2],[^3], è possibile identificare quattro componenti fondamentali che costituiscono l'anatomia di un prompt di alta qualità: **Ruolo**, **Contesto**, **Compito** e **Formato di Output**.
 
 Padroneggiare queste quattro componenti e la loro sinergia è il primo passo per trasformare richieste generiche in istruzioni potenti e precise.
 
@@ -147,7 +147,7 @@ Combinando sapientemente queste quattro componenti -- Ruolo, Contesto, Compito e
 
 ## 3. Tecniche di Prompting: dal Semplice all'Avanzato
 
-### 3.1 Interazione con una Chat LLM - Gestione del Contesto, Delimitazione dei Testi, Memoria e Buone Pratiche Operative
+### 3.1 Interazione con una Chat di un LLM - Gestione del Contesto, Delimitazione dei Testi, Memoria e Buone Pratiche Operative
 
 **Lavorare in modalità “chat” con un modello linguistico (LLM) non è semplicemente inviare una serie di domande indipendenti: ogni messaggio che viene inviato (salvo eccezioni legate a filtri del sistema o alla politica della piattaforma) entra a far parte di una finestra di contesto che il modello utilizza per generare la risposta successiva. Comprendere come funziona questa dinamica è cruciale per ottenere risposte coerenti, evitare derive tematiche, ottimizzare l’uso della lunghezza massima gestibile e minimizzare errori dovuti al “taglio” (truncation) delle parti più vecchie della conversazione.**
 
@@ -157,7 +157,7 @@ Combinando sapientemente queste quattro componenti -- Ruolo, Contesto, Compito e
 
 Tecniche comuni di delimitazione:
 
-1. **Triple backtick (```)** — usate spesso per codice o blocchi formattati:
+1. **Triple backtick (```)** — usate spesso per codice o blocchi formattati (per generare il backtick sulla tastiera italiana è possibile `usare ALT+96` con l'attivazione del tastierino numerico):
 
    ```text
          ```
@@ -211,7 +211,9 @@ Perché funziona? **Gli LLM non “vedono” concetti, ma sequenze di token. Una
 
 #### Finestra di contesto: cosa significa in pratica
 
-**La finestra di contesto è la quantità massima di token (somma di input + output) che il modello può elaborare in un singolo scambio con l'utente. Un token non corrisponde a una parola fissa; in media nell’italiano (e in molte lingue occidentali) 1.000 token ≈ 700–800 parole (stima variabile).** Fornire lunghezze precise è complesso perché ogni provider aggiorna i modelli. Indicazioni indicative (stato aggiornato a inizio 2025, soggette a evoluzione):
+**La finestra di contesto è la quantità massima di token (somma di input + output) che il modello può elaborare in un singolo scambio con l'utente. Un token non corrisponde a una parola fissa; in media nell’italiano (e in molte lingue occidentali) 1.000 token ≈ 700–800 parole (stima variabile).** Fornire lunghezze precise è complesso perché ogni provider aggiorna i modelli.
+
+Valori dichiarati delle finestre di contesto dai provider di LLM (stato aggiornato a inizio 2025, soggette a evoluzione):
 
 - **OpenAI** (esempi recenti di modelli generalisti ChatGPT/GPT-4.x / GPT-4o / successori): 128k token per diversi modelli “estesi”. Versioni sperimentali possono offrire più contesto, ma non sempre pubbliche.
 
@@ -223,7 +225,7 @@ Perché funziona? **Gli LLM non “vedono” concetti, ma sequenze di token. Una
 
 - **Altri sistemi specializzati** (es. modelli per document QA) applicano retrieval esterno per superare i limiti senza realmente “caricare” tutto nel contesto nativo.
 
-:warning: **Importante**: **“Avere” 128k token disponibili non significa poter incollare sempre 128k token di testo e ottenere un output lungo. L’output consuma parte del budget. Se si incollano 120k token e si chiede una risposta di 10k token si stanno già oltrepassando il limite.**
+:warning: **Importante**: **“Avere” 128k token disponibili di context window non significa poter incollare sempre 128k token di testo e ottenere un output lungo. L’output consuma parte del budget. Se si incollano 120k token e si chiede una risposta di 10k token si stanno già oltrepassando il limite.**
 
 - **Strategia utile per un uso ottimale della memoria conversazionale di un LLM, nel caso di utilizzo di molto testo**:
 
@@ -245,7 +247,7 @@ Ciò significa che:
 - Se ci si riferisce a un dettaglio fornito molto tempo prima (“Come il personaggio secondario descritto all’inizio?”) si potrebbe ottenere una risposta vaga o inventata se quella parte è stata espulsa dal contesto.
 - È buona pratica, quando un’informazione è critica per più turni, riproporla sinteticamente (“Riassumo il contesto chiave: ...”).
 
-#### Perché evitare argomenti totalmente scollegati nella stessa chat
+#### Evitare argomenti totalmente scollegati nella stessa chat
 
 **Ogni messaggio influenza il modello.** Se si passa da *“Progetta una unità didattica di letteratura”* a *“Dammi una ricetta vegana”* a *“Analizza un bilancio d’impresa”* in un’unica sessione:
 
@@ -423,11 +425,11 @@ Padroneggiando queste dinamiche, la qualità del prompting sale drasticamente e 
 
 ### 3.1 Tecniche di Base: il Prompt a "Zero-Shot"
 
-La tecnica più comune e intuitiva è il ****Zero-Shot Prompting**. Consiste nel formulare una richiesta diretta senza fornire al modello alcun esempio preliminare. L'IA deve comprendere ed eseguire il compito basandosi unicamente sulla sua conoscenza pregressa e sulla descrizione fornita nel prompt.**
+La tecnica più comune e intuitiva è il **Zero-Shot Prompting**. Consiste nel formulare una richiesta diretta senza fornire al modello alcun esempio preliminare. L'IA deve comprendere ed eseguire il compito basandosi unicamente sulla sua conoscenza pregressa e sulla descrizione fornita nel prompt.**
 
-Tutti i prompt che seguono la struttura Ruolo-Contesto-Compito-Formato discussa precedentemente sono, nella loro essenza, esempi di prompt "zero-shot". Questa tecnica è estremamente efficace per una vasta gamma di compiti, specialmente quando il modello è già stato addestrato su quel tipo di attività (ad esempio, riassumere un testo, tradurre, rispondere a domande fattuali).
+**Tutti i prompt che seguono la struttura Ruolo-Contesto-Compito-Formato discussa precedentemente sono, nella loro essenza, esempi di prompt "zero-shot"**. Questa tecnica è estremamente efficace per una vasta gamma di compiti, specialmente quando il modello è già stato addestrato su quel tipo di attività (ad esempio, riassumere un testo, tradurre, rispondere a domande fattuali).
 
-**Esempio di Prompt Zero-Shot (Semplice):** `Spiega il concetto di PIL (Prodotto Interno Lordo) in meno di 100 parole.`
+**Esempio di Prompt Zero-Shot (Semplice):** `Spiega il concetto di PIL (Prodotto Interno Lordo) in meno di 1000 parole.`
 
 Di seguito, si mostra come la stessa richiesta possa essere arricchita seguendo l'anatomia del prompt efficace per ottenere un risultato più mirato:
 
@@ -437,9 +439,9 @@ Di seguito, si mostra come la stessa richiesta possa essere arricchita seguendo 
 
 - **Contesto:** `La spiegazione è per studenti di un istituto tecnico economico (classe terza) che stanno affrontando l'argomento per la prima volta. Deve essere chiara e usare un esempio pratico.`
 
-- **Compito:** `Definisci il Prodotto Interno Lordo (PIL), spiega brevemente a cosa serve e fornisci un esempio semplice per illustrare il concetto (es. un'economia che produce solo pane e automobili).`
+- **Compito:** `Definisci il Prodotto Interno Lordo (PIL), spiega a cosa serve e fornisci un esempio semplice per illustrare il concetto (es. un'economia che produce solo pane e automobili).`
 
-- **Formato:** `Struttura la risposta in tre punti: 1. Definizione. 2. A cosa serve. 3. Esempio. Il totale non deve superare le 150 parole.`
+- **Formato:** `Struttura la risposta in tre punti: 1. Definizione. 2. A cosa serve. 3. Esempio. Il totale non deve superare le 1000 parole.`
 
 Altro esempio:
 
@@ -595,15 +597,18 @@ Un piano di lezione ben strutturato è la spina dorsale di una didattica efficac
 **Prompt Avanzato (Zero-Shot con Ruolo, Contesto, Compito e Formato)**:
 
 **Ruolo:** Agisci come un docente esperto di storia per licei.
+
 **Contesto:** Sto preparando una lezione di 2 ore per una classe quarta di un liceo classico. Gli studenti hanno già studiato il periodo della Belle Époque e le tensioni imperialistiche. L'obiettivo è far comprendere loro la natura di "guerra totale" del primo conflitto mondiale.
+
 **Compito:** Progetta un piano di lezione dettagliato. Struttura la lezione in tre fasi:
 
   1. Introduzione (15 min): Attività di brainstorming per attivare le conoscenze pregresse.
   2. Corpo centrale (75 min): Spiegazione degli aspetti chiave (guerra di trincea, fronte interno, propaganda) con supporto di fonti.
   3. Conclusione e verifica (30 min): Attività di dibattito e un breve compito di scrittura.
-  **Formato:** Presenta il piano in una tabella con tre colonne: Fase, Durata, Descrizione Attività e Risorse Necessarie.
 
-**Risultato probabile:** Un piano di lezione strutturato, logico e quasi pronto all'uso. Le attività sono pertinenti al contesto (liceo classico, conoscenze pregresse) e l'obiettivo è chiaramente indirizzato. Il formato strutturato per punti lo rende di facile consultazione.
+**Formato:** Presenta il piano in una tabella con tre colonne: Fase, Durata, Descrizione Attività e Risorse Necessarie.
+
+- **Risultato probabile:** Un piano di lezione strutturato, logico e quasi pronto all'uso. Le attività sono pertinenti al contesto (liceo classico, conoscenze pregresse) e l'obiettivo è chiaramente indirizzato. Il formato strutturato per punti lo rende di facile consultazione.
 
 **Prompt Molto Avanzato (Combinazione di Tecniche)**:
 
@@ -617,7 +622,7 @@ Un piano di lezione ben strutturato è la spina dorsale di una didattica efficac
 
   2. Progetta 3 lezioni da 2 ore ciascuna.
      - La prima deve essere introduttiva e basata su stimoli visivi e musicali per introdurre il "mood" di Eugenio Montale.
-     - La seconda deve essere un laboratorio di analisi del testo su "Spesso il male di vivere ho incontrato", usando la tecnica del jigsaw.
+     - La seconda deve essere un laboratorio di analisi del testo su "Spesso il male di vivere ho incontrato", usando la tecnica del **jigsaw**[^4].
      - La terza deve essere un workshop di scrittura creativa in cui gli studenti producono un breve testo o una poesia sul loro "male di vivere" o sulla loro ricerca di un "varco".
 
   3. Per ogni lezione, specifica: obiettivi, materiali, descrizione dettagliata delle attività (inclusi i tempi) e modalità di valutazione formativa.
@@ -710,7 +715,7 @@ Crea una griglia di valutazione per un tema.
 
   4. Correttezza formale e lessico.
 
-**Formato:** Presenta il risultato in una tabella Markdown con i criteri sulle righe e i livelli di performance sulle colonne.
+**Formato:** Presenta il risultato in una tabella con i criteri sulle righe e i livelli di performance sulle colonne.
 
 - **Risultato probabile:** Una rubric chiara, ben strutturata e funzionale. I descrittori per ogni livello saranno specifici e aiuteranno sia il docente nella valutazione sia lo studente nell'autovalutazione.
 
@@ -794,7 +799,13 @@ Questa sezione offre una raccolta di prompt pratici e versatili, pronti per esse
 
    **Contesto:** Ho bisogno di una griglia di valutazione analitica per un progetto di gruppo in cui studenti di una classe quarta di liceo artistico devono creare un breve video (max 3 minuti) che reinterpreti in chiave moderna un'opera d'arte studiata.
 
-   **Compito:** Progetta una griglia di valutazione con 4 criteri: 1. Originalità e pertinenza dell'interpretazione; 2. Qualità tecnica del video (montaggio, audio); 3. Coerenza narrativa e stilistica; 4. Efficacia comunicativa. Per ogni criterio, descrivi 4 livelli di performance (da 1 a 4) in modo dettagliato e specifico.
+   **Compito:** Progetta una griglia di valutazione con 4 criteri:
+      1. Originalità e pertinenza dell'interpretazione;
+      2. Qualità tecnica del video (montaggio, audio);
+      3. Coerenza narrativa e stilistica;
+      4. Efficacia comunicativa.
+
+   Per ogni criterio, descrivi 4 livelli di performance (da 1 a 4) in modo dettagliato e specifico.
 
    **Formato:** Tabella Markdown.
 
@@ -804,7 +815,7 @@ Questa sezione offre una raccolta di prompt pratici e versatili, pronti per esse
 
    **Contesto:** Voglio creare un materiale didattico coinvolgente per la mia classe di storia e filosofia.
 
-   **Compito:** Scrivi un dialogo di circa 600 parole tra Niccolò Machiavelli e Thomas More sul tema del rapporto tra etica e politica. Il dialogo deve essere ambientato nel 1515. Machiavelli deve argomentare le tesi del "Principe" (ancora non pubblicato), mentre More deve sostenere una visione basata sulla morale e sulla giustizia, anticipando le idee di "Utopia". Il linguaggio deve essere plausibile per l'epoca, ma comprensibile a studenti di oggi.
+   **Compito:** Scrivi un dialogo di circa 2000 parole tra Niccolò Machiavelli e Thomas More sul tema del rapporto tra etica e politica. Il dialogo deve essere ambientato nel 1515. Machiavelli deve argomentare le tesi del "Principe" (ancora non pubblicato), mentre More deve sostenere una visione basata sulla morale e sulla giustizia, anticipando le idee di "Utopia". Il linguaggio deve essere plausibile per l'epoca, ma comprensibile a studenti di oggi.
 
    **Formato:** Sceneggiatura, con i nomi dei personaggi in grassetto seguiti dalle loro battute.
 
@@ -882,8 +893,10 @@ La vera rivoluzione consiste nell'integrare l'IA come un partner che potenzia, e
 
 ## Riferimenti e Fonti
 
-- [*Google Gemini for Google Workspace Prompting Guide 101*](https://services.google.com/fh/files/misc/gemini-for-google-workspace-prompting-guide-101.pdf) *(PDF)*
+[^1]: [*Google Gemini for Google Workspace Prompting Guide 101*](https://services.google.com/fh/files/misc/gemini-for-google-workspace-prompting-guide-101.pdf) *(PDF)*
 
-- [OpenAI. *Prompt engineering*. OpenAI Documentation.](https://academy.openai.com/home/clubs/work-users-ynjqu/resources/prompting)
+[^2]: [OpenAI. *Prompt engineering*. OpenAI Documentation.](https://academy.openai.com/home/clubs/work-users-ynjqu/resources/prompting)
 
-- [OpenAI. *ChatGPT for any role*. OpenAI Documentation](https://academy.openai.com/home/clubs/work-users-ynjqu/resources/chatgpt-for-any-role).
+[^3]: [OpenAI. *ChatGPT for any role*. OpenAI Documentation](https://academy.openai.com/home/clubs/work-users-ynjqu/resources/chatgpt-for-any-role).
+
+[^4]: [Jigwaw - metodologia didattica](https://www.metodologiedidattiche.it/jigsaw/)
