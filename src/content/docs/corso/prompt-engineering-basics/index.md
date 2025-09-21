@@ -425,7 +425,7 @@ Padroneggiando queste dinamiche, la qualità del prompting sale drasticamente e 
 
 ### 3.1 Tecniche di Base: il Prompt a "Zero-Shot"
 
-La tecnica più comune e intuitiva è il **Zero-Shot Prompting**. Consiste nel formulare una richiesta diretta senza fornire al modello alcun esempio preliminare. L'IA deve comprendere ed eseguire il compito basandosi unicamente sulla sua conoscenza pregressa e sulla descrizione fornita nel prompt.**
+La tecnica più comune e intuitiva è il **Zero-Shot Prompting**. Consiste nel formulare una richiesta diretta senza fornire al modello alcun esempio preliminare. L'IA deve comprendere ed eseguire il compito basandosi unicamente sulla sua conoscenza pregressa e sulla descrizione fornita nel prompt.
 
 **Tutti i prompt che seguono la struttura Ruolo-Contesto-Compito-Formato discussa precedentemente sono, nella loro essenza, esempi di prompt "zero-shot"**. Questa tecnica è estremamente efficace per una vasta gamma di compiti, specialmente quando il modello è già stato addestrato su quel tipo di attività (ad esempio, riassumere un testo, tradurre, rispondere a domande fattuali).
 

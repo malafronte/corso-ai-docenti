@@ -8,7 +8,7 @@ description: Utilizzare l'IA come partner nella progettazione (es. Project Based
 In un [precedente approfondimento](../prompt-engineering-basics/), sono state gettate le fondamenta del prompt engineering, esplorando l'anatomia di un prompt efficace e introducendo tecniche come il *Few-Shot* e il *Chain-of-Thought*. È stato mostrato come l'intelligenza artificiale possa trasformarsi da semplice motore di ricerca a esecutore di compiti specifici, un assistente in grado di generare contenuti su richiesta. **Ora, è il momento di compiere un passo ulteriore e più ambizioso: elevare l'IA dal ruolo di assistente a quello di **partner strategico nella progettazione didattica****.
 Questo articolo si addentra nelle tecniche avanzate di interazione con i Modelli Linguistici di Grandi Dimensioni (LLM), focalizzandosi non più sulla semplice generazione di materiali, ma sulla co-creazione di esperienze di apprendimento complesse, personalizzate e critiche. Esploreremo tre aree fondamentali:
 
-1. **L'utilizzo dell'IA come partner nella progettazione di metodologie didattiche attive**. Saranno presentate strategie avanzate di prompting al servizio di metodologie attive (Project Based Learning, Debate, Role‑Playing, Challenge Based Learning, Inquiry‑Based Learning e Flipped Classroom), ciascuna con scenari realistici e prompt completi (persona/ruolo, contesto, compito, formato, vincoli, esempi few‑shot e scaffolding del ragionamento).
+1. **L'utilizzo dell'IA come partner nella progettazione di metodologie didattiche attive**. Saranno presentate strategie avanzate di prompting al servizio di metodologie attive (**Project Based Learning**, **Debate**, **Role‑Playing**, **Challenge Based Learning**, **Inquiry‑Based Learning** e **Flipped Classroom**), ciascuna con scenari realistici e prompt completi (persona/ruolo, contesto, compito, formato, vincoli, esempi few‑shot e scaffolding del ragionamento).
 
 2. **La creazione e l'impiego di assistenti personalizzati** veri e propri tutor virtuali specializzati che possono supportare la didattica quotidiana e favorire l'inclusione.
 
@@ -18,7 +18,7 @@ Questo articolo si addentra nelle tecniche avanzate di interazione con i Modelli
 
 L'obiettivo è fornire ai docenti strumenti e strategie per un utilizzo maturo e consapevole dell'intelligenza artificiale, trasformandola in un potente alleato per innovare la didattica e preparare gli studenti alle sfide di un mondo sempre più interconnesso con la tecnologia.
 
-L’articolo integra riferimenti a cornici riconosciute (**PBL “Gold Standard”**[^1], **UDL 3.0**[^2], **SAC/Structured Academic Controversy**[^3], **NIST AI RMF**[^4], **EU AI Act**[^5]) e alla letteratura su tecniche avanzate (**Chain‑of‑Thought**[^6], **Self‑Consistency**[^7], **Tree‑of‑Thoughts**[^8], **Reflexion**[^9], **RAG**[^10]).
+L’articolo integra riferimenti a cornici riconosciute (**PBL “Gold Standard”**[^1], **UDL 3.0**[^2], **Debate**[^17], **SAC/Structured Academic Controversy**[^3], **NIST AI RMF**[^4], **EU AI Act**[^5]) e alla letteratura su tecniche avanzate (**Chain‑of‑Thought**[^6], **Self‑Consistency**[^7], **Tree‑of‑Thoughts**[^8], **Reflexion**[^9], **RAG**[^10]).
 
 ![Schema dell'IA come partner di progettazione didattica](ia-nella-progettazione-didattica.svg)
 
@@ -30,11 +30,26 @@ Nella progettazione di attività didattiche complesse, gli LLM possono fungere d
 
 ### 1.1 Un piccolo "atlante" di tecniche avanzate
 
-- **Few‑shot + CoT[^6]**: fornire 2--4 esempi modello con spiegazione passo‑passo ("mostrare come pensare" prima di chiedere di pensare)
-- **Self‑Consistency[^7]**: generare 3--5 catene di ragionamento diverse e **selezionare** la risposta maggioritaria o "più coerente" (utile in problemi matematici, logici, analitici)
-- **Tree‑of‑Thoughts (ToT)[^8]**: esplorare più percorsi decisionali "a ramo", con criteri di valutazione locale e globale (utile in pianificazione, creatività vincolata, puzzle)
-- **Reflexion (self‑critique)[^9]**: dopo un primo output, chiedere all'IA di riflettere sugli errori, annotare "lezioni apprese" e **riprovare** con le correzioni.
-- **RAG**[^10] (Retrieval‑Augmented Generation): ancorare la generazione a **fonti esterne** (es. Wikipedia, materiali di corso), ottenendo maggiore specificità e **provenienza**
+- **Few‑shot + CoT[^6]**: fornire 2--4 esempi modello (few-shot) con spiegazione passo‑passo ( CoT - "mostrare come pensare" prima di chiedere di pensare). Queste due tecniche sono già state analizzate in una [lezione precedente](../prompt-engineering-basics/#few-shot-prompting).
+- **Self‑Consistency[^7]**: **generare 3--5 catene di ragionamento diverse e **selezionare** la risposta maggioritaria o "più coerente" (utile in problemi matematici, logici, analitici)**.
+  - La tecnica "self-consistency" mira a migliorare il ragionamento in modelli linguistici che usano *chain of thought* (CoT). Invece di generare una sola sequenza (via greedy decoding) come ragionamento, il modello produce **molteplici percorsi logici diversi** (sampling) che conducono potenzialmente a risposte differenti. Dopodiché **si sceglie come risposta finale quella che appare più **consistente**, ossia quella su cui più percorsi convergono (voto di maggioranza/pluralità)**. L'intuizione è che, se vari ragionamenti indipendenti portano allo stesso risultato, è probabile che sia corretto. Questa strategia migliora sensibilmente le prestazioni su problemi aritmetici e di ragionamento di senso comune. 
+  - **Questa tecnica necessita di un attore esterno (un **agente**) all'LLM che valuti le diverse risposte date dall'LLM**.
+  ![Immagine che spiega la Self Consistency](self-consistency-example.svg)
+- **Tree‑of‑Thoughts (ToT)[^8]**: **esplorare più percorsi decisionali "a ramo", con criteri di valutazione locale e globale (utile in pianificazione, creatività vincolata, puzzle)**.
+  - La tecnica “Tree of Thoughts” (ToT) estende il chain-of-thought (CoT) introducendo un processo di ricerca deliberata: piuttosto che generare un solo ragionamento sequenziale, il modello mantiene diversi percorsi (“pensieri” intermedi) organizzati in un albero. Ogni nodo è uno stato parziale, ottenuto applicando un “pensiero” al cammino finora costruito. Si definiscono: come decomporre il problema in passi, come generare le alternative di pensiero (espansione), come valutare o assegnare un valore ad ogni stato (euristica), e quale algoritmo di ricerca usare (per esempio breadth-first, depth-first, con lookahead e backtracking). Questo consente esplorazione, confronto tra percorsi, scarto di opzioni deboli, e selezione della soluzione migliore. I risultati mostrano che ToT supera largamente CoT e altre varianti in compiti che richiedono pianificazione, ragionamento complesso e creatività.
+  - **Si noti bene che un LLM da solo non “sa” fare ToT: ragiona in sequenza, tuttavia se si crea un **agente** che utilizza un LLM, allora l'agente può dare istruzioni multiple all'LLM per attuare ToT**, come ad esempio:
+    - Genera pensieri multipli (espansione dei rami).
+    - Valutali con una metrica (ad es. punteggio del modello o regole definite da te).
+    - Scarta o approfondisci solo quelli promettenti (potatura).
+    - Applica un algoritmo di ricerca (BFS, DFS, backtracking).
+    - Seleziona la risposta finale fra i rami migliori.
+  ![Immagine che spiega la Tree of Thoughts](tot-example.svg)
+- **Reflexion (self‑critique)[^9]**: **dopo un primo output, chiedere all'IA di riflettere sugli errori, annotare "lezioni apprese" e **riprovare** con le correzioni**.
+  - **Reflexion è un framework che migliora gli **agenti** basati su LLM** non aggiornando i pesi, ma tramite feedback linguistico. Dopo ogni tentativo, l’agente “riflette” sugli errori usando segnali di feedback (numerici o testuali), genera un riassunto verbale degli sbagli, e conserva queste riflessioni in una memoria episodica. Questo contesto extra influisce sulle decisioni successive. Reflexion si applica a vari compiti: decision-making sequenziale, ragionamento, codifica. I risultati diventano migliori rispetto a agenti senza riflessione, anche su benchmark difficili (es. HumanEval coding). Non richiede fine-tuning pesante, ed è interpretabile
+  ![Immagine che spiega la Reflexion](reflexion-example.svg)
+- **RAG**[^10] (Retrieval‑Augmented Generation): ancorare la generazione a **fonti esterne** (es. Wikipedia, materiali di corso), ottenendo maggiore specificità e **provenienza**.
+  - La tecnica RAG (Retrieval-Augmented Generation) combina modelli linguistici con un sistema di recupero documentale. Invece di basarsi solo sulla conoscenza interna del modello, una query viene prima usata per cercare documenti rilevanti in una base esterna (ad esempio database, motore di ricerca, vector store). I testi trovati vengono poi passati come contesto aggiuntivo al modello, che li integra nella generazione della risposta. Questo approccio migliora l’aggiornamento delle informazioni, la precisione e la trasparenza, riducendo le “allucinazioni”. RAG è molto usato in applicazioni pratiche come chatbot aziendali, assistenti su documentazione tecnica e motori di ricerca conversazionali.
+  ![Immagine che spiega la RAG](rag-example.svg)
 
 ### 1.2 Pattern riutilizzabili di prompt (template)
 
@@ -48,8 +63,7 @@ Compito:
 1) Proponi 3 idee di unità con Driving Question;
 2) Per la migliore, struttura fasi, compiti autentici, risorse, assessment, rubrica;
 3) Applica Chain-of-Thought esplicita;
-4) Genera 3 varianti e usa Self-Consistency per scegliere la migliore;
-5) Inserisci "Controlli Qualità": fatti, bias, sicurezza, inclusione, accessibilità (UDL 3.0).
+4) Inserisci "Controlli Qualità": fatti, bias, sicurezza, inclusione, accessibilità (UDL 3.0).
 Fonti (RAG): [allega estratti/URL dei materiali], cita tra parentesi quadre.
 Formato: output in sezioni numerate, tabelle per rubriche, checklist finale di rischi/mitigazioni.
 Vincoli: linguaggio chiaro, riferimenti disciplinari, esempi per alunni con DSA/ADHD.
@@ -145,35 +159,7 @@ La letteratura PBL “Gold Standard”[^1] individua sette Essential Project Des
 
 - **Formato di Output:** Organizza la risposta in sezioni ben definite. Utilizza un linguaggio chiaro e accademico.
 
-#### Scenario STEM (Fisica/Matematica/Scienze) - esempio 1
-
-**Progetto**: "Costruire un sismografo low‑cost e modellare i dati"
-
-**Driving Question**: *Come si può progettare un sismografo artigianale e analizzare i segnali per stimare la magnitudo?*
-
-**Prodotto pubblico**: **poster scientifico** + **demo**.
-
-**Prompt avanzato (ToT[^8] + Self‑Consistency[^7] + Sicurezza di laboratorio):**
-
-```text
-Ruolo: Docente di Fisica e Matematica, esperto di didattica laboratoriale e sicurezza.
-Contesto: secondo trimestre, laboratorio scolastico, classe quarta del liceo scientifico; dispositivi a basso costo (Arduino, sensori piezo).
-Compito:
-1) Genera tre possibili piani Project Based Learning (PBL); per ciascuno, stima prerequisiti e rischi.
-2) Usa Tree-of-Thoughts per comparare i piani su criteri: fattibilità, costo, sicurezza, allineamento curricolare.
-3) Applica Self-Consistency: produci 3 catene di ragionamento e seleziona la proposta "vincente".
-4) Fornisci checklist di sicurezza (norme generiche di laboratorio scolastico) e disclaimer.
-5) Crea rubrica (progettazione, raccolta dati, modellizzazione, comunicazione).
-7) Descrizione del progetto:
-    - "Costruire un sismografo low‑cost e modellare i dati"
-    - Driving Question: Come si può progettare un sismografo artigianale e analizzare i segnali per stimare la magnitudo?
-    - Prodotto pubblico**: poster scientifico + demo
-Formato: confronto in tabella; CoT esplicito; rubrica tabellare.
-```
-
->*Per tecniche ToT e Self‑Consistency si veda la relativa letteratura; integrare sempre con protocolli di laboratorio della scuola*
-
-#### Esempio STEM (Fisica e Scienze Naturali) - esempio 2
+#### Esempio STEM (Fisica e Scienze Naturali)
 
 **Prompt:**
 
@@ -659,6 +645,34 @@ Vediamo come configurare alcuni assistenti personalizzati per la scuola superior
 - **Conoscenze Aggiuntive (file caricati):** Il docente può caricare PDF con guide di stile, esempi di saggi ben scritti o elenchi di connettivi logici.
 
 - **Utilizzo in classe:** Gli studenti usano "Stilo" per revisionare le bozze dei loro temi o delle loro relazioni, ricevendo un feedback personalizzato e immediato che li aiuta a migliorare le loro competenze di scrittura.
+
+#### Assistente per PBL - Scenario STEM (Fisica/Matematica/Scienze)
+
+**Progetto**: "Costruire un sismografo low‑cost e modellare i dati"
+
+**Driving Question**: *Come si può progettare un sismografo artigianale e analizzare i segnali per stimare la magnitudo?*
+
+**Prodotto pubblico**: **poster scientifico** + **demo**.
+
+**Prompt avanzato (ToT[^8] + Self‑Consistency[^7] + Sicurezza di laboratorio) - agente:**
+
+```text
+Ruolo: Docente di Fisica e Matematica, esperto di didattica laboratoriale e sicurezza.
+Contesto: secondo trimestre, laboratorio scolastico, classe quarta del liceo scientifico; dispositivi a basso costo (Arduino, sensori piezo).
+Compito:
+1) Genera tre possibili piani Project Based Learning (PBL); per ciascuno, stima prerequisiti e rischi.
+2) Usa Tree-of-Thoughts per comparare i piani su criteri: fattibilità, costo, sicurezza, allineamento curricolare.
+3) Applica Self-Consistency: produci 3 catene di ragionamento e seleziona la proposta "vincente".
+4) Fornisci checklist di sicurezza (norme generiche di laboratorio scolastico) e disclaimer.
+5) Crea rubrica (progettazione, raccolta dati, modellizzazione, comunicazione).
+7) Descrizione del progetto:
+    - "Costruire un sismografo low‑cost e modellare i dati"
+    - Driving Question: Come si può progettare un sismografo artigianale e analizzare i segnali per stimare la magnitudo?
+    - Prodotto pubblico**: poster scientifico + demo
+Formato: confronto in tabella; CoT esplicito; rubrica tabellare.
+```
+
+>*Per tecniche ToT e Self‑Consistency si veda la relativa letteratura; integrare sempre con protocolli di laboratorio della scuola*
 
 ### 3.3 Gestione avanzata di assistenti personalizzati
 
@@ -1244,3 +1258,4 @@ L'integrazione dell'intelligenza artificiale nella didattica sta evolvendo rapid
 [^14]: [Experiencing the Process of Knowledge Creation: The Nature and Use of Inquiry-Based Learning in Higher Education](https://ako.ac.nz/assets/Knowledge-centre/Hei-toko/inquiry-based-learning/SUMMARY-REPORT-Inquiry-based-Learning.pdf)
 [^15]: [Flipped Classroom](https://innovazione.indire.it/avanguardieeducative/flipped-classroom)
 [^16]: [AI as a conversation partner and coach](https://edunewsletter.openai.com/p/ai-as-a-conversation-partner-and?utm_source=publication-search)
+[^17]: [Debate](https://innovazione.indire.it/avanguardieeducative/debate)
