@@ -34,8 +34,8 @@ export default defineConfig({
       ],
       sidebar: [
         {
-          label: "Corso AI",
-          translations: { en: "AI Course" },
+          label: "✨ Corso AI",
+          translations: { en: "✨ AI Course" },
           collapsed: false,
           items: [
             {
@@ -74,19 +74,7 @@ export default defineConfig({
             },
           ],
         },
-        {
-          label: "Guide",
-          translations: { en: "Guides" },
-          collapsed: true,
-          items: [
-            // Each item here is one entry in the navigation menu.
-            {
-              label: "Guide per AI",
-              translations: { en: "AI Guides" },
-              slug: "guides/example",
-            },
-          ],
-        },
+
         {
           label: " 🧭 Bussola dell'AI",
           translations: { en: " 🧭 AI compass" },
@@ -98,6 +86,25 @@ export default defineConfig({
           translations: { en: " 📚 teaching examples" },
           collapsed: true,
           autogenerate: { directory: "lesson-examples" },
+        },
+        {
+          label: "📖 Guide",
+          translations: { en: "📖 Guides" },
+          collapsed: true,
+          items: [
+            // Each item here is one entry in the navigation menu.
+            {
+              label: "Guide per AI",
+              translations: { en: "AI Guides" },
+              slug: "guides/example",
+            },
+          ],
+        },
+        {
+          label: "🏛️ Normativa AI",
+          translations: { en: "🏛️ AI Regulations" },
+          collapsed: true,
+          autogenerate: { directory: "ai-regulations" },
         },
       ],
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 4 },
