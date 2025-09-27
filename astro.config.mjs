@@ -64,6 +64,14 @@ export default defineConfig({
               },
               slug: "corso/prompt-engineering-advanced",
             },
+            {
+              label:
+                "Esperienze Didattiche Personalizzate con NotebookLM, Chatbot RAG e Strumenti per l'Inclusione",
+              translations: {
+                en: "Personalized Learning Experiences with NotebookLM, RAG Chatbots, and Inclusion Tools",
+              },
+              slug: "corso/personalized-learning-experiences",
+            },
           ],
         },
         {
@@ -84,6 +92,12 @@ export default defineConfig({
           translations: { en: " 🧭 AI compass" },
           collapsed: true,
           autogenerate: { directory: "ai-compass" },
+        },
+        {
+          label: " 📚 Esempi Didattici",
+          translations: { en: " 📚 teaching examples" },
+          collapsed: true,
+          autogenerate: { directory: "lesson-examples" },
         },
       ],
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 4 },

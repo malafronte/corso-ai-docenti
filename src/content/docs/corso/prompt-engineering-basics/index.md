@@ -157,7 +157,7 @@ Combinando sapientemente queste quattro componenti -- Ruolo, Contesto, Compito e
 
 Tecniche comuni di delimitazione:
 
-1. **Triple backtick (```)** — usate spesso per codice o blocchi formattati (per generare il backtick sulla tastiera italiana è possibile `usare ALT+96` con l'attivazione del tastierino numerico):
+1. **Triple backtick (```)** — usate spesso per codice o blocchi formattati (per generare il backtick sulla tastiera italiana è possibile usare `ALT+96` con l'attivazione del tastierino numerico):
 
    ```text
          ```
