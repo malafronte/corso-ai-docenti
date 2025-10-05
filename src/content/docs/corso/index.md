@@ -57,21 +57,25 @@ Il corso adotta un approccio teorico-pratico. Ogni lezione sarà suddivisa in du
 #### Lezione 3: Prompt Avanzati e Progettazione Didattica
 
 - **Contenuti principali**:
-  - utilizzare l'IA come partner nella progettazione (es. Project Based Learning, debate, role-playing).
-  - creazione e utilizzo di assistenti personalizzati (GPTs, Gems)
+  - utilizzare l'IA come partner nella progettazione (es. Project Based Learning, debate, role-playing, etc.).
+  - creazione e utilizzo di assistenti personalizzati (GPTs, Gems, Assistenti di Copilot, etc.)
   - analisi critica dei risultati: riconoscere e gestire errori, bias e "allucinazioni" dell'IA.
 
-#### Lezione 4: Strumenti di AI che elaborano i contenuti dell'utente: NotebookLM e altri
+#### Lezione 4: Strumenti di AI che elaborano i contenuti dell'utente: NotebookLM, Perplexity e altri
 
 - **Contenuti principali**:
-  - introduzione a piattaforme di IA "source-grounded" come NotebookLM
-  - funzionalità principali: riassumere, interrogare documenti, generare guide allo studio, mappe concettuali, FAQ e glossari a partire da fonti proprie (PDF, slide, trascrizioni)
+  - introduzione a piattaforme di IA "source-grounded" come NotebookLM, Perplexity, etc.
+  - funzionalità principali: riassumere, interrogare documenti, generare guide allo studio, mappe concettuali, FAQ e glossari a partire da fonti proprie (PDF, slide, trascrizioni, etc.)
   - creazione di chatbot che rispondono su una base di conoscenza prestabilita.
 
 #### Lezione 5: IA per la creatività e l'inclusione
 
 - **Contenuti principali**:
-  - panoramica di strumenti specialistici per generare contenuti visivi: mappe concettuali (es. Napkin, Chatmind, NotebookLM), presentazioni (es. Gamma, Canva), immagini (Nano-Banana, DALL-E 3, etc.) e video (Veo 3, Sora, etc.)
+  - panoramica di strumenti specialistici per generare contenuti visivi: 
+    - mappe concettuali con Napkin, NotebookLM, MarkMap, etc.
+    - presentazioni (es. Gamma, Canva, etc.)
+    - immagini (Gemini Flash Image, OpenAI DALL-E, etc.)
+    - video (Veo, Sora, etc.)
   - focus sull'uso dell'IA come strumento compensativo e di supporto per studenti con Bisogni Educativi Speciali (BES).
 
 #### Lezione 6: Uso Responsabile, Etica e Sicurezza dell'IA

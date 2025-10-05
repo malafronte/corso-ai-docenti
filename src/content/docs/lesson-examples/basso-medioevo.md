@@ -5,7 +5,9 @@ description: Progettare un Percorso Didattico sul Basso Medioevo - Fonti Digital
 
 ## Prompt in modalità **Deep Research** per il progetto dell'UdA
 
-*Vorrei preparare un ciclo di lezioni sulla vita in Italia e in Europa ai tempi del medioevo per la mia classe terza del liceo delle scienze umane. In particolare vorrei concentrarmi sul periodo che va dall'anno mille alle soglie del Rinascimento. Vorrei avere un elenco di fonti che poi utilizzerei per NotebookLM assieme al mio libro di testo "Profili storici XXI secolo"(https://www.laterza.it/libro-scuola.php?isbn=9788842116004 con estratto rilevante https://www.laterza.it/indici/9788842116004_capitolo.pdf ). Vorrei che trovassi delle fonti su Youtube e su internet che possano rendere l'esperienza di apprendimento più completa, coinvolgente e stimolante per i miei alunni. In particolare per YouTube vorrei che trovassi i video di Alessandro Barbero pertinenti e mi fornissi tali link assieme ai link delle altre risorse per NotebookLM. Alla fine vorrei che mi aiutassi a progettare una UdA di 6 settimane sulla storia del Medioevo e a progettare i notebook da preparare (prompt, risorse, attività in classe e a casa).*
+```text
+Vorrei preparare un ciclo di lezioni sulla vita in Italia e in Europa ai tempi del medioevo per la mia classe terza del liceo delle scienze umane. In particolare vorrei concentrarmi sul periodo che va dall'anno mille alle soglie del Rinascimento. Vorrei avere un elenco di fonti che poi utilizzerei per NotebookLM assieme al mio libro di testo "Profili storici XXI secolo"(https://www.laterza.it/libro-scuola.php?isbn=9788842116004 con estratto rilevante https://www.laterza.it/indici/9788842116004_capitolo.pdf ). Vorrei che trovassi delle fonti su Youtube e su internet che possano rendere l'esperienza di apprendimento più completa, coinvolgente e stimolante per i miei alunni. In particolare per YouTube vorrei che trovassi i video di Alessandro Barbero pertinenti e mi fornissi tali link assieme ai link delle altre risorse per NotebookLM. Alla fine vorrei che mi aiutassi a progettare una UdA di 6 settimane sulla storia del Medioevo e a progettare i notebook da preparare (prompt, risorse, attività in classe e a casa).
+```
 
 >:warning: Il precedente prompt è stato utilizzato in **Gemini Pro** con la funzione [Deep Research](https://gemini.google/overview/deep-research/), disponibile al momento in cui si scrivono queste note solo agli utenti degli abbonamenti Gemini AI Pro e Gemini AI Ultra. L'obiettivo del prompt è quello di trovare e organizzare le risorse didattiche da utilizzare in [NotebookLM](https://notebooklm.google.com/).
 La funzione Deep Research effettua una ricerca approfondita nel web con il supporto dell'AI. La ricerca viene condotta da un piano d'azione che viene elaborato dall'AI prima di iniziare la ricerca nel web e che è possibile modificare se non risponde alle proprie aspettative.
@@ -79,9 +81,7 @@ Per diversificare le metodologie didattiche e promuovere un apprendimento attivo
 
 - **Piattaforme di Gamification**: `Wordwall.net` consente di creare facilmente attività ludiche come quiz, cruciverba e giochi a tempo. Questi strumenti sono ideali per la verifica formativa, il consolidamento delle conoscenze e per mantenere alto il coinvolgimento della classe.[^22]
 
-- **Mappe Geografiche Interattive**: Sfruttando l'approccio proposto in un percorso didattico sulle città medievali [^23], si può utilizzare
-
-    **Google My Maps**. Gli studenti possono creare mappe collaborative per tracciare le rotte commerciali delle repubbliche marinare, localizzare i principali centri universitari o i cantieri delle cattedrali gotiche, arricchendo ogni punto con testi, immagini e link.
+- **Mappe Geografiche Interattive**: Sfruttando l'approccio proposto in un percorso didattico sulle città medievali [^5], si può utilizzare [**Google My Maps**](https://www.google.com/intl/it/maps/about/mymaps/). Gli studenti possono creare mappe collaborative per tracciare le rotte commerciali delle repubbliche marinare, localizzare i principali centri universitari o i cantieri delle cattedrali gotiche, arricchendo ogni punto con testi, immagini e link.
 
 ## Parte II: Progettazione dell'Unità di Apprendimento (UdA) - "Vita, Potere e Società nel Basso Medioevo"
 
@@ -341,7 +341,7 @@ Questa sezione fornisce una guida pratica per tradurre il piano didattico in azi
 
     1. **Un Podcast di Approfondimento**: Una puntata di 10-15 minuti in stile "Barbero" che parte da un luogo comune sul Medioevo (es. "le donne non avevano alcun ruolo", "tutti erano sporchi e ignoranti") e lo sfata attraverso un'analisi argomentata delle fonti studiate.
 
-    2. **Una Mappa Narrativa Interattiva**: Utilizzando Google My Maps, potranno creare un percorso tematico, ad esempio "Le vie della seta e delle spezie: il viaggio di un mercante veneziano nel Duecento", arricchendo ogni tappa con descrizioni, immagini, estratti di fonti e link di approfondimento.
+    2. **Una Mappa Narrativa Interattiva**: Utilizzando [Google My Maps](https://www.google.com/intl/it/maps/about/mymaps/), potranno creare un percorso tematico, ad esempio "Le vie della seta e delle spezie: il viaggio di un mercante veneziano nel Duecento", arricchendo ogni tappa con descrizioni, immagini, estratti di fonti e link di approfondimento.
 
     3. **Un Video-Saggio**: Un breve documentario (5-7 minuti) che combina immagini storiche (miniature, opere d'arte, mappe) con una narrazione basata sulle ricerche effettuate, montato con software di video editing accessibili.
 

@@ -114,7 +114,7 @@ In ricerca si parla di **reasoning simulato**: non è pensiero consapevole, ma u
 
 ## 3. Concetti fondamentali: AI, Machine Learning, Deep Learning, Reti Neurali e i livelli (ANI, AGI, ASI)
 
-Per orientarsi nel panorama dell’Intelligenza Artificiale è utile immaginare una serie di matrioske: ogni bambola ne contiene una più piccola, più specializzata. All’esterno c’è l’**Artificial Intelligence (AI)**, poi una più piccola chiamata **Machine Learning (ML)**, dentro ancora **Deep Learning (DL)**. Sia il Machine Learning (ML) che il Deep Learning (DL) utilizzano [**Reti Neurali Artificiali**](../../ai-compass/base-concepts-in-gen-ai#reti-neurali-i-mattoni-dellapprendimento) per funzionare, ma esistono forme di intelligenza artificiale che non sono basate su reti neurali artificiali. Comprendere questa stratificazione evita confusioni e rende più chiaro perché la rivoluzione attuale è possibile.
+Per orientarsi nel panorama dell’Intelligenza Artificiale è utile immaginare una serie di matrioske: ogni bambola ne contiene una più piccola, più specializzata. All’esterno c’è l'**Artificial Intelligence (AI)**, poi una più piccola chiamata **Machine Learning (ML)**, dentro ancora **Deep Learning (DL)**. Sia il Machine Learning (ML) che il Deep Learning (DL) utilizzano [**Reti Neurali Artificiali**](../../ai-compass/base-concepts-in-gen-ai#reti-neurali-i-mattoni-dellapprendimento) per funzionare, ma esistono forme di intelligenza artificiale che non sono basate su reti neurali artificiali. Comprendere questa stratificazione evita confusioni e rende più chiaro perché la rivoluzione attuale è possibile.
 
 ### Artificial Intelligence (AI)
 
@@ -184,8 +184,13 @@ L'apprendimento Semi-supervisionato mescola pochi dati etichettati con molti non
   
 ##### Reinforcement Learning (RL)
 
-Nel Reinforcement Learning (RL) l’agente interagisce con un **ambiente** in una sequenza ciclica: osserva uno stato (state), compie un’azione (action) seguendo una strategia (policy), riceve una ricompensa (reward) e un nuovo stato. L’obiettivo non è massimizzare il premio immediato, ma la ricompensa cumulativa futura (valore). Differenze chiave rispetto al supervisionato:
-  
+Nel Reinforcement Learning (RL) l'agente interagisce con un **ambiente** in una sequenza ciclica: osserva uno stato (state), compie un'azione (action) seguendo una strategia (policy), riceve una ricompensa (reward) e un nuovo stato. L'obiettivo non è massimizzare il premio immediato, ma la ricompensa cumulativa futura (valore). Differenze chiave rispetto al supervisionato:
+
+- **Feedback ritardato**: la ricompensa può arrivare molto dopo l'azione (es. una mossa in una partita a scacchi si rivela vincente solo alla fine)
+- **Esplorazione vs sfruttamento**: l'agente deve bilanciare tra provare nuove azioni (exploration) e usare quelle che già sa funzionare (exploitation)
+- **Sequenzialità**: le azioni influenzano gli stati futuri, non sono indipendenti come in classificazione
+- **Assenza di etichette**: non esiste una "risposta corretta" predefinita, solo segnali di ricompensa da ottimizzare
+
 Esempi applicativi: giochi (AlphaGo), robotica, ottimizzazione di traffico o consumi energetici, sistemi di raccomandazione adattivi, gestione automatica di risorse cloud.
 
 ![Immagine del ciclo di apprendimento per reinforcement learning](reinforcement-learning.svg)
@@ -281,7 +286,7 @@ Abbiamo parlato di "parola successiva", ma è una semplificazione. I modelli non
 
 - `gatto` -> `[gatto]` (1 token)
 
-- `de-mocraticamente` -> `[de]`, `[mocratica]`, `[mente]` (3 token)
+- `democraticamente` -> `[de]`, `[mocratica]`, `[mente]` (3 token)
 
 - `L'albero` -> `[L']`, `[albero]` (2 token)
 
@@ -338,6 +343,8 @@ Vediamo ora i principali attori in campo e le loro caratteristiche distintive. N
 - **[Copilot (Microsoft)](https://copilot.microsoft.com/):** Non è tanto un modello a sé stante, quanto un "assistente" basato sulla tecnologia di OpenAI (ChatGPT) e integrato profondamente nei prodotti Microsoft: Windows, Office (Word, Excel, PowerPoint), Teams. Il suo scopo è la **produttività**: aiutarti a scrivere un'email, analizzare dati in un foglio di calcolo, creare una presentazione. È l'"assistente d'ufficio".
 
 - **[M365 Copilot (Microsoft)](https://m365.cloud.microsoft/):** La versione di Copilot per chi ha una sottoscrizione Office 365, come quella dell'Istituto Greppi. Al momento in cui si scrivono queste note, M365 Copilot dà la possibilità di utilizzare ChatGPT5 nelle risposte con anche la [protezione dei dati aziendali](https://learn.microsoft.com/en-us/copilot/microsoft-365/enterprise-data-protection) e la possibilità di personalizzare Copilot sia con istruzioni personalizzate che con la possibilità di configurare la memoria storia delle chat. Nella versione inclusa con l'abbonamento presente al Greppi c'è anche la possibilità di creare agenti AI.
+
+- **[Perplexity](https://www.perplexity.ai/):** Un motore di ricerca conversazionale che fornisce risposte dirette con citazioni. Offre funzionalità come "Spaces" per organizzare la ricerca e la possibilità di caricare documenti per un'analisi contestualizzata.
 
 ### 5.1 Applicazioni pratiche per la didattica
 

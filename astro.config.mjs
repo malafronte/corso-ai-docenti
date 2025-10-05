@@ -15,8 +15,8 @@ export default defineConfig({
     }),
     starlight({
       title: {
-        it: "AI per Docenti 2025",
-        en: "AI for Teachers 2025",
+        it: "AI per Docenti",
+        en: "AI for Teachers",
       },
       // Enable multilingual docs: Italian as root (no /it/ prefix) and English under /en/
       defaultLocale: "root",
@@ -66,11 +66,19 @@ export default defineConfig({
             },
             {
               label:
-                "Esperienze Didattiche Personalizzate con NotebookLM, Chatbot RAG e Strumenti per l'Inclusione",
+                "Esperienze Didattiche Personalizzate con NotebookLM, Perplexity, Chatbot RAG e Strumenti per l'Inclusione",
               translations: {
-                en: "Personalized Learning Experiences with NotebookLM, RAG Chatbots, and Inclusion Tools",
+                en: "Personalized Learning Experiences with NotebookLM, Perplexity, RAG Chatbots, and Inclusion Tools",
               },
               slug: "corso/personalized-learning-experiences",
+            },
+            {
+              label:
+                "IA per la Creatività e l'Inclusione: strumenti visivi e strategie di supporto",
+              translations: {
+                en: "AI for Creativity and Inclusion: Visual Tools and Support Strategies",
+              },
+              slug: "corso/creativity-and-inclusion",
             },
           ],
         },

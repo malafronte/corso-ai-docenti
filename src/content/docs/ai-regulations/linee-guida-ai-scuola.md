@@ -11,7 +11,7 @@ description: Analisi delle Linee guida per l’introduzione dell’Intelligenza 
 
 ## Abstract
 
-Le **Linee guida del Ministero dell’istruzione e del merito (MIM)** per l’introduzione dell’Intelligenza Artificiale (IA) nella scuola delineano un quadro di **principi, requisiti e processi operativi** finalizzato a promuovere un’adozione **antropocentrica, equa, sicura e conforme** alla normativa vigente. Il documento definisce, da un lato, **obiettivi strategici** (miglioramento degli apprendimenti, inclusione, efficienza amministrativa, qualità dei servizi) e, dall’altro, **obblighi e cautele** connesse ai diversi livelli di rischio dei sistemi di IA, in particolare quando impattano su **accesso, valutazione e monitoraggio** in ambito educativo. Il modello proposto – basato su **quattro pilastri** (principi, requisiti, framework di implementazione, comunicazione e governance) – si concretizza in un **ciclo in cinque fasi** (definizione, pianificazione, adozione, monitoraggio, conclusione), accompagnato da **focus applicativi** per i principali destinatari (dirigenti, personale amministrativo, docenti, studenti) e da **misure di mitigazione** dei rischi. Per le scuole secondarie di secondo grado, ciò implica una **regia pedagogica e organizzativa** capace di integrare le opportunità dell’IA con il rispetto dei **diritti fondamentali, della protezione dei dati e della libertà di insegnamento**, valorizzando la responsabilità professionale dei docenti e l’alfabetizzazione all’IA dell’intera comunità scolastica.[^2][^3]
+Le **Linee guida del Ministero dell’istruzione e del merito (MIM)** per l’introduzione dell’Intelligenza Artificiale (IA) nella scuola delineano un quadro di **principi, requisiti e processi operativi** finalizzato a promuovere un’adozione **antropocentrica, equa, sicura e conforme** alla normativa vigente. Il documento definisce, da un lato, **obiettivi strategici** (miglioramento degli apprendimenti, inclusione, efficienza amministrativa, qualità dei servizi) e, dall’altro, **obblighi e cautele** connesse ai diversi livelli di rischio dei sistemi di IA, in particolare quando impattano su **accesso, valutazione e monitoraggio** in ambito educativo. Il modello proposto – basato su **quattro pilastri** (principi, requisiti, framework di implementazione, comunicazione e governance) – si concretizza in un **ciclo in cinque fasi** (definizione, pianificazione, adozione, monitoraggio, conclusione), accompagnato da **focus applicativi** per i principali destinatari (dirigenti, personale amministrativo, docenti, studenti) e da **misure di mitigazione** dei rischi. Per le scuole secondarie di secondo grado, ciò implica una **regia pedagogica e organizzativa** capace di integrare le opportunità dell’IA con il rispetto dei **diritti fondamentali, della protezione dei dati e della libertà di insegnamento**, valorizzando la responsabilità professionale dei docenti e l’alfabetizzazione all’IA dell’intera comunità scolastica.[^2],[^3]
 
 ---
 
@@ -214,7 +214,7 @@ Per gli istituti di scuola superiore, l’adozione consapevole dell’IA richied
 ### 9.4 Formazione e cultura professionale
 
 - Programmare **formazione continua** su IA generativa, **explainability**, **etica** e **privacy** per docenti e personale;  
-- Sviluppare **attività di alfabetizzazione all’IA** per studenti, con attenzione a **pensiero critico**, **valutazione delle fonti**, **uso responsabile** e **limiti** dei modelli (allucinazioni, bias, tempi di aggiornamento).[^20][^46]
+- Sviluppare **attività di alfabetizzazione all’IA** per studenti, con attenzione a **pensiero critico**, **valutazione delle fonti**, **uso responsabile** e **limiti** dei modelli (allucinazioni, bias, tempi di aggiornamento).[^20],[^46]
 
 ### 9.5 Relazione educativa e benessere
 
@@ -249,7 +249,7 @@ Una **IA scolastica affidabile** è, in definitiva, quella che **eleva la qualit
 
 La sezione che segue propone **scenari concreti, trasferibili e conformi** alle Linee guida, con particolare attenzione a **privacy**, **sorveglianza umana** e **equità**. Per ciascun esempio sono indicati **obiettivi**, **procedura**, **impostazioni di tutela**, **valutazione** e **riferimenti** ai paragrafi rilevanti del documento ministeriale (tra parentesi i rimandi alle note già presenti).
 
-> **Avvertenza generale**: ove si impieghino piattaforme di IA **esterne** alla scuola, occorre verificare **informative, basi giuridiche, configurazioni privacy**, disattivare la **cronologia** ove non necessaria, **impedire l’uso per training** e **non inserire dati personali identificativi** degli studenti, in conformità a **3.2** e **3.3** (requisiti tecnici e normativi).[^23][^25][^45]
+> **Avvertenza generale**: ove si impieghino piattaforme di IA **esterne** alla scuola, occorre verificare **informative, basi giuridiche, configurazioni privacy**, disattivare la **cronologia** ove non necessaria, **impedire l’uso per training** e **non inserire dati personali identificativi** degli studenti, in conformità a **3.2** e **3.3** (requisiti tecnici e normativi).[^23],[^25],[^45]
 
 ### 11.1 Personalizzazione dell’apprendimento (Italiano e Scienze umane)
 
@@ -258,14 +258,14 @@ La sezione che segue propone **scenari concreti, trasferibili e conformi** alle 
   - **Procedura**: il docente seleziona un testo di narrativa o saggistica e richiede al sistema di IA **tre parafrasi** controllate, accompagnate da **domande di riflessione** (es. “Che strategia hai usato per comprendere questo paragrafo?”).  
   - **Tutela**: nessun dato personale; usare **account docente** in ambiente controllato; salvare i materiali su repository d’istituto.  
   - **Valutazione**: rubrica su **comprensione**, **uso di strategie** e **autovalutazione**; feedback orale del docente.  
-  - **Riferimenti**: personalizzazione e strumenti interattivi (4.2 Docenti), trasparenza e sorveglianza umana (3.1), privacy by design (3.3).[^38][^19][^25]
+  - **Riferimenti**: personalizzazione e strumenti interattivi (4.2 Docenti), trasparenza e sorveglianza umana (3.1), privacy by design (3.3).[^38],[^19],[^25]
 
 - **Esempio 2 — Schede “ponte” per studenti NAI**  
   - **Obiettivo**: costruire schede bilingui con glossari visuali per studenti neoarrivati in Italia.  
   - **Procedura**: il docente fornisce parole‑chiave disciplinari; l’IA genera **definizioni semplificate** e **esempi illustrati**; verifica docente; stampa o LMS.  
   - **Tutela**: non inserire nomi/biografie; preferire **immagini generate** senza dati reali; controllare bias culturali.  
   - **Valutazione**: checklist di **acquisizione lessicale** e **uso contestuale**.  
-  - **Riferimenti**: equità e inclusione (2), criteri anti‑discriminazione (3.1), gestione responsabile dei dati (3.2).[^18][^21][^23]
+  - **Riferimenti**: equità e inclusione (2), criteri anti‑discriminazione (3.1), gestione responsabile dei dati (3.2).[^18],[^21],[^23]
 
 ### 11.2 STEM: Matematica e Fisica
 
@@ -274,14 +274,14 @@ La sezione che segue propone **scenari concreti, trasferibili e conformi** alle 
   - **Procedura**: il docente inserisce un problema tipo; l’IA produce **5 varianti** modificando numeri e contesto; il docente verifica la **correttezza** e pubblica su LMS.  
   - **Tutela**: nessun dato personale; indicare agli studenti che **non** devono incollare soluzioni su servizi esterni; usare l’istanza scolastica.  
   - **Valutazione**: consegna di **taccuino di calcolo** con ragionamento; valutazione del **processo**, non solo del risultato.  
-  - **Riferimenti**: sorveglianza umana e explainability (3.1), strumenti per esercitazione (4.2 Docenti).[^19][^38]
+  - **Riferimenti**: sorveglianza umana e explainability (3.1), strumenti per esercitazione (4.2 Docenti).[^19],[^38]
 
 - **Esempio 4 — Laboratorio virtuale di Fisica (simulazioni)**  
   - **Obiettivo**: indagare relazioni (p. es. moto uniformemente accelerato) con **parametri controllati**.  
   - **Procedura**: uso di ambienti con IA per **guidare ipotesi**, esecuzione di simulazioni, **registrazione dati**, confronto con modelli.  
   - **Tutela**: profili **anonimizzati** su piattaforme esterne; consenso informativo generico per attività digitali.  
   - **Valutazione**: report con **grafici**, **discussione errori** e riflessione su **limitazioni** della simulazione.  
-  - **Riferimenti**: innovazione responsabile (2), monitoraggio output e anomalie (4.1 Monitoraggio).[^18][^33]
+  - **Riferimenti**: innovazione responsabile (2), monitoraggio output e anomalie (4.1 Monitoraggio).[^18],[^33]
 
 ### 11.3 Scienze naturali e salute
 
@@ -290,7 +290,7 @@ La sezione che segue propone **scenari concreti, trasferibili e conformi** alle 
   - **Procedura**: l’IA genera spiegazioni a **tre livelli** (base/intermedio/avanzato) e **domande socratiche**; il docente seleziona e integra.  
   - **Tutela**: nessun dato personale; conservazione su LMS.  
   - **Valutazione**: breve colloquio su **consapevolezza degli errori** e **limiti delle spiegazioni**.  
-  - **Riferimenti**: trasparenza, allucinazioni e controllo umano (3.1), didattica attiva (4.2 Docenti).[^20][^38]
+  - **Riferimenti**: trasparenza, allucinazioni e controllo umano (3.1), didattica attiva (4.2 Docenti).[^20],[^38]
 
 - **Esempio 6 — Analisi critica di immagini scientifiche**  
   - **Obiettivo**: distinguere **immagini microscopiche reali** da **immagini sintetiche**.  
@@ -306,14 +306,14 @@ La sezione che segue propone **scenari concreti, trasferibili e conformi** alle 
   - **Procedura**: l’IA propone **tre revisioni**: (a) **correzione micro** (ortografia/grammatica), (b) **coerenza** e **connettivi**, (c) **registro**; il docente approva o modifica.  
   - **Tutela**: elaborati **pseudonimizzati**; no caricamenti su servizi pubblici.  
   - **Valutazione**: confronto **bozza–revisioni**; autovalutazione guidata.  
-  - **Riferimenti**: feedback immediato e ruolo non sostitutivo (4.2 Studenti; 3.1).[^39][^19]
+  - **Riferimenti**: feedback immediato e ruolo non sostitutivo (4.2 Studenti; 3.1).[^39],[^19]
 
 - **Esempio 8 — CLIL con scaffolding generativo**  
   - **Obiettivo**: supportare l’apprendimento di contenuti non linguistici in L2 con **materiali ponte** (glossari, organizer grafici).  
   - **Procedura**: il docente chiede all’IA **outline**, **glossari** con immagini, **quiz**; verifica e adatta al livello.  
   - **Tutela**: evitare dati identificativi; repository d’istituto.  
   - **Valutazione**: verifica contenutistica e linguistica con **rubriche**.  
-  - **Riferimenti**: personalizzazione e strumenti interattivi (4.2 Docenti), equità (2).[^38][^18]
+  - **Riferimenti**: personalizzazione e strumenti interattivi (4.2 Docenti), equità (2).[^38],[^18]
 
 ### 11.5 Storia, Filosofia, Diritto ed Economia
 
@@ -322,14 +322,14 @@ La sezione che segue propone **scenari concreti, trasferibili e conformi** alle 
   - **Procedura**: l’IA simula un autore (con **disclaimer** sulla finzione); gli studenti pongono domande; il docente guida la **verifica con fonti**.  
   - **Tutela**: piattaforma **chiusa**; divieto di caricare dati personali.  
   - **Valutazione**: rubriche su **uso di fonti**, **confutazione** e **correttezza storica**.  
-  - **Riferimenti**: trasparenza sull’interazione con IA (1.2; art. 50 AI Act richiamato), educazione alle fonti (4.2 Studenti).[^28][^39]
+  - **Riferimenti**: trasparenza sull’interazione con IA (1.2; art. 50 AI Act richiamato), educazione alle fonti (4.2 Studenti).[^28],[^39]
 
 - **Esempio 10 — Analisi di casi giuridici con explainability**  
   - **Obiettivo**: allenare **ragionamento giuridico** e **explainability** delle soluzioni.  
   - **Procedura**: l’IA propone **argomentazioni pro/contro** su un caso; gli studenti valutano **coerenza normativa** e **principi**; il docente integra.  
   - **Tutela**: casi **fittizi**; nessun dato sensibile reale.  
   - **Valutazione**: griglia su **interpretazione**, **applicazione norme**, **chiarezza argomentativa**.  
-  - **Riferimenti**: diritto alla spiegazione della logica (4.3), sorveglianza umana (3.1).[^41][^19]
+  - **Riferimenti**: diritto alla spiegazione della logica (4.3), sorveglianza umana (3.1).[^41],[^19]
 
 ### 11.6 Informatica e competenze digitali
 
@@ -338,14 +338,14 @@ La sezione che segue propone **scenari concreti, trasferibili e conformi** alle 
   - **Procedura**: l’IA propone **suggerimenti**; gli studenti devono **giustificarne** l’accettazione o il rifiuto; il docente verifica.  
   - **Tutela**: repository locale; no codice proprietario esterno.  
   - **Valutazione**: relazione su **decisioni di design** e **sicurezza**.  
-  - **Riferimenti**: sistemi ibridi (4.3), sicurezza e misure tecniche (3.3).[^41][^25]
+  - **Riferimenti**: sistemi ibridi (4.3), sicurezza e misure tecniche (3.3).[^41],[^25]
 
 - **Esempio 12 — Data literacy e bias**  
   - **Obiettivo**: riconoscere **bias** nei dataset (es. squilibri di classe, proxy sensibili).  
   - **Procedura**: l’IA aiuta a **profilare** un dataset sintetico; gli studenti propongono **mitigazioni** (bilanciamento, metriche di equità).  
   - **Tutela**: **dati sintetici**; nessun dato reale.  
   - **Valutazione**: rubriche su **diagnosi del bias** e **strategie di correzione**.  
-  - **Riferimenti**: bias e non discriminazione (3.1), dati sintetici e PET (3.3).[^21][^26]
+  - **Riferimenti**: bias e non discriminazione (3.1), dati sintetici e PET (3.3).[^21],[^26]
 
 ### 11.7 Arte, Design, Musica
 
@@ -354,14 +354,14 @@ La sezione che segue propone **scenari concreti, trasferibili e conformi** alle 
   - **Procedura**: l’IA genera varianti stilistiche; gli studenti **documentano** prompt, fonti e licenze; il docente verifica.  
   - **Tutela**: attenzione a **copyright** e **licenze**; uso di contenuti liberi.  
   - **Valutazione**: rubrica su **processo creativo**, **citazioni** e **coerenza**.  
-  - **Riferimenti**: innovazione responsabile (2), trasparenza e documentazione (3.1).[^18][^20]
+  - **Riferimenti**: innovazione responsabile (2), trasparenza e documentazione (3.1).[^18],[^20]
 
 - **Esempio 14 — Ear training assistito**  
   - **Obiettivo**: riconoscere **intervalli e progressioni** con feedback immediato.  
   - **Procedura**: l’IA genera sequenze; gli studenti rispondono e ricevono **feedback**; il docente personalizza i livelli.  
   - **Tutela**: profili anonimi; nessun dato sensibile.  
   - **Valutazione**: tracking dei progressi e prova pratica.  
-  - **Riferimenti**: feedback immediato (4.2 Studenti), equità dei sistemi (3.2).[^39][^23]
+  - **Riferimenti**: feedback immediato (4.2 Studenti), equità dei sistemi (3.2).[^39],[^23]
 
 ### 11.8 Educazione civica e cittadinanza digitale
 
@@ -370,14 +370,14 @@ La sezione che segue propone **scenari concreti, trasferibili e conformi** alle 
   - **Procedura**: simulazione di **valutazione d’impatto**: identificazione finalità, rischi, misure; presentazione al “consiglio d’istituto” (simulato).  
   - **Tutela**: nessun dato reale; materiali fittizi.  
   - **Valutazione**: rubrica su **analisi rischi**, **mitigazioni** e **comunicazione**.  
-  - **Riferimenti**: DPIA/FRIA (3.3), comunicazione e governance (5).[^25][^42]
+  - **Riferimenti**: DPIA/FRIA (3.3), comunicazione e governance (5).[^25],[^42]
 
 - **Esempio 16 — Fact‑checking assistito**  
   - **Obiettivo**: potenziare la **valutazione delle fonti** e la **verifica** delle affermazioni.  
   - **Procedura**: l’IA propone **ipotesi** e **fonti candidate**; gli studenti verificano su **fonti istituzionali**; il docente supervisiona.  
   - **Tutela**: citazioni corrette; evitare dati personali.  
   - **Valutazione**: griglia su **criteri di attendibilità** e **rigore** del fact‑checking.  
-  - **Riferimenti**: DigComp (4.2 Studenti), trasparenza (3.1).[^39][^20]
+  - **Riferimenti**: DigComp (4.2 Studenti), trasparenza (3.1).[^39],[^20]
 
 ### 11.9 Inclusione e BES/DSA
 
@@ -386,14 +386,14 @@ La sezione che segue propone **scenari concreti, trasferibili e conformi** alle 
   - **Procedura**: uso di **Immersive Reader** e **speech‑to‑text** per lezioni e materiali; personalizzazione del ritmo.  
   - **Tutela**: **no registrazioni** non autorizzate; policy d’istituto; informativa a famiglie.  
   - **Valutazione**: diari di **auto‑monitoraggio**; colloqui individuali.  
-  - **Riferimenti**: privacy by design (3.3), equità (2), personalizzazione (4.2 Docenti).[^25][^18][^38]
+  - **Riferimenti**: privacy by design (3.3), equità (2), personalizzazione (4.2 Docenti).[^25],[^18],[^38]
 
 - **Esempio 18 — Mappe concettuali generate e validate**  
   - **Obiettivo**: sostenere l’**organizzazione cognitiva**; rendere visibile la struttura dei concetti.  
   - **Procedura**: l’IA genera una **bozza di mappa**; gli studenti la **correggono** e **annotano**; il docente valuta coerenza.  
   - **Tutela**: nessun dato personale; salvataggio locale.  
   - **Valutazione**: rubrica su **completezza, gerarchia e relazioni**.  
-  - **Riferimenti**: strumenti interattivi (4.2 Docenti), explainability (3.1).[^38][^20]
+  - **Riferimenti**: strumenti interattivi (4.2 Docenti), explainability (3.1).[^38],[^20]
 
 ### 11.10 Valutazione formativa e academic integrity
 
@@ -402,14 +402,14 @@ La sezione che segue propone **scenari concreti, trasferibili e conformi** alle 
   - **Procedura**: il docente fornisce **obiettivi** e **livelli**; l’IA suggerisce **descrittori**; il docente rifinisce e condivide con la classe.  
   - **Tutela**: nessun dato personale; repository d’istituto.  
   - **Valutazione**: coerenza tra **descrittori** e **evidenze** prodotte.  
-  - **Riferimenti**: trasparenza e sorveglianza umana (3.1), focus docenti (4.2).[^20][^38]
+  - **Riferimenti**: trasparenza e sorveglianza umana (3.1), focus docenti (4.2).[^20],[^38]
 
 - **Esempio 20 — Compiti autentici “tracciabili”**  
   - **Obiettivo**: limitare la **sostituzione impropria** con strumenti generativi.  
   - **Procedura**: task che richiedono **dati locali**, **esperimenti**, **interviste**, **riflessioni personali**; l’IA è ammessa solo per **bozze**, da **documentare**.  
   - **Tutela**: anonimizzazione dei soggetti intervistati; consenso informato quando serve.  
   - **Valutazione**: rubriche che premiano **processo**, **tracce** e **citazioni**.  
-  - **Riferimenti**: ruolo insostituibile del docente e responsabilità (3.1), educazione alla consapevolezza (4.4).[^19][^46]
+  - **Riferimenti**: ruolo insostituibile del docente e responsabilità (3.1), educazione alla consapevolezza (4.4).[^19],[^46]
 
 ### 11.11 Organizzazione didattica e collaborazione
 
@@ -418,14 +418,14 @@ La sezione che segue propone **scenari concreti, trasferibili e conformi** alle 
   - **Procedura**: l’IA propone uno **scheletro di UDA**; il docente **adatta** obiettivi, attività, verifiche; collega a **PTOF**.  
   - **Tutela**: nessun dato personale; salvataggio su sistema d’istituto.  
   - **Valutazione**: confronto **ex‑post** tra piano e pratica; “lezioni apprese”.  
-  - **Riferimenti**: framework in cinque fasi (4.1), valorizzazione risultati (4.1 Conclusione).[^29][^34]
+  - **Riferimenti**: framework in cinque fasi (4.1), valorizzazione risultati (4.1 Conclusione).[^29],[^34]
 
 - **Esempio 22 — Co‑progettazione interdisciplinare**  
   - **Obiettivo**: favorire **interdisciplinarità** (es. Matematica–Storia: statistica delle migrazioni).  
   - **Procedura**: l’IA suggerisce **compiti di realtà** e **rubriche comuni**; i docenti validano; predisposizione **rubriche integrate**.  
   - **Tutela**: nessun dato personale; documentazione condivisa.  
   - **Valutazione**: valutazione **multidimensionale** con rubriche incrociate.  
-  - **Riferimenti**: governance partecipata (4.1 Definizione–Pianificazione).[^30][^31]
+  - **Riferimenti**: governance partecipata (4.1 Definizione–Pianificazione).[^30],[^31]
 
 ### 11.12 Preparazione ad esami e prove
 
@@ -434,14 +434,14 @@ La sezione che segue propone **scenari concreti, trasferibili e conformi** alle 
   - **Procedura**: l’IA genera **varianti di tracce** simili alle prove ufficiali; il docente seleziona; **tempi e vincoli** reali.  
   - **Tutela**: nessun dato personale; archivio interno.  
   - **Valutazione**: doppia correzione (docente e auto‑valutazione con rubrica).  
-  - **Riferimenti**: sistemi ad alto rischio (monitoraggio durante prove) **non** utilizzati; sorveglianza umana (3.1).[^27][^19]
+  - **Riferimenti**: sistemi ad alto rischio (monitoraggio durante prove) **non** utilizzati; sorveglianza umana (3.1).[^27],[^19]
 
 - **Esempio 24 — Orali strutturati con domande a gradiente**  
   - **Obiettivo**: allenare **argomentazione** e **padronanza lessicale**.  
   - **Procedura**: l’IA propone **batterie di domande** a difficoltà crescente; il docente **sceglie** e **adatta**; studenti preparano **schede di risposta**.  
   - **Tutela**: nessun dato personale; svolgimento in aula.  
   - **Valutazione**: rubriche per **chiarezza**, **accuratezza**, **uso di fonti**.  
-  - **Riferimenti**: explainability e controllo (3.1), strumenti per studenti (4.2).[^20][^39]
+  - **Riferimenti**: explainability e controllo (3.1), strumenti per studenti (4.2).[^20],[^39]
 
 ---
 

@@ -141,45 +141,49 @@ La letteratura PBL “Gold Standard”[^1] individua sette Essential Project Des
 
 **Prompt:**
 
-- **Ruolo:** Sei un esperto di didattica della storia e della letteratura, con una specializzazione nell'implementazione del Project Based Learning in contesti umanistici per studenti di scuola superiore.
+```text
+- Ruolo: Sei un esperto di didattica della storia e della letteratura, con una specializzazione nell'implementazione del Project Based Learning in contesti umanistici per studenti di scuola superiore.
 
-- **Contesto:** Vorrei sviluppare un'unità PBL per una classe terza di un liceo classico. L'unità deve collegare lo studio della Seconda Rivoluzione Industriale in Storia con l'analisi del Verismo in Letteratura Italiana. La durata è di 4 settimane. L'obiettivo è far comprendere agli studenti l'impatto sociale e culturale delle trasformazioni economiche di fine '800.
+- Contesto: Vorrei sviluppare un'unità PBL per una classe terza di un liceo classico. L'unità deve collegare lo studio della Seconda Rivoluzione Industriale in Storia con l'analisi del Verismo in Letteratura Italiana. La durata è di 4 settimane. L'obiettivo è far comprendere agli studenti l'impatto sociale e culturale delle trasformazioni economiche di fine '800.
 
-- **Compito:** Elabora una proposta completa di PBL che integri le due discipline. La proposta deve contenere:
+- Compito: Elabora una proposta completa di PBL che integri le due discipline. La proposta deve contenere:
 
-    1. Una **Driving Question (Domanda Guida)** che stimoli la riflessione critica, ad esempio: "In che modo le ciminiere delle fabbriche hanno proiettato la loro ombra sulla letteratura e sulla società italiana di fine Ottocento?".
+    1. Una Driving Question (Domanda Guida) che stimoli la riflessione critica, ad esempio: "In che modo le ciminiere delle fabbriche hanno proiettato la loro ombra sulla letteratura e sulla società italiana di fine Ottocento?".
 
-    2. **Obiettivi di Apprendimento** distinti per Storia (es. analizzare le cause e le conseguenze sociali dell'industrializzazione) e Italiano (es. riconoscere le caratteristiche stilistiche e tematiche del Verismo come risposta letteraria alla "questione sociale").
+    2. Obiettivi di Apprendimento distinti per Storia (es. analizzare le cause e le conseguenze sociali dell'industrializzazione) e Italiano (es. riconoscere le caratteristiche stilistiche e tematiche del Verismo come risposta letteraria alla "questione sociale").
 
-    3. Una **Strutturazione del Progetto in 4 Fasi Settimanali**, descrivendo le attività (ricerca d'archivio su fonti storiche digitalizzate, analisi testuale di brani di Verga e Capuana, scrittura creativa, creazione di un prodotto multimediale).
+    3. Una Strutturazione del Progetto in 4 Fasi Settimanali, descrivendo le attività (ricerca d'archivio su fonti storiche digitalizzate, analisi testuale di brani di Verga e Capuana, scrittura creativa, creazione di un prodotto multimediale).
 
-    4. Un'idea per un **Prodotto Finale** significativo, come un "Giornale d'Epoca" digitale o un documentario podcast che racconti una storia di vita operaia dell'epoca, intrecciando dati storici e stilemi veristi.
+    4. Un'idea per un Prodotto Finale significativo, come un "Giornale d'Epoca" digitale o un documentario podcast che racconti una storia di vita operaia dell'epoca, intrecciando dati storici e stilemi veristi.
 
-    5. Una **Rubrica di Valutazione** completa con criteri quali l'accuratezza storica, la pertinenza dell'analisi letteraria, la coerenza del prodotto finale, la capacità di sintesi e la collaborazione di gruppo. La rubrica deve essere strutturata con 4 livelli di performance e 5 criteri.
+    5. Una Rubrica di Valutazione completa con criteri quali l'accuratezza storica, la pertinenza dell'analisi letteraria, la coerenza del prodotto finale, la capacità di sintesi e la collaborazione di gruppo. La rubrica deve essere strutturata con 4 livelli di performance e 5 criteri.
 
-- **Formato di Output:** Organizza la risposta in sezioni ben definite. Utilizza un linguaggio chiaro e accademico.
+- Formato di Output: Organizza la risposta in sezioni ben definite. Utilizza un linguaggio chiaro e accademico.
+```
 
 #### Esempio STEM (Fisica e Scienze Naturali)
 
 **Prompt:**
 
-- **Ruolo:** Sei un esperto di pedagogia e progettazione didattica, specializzato in metodologie STEM e Project Based Learning per la scuola secondaria di secondo grado.
+```text
+- Ruolo: Sei un esperto di pedagogia e progettazione didattica, specializzato in metodologie STEM e Project Based Learning per la scuola secondaria di secondo grado.
 
-- **Contesto:** Sto pianificando un'unità di apprendimento in modalità Project Based Learning per una classe quarta di un liceo scientifico. Il progetto deve essere interdisciplinare, coinvolgendo Fisica e Scienze Naturali. La durata è di 4 settimane, con 6 ore settimanali dedicate al progetto. Il tema centrale è la "Sostenibilità Energetica Urbana". Gli studenti hanno già studiato i principi della termodinamica, l'elettromagnetismo e le basi degli ecosistemi.
+- Contesto: Sto pianificando un'unità di apprendimento in modalità Project Based Learning per una classe quarta di un liceo scientifico. Il progetto deve essere interdisciplinare, coinvolgendo Fisica e Scienze Naturali. La durata è di 4 settimane, con 6 ore settimanali dedicate al progetto. Il tema centrale è la "Sostenibilità Energetica Urbana". Gli studenti hanno già studiato i principi della termodinamica, l'elettromagnetismo e le basi degli ecosistemi.
 
-- **Compito:** Progetta un piano completo per questa unità PBL. Il piano deve includere:
+- Compito: Progetta un piano completo per questa unità PBL. Il piano deve includere:
 
-    1. Una **Driving Question (Domanda Guida)** avvincente e aperta.
+    1. Una Driving Question (Domanda Guida) avvincente e aperta.
 
-    2. Gli **Obiettivi di Apprendimento** specifici per Fisica (es. applicazione dei principi di conservazione dell'energia) e Scienze Naturali (es. analisi dell'impatto ambientale delle fonti energetiche).
+    2. Gli Obiettivi di Apprendimento specifici per Fisica (es. applicazione dei principi di conservazione dell'energia) e Scienze Naturali (es. analisi dell'impatto ambientale delle fonti energetiche).
 
-    3. Una **Suddivisione del Progetto in 4 Fasi Settimanali**, dettagliando per ogni settimana: le attività principali degli studenti (ricerca, progettazione, costruzione, presentazione), le risorse necessarie (articoli, video, software di simulazione), e il ruolo del docente come facilitatore.
+    3. Una Suddivisione del Progetto in 4 Fasi Settimanali, dettagliando per ogni settimana: le attività principali degli studenti (ricerca, progettazione, costruzione, presentazione), le risorse necessarie (articoli, video, software di simulazione), e il ruolo del docente come facilitatore.
 
-    4. Un'idea per un **Prodotto Finale** tangibile (es. un modello in scala di un quartiere a basso impatto, un report tecnico, una presentazione multimediale).
+    4. Un'idea per un Prodotto Finale tangibile (es. un modello in scala di un quartiere a basso impatto, un report tecnico, una presentazione multimediale).
 
-    5. Una **Rubrica di Valutazione** dettagliata che valuti le competenze disciplinari, le capacità di collaborazione, il pensiero critico e la qualità del prodotto finale. La rubrica deve avere 4 livelli di performance (Eccellente, Buono, Sufficiente, Inadeguato) e almeno 5 criteri di valutazione.
+    5. Una Rubrica di Valutazione dettagliata che valuti le competenze disciplinari, le capacità di collaborazione, il pensiero critico e la qualità del prodotto finale. La rubrica deve avere 4 livelli di performance (Eccellente, Buono, Sufficiente, Inadeguato) e almeno 5 criteri di valutazione.
 
-- **Formato di Output:** Struttura la risposta in sezioni chiare e numerate, utilizzando elenchi puntati per i dettagli di ogni fase. Usa un linguaggio formale e professionale.
+- Formato di Output: Struttura la risposta in sezioni chiare e numerate, utilizzando elenchi puntati per i dettagli di ogni fase. Usa un linguaggio formale e professionale.
+```
 
 ### 2.2 Il Challenge Based Learning (CBL) con l'IA
 
@@ -234,7 +238,7 @@ Compito:
     3) Integra RAG con fonti ufficiali (OMS/ARPA Lombardia...): cita tra [ ];
     4) Fornisci piano di comunicazione per studenti e famiglie;
     5) Checklist etica: privacy (foto/volti), consenso, sicurezza in strada.
-    6) Grande Idea: "Ridurre la **PM2.5** davanti alla scuola in 4 settimane"
+    6) Grande Idea: "Ridurre la PM2.5 davanti alla scuola in 4 settimane"
     7) Domanda Essenziale: Inizia a chiedere come si potrebbe ridurre l'inquinamento da PM2.5 davanti alla scuola
     8) Guiding Questions: Aiutali a scomporre la sfida generando una serie di domande guida (come si potrebbe osservare/misurare la concentrazione di pm2.5?, come si potrebbe tenere traccia dei picchi?, come si potrebbero sensibilizzare le persone e le istituzioni?)
     9) Pianificazione della Soluzione: Proposte realistiche (limitazioni traffico negli orari punta, micro‑interventi su sosta, comunicazione su social, etc.)
@@ -247,37 +251,41 @@ Formato: canvas CBL + tabella KPI + rubrica d'impatto.
 
 **Prompt:**
 
-- **Ruolo:** Sei un esperto di media literacy e un sociologo della comunicazione. Il tuo compito è agire come consulente per un gruppo di studenti che partecipa a un Challenge Based Learning.
+```text
+- Ruolo: Sei un esperto di media literacy e un sociologo della comunicazione. Il tuo compito è agire come consulente per un gruppo di studenti che partecipa a un Challenge Based Learning.
 
-- **Contesto:** La "grande idea" è la lotta alla disinformazione. Gli studenti di una classe quarta di un liceo delle scienze umane devono sviluppare una soluzione per aumentare la consapevolezza sul fenomeno delle fake news all'interno della loro scuola.
+- Contesto: La "grande idea" è la lotta alla disinformazione. Gli studenti di una classe quarta di un liceo delle scienze umane devono sviluppare una soluzione per aumentare la consapevolezza sul fenomeno delle fake news all'interno della loro scuola.
 
-- **Compito:** Guida gli studenti attraverso il framework del CBL. Interagisci con loro in modo sequenziale:
+- Compito: Guida gli studenti attraverso il framework del CBL. Interagisci con loro in modo sequenziale:
 
-    1. **Domanda Essenziale:** Inizia chiedendo: "Qual è la relazione tra informazione, social media e democrazia nella nostra società?". Dopo la loro riflessione, aiutali a formulare una domanda essenziale forte.
+    1. Domanda Essenziale: Inizia chiedendo: "Qual è la relazione tra informazione, social media e democrazia nella nostra società?". Dopo la loro riflessione, aiutali a formulare una domanda essenziale forte.
 
-    2. **Guiding Questions:** Aiutali a scomporre la sfida generando una serie di domande guida (es. "Quali sono le tipologie di fake news più diffuse tra i giovani?", "Quali meccanismi psicologici rendono le fake news virali?", "Quali strumenti di fact-checking esistono e come si usano?").
+    2. Guiding Questions: Aiutali a scomporre la sfida generando una serie di domande guida (es. "Quali sono le tipologie di fake news più diffuse tra i giovani?", "Quali meccanismi psicologici rendono le fake news virali?", "Quali strumenti di fact-checking esistono e come si usano?").
 
-    3. **Pianificazione della Soluzione:** Proponi diverse tipologie di soluzioni che possono implementare (es. una campagna di sensibilizzazione su Instagram, un workshop per le classi prime, la creazione di un "decalogo anti-bufale" per la scuola). Aiutali a scegliere una soluzione e a creare un piano d'azione dettagliato, con una timeline e ruoli definiti.
+    3. Pianificazione della Soluzione: Proponi diverse tipologie di soluzioni che possono implementare (es. una campagna di sensibilizzazione su Instagram, un workshop per le classi prime, la creazione di un "decalogo anti-bufale" per la scuola). Aiutali a scegliere una soluzione e a creare un piano d'azione dettagliato, con una timeline e ruoli definiti.
 
-- **Formato di Output:** Conversazionale e interattivo. Ogni passaggio deve essere una domanda che stimola la riflessione e l'azione degli studenti.
+- Formato di Output: Conversazionale e interattivo. Ogni passaggio deve essere una domanda che stimola la riflessione e l'azione degli studenti.
+```
 
 #### Scenario STEM (Scienze Naturali e Tecnologia)
 
 **Prompt:**
 
-- **Ruolo:** Assumi il ruolo di un consulente per la sostenibilità e un ingegnere gestionale. Il tuo obiettivo è aiutare un gruppo di studenti a progettare una soluzione misurabile per un problema ambientale.
+```text
+- Ruolo: Assumi il ruolo di un consulente per la sostenibilità e un ingegnere gestionale. Il tuo obiettivo è aiutare un gruppo di studenti a progettare una soluzione misurabile per un problema ambientale.
 
-- **Contesto:** La "grande idea" è la riduzione dello spreco. Gli studenti di un istituto tecnico industriale devono affrontare la sfida dello spreco alimentare nella loro comunità locale (es. la mensa scolastica o i supermercati di quartiere).
+- Contesto: La "grande idea" è la riduzione dello spreco. Gli studenti di un istituto tecnico industriale devono affrontare la sfida dello spreco alimentare nella loro comunità locale (es. la mensa scolastica o i supermercati di quartiere).
 
-- **Compito:** Struttura un piano di lavoro per un progetto CBL che duri 6 settimane. Il piano deve includere:
+- Compito: Struttura un piano di lavoro per un progetto CBL che duri 6 settimane. Il piano deve includere:
 
-    1. **Fase 1 (Investigazione - 2 settimane):** Dettaglia i passaggi che gli studenti devono seguire per raccogliere e analizzare i dati. Suggerisci metodi specifici (es. "Create un diario per tracciare il cibo invenduto della mensa per 5 giorni", "Progettate un breve sondaggio per i proprietari dei negozi locali", "Utilizzate fogli di calcolo per visualizzare i dati raccolti").
+    1. Fase 1 (Investigazione - 2 settimane): Dettaglia i passaggi che gli studenti devono seguire per raccogliere e analizzare i dati. Suggerisci metodi specifici (es. "Create un diario per tracciare il cibo invenduto della mensa per 5 giorni", "Progettate un breve sondaggio per i proprietari dei negozi locali", "Utilizzate fogli di calcolo per visualizzare i dati raccolti").
 
-    2. **Fase 2 (Sviluppo Soluzione - 3 settimane):** Fai un brainstorming di 3 possibili soluzioni (una tecnologica, una di processo, una di sensibilizzazione). Per esempio: un'app che connette la mensa con enti di beneficenza, un sistema di compostaggio per l'umido della scuola, una campagna informativa con infografiche basate sui dati raccolti.
+    2. Fase 2 (Sviluppo Soluzione - 3 settimane): Fai un brainstorming di 3 possibili soluzioni (una tecnologica, una di processo, una di sensibilizzazione). Per esempio: un'app che connette la mensa con enti di beneficenza, un sistema di compostaggio per l'umido della scuola, una campagna informativa con infografiche basate sui dati raccolti.
 
-    3. **Fase 3 (Implementazione e Misurazione - 1 settimana):** Definisci come gli studenti potrebbero implementare un prototipo della loro soluzione e, soprattutto, quali metriche dovrebbero usare per misurarne l'impatto (es. "Kg di cibo salvato", "numero di persone raggiunte dalla campagna").
+    3. Fase 3 (Implementazione e Misurazione - 1 settimana): Definisci come gli studenti potrebbero implementare un prototipo della loro soluzione e, soprattutto, quali metriche dovrebbero usare per misurarne l'impatto (es. "Kg di cibo salvato", "numero di persone raggiunte dalla campagna").
 
-- **Formato di Output:** Un piano strutturato per punti, con azioni concrete e suggerimenti tecnici per ogni fase.
+- Formato di Output: Un piano strutturato per punti, con azioni concrete e suggerimenti tecnici per ogni fase.
+```
 
 ### 2.3 L'Inquiry Based Learning (IBL) Guidato dall'IA
 
@@ -320,31 +328,35 @@ Formato: sequenza di domande per ciascuna fase; scheda di riflessione finale.
 
 **Prompt:**
 
-- **Ruolo:** Sei un mentore di ricerca socratico. La tua unica regola è: non rispondere mai direttamente a una domanda fattuale. Rispondi sempre con un'altra domanda che aiuti lo studente a trovare la risposta da solo o ad approfondire la sua riflessione.
+```text
+- Ruolo: Sei un mentore di ricerca socratico. La tua unica regola è: non rispondere mai direttamente a una domanda fattuale. Rispondi sempre con un'altra domanda che aiuti lo studente a trovare la risposta da solo o ad approfondire la sua riflessione.
 
-- **Contesto:** Uno studente di una classe quinta di liceo classico sta osservando un monumento ai caduti della Prima Guerra Mondiale nella sua città e si pone la domanda: "Questo monumento racconta tutta la verità sulla guerra?".
+- Contesto: Uno studente di una classe quinta di liceo classico sta osservando un monumento ai caduti della Prima Guerra Mondiale nella sua città e si pone la domanda: "Questo monumento racconta tutta la verità sulla guerra?".
 
-- **Compito:** Inizia la conversazione con lo studente. Se lo studente ti chiede "Chi ha costruito il monumento e quando?", tu rispondi con domande come: "Dove potresti trovare questa informazione?", "Quali fonti ufficiali (archivi comunali, giornali d'epoca) potrebbero parlarne?". Se lo studente afferma "Il monumento celebra solo gli eroi", tu chiedi: "Quali altre storie legate alla guerra potrebbero essere state escluse?", "La prospettiva di chi manca in questa narrazione? (es. le donne, i disertori, i civili)", "Perché, secondo te, chi ha commissionato il monumento ha scelto di raccontare proprio questa versione della storia?".
+- Compito: Inizia la conversazione con lo studente. Se lo studente ti chiede "Chi ha costruito il monumento e quando?", tu rispondi con domande come: "Dove potresti trovare questa informazione?", "Quali fonti ufficiali (archivi comunali, giornali d'epoca) potrebbero parlarne?". Se lo studente afferma "Il monumento celebra solo gli eroi", tu chiedi: "Quali altre storie legate alla guerra potrebbero essere state escluse?", "La prospettiva di chi manca in questa narrazione? (es. le donne, i disertori, i civili)", "Perché, secondo te, chi ha commissionato il monumento ha scelto di raccontare proprio questa versione della storia?".
 
-- **Formato di Output:** Dialogo interattivo. L'obiettivo è creare un "GPT" che funga da allenatore del pensiero critico, costringendo lo studente a formulare ipotesi e a cercare attivamente le prove.
+- Formato di Output: Dialogo interattivo. L'obiettivo è creare un "GPT" che funga da allenatore del pensiero critico, costringendo lo studente a formulare ipotesi e a cercare attivamente le prove.
+```
 
 #### Esempio STEM (Fisica)
 
 **Prompt:**
 
-- **Ruolo:** Vesti i panni di un ricercatore e mentore scientifico. Il tuo compito è guidare gli studenti attraverso le fasi del metodo scientifico per investigare un fenomeno naturale. Non devi fornire spiegazioni teoriche complete.
+```text
+- Ruolo: Vesti i panni di un ricercatore e mentore scientifico. Il tuo compito è guidare gli studenti attraverso le fasi del metodo scientifico per investigare un fenomeno naturale. Non devi fornire spiegazioni teoriche complete.
 
-- **Contesto:** Alcuni studenti osservano un arcobaleno e ti pongono la domanda iniziale: "Come si forma un arcobaleno?".
+- Contesto: Alcuni studenti osservano un arcobaleno e ti pongono la domanda iniziale: "Come si forma un arcobaleno?".
 
-- **Compito:** Struttura l'interazione per guidare la loro indagine:
+- Compito: Struttura l'interazione per guidare la loro indagine:
 
-    1. **Formulazione di Ipotesi:** Inizia chiedendo: "Quali sono gli 'ingredienti' necessari per vedere un arcobaleno? Cosa avete osservato?". Guidali a formulare un'ipotesi verificabile (es. "L'arcobaleno è causato dalla luce del sole che attraversa le gocce d'acqua").
+    1. Formulazione di Ipotesi: Inizia chiedendo: "Quali sono gli 'ingredienti' necessari per vedere un arcobaleno? Cosa avete osservato?". Guidali a formulare un'ipotesi verificabile (es. "L'arcobaleno è causato dalla luce del sole che attraversa le gocce d'acqua").
 
-    2. **Progettazione di un Esperimento:** Chiedi: "Come potremmo ricreare una versione in piccolo di questo fenomeno in laboratorio o a casa? Di quali strumenti avremmo bisogno?". Guidali a ideare un semplice esperimento (es. usare un prisma, o un bicchiere d'acqua e una fonte di luce).
+    2. Progettazione di un Esperimento: Chiedi: "Come potremmo ricreare una versione in piccolo di questo fenomeno in laboratorio o a casa? Di quali strumenti avremmo bisogno?". Guidali a ideare un semplice esperimento (es. usare un prisma, o un bicchiere d'acqua e una fonte di luce).
 
-    3. **Osservazione e Analisi:** Una volta descritto l'esperimento, chiedi: "Cosa vi aspettate di osservare? Cosa rappresentano i diversi colori che vedete? In che ordine appaiono?". Introduci termini chiave come "scomposizione" o "spettro" solo dopo che hanno descritto il fenomeno con parole loro.
+    3. Osservazione e Analisi: Una volta descritto l'esperimento, chiedi: "Cosa vi aspettate di osservare? Cosa rappresentano i diversi colori che vedete? In che ordine appaiono?". Introduci termini chiave come "scomposizione" o "spettro" solo dopo che hanno descritto il fenomeno con parole loro.
 
-- **Formato di Output:** Una conversazione guidata che segue le tappe del metodo scientifico, stimolando l'osservazione e il ragionamento deduttivo.
+- Formato di Output: Una conversazione guidata che segue le tappe del metodo scientifico, stimolando l'osservazione e il ragionamento deduttivo.
+```
 
 ### 2.4 La Flipped Classroom Potenziata dall'IA
 
@@ -376,47 +388,51 @@ La Flipped Classroom, pur non essendo una metodologia completamente nuova, rappr
 
 **Prompt:**
 
-- **Ruolo:** Sei un instructional designer e un esperto di letteratura italiana. Devi progettare un modulo didattico completo in modalità Flipped Classroom.
+```text
+- Ruolo: Sei un instructional designer e un esperto di letteratura italiana. Devi progettare un modulo didattico completo in modalità Flipped Classroom.
 
-- **Contesto:** L'argomento della lezione è "L'Infinito" di Giacomo Leopardi, per una classe quarta di liceo.
+- Contesto: L'argomento della lezione è "L'Infinito" di Giacomo Leopardi, per una classe quarta di liceo.
 
-- **Compito:** Genera le risorse per le due fasi della lezione:
+- Compito: Genera le risorse per le due fasi della lezione:
 
-    1. **Materiale per lo Studio a Casa:**
+    1. Materiale per lo Studio a Casa:
 
-        - Crea lo **script per un video di 8 minuti**. Lo script deve essere chiaro, suddiviso in 3 parti: a) Breve introduzione biografica e sul contesto delle "idilli"; b) Lettura espressiva della poesia; c) Spiegazione dei due concetti chiave: il "limite" (la siepe) come stimolo all'immaginazione e la dialettica tra reale e immaginario.
+        - Crea lo script per un video di 8 minuti. Lo script deve essere chiaro, suddiviso in 3 parti: a) Breve introduzione biografica e sul contesto delle "idilli"; b) Lettura espressiva della poesia; c) Spiegazione dei due concetti chiave: il "limite" (la siepe) come stimolo all'immaginazione e la dialettica tra reale e immaginario.
 
-        - Genera **3 domande di comprensione** che gli studenti devono portare come "biglietto d'ingresso" alla lezione in classe (es. "Quale ruolo gioca la siepe nel processo immaginativo del poeta?").
+        - Genera 3 domande di comprensione che gli studenti devono portare come "biglietto d'ingresso" alla lezione in classe (es. "Quale ruolo gioca la siepe nel processo immaginativo del poeta?").
 
-    2. **Attività per la Lezione in Classe:**
+    2. Attività per la Lezione in Classe:
 
-        - Progetta un'**attività collaborativa di analisi del testo** della durata di 30 minuti. Suddividi la classe in 4 gruppi, assegnando a ciascun gruppo un compito specifico: a) Gruppo Figure Retoriche; b) Gruppo Campi Semantici (visivo vs. uditivo); c) Gruppo Lessico (parole legate al vago e indefinito); d) Gruppo Struttura (sintassi e enjambement). Fornisci una breve istruzione per ogni gruppo.
+        - Progetta un'attività collaborativa di analisi del testo della durata di 30 minuti. Suddividi la classe in 4 gruppi, assegnando a ciascun gruppo un compito specifico: a) Gruppo Figure Retoriche; b) Gruppo Campi Semantici (visivo vs. uditivo); c) Gruppo Lessico (parole legate al vago e indefinito); d) Gruppo Struttura (sintassi e enjambement). Fornisci una breve istruzione per ogni gruppo.
 
-- **Formato di Output:** Un documento strutturato in due sezioni chiare: "Fase a Casa" e "Fase in Classe", con contenuti pronti all'uso.
+- Formato di Output: Un documento strutturato in due sezioni chiare: "Fase a Casa" e "Fase in Classe", con contenuti pronti all'uso.
+```
 
 #### Esempio STEM (Chimica)
 
 **Prompt:**
 
-- **Ruolo:** Sei un docente di chimica e un creatore di contenuti didattici digitali. Il tuo compito è preparare una lezione "capovolta" sul bilanciamento delle reazioni chimiche.
+```text
+- Ruolo: Sei un docente di chimica e un creatore di contenuti didattici digitali. Il tuo compito è preparare una lezione "capovolta" sul bilanciamento delle reazioni chimiche.
 
-- **Contesto:** La lezione è rivolta a una classe seconda di un istituto tecnico.
+- Contesto: La lezione è rivolta a una classe seconda di un istituto tecnico.
 
-- **Compito:** Sviluppa i materiali necessari:
+- Compito: Sviluppa i materiali necessari:
 
-    1. **Materiale per lo Studio a Casa:**
+    1. Materiale per lo Studio a Casa:
 
-        - Scrivi una **spiegazione testuale chiara e sintetica** (massimo 600 parole) sulla legge di conservazione della massa e sul metodo per il bilanciamento di una reazione semplice. Include due esempi commentati passo dopo passo.
+        - Scrivi una spiegazione testuale chiara e sintetica (massimo 600 parole) sulla legge di conservazione della massa e sul metodo per il bilanciamento di una reazione semplice. Include due esempi commentati passo dopo passo.
 
-        - Crea un **quiz di autovalutazione online di 5 domande** (es. a scelta multipla o completamento) che gli studenti possono svolgere per testare la loro comprensione. Fornisci domande e risposte corrette.
+        - Crea un quiz di autovalutazione online di 5 domande (es. a scelta multipla o completamento) che gli studenti possono svolgere per testare la loro comprensione. Fornisci domande e risposte corrette.
 
-    2. **Attività per la Lezione in Classe:**
+    2. Attività per la Lezione in Classe:
 
-        - Genera una **scheda di lavoro (worksheet)** con 10 reazioni chimiche da bilanciare, con difficoltà crescente. Le prime 5 devono essere semplici, le successive devono includere parentesi e indici più complessi.
+        - Genera una scheda di lavoro (worksheet) con 10 reazioni chimiche da bilanciare, con difficoltà crescente. Le prime 5 devono essere semplici, le successive devono includere parentesi e indici più complessi.
 
-        - Includi nella scheda un "**Problema Sfida**" per gli studenti che finiscono prima, ad esempio una reazione di combustione di un idrocarburo più complesso da bilanciare.
+        - Includi nella scheda un "Problema Sfida" per gli studenti che finiscono prima, ad esempio una reazione di combustione di un idrocarburo più complesso da bilanciare.
 
-- **Formato di Output:** Un documento unico con la spiegazione, il quiz e la scheda di lavoro, pronti per essere distribuiti agli studenti.
+- Formato di Output: Un documento unico con la spiegazione, il quiz e la scheda di lavoro, pronti per essere distribuiti agli studenti.
+```
 
 ### 2.5 Il Debate Strutturato con l'IA
 
@@ -428,39 +444,43 @@ Il dibattito è uno strumento eccezionale per sviluppare competenze argomentativ
 
 **Prompt:**
 
-- **Ruolo:** Sei un esperto di logica, retorica e teoria dell'argomentazione. Il tuo obiettivo è preparare due squadre di studenti per un dibattito formale.
+```text
+- Ruolo: Sei un esperto di logica, retorica e teoria dell'argomentazione. Il tuo obiettivo è preparare due squadre di studenti per un dibattito formale.
 
-- **Contesto:** La mozione del dibattito è: *"La sorveglianza digitale di massa è un prezzo accettabile da pagare per la sicurezza nazionale"*. Il dibattito si terrà in una classe quinta di un liceo delle scienze umane. Gli studenti devono preparare argomentazioni basate su principi filosofici (es. utilitarismo vs. deontologia), teorie sociologiche (es. Foucault e il Panopticon) e implicazioni psicologiche sulla privacy.
+- Contesto: La mozione del dibattito è: *"La sorveglianza digitale di massa è un prezzo accettabile da pagare per la sicurezza nazionale"*. Il dibattito si terrà in una classe quinta di un liceo delle scienze umane. Gli studenti devono preparare argomentazioni basate su principi filosofici (es. utilitarismo vs. deontologia), teorie sociologiche (es. Foucault e il Panopticon) e implicazioni psicologiche sulla privacy.
 
-- **Compito:** Svolgi le seguenti azioni in sequenza:
+- Compito: Svolgi le seguenti azioni in sequenza:
 
-    1. **Brainstorming Argomentativo:** Genera una tabella a due colonne. Nella prima colonna ("PRO"), elenca 5 solide argomentazioni a favore della mozione, supportate da esempi concreti o riferimenti teorici. Nella seconda colonna ("CONTRO"), elenca 5 solide argomentazioni contro la mozione, anch'esse supportate da evidenze.
+    1. Brainstorming Argomentativo: Genera una tabella a due colonne. Nella prima colonna ("PRO"), elenca 5 solide argomentazioni a favore della mozione, supportate da esempi concreti o riferimenti teorici. Nella seconda colonna ("CONTRO"), elenca 5 solide argomentazioni contro la mozione, anch'esse supportate da evidenze.
 
-    2. **Anticipazione delle Confutazioni:** Per ciascuna delle 10 argomentazioni generate, scrivi una potenziale confutazione che la squadra avversaria potrebbe sollevare.
+    2. Anticipazione delle Confutazioni: Per ciascuna delle 10 argomentazioni generate, scrivi una potenziale confutazione che la squadra avversaria potrebbe sollevare.
 
-    3. **Simulazione di Dibattito (Modalità Interattiva):** Annuncia: "Ora sono pronto a simulare il dibattito. Studente, scegli se vuoi difendere la posizione PRO o CONTRO. Inizia tu con la tua prima argomentazione, e io assumerò il ruolo della squadra avversaria, utilizzando le argomentazioni e le confutazioni che abbiamo preparato. Ti darò un feedback sulla forza della tua argomentazione."
+    3. Simulazione di Dibattito (Modalità Interattiva): Annuncia: "Ora sono pronto a simulare il dibattito. Studente, scegli se vuoi difendere la posizione PRO o CONTRO. Inizia tu con la tua prima argomentazione, e io assumerò il ruolo della squadra avversaria, utilizzando le argomentazioni e le confutazioni che abbiamo preparato. Ti darò un feedback sulla forza della tua argomentazione."
 
-- **Formato di Output:** Per i punti 1 e 2, usa una formattazione chiara come tabelle o elenchi puntati. Per il punto 3, fornisci un testo introduttivo chiaro che inviti all'interazione.
+- Formato di Output: Per i punti 1 e 2, usa una formattazione chiara come tabelle o elenchi puntati. Per il punto 3, fornisci un testo introduttivo chiaro che inviti all'interazione.
+```
 
 #### Esempio STEM (Biologia e Chimica)
 
 **Prompt:**
 
-- **Ruolo:** Vesti i panni di un bioeticista e consulente scientifico. Devi fornire una visione equilibrata e basata sui dati su un tema scientifico complesso per preparare un dibattito.
+```text
+- Ruolo: Vesti i panni di un bioeticista e consulente scientifico. Devi fornire una visione equilibrata e basata sui dati su un tema scientifico complesso per preparare un dibattito.
 
-- **Contesto:** Una classe quinta di un istituto tecnico ad indirizzo chimico-biologico deve dibattere sulla mozione: *"L'utilizzo estensivo di organismi geneticamente modificati (OGM) in agricoltura è la soluzione più efficace per garantire la sicurezza alimentare globale"*.
+- Contesto: Una classe quinta di un istituto tecnico ad indirizzo chimico-biologico deve dibattere sulla mozione: *"L'utilizzo estensivo di organismi geneticamente modificati (OGM) in agricoltura è la soluzione più efficace per garantire la sicurezza alimentare globale"*.
 
-- **Compito:** Esegui i seguenti passaggi:
+- Compito: Esegui i seguenti passaggi:
 
-    1. **Mappatura delle Argomentazioni:** Crea una mappa concettuale testuale. Al centro poni la mozione. Da essa, fai partire due rami principali: "Argomenti a Favore" e "Argomenti Contrari".
+    1. Mappatura delle Argomentazioni: Crea una mappa concettuale testuale. Al centro poni la mozione. Da essa, fai partire due rami principali: "Argomenti a Favore" e "Argomenti Contrari".
 
-        - **Ramo "A Favore":** Dettaglia almeno 4 sotto-argomenti, come: Aumento della resa delle colture, Resistenza a parassiti e siccità, Miglioramento del profilo nutrizionale (es. Golden Rice), Riduzione dell'uso di pesticidi. Per ogni punto, fornisci un breve dato scientifico o uno studio di caso a supporto.
+        - Ramo "A Favore": Dettaglia almeno 4 sotto-argomenti, come: Aumento della resa delle colture, Resistenza a parassiti e siccità, Miglioramento del profilo nutrizionale (es. Golden Rice), Riduzione dell'uso di pesticidi. Per ogni punto, fornisci un breve dato scientifico o uno studio di caso a supporto.
 
-        - **Ramo "Contrari":** Dettaglia almeno 4 sotto-argomenti, come: Rischi per la biodiversità, Potenziale sviluppo di super-infestanti, Dipendenza economica da poche multinazionali sementiere, Preoccupazioni sulla sicurezza a lungo termine per la salute umana. Anche qui, fornisci brevi riferimenti o esempi.
+        - Ramo "Contrari": Dettaglia almeno 4 sotto-argomenti, come: Rischi per la biodiversità, Potenziale sviluppo di super-infestanti, Dipendenza economica da poche multinazionali sementiere, Preoccupazioni sulla sicurezza a lungo termine per la salute umana. Anche qui, fornisci brevi riferimenti o esempi.
 
-    2. **Simulazione del Ruolo di Esperto:** Scrivi: "Ora agisco come un esperto imparziale. Ponetemi una domanda specifica su uno di questi argomenti (es. 'Quali sono le evidenze scientifiche riguardo l'impatto degli OGM sugli insetti impollinatori?') e io vi fornirò una risposta dettagliata e bilanciata, presentando i dati da diverse prospettive."
+    2. Simulazione del Ruolo di Esperto: Scrivi: "Ora agisco come un esperto imparziale. Ponetemi una domanda specifica su uno di questi argomenti (es. 'Quali sono le evidenze scientifiche riguardo l'impatto degli OGM sugli insetti impollinatori?') e io vi fornirò una risposta dettagliata e bilanciata, presentando i dati da diverse prospettive."
 
-- **Formato di Output:** Usa elenchi annidati o testo indentato per creare la mappa concettuale. La seconda parte deve essere un chiaro invito all'interazione.
+- Formato di Output: Usa elenchi annidati o testo indentato per creare la mappa concettuale. La seconda parte deve essere un chiaro invito all'interazione.
+```
 
 ### 2.6  Structured Academic Controversy (SAC)
 
@@ -548,51 +568,51 @@ Il gioco di ruolo (role-playing) permette agli studenti di "vivere" situazioni s
 
 **Prompt:**
 
-- **Ruolo:** Sei un "Dungeon Master" esperto di storia romana. Il tuo compito è creare e gestire una simulazione interattiva basata su un dilemma storico.
+```text
+- Ruolo: Sei un "Dungeon Master" esperto di storia romana. Il tuo compito è creare e gestire una simulazione interattiva basata su un dilemma storico.
 
-- **Contesto:** Lo scenario è ambientato a Roma, nel 44 a.C., nei giorni immediatamente successivi all'assassinio di Giulio Cesare. Gli studenti interpreteranno il ruolo di senatori romani di diverse fazioni (optimates, populares, cesariani moderati).
+- Contesto: Lo scenario è ambientato a Roma, nel 44 a.C., nei giorni immediatamente successivi all'assassinio di Giulio Cesare. Gli studenti interpreteranno il ruolo di senatori romani di diverse fazioni (optimates, populares, cesariani moderati).
 
-- **Compito:**
+- Compito:
 
-    1. **Impostazione dello Scenario:** Scrivi un paragrafo introduttivo che descriva l'atmosfera a Roma: il panico, l'incertezza, le voci che si rincorrono.
+    1. Impostazione dello Scenario: Scrivi un paragrafo introduttivo che descriva l'atmosfera a Roma: il panico, l'incertezza, le voci che si rincorrono.
 
-    2. **Definizione dei Ruoli:** Crea 3 profili di ruolo per gli studenti. Per ogni profilo, specifica: Nome fittizio del senatore, Fazione di appartenenza, Obiettivi segreti (es. "Ottenere l'amnistia per i cesaricidi per evitare la guerra civile", "Sfruttare il caos per guadagnare potere personale", "Rimanere fedele alla memoria di Cesare e preparare la vendetta").
+    2. Definizione dei Ruoli: Crea 3 profili di ruolo per gli studenti. Per ogni profilo, specifica: Nome fittizio del senatore, Fazione di appartenenza, Obiettivi segreti (es. "Ottenere l'amnistia per i cesaricidi per evitare la guerra civile", "Sfruttare il caos per guadagnare potere personale", "Rimanere fedele alla memoria di Cesare e preparare la vendetta").
 
-    3. **Avvio della Simulazione:** Scrivi il seguente testo per dare inizio al gioco: "Senatori, siete riuniti in una seduta segreta della Curia. La città è nel caos. Marco Antonio sta per parlare al popolo ai funerali di Cesare. Io sarò il messaggero e rappresenterò gli altri personaggi non giocanti (Cicerone, Bruto, lo stesso Antonio). La prima questione all'ordine del giorno è: 'Cosa fare dei congiurati?'. Senatore
+    3. Avvio della Simulazione: Scrivi il seguente testo per dare inizio al gioco: "Senatori, siete riuniti in una seduta segreta della Curia. La città è nel caos. Marco Antonio sta per parlare al popolo ai funerali di Cesare. Io sarò il messaggero e rappresenterò gli altri personaggi non giocanti (Cicerone, Bruto, lo stesso Antonio). La prima questione all'ordine del giorno è: 'Cosa fare dei congiurati?'. Senatore [Nome del primo ruolo], qual è la tua posizione? Esponila alla Curia."
 
-        Nomedelprimoruolo
+    4. Gestione dell'Interazione: Da questo momento in poi, rispondi alle decisioni degli studenti, introducendo eventi inaspettati (es. "Un messaggero trafelato entra nella Curia: 'La plebe è in rivolta! Ha dato fuoco alle case dei congiurati!'") e facendo agire i PNG in modo coerente con i loro profili storici.
 
-        , qual è la tua posizione? Esponila alla Curia."
-
-    4. **Gestione dell'Interazione:** Da questo momento in poi, rispondi alle decisioni degli studenti, introducendo eventi inaspettati (es. "Un messaggero trafelato entra nella Curia: 'La plebe è in rivolta! Ha dato fuoco alle case dei congiurati!'") e facendo agire i PNG in modo coerente con i loro profili storici.
-
-- **Formato di Output:** Testo narrativo e descrittivo, con istruzioni chiare per l'avvio dell'interazione.
+- Formato di Output: Testo narrativo e descrittivo, con istruzioni chiare per l'avvio dell'interazione.
+```
 
 #### Esempio STEM (Scienze Naturali)
 
 **Prompt:**
 
-- **Ruolo:** Sei il direttore di un'agenzia di gestione delle emergenze ambientali. Devi guidare una squadra di esperti attraverso una crisi simulata.
+```text
+- Ruolo: Sei il direttore di un'agenzia di gestione delle emergenze ambientali. Devi guidare una squadra di esperti attraverso una crisi simulata.
 
-- **Contesto:** Una nave petroliera si è incagliata al largo delle coste di un'area marina protetta, causando una fuoriuscita di greggio. Gli studenti sono i membri della squadra di crisi: un biologo marino, un ingegere chimico e un esperto di comunicazione.
+- Contesto: Una nave petroliera si è incagliata al largo delle coste di un'area marina protetta, causando una fuoriuscita di greggio. Gli studenti sono i membri della squadra di crisi: un biologo marino, un ingegnere chimico e un esperto di comunicazione.
 
-- **Compito:**
+- Compito:
 
-    1. **Briefing Iniziale:** Fornisci un report dettagliato della situazione: coordinate dell'incidente, tipo e quantità di petrolio sversato, condizioni meteo-marine, specie a rischio nell'area protetta.
+    1. Briefing Iniziale: Fornisci un report dettagliato della situazione: coordinate dell'incidente, tipo e quantità di petrolio sversato, condizioni meteo-marine, specie a rischio nell'area protetta.
 
-    2. **Assegnazione dei Ruoli e Obiettivi:** Definisci i compiti specifici per ogni ruolo.
+    2. Assegnazione dei Ruoli e Obiettivi: Definisci i compiti specifici per ogni ruolo.
 
-        - **Biologo Marino:** Valutare l'impatto sulla fauna e sulla flora e proporre metodi di salvataggio.
+        - Biologo Marino: Valutare l'impatto sulla fauna e sulla flora e proporre metodi di salvataggio.
 
-        - **Ingegnere Chimico:** Scegliere la migliore strategia di contenimento e pulizia (es. skimmer, disperdenti, biorisanamento) valutandone pro e contro.
+        - Ingegnere Chimico: Scegliere la migliore strategia di contenimento e pulizia (es. skimmer, disperdenti, biorisanamento) valutandone pro e contro.
 
-        - **Esperto di Comunicazione:** Preparare il comunicato stampa per informare la popolazione e gestire le domande dei media.
+        - Esperto di Comunicazione: Preparare il comunicato stampa per informare la popolazione e gestire le domande dei media.
 
-    3. **Inizio della Simulazione:** Inizia con una domanda diretta: "Squadra, abbiamo poche ore prima che la marea cambi e porti la macchia di petrolio direttamente sulla barriera corallina. Qual è la nostra prima, immediata azione? Ingegnere, qual è la sua raccomandazione tecnica?".
+    3. Inizio della Simulazione: Inizia con una domanda diretta: "Squadra, abbiamo poche ore prima che la marea cambi e porti la macchia di petrolio direttamente sulla barriera corallina. Qual è la nostra prima, immediata azione? Ingegnere, qual è la sua raccomandazione tecnica?".
 
-    4. **Introduzione di Complicazioni:** In base alle risposte degli studenti, introduce nuove variabili. Esempi: "Le condizioni del mare stanno peggiorando, rendendo inefficaci gli skimmer", "Un gruppo di attivisti ambientalisti sta bloccando il porto: l'esperto di comunicazione deve intervenire", "Il biologo rileva che una specie di tartaruga marina protetta sta iniziando la nidificazione sulle spiagge a rischio".
+    4. Introduzione di Complicazioni: In base alle risposte degli studenti, introduce nuove variabili. Esempi: "Le condizioni del mare stanno peggiorando, rendendo inefficaci gli skimmer", "Un gruppo di attivisti ambientalisti sta bloccando il porto: l'esperto di comunicazione deve intervenire", "Il biologo rileva che una specie di tartaruga marina protetta sta iniziando la nidificazione sulle spiagge a rischio".
 
-- **Formato di Output:** Report tecnici, istruzioni chiare e scenari dinamici che richiedono decisioni rapide e basate su dati.
+- Formato di Output: Report tecnici, istruzioni chiare e scenari dinamici che richiedono decisioni rapide e basate su dati.
+```
 
 ## 3. Creare Assistenti Didattici Personalizzati (GPTs di ChatGPT, Gems di Google Gemini, Agenti di Copilot)
 
@@ -668,7 +688,7 @@ Compito:
 7) Descrizione del progetto:
     - "Costruire un sismografo low‑cost e modellare i dati"
     - Driving Question: Come si può progettare un sismografo artigianale e analizzare i segnali per stimare la magnitudo?
-    - Prodotto pubblico**: poster scientifico + demo
+    - Prodotto pubblico: poster scientifico + demo
 Formato: confronto in tabella; CoT esplicito; rubrica tabellare.
 ```
 
@@ -747,7 +767,7 @@ PROTOCOLLI DI RAGIONAMENTO
 - Self‑Consistency: per problemi complessi, generare 3 catene di ragionamento e selezionare la soluzione più coerente; indicare perché.
 - ToT: quando si confrontano piani/strategie, esplorare 2–3 rami alternativi con criteri (fattibilità, impatto, costi, rischi, allineamento curricolare) e scegliere in modo motivato.
 - Reflexion: dopo la prima bozza, elencare 3–5 “lezioni apprese” e rigenerare la versione migliorata.
-- RAG: se l’utente allega file/link, ancorare informazioni e **citare** con [fonte]; in assenza di fonti attendibili, marcare “da verificare”.
+- RAG: se l’utente allega file/link, ancorare informazioni e citare con [fonte]; in assenza di fonti attendibili, marcare “da verificare”.
 
 FORMATI DI OUTPUT (DEFAULT)
 1) SOMMARIO ESECUTIVO (10 righe): obiettivi, prodotto, timeline.

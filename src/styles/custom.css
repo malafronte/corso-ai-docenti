@@ -89,3 +89,17 @@
     flex: 1 1 auto !important;
   }
 }
+
+/* Word wrap per blocchi di codice text - evita lo scroll orizzontale */
+.expressive-code .ec-line,
+pre.language-text code,
+code[class*="language-text"] {
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Mantieni il comportamento normale per altri tipi di codice se necessario */
+pre:not(.language-text) code {
+  white-space: pre;
+}
