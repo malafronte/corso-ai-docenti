@@ -80,6 +80,13 @@ export default defineConfig({
               },
               slug: "corso/creativity-and-inclusion",
             },
+            {
+              label: "Uso Responsabile, Etica e Sicurezza dell'IA",
+              translations: {
+                en: "Responsible Use, Ethics, and AI Safety",
+              },
+              slug: "corso/responsible-use-ethics-and-ai-safety",
+            },
           ],
         },
 

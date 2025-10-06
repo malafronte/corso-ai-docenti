@@ -1,6 +1,8 @@
 ---
 title: Linee guida per l’introduzione dell’AI a scuola
 description: Analisi delle Linee guida per l’introduzione dell’Intelligenza Artificiale nelle Istituzioni scolastiche Versione 1.0 - Anno 2025 .
+sidebar:
+  order: 20
 ---
 
 ## Linee guida MIM per l’introduzione dell’Intelligenza Artificiale nelle Istituzioni scolastiche (v.1.0, 2025): un’analisi per le scuole secondarie di secondo grado

@@ -1,6 +1,8 @@
 ---
 title: Concetti di base nell'AI generativa
 description: Una pagina con approfondimenti, schemi e link a risorse esterne relativi ad AI generativa
+sidebar:
+  order: 10
 ---
 
 ## Concetti Fondamentali

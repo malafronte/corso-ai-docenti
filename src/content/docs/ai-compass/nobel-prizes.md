@@ -1,6 +1,8 @@
 ---
 title: Premi nobel per l'AI
-description: Un saggio sulla importanza dell'IA in scienze classiche come la Fisica e la Chimica 
+description: Un saggio sulla importanza dell'IA in scienze classiche come la Fisica e la Chimica
+sidebar:
+  order: 30
 ---
 
 ## Premi nobel per la fisica e la chimica

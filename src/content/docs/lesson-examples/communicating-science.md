@@ -1,6 +1,8 @@
 ---
 title: Comunicare la Scienza nell'Era della Disinformazione (Scienze Umane e Scienze Naturali con PBL, Jigsaw, Flipped Classroom - Liceo delle Scienze Umane)
 description: Progettazione di un'Unità di Apprendimento Interdisciplinare - "Comunicare la Scienza nell'Era della Disinformazione -- Il Caso dei Vaccini"
+sidebar:
+  order: 20
 ---
 
 ## Prompt in modalità **Deep Research** per il progetto dell'UdA

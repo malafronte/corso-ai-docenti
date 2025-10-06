@@ -1,6 +1,8 @@
 ---
 title: Vita, Potere e Società nel Basso Medioevo (Storia - classe terza - Liceo delle Scienze Umane)
 description: Progettare un Percorso Didattico sul Basso Medioevo - Fonti Digitali e Unità di Apprendimento per il Liceo delle Scienze Umane
+sidebar:
+  order: 10
 ---
 
 ## Prompt in modalità **Deep Research** per il progetto dell'UdA

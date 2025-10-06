@@ -1,6 +1,8 @@
 ---
 title: AI e lavoro
 description: Uno studio dull'impatto dell'AI nel mondo del lavoro a partire da un paper di Microsoft che analizza le professioni a maggiore probabilità di essere impattate dall'utilizzo dell'AI.
+sidebar:
+  order: 20
 ---
 
 ## Analisi del paper **"Working with AI: Measuring the Occupational Implications of Generative AI"** [^1]

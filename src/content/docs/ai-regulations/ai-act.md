@@ -1,6 +1,8 @@
 ---
 title: AI Act
-description: Analisi dell'AI Act dell'Unione Europea 
+description: Analisi dell'AI Act dell'Unione Europea
+sidebar:
+  order: 10
 ---
 
 ## AI Act per la scuola secondaria: linee guida operative per docenti e istituzioni educative

@@ -1,6 +1,8 @@
 ---
 title: l'AI è più grande di Internet
 description: Una discussione sulle affermazioni fatte da importanti CEO di grandi aziende del settore tecnologico che hanno definito l'introduzione dell'AI generativa come "qualcosa di più grande di Internet" 
+sidebar:
+  order: 50
 ---
 
 ## L'AI è una innovazione più grande di Internet

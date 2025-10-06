@@ -1,6 +1,8 @@
 ---
 title: La visione di Geoffrey Hinton sull'Intelligenza Artificiale
 description: La Visione di Geoffrey Hinton sull'Intelligenza Artificiale - Promesse, Pericoli e il Futuro dell'Umanità
+sidebar:
+  order: 40
 ---
 
 ## Introduzione
