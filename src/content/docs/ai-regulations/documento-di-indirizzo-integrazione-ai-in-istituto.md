@@ -145,7 +145,7 @@ Le Linee Guida[^2] dedicano un'ampia e fondamentale sezione ai requisiti derivan
 
                 - **Errore di valutazione**: Un sistema di correzione automatica potrebbe non comprendere una risposta corretta ma formulata in modo creativo.
 
-                - **Effetto di sorveglianza (*****chilling effect*****)**: La percezione di essere costantemente monitorati da un'IA potrebbe inibire la creatività e l'assunzione di rischi intellettuali da parte degli studenti.
+                - **Effetto di sorveglianza (*chilling effect*)**: La percezione di essere costantemente monitorati da un'IA potrebbe inibire la creatività e l'assunzione di rischi intellettuali da parte degli studenti.
 
         4. **Individuazione delle misure di mitigazione**: Definire le contromisure tecniche e organizzative.
 
@@ -155,7 +155,7 @@ Le Linee Guida[^2] dedicano un'ampia e fondamentale sezione ai requisiti derivan
 
                 - **Organizzative**: Previsione obbligatoria della supervisione umana su ogni decisione critica, formazione dei docenti sui limiti dello strumento, definizione di una procedura chiara e accessibile per studenti e famiglie per contestare una decisione automatizzata e richiedere una revisione umana.
 
-    - **Esempio Pratico (DPIA/FRIA per un software di** ***proctoring*****)**:
+    - **Esempio Pratico (DPIA/FRIA per un software di *proctoring*)**:
 
         - **Rischio (FRIA - Diritto alla privacy e alla non discriminazione)**: Il software analizza il volto e i suoni ambientali. Rischia di violare la privacy dello spazio domestico e di segnalare come "sospetti" comportamenti legati a condizioni di neurodivergenza (es. movimenti ripetitivi).
 

@@ -81,11 +81,19 @@ export default defineConfig({
               slug: "corso/creativity-and-inclusion",
             },
             {
-              label: "Uso Responsabile, Etica e Sicurezza dell'IA",
+              label: "Uso responsabile, etica e sicurezza dell'IA a scuola",
               translations: {
                 en: "Responsible Use, Ethics, and AI Safety",
               },
               slug: "corso/responsible-use-ethics-and-ai-safety",
+            },
+            {
+              label:
+                "Implicazioni filosofiche, etiche e lavorative dell'AI",
+              translations: {
+                en: "Beyond Human Thought - An Alien Intelligence Among Us",
+              },
+              slug: "corso/ai-beyond-human-thought",
             },
           ],
         },

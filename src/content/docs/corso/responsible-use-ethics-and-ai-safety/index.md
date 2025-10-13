@@ -1,6 +1,6 @@
 ---
-title: Uso Responsabile, Etica e Sicurezza dell'IA
-description: Intelligenza Artificiale a Scuola - Guida per un Uso Responsabile, Etico e Sicuro
+title: Uso responsabile, etica e sicurezza dell'IA a scuola
+description: Intelligenza Artificiale a scuola - Guida per un uso responsabile, etico e sicuro
 ---
 
 ## Introduzione
@@ -13,8 +13,7 @@ Questo articolo si propone come una guida esaustiva per i docenti della scuola s
 
 Attraverso un percorso strutturato in capitoli, affronteremo la normativa di riferimento, le strategie didattiche per promuovere l'onestà accademica nell'era dell'IA generativa, il processo di costruzione di una policy d'istituto e le profonde implicazioni etiche legate ai bias algoritmici e alla responsabilità umana. L'obiettivo finale è quello di equipaggiare ogni docente, a prescindere dalla disciplina di insegnamento, con le conoscenze e gli strumenti necessari per diventare un attore protagonista di un'innovazione responsabile, sicura e realmente al servizio della crescita di ogni studente.
 
-Capitolo 1: Il Quadro Normativo di Riferimento per la Scuola
-------------------------------------------------------------
+## Capitolo 1: Il Quadro Normativo di Riferimento per la Scuola
 
 L'integrazione dell'Intelligenza Artificiale nel contesto scolastico non può prescindere da una solida comprensione del quadro giuridico che ne regola l'utilizzo. La scuola, in quanto pubblica amministrazione che tratta dati particolarmente sensibili di soggetti vulnerabili come i minori, è chiamata a un rigore normativo ancora maggiore. Le due colonne portanti di questo quadro sono il Regolamento Generale sulla Protezione dei Dati (GDPR)[^3] e, più specificamente per il nostro ambito, il nuovo Regolamento europeo sull'Intelligenza Artificiale (AI Act)[^1].
 
@@ -82,14 +81,13 @@ La DPIA non è un mero adempimento burocratico, ma un'analisi sistematica che la
 
     - **Errore di valutazione:** Un sistema di correzione automatica potrebbe non comprendere una risposta corretta ma formulata in modo creativo.
 
-    - **Effetto di sorveglianza (*****chilling effect*****):** La percezione di essere costantemente monitorati potrebbe inibire la creatività degli studenti.
+    - **Effetto di sorveglianza (*chilling effect*):** La percezione di essere costantemente monitorati potrebbe inibire la creatività degli studenti.
 
 4. **Individuazione delle misure di mitigazione:** Quali contromisure tecniche (es. pseudonimizzazione, crittografia) e organizzative (es. supervisione umana obbligatoria, formazione dei docenti, procedure di ricorso) verranno adottate?
 
 Quando un sistema è classificato come "ad alto rischio" dall'AI Act[^1], questa DPIA deve essere integrata con gli elementi di una **FRIA (Fundamental Rights Impact Assessment)**, analizzando in modo ancora più approfondito l'impatto sui diritti fondamentali come la dignità umana, la non discriminazione e la libertà di espressione.
 
-Capitolo 2: Il Dilemma del Plagio e l'Onestà Accademica
--------------------------------------------------------
+## Capitolo 2: Il Dilemma del Plagio e l'Onestà Accademica
 
 L'ascesa dei modelli linguistici di grandi dimensioni (LLM) come GPT-4 ha introdotto una nuova e complessa sfida per il mondo dell'istruzione: la ridefinizione del concetto di plagio e di onestà accademica. Se uno studente può generare un tema, un saggio o la soluzione a un problema in pochi secondi, come possiamo valutare le sue reali competenze? La tentazione di un approccio puramente repressivo, basato sulla caccia al testo generato dall'IA, è forte, ma rischia di essere inefficace e pedagogicamente controproducente. Un approccio più maturo e sostenibile sposta il focus dalla repressione alla prevenzione, attraverso una riprogettazione consapevole delle attività didattiche.
 
@@ -153,8 +151,7 @@ Per guidare gli studenti verso un uso corretto, è essenziale che i docenti cono
 
 Conoscere questi strumenti permette al docente non di proibirli, ma di educare gli studenti a un loro uso consapevole, critico e, soprattutto, onesto.
 
-Capitolo 3: Costruire una Policy d'Istituto sull'IA
----------------------------------------------------
+## Capitolo 3: Costruire una Policy d'Istituto sull'IA
 
 L'integrazione dell'Intelligenza Artificiale nella vita scolastica non può essere lasciata all'iniziativa individuale o all'improvvisazione. Un approccio frammentato e non governato rischia di creare disuguaglianze, esporre l'istituto a rischi legali e di sicurezza, e vanificare le potenzialità educative della tecnologia. Per questo motivo, ogni scuola ha bisogno di una **AI Policy**, un documento strategico che definisca una visione, stabilisca regole chiare e assegni responsabilità precise.
 
@@ -246,8 +243,7 @@ Una policy efficace deve essere anche prescrittiva. Basandosi sulla sezione 3.4 
 
 - **NON ignorare l'obbligo di trasparenza.** La natura artificiale di un chatbot o di un contenuto generato da IA deve essere sempre dichiarata agli studenti.
 
-Capitolo 4: Rischi, Bias e Implicazioni Etiche Profonde
--------------------------------------------------------
+## Capitolo 4: Rischi, Bias e Implicazioni Etiche Profonde
 
 Oltre alle questioni normative e di sicurezza, l'uso dell'IA nella didattica solleva profonde implicazioni etiche che toccano il cuore della missione educativa della scuola. Un approccio responsabile richiede di guardare oltre la superficie della tecnologia per interrogarsi sui suoi effetti più profondi sull'equità, la trasparenza e la natura stessa dell'apprendimento.
 
@@ -273,8 +269,225 @@ Questo problema della non-trasparenza pone una questione fondamentale di respons
 
 La risposta normativa ed etica, come sottolineato in più punti del "Documento di Indirizzo"[^2] e nell'AI Act[^1], è inequivocabile: la **centralità e la responsabilità finale devono sempre rimanere umane**. Nessuna decisione critica che riguardi la vita e il percorso formativo di uno studente può essere interamente delegata a una macchina. Il docente non è un semplice "operatore" di un sistema, ma il garante del processo educativo. L'IA può fornire dati, analisi, suggerimenti, ma il giudizio finale, la valutazione contestualizzata, la decisione pedagogica e la responsabilità che ne deriva sono e devono rimanere una prerogativa irrinunciabile dell'essere umano. Questo principio non è un ostacolo all'innovazione, ma la sua più importante garanzia etica.
 
-Conclusioni e Prossimi Passi
-----------------------------
+## Guida alla Co-Progettazione di un Patto Etico per l'Uso dell'Intelligenza Artificiale a Scuola
+
+### Premessa: Governare la Complessità, Costruire il Futuro
+
+L'irruzione dell'Intelligenza Artificiale generativa nel panorama educativo rappresenta un punto di non ritorno, una trasformazione tecnologica e culturale di portata paragonabile all'avvento di Internet. Strumenti capaci di generare testi, immagini, codice e soluzioni a problemi complessi in pochi istanti sono ormai entrati nella pratica quotidiana degli studenti, ridefinendo i paradigmi tradizionali dell'apprendimento, della valutazione e dell'onestà accademica. Di fronte a questa realtà, le istituzioni scolastiche si trovano a un bivio: subire il cambiamento in modo passivo e reattivo, oscillando tra divieti inefficaci e un'adozione acritica, oppure scegliere di governare la complessità, assumendo un ruolo proattivo nella definizione di un nuovo equilibrio.
+
+Questa guida si colloca risolutamente in questa seconda prospettiva. Il suo scopo è fornire un modello operativo per la co-progettazione di un **"Patto di Corresponsabilità per l'Uso Etico dell'IA"**, uno strumento strategico fondamentale per ogni istituto che desideri integrare l'innovazione tecnologica in modo consapevole, sicuro e allineato alla propria missione educativa. L'approccio proposto non è quello di fornire una soluzione preconfezionata, bensì di avviare un processo collaborativo che coinvolga l'intera comunità educante, a partire dal corpo docente.
+
+La finalità ultima di questa attività laboratoriale è duplice. In primo luogo, si intende elevare il livello di consapevolezza collettiva, trasformando le percezioni individuali -- spesso un misto di entusiasmo, preoccupazione e incertezza -- in una comprensione strutturata delle implicazioni normative, etiche e didattiche dell'IA. In secondo luogo, l'obiettivo è eminentemente pratico: tradurre la riflessione in azione, dotando la scuola di un documento di riferimento chiaro, condiviso e operativo.
+
+Un Patto di Corresponsabilità non è un mero regolamento, ma un manifesto culturale. È la dichiarazione pubblica di come una comunità sceglie di relazionarsi con una tecnologia potente, definendo i principi irrinunciabili, i confini da rispettare e gli impegni reciproci che legano studenti, docenti, famiglie e l'istituzione stessa. Attraverso il dialogo guidato e la scrittura collaborativa, i docenti diventano i primi architetti di questo nuovo patto formativo, ponendo le basi per una cultura dell'innovazione responsabile che sappia cogliere le immense opportunità dell'IA senza mai abdicare al primato del pensiero critico, della creatività e della centralità della persona umana.
+
+### Descrizione dell'Attività Laboratoriale: un Percorso in Quattro Fasi
+
+Il laboratorio è concepito come un percorso strutturato della durata di circa due ore, progettato per essere condotto con gruppi di docenti di scuola secondaria di secondo grado. L'approccio è maieutico e costruttivista: il ruolo del facilitatore è quello di guidare la discussione, fornire stimoli e strumenti, ma il contenuto e il prodotto finale emergono dal lavoro collettivo dei partecipanti.
+
+#### Finalità Pedagogiche e Strumenti
+
+L'attività si prefigge di raggiungere i seguenti obiettivi:
+
+- **Analisi Critica:** Sviluppare una comprensione approfondita del quadro normativo (AI Act, GDPR) e dei concetti etici chiave (bias, trasparenza, equità) legati all'uso dell'IA in contesti educativi.
+
+- **Progettazione Didattica:** Riflettere sulle modifiche necessarie alle pratiche di insegnamento e valutazione per promuovere l'onestà accademica e valorizzare le competenze umane nell'era dell'IA.
+
+- **Costruzione di Comunità:** Rafforzare il dialogo professionale e la coesione del corpo docente attorno a una sfida comune, favorendo la nascita di un linguaggio e di un approccio condivisi.
+
+- **Produzione Concreta:** Elaborare una bozza avanzata di "Patto di Corresponsabilità" che possa servire come base per il successivo coinvolgimento di studenti e famiglie e per l'integrazione nei documenti ufficiali dell'istituto (PTOF, Regolamento d'Istituto).
+
+Gli strumenti necessari per la conduzione del laboratorio sono semplici e accessibili: uno spazio che favorisca la discussione, una lavagna (tradizionale o digitale) per la mappatura delle idee, un proiettore e un computer con accesso a un editor di testo collaborativo (es. Google Docs) per la stesura collettiva del documento.
+
+#### Fase 1: Mappatura delle Percezioni e Brainstorming Guidato (Durata: 20 minuti)
+
+**Razionale:** Ogni processo di cambiamento deve partire dall'ascolto e dalla comprensione del punto di vista dei suoi attori. Questa fase iniziale ha lo scopo di far emergere il "non detto": le speranze, le paure, le incertezze e le convinzioni dei docenti riguardo all'IA. Creare una mappa concettuale condivisa permette di stabilire un terreno comune, legittimare tutte le posizioni e focalizzare la discussione successiva sui temi realmente sentiti come prioritari dal gruppo.
+
+**Istruzioni Operative per il Facilitatore:**
+
+1. **Introduzione e Posizionamento (5 min):** Dopo aver accolto i partecipanti, il facilitatore introduce gli obiettivi del laboratorio, enfatizzando la natura collaborativa e il fine pratico dell'incontro. È cruciale posizionare l'attività non come un momento "top-down" di imposizione di regole, ma come un'opportunità "bottom-up" di co-costruzione di una policy che rispecchi l'identità e le esigenze dell'istituto.
+
+2. **Lancio dello Stimolo (15 min):** Il facilitatore pone al gruppo una domanda aperta e potente, pensata per sollecitare una risposta sia razionale che emotiva. La domanda suggerita è: *"Pensando all'uso che i vostri studenti fanno dell'Intelligenza Artificiale oggi, qual è la vostra più grande preoccupazione e, al contempo, la vostra più grande speranza?"*
+
+3. Il facilitatore modera il giro di interventi, trascrivendo sulla lavagna le parole chiave e i concetti che emergono. È importante non giudicare né filtrare le risposte, ma accoglierle tutte. Progressivamente, le idee vengono raggruppate visivamente in macro-categorie tematiche. L'esperienza suggerisce che emergeranno quasi certamente le seguenti aree:
+
+    - **Onestà Accademica e Plagio:** La preoccupazione più immediata, legata al rischio che l'IA diventi una scorciatoia per evitare lo studio e la rielaborazione personale.
+
+    - **Privacy e Sicurezza dei Dati:** La consapevolezza, più o meno strutturata, che l'interazione con queste piattaforme implica la cessione di dati personali e sensibili.
+
+    - **Equità, Bias e Discriminazione:** La preoccupazione che l'IA possa amplificare le disuguaglianze esistenti o introdurre nuove forme di pregiudizio algoritmico.
+
+    - **Sviluppo del Pensiero Critico:** Il timore che un affidamento eccessivo all'IA possa atrofizzare le capacità cognitive superiori, come la capacità di analisi, sintesi e valutazione.
+
+    - **Creatività e Originalità:** Il dubbio che la facilità di generazione di contenuti possa omologare il pensiero e ridurre lo spazio per l'espressione creativa autentica e originale.
+
+#### Fase 2: Analisi Guidata e Costruzione delle Competenze (Durata: 40 minuti)
+
+**Razionale:** Dopo aver fatto emergere le percezioni, è necessario fornire al gruppo gli strumenti concettuali per analizzare i problemi in modo più strutturato e informato. Questa fase trasforma le preoccupazioni in domande di ricerca e guida i docenti a trovare risposte basate su fonti normative ed etiche. Il lavoro in piccoli gruppi favorisce la partecipazione attiva e permette di approfondire tematiche specifiche in parallelo.
+
+**Istruzioni Operative per il Facilitatore:**
+
+1. **Suddivisione in Gruppi di Lavoro (5 min):** Il facilitatore divide l'uditorio in piccoli gruppi di 3-4 persone, possibilmente eterogenei per disciplina di insegnamento. A ciascun gruppo viene assegnata una delle macro-aree tematiche emerse nella fase precedente.
+
+2. **Consegna e Analisi dei Materiali (35 min):** Il facilitatore fornisce a tutti i gruppi un set di risorse digitali (vedi Allegato B), che include sintesi della normativa, articoli su etica e didattica ed esempi di policy esistenti. Il compito di ogni gruppo è analizzare questi materiali attraverso la lente della propria tematica, utilizzando delle domande-guida per strutturare la riflessione e preparare una sintesi da condividere.
+
+**Domande Guida Approfondite per i Gruppi:**
+
+- **Gruppo "Onestà Accademica":**
+
+    - Come possiamo superare la dicotomia "uso buono / uso cattivo"? È possibile definire una tassonomia degli usi dell'IA (es. IA come tutor, IA come revisore, IA come fonte di idee, IA come autore)?
+
+    - Quali sono le caratteristiche di un compito "a prova di IA"? Si richiede di elaborare almeno tre esempi concreti di compiti per la propria disciplina che integrino l'IA in modo virtuoso.
+
+    - Come si cita correttamente l'IA? Il gruppo è invitato a elaborare una bozza di linea guida per la citazione, specificando quali informazioni includere (es. prompt utilizzato, data, strumento).
+
+- **Gruppo "Privacy e Sicurezza":**
+
+    - Analizzando le definizioni di "dati personali" del GDPR, si chiede di stilare un elenco dettagliato di informazioni che uno studente non dovrebbe mai inserire in un prompt (es. nomi completi, dati sulla salute, opinioni politiche, dettagli familiari, testi di temi personali).
+
+    - Qual è la differenza tra un account "consumer" e un account "educational/enterprise" di un servizio di IA? Quali garanzie contrattuali (DPA - Data Processing Agreement) la scuola deve esigere da un fornitore?
+
+    - Quali sono le responsabilità del docente nel vigilare sull'uso corretto degli strumenti in classe?
+
+- **Gruppo "Equità e Bias":**
+
+    - Si chiede di cercare e analizzare due esempi concreti di bias algoritmico (di genere, culturale, linguistico) in noti modelli di IA.
+
+    - Come si può trasformare il rischio del bias in un'opportunità didattica? Il gruppo deve progettare un'attività di classe in cui gli studenti sono chiamati a "fare il debiasing" di un testo generato da IA, identificando e correggendo gli stereotipi.
+
+    - Quali misure può adottare la scuola per mitigare il divario digitale e garantire che l'accesso ai benefici dell'IA sia equo per tutti gli studenti?
+
+- **Gruppo "Pensiero Critico e Creatività":**
+
+    - Cosa significa trattare l'IA come un "compagno cognitivo"? Il gruppo deve identificare almeno tre pratiche didattiche in cui l'IA è usata per stimolare domande, esplorare prospettive multiple o superare blocchi creativi.
+
+    - Si chiede di stilare un elenco delle "competenze insostituibilmente umane" che la scuola deve prioritariamente potenziare nell'era dell'IA (es. intelligenza emotiva, pensiero etico, collaborazione complessa, problem solving non strutturato).
+
+    - Come può la valutazione evolvere per dare più peso al processo di ricerca e rielaborazione piuttosto che al solo prodotto finale?
+
+#### Fase 3: Sintesi e Co-Costruzione del Documento (Durata: 40 minuti)
+
+**Razionale:** Questa è la fase convergente del laboratorio, in cui il lavoro analitico dei gruppi viene messo a sistema per costruire un prodotto comune. La scrittura collaborativa in tempo reale è un potente strumento di mediazione e di sintesi, che trasforma le idee discusse in un testo formale e condiviso, aumentando il senso di appartenenza e di "ownership" del documento finale da parte dei partecipanti.
+
+**Istruzioni Operative per il Facilitatore:**
+
+1. **Restituzione e Sistematizzazione (15 min):** A turno, un portavoce per ogni gruppo presenta alla plenaria i risultati principali della loro analisi. Il facilitatore ha un ruolo attivo: non si limita ad ascoltare, ma proietta un documento di testo vuoto (strutturato secondo il modello dell'Allegato A) e inizia a popolarlo in tempo reale con le proposte dei gruppi, sintetizzando, riformulando e chiedendo conferme.
+
+2. **Scrittura Collettiva Guidata (25 min):** Con la struttura della bozza visibile a tutti, il facilitatore guida la stesura collettiva del "Patto di Corresponsabilità". Si procede sezione per sezione (Principi, Impegni degli Studenti, Impegni dei Docenti, etc.). Il facilitatore legge ad alta voce le proposte, invita a suggerire formulazioni più chiare o incisive e digita il testo in diretta. È fondamentale incoraggiare un linguaggio positivo e propositivo (privilegiando "Ci impegniamo a..." rispetto a "È vietato..."), che renda il patto uno strumento di empowerment piuttosto che un mero elenco di divieti.
+
+#### Fase 4: Fase operativa e passi futuri (Durata: 20 minuti)
+
+**Razionale:** Nessun documento ha valore se rimane confinato a un incontro di formazione. Quest'ultima fase è cruciale per garantire che il lavoro svolto abbia un seguito concreto e un impatto reale sulla vita dell'istituto. Definire chiaramente i prossimi passi trasforma l'energia del laboratorio in un processo di cambiamento organizzativo.
+
+**Istruzioni Operative per il Facilitatore:**
+
+1. **Revisione e Consolidamento (10 min):** Il facilitatore legge ad alta voce l'intera bozza del "Patto", così come è stata redatta collettivamente. Viene chiesto un ultimo giro di feedback per affinare il testo e assicurarsi che rappresenti il consenso del gruppo.
+
+2. **Pianificazione del Follow-up (10 min):** La discussione si sposta sul piano operativo. Il facilitatore guida il gruppo a rispondere a domande chiave:
+
+    - **Finalizzazione:** Chi si assume la responsabilità di revisionare e formattare la bozza? (es. un piccolo comitato di redazione, il referente per l'innovazione).
+
+    - **Condivisione e Feedback:** Come verrà presentato questo documento agli studenti e alle famiglie? (es. durante assemblee di classe dedicate, incontri scuola-famiglia, tramite una comunicazione ufficiale con un modulo per raccogliere feedback).
+
+    - **Validazione Istituzionale:** Qual è l'iter per rendere questo Patto un documento ufficiale della scuola? (es. presentazione al Collegio Docenti, approvazione in Consiglio d'Istituto).
+
+    - **Monitoraggio:** Come verificheremo l'efficacia di questo Patto nel tempo? Si prevede un momento di revisione annuale?
+
+3. Il facilitatore conclude l'incontro ringraziando i partecipanti per il contributo e riaffermando l'importanza del percorso intrapreso, che posiziona la comunità professionale come protagonista dell'innovazione.
+
+#### Allegato A: Esempio di "Patto di Corresponsabilità per l'Uso Etico dell'IA"
+
+##### I.I.S.S. "Alessandro Greppi"
+
+###### Premessa
+
+L'Istituto di Istruzione Secondaria Superiore "Alessandro Greppi", in linea con la sua tradizione di eccellenza formativa e di attenzione all'innovazione, riconosce l'Intelligenza Artificiale (IA) come una potente risorsa per l'arricchimento della didattica e lo sviluppo delle competenze del XXI secolo. Consapevoli delle profonde implicazioni etiche, culturali e sociali di questa tecnologia, intendiamo promuoverne un'integrazione che sia consapevole, critica, responsabile e pienamente allineata ai principi della nostra Costituzione e alla normativa europea. Questo documento rappresenta il patto che la nostra intera comunità educante -- studenti, docenti, famiglie e istituzione -- stringe per governare insieme questa transizione, assicurando che ogni strumento tecnologico sia sempre al servizio della crescita intellettuale, della creatività e dello sviluppo integrale della persona.
+
+###### I Nostri Principi Fondamentali
+
+1. **Antropocentrismo e Centralità della Persona:** Affermiamo il primato della persona umana. L'IA è e deve rimanere uno strumento. Nessuna decisione che impatti significativamente il percorso formativo o la valutazione di uno studente può essere delegata interamente a un algoritmo. La relazione educativa, il giudizio professionale del docente e l'interazione umana rimangono il cuore insostituibile del processo di apprendimento.
+
+2. **Onestà Intellettuale e Valore dell'Impegno:** Riconosciamo che l'apprendimento autentico è un processo che richiede impegno, fatica, riflessione e rielaborazione personale. L'IA può supportare questo processo, ma non deve mai diventare una scorciatoia per eluderlo. L'onestà accademica è un valore non negoziabile.
+
+3. **Sviluppo del Pensiero Critico:** Il nostro obiettivo non è insegnare a "usare" l'IA, ma a "pensare con e oltre" l'IA. Ci impegniamo a sviluppare la capacità di interrogare, verificare, analizzare criticamente e contestualizzare ogni informazione prodotta da un sistema artificiale, riconoscendone limiti, errori e potenziali bias.
+
+4. **Equità, Inclusione e Rifiuto del Pregiudizio:** Vigileremo attivamente affinché l'uso dell'IA non crei né amplifichi disuguaglianze. Ci impegniamo a promuovere un accesso equo alle risorse, a educare al riconoscimento dei bias algoritmici e a utilizzare la tecnologia come strumento per l'inclusione e la personalizzazione, nel rispetto delle unicità di ciascuno.
+
+5. **Responsabilità e Sicurezza:** La tutela dei dati personali e la sicurezza digitale sono una responsabilità condivisa. Ci impegniamo a rispettare rigorosamente la normativa (GDPR, AI Act) e ad adottare comportamenti che proteggano la privacy individuale e la sicurezza dell'intera comunità scolastica.
+
+**Come Studentesse e Studenti, ci impegniamo a:**
+
+- Utilizzare l'IA come un "compagno cognitivo": uno strumento per esplorare idee, chiarire dubbi, rivedere bozze e superare ostacoli, non come un sostituto del nostro lavoro e del nostro pensiero.
+
+- Dichiarare sempre in modo trasparente e onesto l'utilizzo dell'IA nei nostri lavori, seguendo le specifiche indicazioni fornite da ciascun docente per ogni attività.
+
+- Non presentare mai come interamente nostro un testo, un'immagine, un codice o qualsiasi altro elaborato generato da un'IA, in quanto ciò costituisce una violazione del principio di onestà accademica.
+
+- Essere custodi dei nostri dati personali e di quelli dei nostri compagni, evitando di inserire informazioni sensibili o identificative in piattaforme di IA pubbliche o non approvate dall'Istituto.
+
+- Esercitare il nostro pensiero critico, verificando sempre l'accuratezza, la pertinenza e l'assenza di bias nelle informazioni fornite dall'IA, confrontandole con altre fonti autorevoli.
+
+- Segnalare ai docenti eventuali output dell'IA che risultino palesemente errati, inappropriati, offensivi o discriminatori.
+
+**Come Docenti, ci impegniamo a:**
+
+- Progettare percorsi didattici e valutativi che valorizzino le competenze umane superiori (pensiero critico, creatività, problem solving complesso, collaborazione) e che rendano l'uso fraudolento dell'IA pedagogicamente irrilevante.
+
+- Fornire indicazioni chiare, esplicite e differenziate per ogni attività didattica su quando, come e perché l'uso dell'IA è consentito, incoraggiato o sconsigliato.
+
+- Dedicarci a una formazione continua per comprendere l'evoluzione dell'IA e per sviluppare le competenze necessarie a guidare gli studenti verso un uso etico ed efficace di questi strumenti.
+
+- Selezionare e utilizzare esclusivamente piattaforme e software di IA che siano conformi alla normativa sulla protezione dei dati e che siano stati approvati dall'Istituto, garantendo un ambiente di apprendimento sicuro.
+
+- Mantenere la centralità del nostro giudizio professionale nel processo di valutazione, utilizzando gli strumenti di IA come supporto ma mai come sostituti della nostra responsabilità valutativa finale.
+
+- Educare esplicitamente gli studenti sui rischi dell'IA, inclusi i bias algoritmici, le "allucinazioni" (informazioni false), la disinformazione e le implicazioni per la privacy.
+
+**Come Istituzione Scolastica e Famiglie, ci impegniamo a:**
+
+- Promuovere un dialogo costante e costruttivo tra tutte le componenti della comunità scolastica per monitorare e aggiornare periodicamente il presente Patto.
+
+- Garantire, come Istituto, l'accesso a un'infrastruttura tecnologica e a una selezione di strumenti software sicuri, equi e pedagogicamente validi.
+
+- Sostenere, come Istituto, la formazione dei docenti e l'organizzazione di iniziative informative per studenti e famiglie.
+
+- Collaborare, come Famiglie, con la scuola per promuovere un uso equilibrato e consapevole delle tecnologie digitali anche in ambito domestico, supportando i principi di onestà e impegno nello studio.
+
+#### Allegato B: Risorse e Materiali di Supporto per il Laboratorio
+
+- **Quadro Normativo (Link e Sintesi):**
+
+    - **AI Act (Regolamento UE 2024/1689):** [Testo ufficiale su EUR-Lex](https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32024R1689 "null"). Si raccomanda la lettura della sintesi commentata degli Articoli 5 (Pratiche Vietate), 6 (Sistemi ad Alto Rischio) e dell'Allegato III (focus su Istruzione).
+
+    - **GDPR (Regolamento UE 2016/679):** [Testo ufficiale su EUR-Lex](https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32016R0679 "null"). Si raccomanda la lettura guidata degli Articoli 5 (Principi), 6 (Base Giuridica) e 35 (Valutazione d'Impatto) nel contesto scolastico.
+
+- **Articoli di Approfondimento su Etica e Didattica:**
+
+    - **"Bias within AI: unpacking the risks and opportunities for education" (UNESCO):** [Leggi l'articolo](https://unesdoc.unesco.org/ark:/48223/pf0000386670). Un'analisi autorevole su come i bias di genere e culturali si manifestano nei modelli di IA.
+
+    - **"A Generative AI Guide for Educators" (Vanderbilt University):** [Consulta la guida (PDF)](https://cdn.vanderbilt.edu/vu-sub/wp-content/uploads/sites/59/2023/09/09144130/Teaching-in-the-Age-of-AI-PRINT-VERSION.pdf). Un esempio di guida che illustra come formulare prompt per trasformare l'IA in uno strumento di riflessione.
+
+    - **"Rethinking Assessment in the Age of AI" (Getting Smart):** [Leggi l'articolo](https://www.csu.edu.au/division/learning-teaching/assessments/assessment-and-artificial-intelligence/rethinking-assessments). Un saggio che esplora nuove forme di valutazione che valorizzano le competenze non automatizzabili.
+
+- **Esempi Pratici e Strumenti:**
+
+    - **Policy di Atenei Internazionali:**
+
+        - [MIT - Academic Integrity & AI](https://library.mit.edu.au/c.php?g=968719&p=7042933)
+
+        - [University of Sydney - Generative AI in learning](https://www.sydney.edu.au/students/academic-integrity/artificial-intelligence.html)
+
+        - [ETH Zurich - AI and Plagiarism Policy](https://library.ethz.ch/en/researching-and-publishing/scientific-writing-at-eth-zurich/prevention-of-plagiarism.html)
+
+    - **Guida alla Citazione dell'IA:**
+
+        - [APA Style: How to cite ChatGPT](https://apastyle.apa.org/blog/how-to-cite-chatgpt "null")
+
+        - [MLA Style: How to Cite Generative AI](https://style.mla.org/citing-generative-ai/ "null")
+
+    - **UNESCO - AI and Education:** [Visita il portale](https://www.unesco.org/en/digital-education/artificial-intelligence). Il portale di riferimento dell'UNESCO con risorse e raccomandazioni globali sull'integrazione dell'IA nei sistemi educativi.
+
+## Conclusioni e Prossimi Passi
 
 L'integrazione dell'Intelligenza Artificiale nel mondo della scuola non è più un'ipotesi futuribile, ma una realtà presente e in rapida evoluzione. Le sfide che pone sono complesse e non ammettono risposte semplicistiche. Come abbiamo visto in questo percorso, un approccio puramente entusiasta rischia di ignorare i pericoli, mentre un atteggiamento di chiusura e divieto è destinato a essere superato dalla realtà e a privare gli studenti di opportunità formative cruciali.
 
@@ -291,12 +504,6 @@ I punti chiave emersi sono chiari:
 4. **La responsabilità è e deve rimanere umana:** Nessuna tecnologia può sostituire il giudizio critico, l'empatia e la responsabilità etica del docente.
 
 L'invito finale è rivolto a tutti i docenti: diventare protagonisti attivi di questo processo. Ciò significa formarsi continuamente, sperimentare con prudenza e spirito critico, collaborare con i colleghi e, soprattutto, educare gli studenti a essere non solo consumatori passivi, ma cittadini digitali consapevoli, capaci di comprendere, utilizzare e interrogare criticamente la tecnologia più potente del nostro tempo. Promuovendo una cultura della responsabilità e dell'innovazione etica all'interno della propria comunità, possiamo assicurare che l'Intelligenza Artificiale diventi un potente alleato per una scuola più equa, inclusiva ed efficace.
-
-### Bibliografia e Riferimenti
-
-- Malafronte, G. (2025). *Corso di Formazione sull'Intelligenza Artificiale per Docenti*. Reperibile su: https://www.google.com/search?q=https://malafronte.github.io/corso-ai-docenti/
-
-- Istituto di Istruzione Secondaria Superiore "Alessandro Greppi", (BOZZA) "Documento di Indirizzo Strategico per l'Integrazione dell'Intelligenza Artificiale nell'Istituto", Versione 1.0, Ottobre 2025.
 
 ## Riferimenti
 
