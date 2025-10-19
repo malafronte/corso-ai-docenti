@@ -115,7 +115,7 @@ La disciplina è entrata in vigore nel 2024, con applicazione **scaglionata**: i
 
 - **Deployer**: soggetto (es. istituzione scolastica) che **utilizza** un sistema di IA sotto la propria autorità. Nel contesto scolastico, la scuola è tipicamente deployer. [^1]
 
-- **FRAI** (*Fundamental Rights Assessment/Impact*): **Valutazione d’impatto sui diritti fondamentali** che i **deployer pubblici** (es. scuole) devono svolgere **prima** di usare determinati sistemi di IA **ad alto rischio**, per individuare rischi su diritti e libertà, definire misure di mitigazione, stabilire sorveglianza umana e canali di reclamo. [^1]
+- **FRIA** (*Fundamental Rights Impact Assessment*): **Valutazione d’impatto sui diritti fondamentali** che i **deployer pubblici** (es. scuole) devono svolgere **prima** di usare determinati sistemi di IA **ad alto rischio**, per individuare rischi su diritti e libertà, definire misure di mitigazione, stabilire sorveglianza umana e canali di reclamo. [^1]
 
 - **GPAI** (*General-Purpose AI models*): **modelli di IA per finalità generali** che possono essere adattati a un’ampia gamma di compiti (es. **LLM** generativi). Per i fornitori sono previsti obblighi di **trasparenza** (documentazione tecnica, **sintesi dei dati di addestramento**, rispetto del **copyright**) e, nei casi con **rischi sistemici**, misure rafforzate di valutazione e mitigazione. [^1][^2]
 
@@ -131,7 +131,7 @@ La disciplina è entrata in vigore nel 2024, con applicazione **scaglionata**: i
 
 > *Altre sigle richiamate nel testo:*
 >
-> - **DPIA** (Data Protection Impact Assessment): valutazione d’impatto privacy secondo il GDPR (strumento distinto dalla **FRAI**, ma spesso complementare).  
+> - **DPIA** (Data Protection Impact Assessment): valutazione d’impatto privacy secondo il GDPR (strumento distinto dalla **FRIA**, ma spesso complementare).  
 > - **CE/Marcatura CE**: indicatore di conformità alla normativa UE applicabile a specifici prodotti/sistemi; per alcuni sistemi di IA **ad alto rischio** si accompagna alla dichiarazione UE di conformità. [^1]
 
 ### 4. Attori e responsabilità nella filiera scolastica
@@ -158,7 +158,7 @@ Strumenti basati su **modelli generativi** (LLM, generatori di immagini, audio, 
 
 ### 6. Linea guida 2 — Obblighi per sistemi ad alto rischio nell’istruzione
 
-I sistemi ad alto rischio sono soggetti a requisiti **stringenti**: **gestione del rischio**, **governance dei dati**, **documentazione e logging**, **trasparenza e istruzioni**, **sorveglianza umana**, **accuratezza/robustezza/cibersicurezza**, **valutazione d’impatto sui diritti fondamentali (FRAI)** per i deployer pubblici, **registrazione** nella banca dati UE. [^1]
+I sistemi ad alto rischio sono soggetti a requisiti **stringenti**: **gestione del rischio**, **governance dei dati**, **documentazione e logging**, **trasparenza e istruzioni**, **sorveglianza umana**, **accuratezza/robustezza/cibersicurezza**, **valutazione d’impatto sui diritti fondamentali (FRIA)** per i deployer pubblici, **registrazione** nella banca dati UE. [^1]
 
 #### 6.1 Gestione del rischio
 
@@ -180,9 +180,9 @@ Possibilità di **intervento, sospensione, override**; nessuna decisione **solo*
 
 Prestazioni **dichiarate** e coerenti; difese da **attacchi antagonisti** e **avvelenamento dei dati**; misure adeguate sulla sicurezza dell’infrastruttura ICT. [^1]
 
-#### 6.6 FRAI (Valutazione d’impatto sui diritti fondamentali) per i deployer pubblici
+#### 6.6 FRIA (Valutazione d’impatto sui diritti fondamentali) per i deployer pubblici
 
-Obbligo di **FRAI** prima dell’uso: descrizione dei processi, popolazioni coinvolte, rischi su diritti (non discriminazione, equità, trasparenza), misure (sorveglianza umana, reclami, audit), **notifica** all’autorità di vigilanza; aggiornamento in caso di cambiamenti. [^1]
+Obbligo di **FRIA** prima dell’uso: descrizione dei processi, popolazioni coinvolte, rischi su diritti (non discriminazione, equità, trasparenza), misure (sorveglianza umana, reclami, audit), **notifica** all’autorità di vigilanza; aggiornamento in caso di cambiamenti. [^1]
 
 #### 6.7 Registrazione nella banca dati UE
 
@@ -230,7 +230,7 @@ Nomina del **Referente IA** (o gruppo di lavoro); adozione del **registro dei si
 **Settimane 3–4 — Due diligence fornitori**  
 Raccolta di **documentazione tecnica** (istruzioni, metriche, log), **dichiarazioni di conformità UE** e marcatura CE (se pertinenti), **policy di sicurezza** e privacy; per GPAI, verifica di **sintesi dei dati di addestramento** e **politica sul copyright** dichiarata dal fornitore; analisi della **marcatura dei contenuti sintetici**. [^1][^2]
 
-**Settimane 5–6 — FRAI (se ad alto rischio)**  
+**Settimane 5–6 — FRIA (se ad alto rischio)**  
 Mappatura dei processi scolastici toccati dal sistema; analisi dei rischi su **equità**, **non discriminazione**, **trasparenza**; definizione delle **misure di sorveglianza umana**; progettazione dei **meccanismi di reclamo**; predisposizione di **indicatori** di monitoraggio; **notifica** all’autorità di vigilanza del mercato. [^1]
 
 **Settimane 7–8 — Registrazione e fase pilota**  
@@ -245,9 +245,9 @@ Messa in esercizio su scala d’istituto; attivazione di **cruscotti** di monito
 ### 12. Modelli documentali raccomandati
 
 1. **Registro dei sistemi di IA**  
-   - Campi minimi: denominazione, fornitore, versione; finalità prevista; processi scolastici; categorie di dati; base giuridica (GDPR); ruoli e referenti; **categoria di rischio**; esito FRAI (se presente); stato registrazione banca dati UE (se ad alto rischio); log e conservazione. [^1]
+   - Campi minimi: denominazione, fornitore, versione; finalità prevista; processi scolastici; categorie di dati; base giuridica (GDPR); ruoli e referenti; **categoria di rischio**; esito FRIA (se presente); stato registrazione banca dati UE (se ad alto rischio); log e conservazione. [^1]
 
-2. **Schema di FRAI per istituti scolastici**  
+2. **Schema di FRIA per istituti scolastici**  
    - Contenuti: descrizione del sistema; mappa dei processi; popolazioni e gruppi vulnerabili; rischi sui diritti fondamentali; **sorveglianza umana**; **explainability**; canali di **reclamo**; misure di mitigazione; indicatori; **piano di audit**; notifica all’autorità competente. [^1]
 
 3. **Informativa di trasparenza per studenti/famiglie**  
@@ -262,7 +262,7 @@ Messa in esercizio su scala d’istituto; attivazione di **cruscotti** di monito
 ### 13. Domande ricorrenti (FAQ) per la compliance scolastica
 
 **D1. Un correttore automatico di elaborati rende la scuola “ad alto rischio”?**  
-Se la valutazione automatizzata **influisce materialmente** sull’esito dello studente (punteggio, ammissione, passaggio di classe), il sistema rientra tra i casi **ad alto rischio** e richiede i relativi adempimenti (FRAI, sorveglianza umana, registrazione se ente pubblico). Se l’uso è **meramente ausiliario** e non incide sull’esito (supporto allo stile, ortografia), può non essere classificato ad alto rischio, con adeguata **documentazione**. [^1]
+Se la valutazione automatizzata **influisce materialmente** sull’esito dello studente (punteggio, ammissione, passaggio di classe), il sistema rientra tra i casi **ad alto rischio** e richiede i relativi adempimenti (FRIA, sorveglianza umana, registrazione se ente pubblico). Se l’uso è **meramente ausiliario** e non incide sull’esito (supporto allo stile, ortografia), può non essere classificato ad alto rischio, con adeguata **documentazione**. [^1]
 
 **D2. È consentita la rilevazione di “ansia” o “attenzione” durante la lezione via webcam?**  
 No. Il **riconoscimento delle emozioni** in contesti educativi è **vietato**. [^1]
@@ -270,8 +270,8 @@ No. Il **riconoscimento delle emozioni** in contesti educativi è **vietato**. [
 **D3. Come vanno trattati i contenuti generati da IA in comunicazioni esterne?**  
 Devono essere **etichettati** in modo chiaro come contenuti generati/manipolati artificialmente; ove possibile si usano **tecniche** di marcatura (filigrane, metadati). [^1][^2]
 
-**D4. La scuola deve fare la DPIA (GDPR) oltre alla FRAI (AI Act)?**  
-L’AI Act non sostituisce il GDPR: **DPIA** e **FRAI** hanno funzioni complementari. La scuola valuta entrambi i profili e coordina le misure. [^1]
+**D4. La scuola deve fare la DPIA (GDPR) oltre alla FRIA (AI Act)?**  
+L’AI Act non sostituisce il GDPR: **DPIA** e **FRIA** hanno funzioni complementari. La scuola valuta entrambi i profili e coordina le misure. [^1]
 
 **D5. I modelli generativi “open” usati in classe rientrano nell’AI Act?**  
 Gli obblighi principali sui **GPAI** ricadono sui **fornitori** (trasparenza, sintesi dei dati, rispetto del diritto d’autore; misure aggiuntive per **rischi sistemici**). Il deployer deve comunque assicurare **trasparenza** in classe, **etichettatura** dei contenuti sintetici e uso conforme alle istruzioni. [^1][^2]
@@ -279,7 +279,7 @@ Gli obblighi principali sui **GPAI** ricadono sui **fornitori** (trasparenza, si
 ### 14. Errori ricorrenti e come evitarli
 
 1. **Confondere “uso didattico” con “non applicabilità”**  
-Anche strumenti didattici possono essere **ad alto rischio** se influenzano l’esito; occorre **valutazione** e, ove necessario, **FRAI** e registrazione. [^1]
+Anche strumenti didattici possono essere **ad alto rischio** se influenzano l’esito; occorre **valutazione** e, ove necessario, **FRIA** e registrazione. [^1]
 
 2. **Sottovalutare l’alfabetizzazione del personale**  
 Senza competenze su **bias**, **spiegabilità** e **sorveglianza umana**, la conformità rimane formale. La formazione deve essere **periodica** e basata su casi reali. [^1][^2]

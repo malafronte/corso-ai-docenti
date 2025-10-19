@@ -81,19 +81,25 @@ export default defineConfig({
               slug: "corso/creativity-and-inclusion",
             },
             {
-              label: "Uso responsabile, etica e sicurezza dell'IA a scuola",
+              label: "Uso responsabile, etica e sicurezza dell'AI a scuola",
               translations: {
                 en: "Responsible Use, Ethics, and AI Safety",
               },
               slug: "corso/responsible-use-ethics-and-ai-safety",
             },
             {
-              label:
-                "Implicazioni filosofiche, etiche e lavorative dell'AI",
+              label: "L'impatto dell'AI nel mercato del lavoro",
               translations: {
-                en: "Beyond Human Thought - An Alien Intelligence Among Us",
+                en: "The Impact of Generative AI on the Job Market",
               },
-              slug: "corso/ai-beyond-human-thought",
+              slug: "corso/impact-of-ai-on-job-market",
+            },
+            {
+              label: "Implicazioni filosofiche ed etiche dell'AI",
+              translations: {
+                en: "Philosophical and Ethical Implications of AI",
+              },
+              slug: "corso/ai-philosophical-and-ethical-implications",
             },
           ],
         },
@@ -131,6 +137,9 @@ export default defineConfig({
         },
       ],
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 4 },
+      components: {
+        Footer: "./src/components/Footer.astro",
+      },
     }),
   ],
   // Enable remark plugin to convert emoji shortcodes like :tent: into unicode

@@ -1,0 +1,66 @@
+---
+// src/components/Footer.astro
+---
+
+<footer>
+  <div class="footer-content">
+    <p>
+      Copyright © 2025 <a
+        href="https://github.com/malafronte"
+        target="_blank"
+        rel="noopener noreferrer">Prof. Gennaro Malafronte</a
+      >
+    </p>
+    <p>
+      <a
+        rel="license"
+        href="http://creativecommons.org/licenses/by-nc/4.0/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img
+          alt="Licenza Creative Commons"
+          style="border-width:0; vertical-align: middle;"
+          src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png"
+        />
+      </a>
+      Materiale distribuito con Licenza
+      <a
+        rel="license"
+        href="http://creativecommons.org/licenses/by-nc/4.0/"
+        target="_blank"
+        rel="noopener noreferrer">CC BY-NC 4.0</a
+      >
+    </p>
+  </div>
+</footer>
+
+<style>
+  footer {
+    border-top: 1px solid var(--sl-color-gray-5);
+    padding: 2rem 1rem;
+    margin-top: 4rem;
+    background-color: var(--sl-color-bg-nav);
+  }
+
+  .footer-content {
+    max-width: 72rem;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--sl-color-gray-3);
+  }
+
+  .footer-content p {
+    margin: 0.5rem 0;
+  }
+
+  .footer-content a {
+    color: var(--sl-color-text-accent);
+    text-decoration: none;
+  }
+
+  .footer-content a:hover {
+    text-decoration: underline;
+  }
+</style>
