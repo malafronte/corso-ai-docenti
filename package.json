@@ -15,7 +15,9 @@
     "astro-mermaid": "^1.0.4",
     "astro-plantuml": "^0.1.4",
     "mermaid": "^11.10.1",
+    "rehype-katex": "^7.0.1",
     "remark-emoji": "^4.0.1",
+    "remark-math": "^6.0.0",
     "sharp": "^0.34.2"
   }
 }

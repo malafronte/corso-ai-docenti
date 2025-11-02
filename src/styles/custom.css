@@ -1,3 +1,6 @@
+/* Import KaTeX CSS for math rendering */
+@import "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css";
+
 /* Riduce la larghezza della sidebar */
 :root {
   /* Larghezza sidebar ridotta da 18rem (default) a 14rem */

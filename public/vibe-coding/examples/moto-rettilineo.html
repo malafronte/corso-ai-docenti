@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulatore di Moto Rettilineo (MRU e MRUA)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+        }
+
+        .instructions {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Colonna sinistra contenitore */
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Pannello di Controllo */
+        .control-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .control-panel h2 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .motion-type {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .motion-type h3 {
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            color: #495057;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .radio-group input[type="radio"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .slider-control {
+            margin-bottom: 20px;
+        }
+
+        .slider-control label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #495057;
+            font-size: 1.05em;
+        }
+
+        .slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #ddd;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #5568d3;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        input[type="range"]:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .value-display {
+            min-width: 80px;
+            text-align: right;
+            font-weight: 700;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        button {
+            padding: 14px 20px;
+            font-size: 1.1em;
+            font-weight: 700;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .btn-start {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-start:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-export {
+            background: #6f42c1;
+            color: white;
+        }
+
+        .btn-export:hover {
+            background: #5a32a3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(111, 66, 193, 0.4);
+        }
+
+        .btn-reset {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.4);
+        }
+
+        /* Area di Simulazione */
+        .simulation-area {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+            margin-bottom: 30px;
+        }
+
+        .simulation-area h2 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        #animationCanvas {
+            width: 100%;
+            height: 120px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #dee2e6;
+            display: block;
+        }
+
+        /* Colonna destra contenitore */
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Dati e Grafici */
+        .data-section {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        .data-display {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .data-display h2 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .data-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .data-item:nth-child(2) {
+            border-left-color: #28a745;
+        }
+
+        .data-item:nth-child(3) {
+            border-left-color: #ffc107;
+        }
+
+        .data-item:nth-child(4) {
+            border-left-color: #dc3545;
+        }
+
+        .data-label {
+            font-weight: 500;
+            color: #666;
+            font-size: 0.95em;
+            margin-bottom: 5px;
+        }
+
+        .data-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .graph-container {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .graph-container h2 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        #chartCanvas {
+            background: white;
+            border-radius: 10px;
+            min-height: 250px;
+            width: 100% !important;
+        }
+
+        .graph-container-full {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .graph-container-full h2 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        #velocityChartCanvas {
+            background: white;
+            border-radius: 10px;
+            min-height: 250px;
+            width: 100% !important;
+        }
+
+        /* Approfondimento */
+        .questions-section {
+            background: #fff3cd;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #ffc107;
+            margin-bottom: 30px;
+        }
+
+        .questions-section h2 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .questions-section ol {
+            margin-left: 20px;
+            line-height: 1.8;
+            color: #856404;
+        }
+
+        .questions-section li {
+            margin-bottom: 12px;
+        }
+
+        /* Modale */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 40px;
+            border-radius: 20px;
+            width: 80%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .modal-content h3 {
+            color: #495057;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            font-size: 1.3em;
+        }
+
+        .modal-content p {
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .modal-content strong {
+            color: #667eea;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 20px;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #333;
+        }
+
+        @media (max-width: 968px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Simulatore di Moto Rettilineo (MRU e MRUA)</h1>
+        <p class="instructions">
+            Scegli il tipo di moto, imposta i valori iniziali con gli slider e premi 'Avvia' per osservare la
+            simulazione e il grafico posizione-tempo.
+        </p>
+
+        <div class="main-grid">
+            <!-- Colonna sinistra: Pannello di Controllo + Dati -->
+            <div class="left-column">
+                <!-- Pannello di Controllo -->
+                <div class="control-panel">
+                    <h2>⚙️ Pannello di Controllo</h2>
+
+                    <div class="motion-type">
+                        <h3>Tipo di Moto</h3>
+                        <div class="radio-group">
+                            <label>
+                                <input type="radio" name="motionType" value="mru" checked>
+                                Moto Uniforme (MRU)
+                            </label>
+                            <label>
+                                <input type="radio" name="motionType" value="mrua">
+                                Moto Accelerato (MRUA)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="slider-control">
+                        <label>Velocità Iniziale (v₀)</label>
+                        <div class="slider-wrapper">
+                            <input type="range" id="v0Slider" min="0" max="100" value="10" step="1"
+                                aria-label="Velocità Iniziale">
+                            <span class="value-display" id="v0Value">10 m/s</span>
+                        </div>
+                    </div>
+
+                    <div class="slider-control">
+                        <label>Accelerazione (a)</label>
+                        <div class="slider-wrapper">
+                            <input type="range" id="aSlider" min="-10" max="10" value="0" step="0.5" disabled
+                                aria-label="Accelerazione">
+                            <span class="value-display" id="aValue">0 m/s²</span>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-start" id="toggleBtn">▶ Avvia</button>
+                        <button class="btn-reset" id="resetBtn">🔄 Reset</button>
+                        <button class="btn-export" id="exportBtn">� Esporta Dati (CSV)</button>
+                        <button class="btn-info" id="infoBtn">💡 Spiegazione Teorica</button>
+                    </div>
+                </div>
+
+                <!-- Dati in Tempo Reale -->
+                <div class="data-display">
+                    <h2>📊 Dati in Tempo Reale</h2>
+                    <div class="data-item">
+                        <div class="data-label">Tempo (t)</div>
+                        <div class="data-value" id="timeDisplay">0.00 s</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Posizione (s)</div>
+                        <div class="data-value" id="positionDisplay">0.00 m</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Velocità (v)</div>
+                        <div class="data-value" id="velocityDisplay">0.00 m/s</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Colonna destra: Simulazione + Grafici -->
+            <div class="right-column">
+                <!-- Area di Simulazione -->
+                <div class="simulation-area">
+                    <h2>🎬 Simulazione Visuale</h2>
+                    <canvas id="animationCanvas" width="750" height="120"></canvas>
+                </div>
+
+                <!-- Grafico Posizione-Tempo -->
+                <div class="graph-container">
+                    <h2>📈 Grafico Posizione-Tempo</h2>
+                    <canvas id="chartCanvas"></canvas>
+                </div>
+
+                <!-- Grafico Velocità-Tempo -->
+                <div class="graph-container-full">
+                    <h2>📉 Grafico Velocità-Tempo</h2>
+                    <canvas id="velocityChartCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Domande Guida -->
+        <div class="questions-section">
+            <h2>🤔 Domande Guida per Riflettere</h2>
+            <ol>
+                <li>Come appare il grafico v-t quando l'accelerazione è costante e positiva? E se è zero (MRU)?</li>
+                <li>Che forma ha il grafico x-t nel MRUA? Perché è diverso da quello del MRU?</li>
+                <li>Osserva entrambi i grafici durante un MRUA con accelerazione positiva. Come cambiano nel tempo?
+                    Quale relazione vedi tra la pendenza del grafico v-t e la curvatura del grafico x-t?</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Modale Spiegazioni -->
+    <div id="explanationModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>💡 Cosa stiamo vedendo?</h2>
+
+            <h3>Moto Rettilineo Uniforme (MRU)</h3>
+            <p>
+                Nel <strong>MRU</strong>, l'oggetto si muove con <strong>velocità costante</strong> (v), il che
+                significa che l'accelerazione è zero (a = 0).
+                La legge oraria che descrive questo moto è:
+            </p>
+            <p><strong>s = s₀ + v · t</strong></p>
+            <p>
+                Dove s₀ è la posizione iniziale, v è la velocità (costante) e t è il tempo.
+                Il <strong>grafico s-t</strong> in questo caso è una <strong>retta</strong>. La pendenza (inclinazione)
+                della retta rappresenta la velocità:
+                più la retta è ripida, maggiore è la velocità.
+            </p>
+
+            <h3>Moto Rettilineo Uniformemente Accelerato (MRUA)</h3>
+            <p>
+                Nel <strong>MRUA</strong>, l'oggetto ha un'<strong>accelerazione costante</strong> (a), che fa variare
+                la velocità in modo lineare nel tempo.
+                La velocità all'istante t è data da:
+            </p>
+            <p><strong>v(t) = v₀ + a · t</strong></p>
+            <p>
+                Dove v₀ è la velocità iniziale. La legge oraria per la posizione è:
+            </p>
+            <p><strong>s(t) = s₀ + v₀ · t + ½ a · t²</strong></p>
+            <p>
+                Il <strong>grafico s-t</strong> è una <strong>parabola</strong>. Se l'accelerazione è positiva, la
+                parabola è concava verso l'alto;
+                se è negativa, è concava verso il basso.
+            </p>
+
+            <h3>Come leggere il grafico</h3>
+            <p>
+                La <strong>pendenza (inclinazione) del grafico s-t</strong> in un dato punto rappresenta la
+                <strong>velocità istantanea</strong> in quell'istante.
+                Nel MRU, la pendenza è costante (retta). Nel MRUA, la pendenza cambia continuamente (parabola).
+            </p>
+            <p>
+                Se la pendenza è positiva, l'oggetto si muove in avanti (nella direzione positiva).
+                Se la pendenza è negativa, l'oggetto si muove all'indietro.
+                Nel punto in cui la pendenza è zero (punto di massimo o minimo della parabola), la velocità è zero e
+                l'oggetto inverte il moto.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // ==============================
+        // VARIABILI GLOBALI
+        // ==============================
+
+        // Elementi DOM - Controlli
+        const v0Slider = document.getElementById('v0Slider');
+        const aSlider = document.getElementById('aSlider');
+        const v0Value = document.getElementById('v0Value');
+        const aValue = document.getElementById('aValue');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const infoBtn = document.getElementById('infoBtn');
+        const radioButtons = document.querySelectorAll('input[name="motionType"]');
+
+        // Elementi DOM - Display
+        const timeDisplay = document.getElementById('timeDisplay');
+        const positionDisplay = document.getElementById('positionDisplay');
+        const velocityDisplay = document.getElementById('velocityDisplay');
+
+        // Canvas Animazione
+        const canvas = document.getElementById('animationCanvas');
+        let ctx = null;
+
+        // Modale
+        const modal = document.getElementById('explanationModal');
+        const closeModal = document.querySelector('.close');
+
+        // Variabili Fisica
+        let v0 = 10;     // Velocità iniziale (m/s)
+        let a = 0;       // Accelerazione (m/s²)
+        let t = 0;       // Tempo corrente (s)
+        let x = 0;       // Posizione corrente (m) - parte sempre da 0
+        let v = 0;       // Velocità corrente (m/s)
+        let motionType = 'mru';  // 'mru' o 'mrua'
+
+        // Variabili Animazione
+        let isRunning = false;
+        let lastTimestamp = 0;
+        let animationId = null;
+
+        // Grafici
+        let positionChart = null;
+        let velocityChart = null;
+        let chartData = { time: [], position: [], velocity: [] };
+        let lastChartUpdate = 0;
+        const CHART_UPDATE_INTERVAL = 200; // ms
+
+        // ==============================
+        // ==============================
+        // INIZIALIZZAZIONE
+        // ==============================
+
+        /**
+         * Inizializza l'applicazione al caricamento della pagina
+         */
+        function init() {
+            setupCanvas();
+            setupEventListeners();
+            updateSliderDisplays();
+            setupCharts();
+            // Inizializza i valori
+            x = 0;  // Posizione iniziale sempre 0
+            v = v0;
+            updateDisplays();
+            drawAnimation();
+            // Aggiungi punto iniziale ai grafici (sarà aggiunto al primo update)
+            chartData.time = [];
+            chartData.position = [];
+            chartData.velocity = [];
+            updateCharts();
+        }
+
+        /**
+         * Configura le dimensioni del canvas
+         */
+        function setupCanvas() {
+            if (!canvas) {
+                console.error('Canvas element non trovato');
+                return;
+            }
+
+            // Inizializza il context 2d
+            ctx = canvas.getContext('2d');
+
+            console.log('Canvas impostato:', canvas.width, 'x', canvas.height);
+        }
+
+        /**
+         * Configura tutti gli event listener
+         */
+        function setupEventListeners() {
+            // Slider
+            v0Slider.addEventListener('input', () => {
+                v0 = parseFloat(v0Slider.value);
+                updateSliderDisplays();
+                if (!isRunning) {
+                    v = v0;
+                    updateDisplays();
+                }
+            });
+
+            aSlider.addEventListener('input', () => {
+                a = parseFloat(aSlider.value);
+                updateSliderDisplays();
+            });
+
+            // Radio buttons
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    motionType = e.target.value;
+                    if (motionType === 'mru') {
+                        aSlider.disabled = true;
+                        aSlider.value = 0;
+                        a = 0;
+                    } else {
+                        aSlider.disabled = false;
+                        aSlider.value = 3;
+                        a = 3;
+                    }
+                    updateSliderDisplays();
+                });
+            });
+
+            // Pulsanti
+            toggleBtn.addEventListener('click', toggleAnimation);
+            resetBtn.addEventListener('click', resetAnimation);
+            exportBtn.addEventListener('click', exportCSV);
+            infoBtn.addEventListener('click', () => { modal.style.display = 'block'; });
+
+            // Modale
+            closeModal.addEventListener('click', () => { modal.style.display = 'none'; });
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        /**
+         * Aggiorna i display numerici degli slider
+         */
+        function updateSliderDisplays() {
+            v0Value.textContent = `${v0} m/s`;
+            aValue.textContent = `${a} m/s²`;
+        }
+
+        /**
+         * Aggiorna i display dei dati in tempo reale
+         */
+        function updateDisplays() {
+            timeDisplay.textContent = `${t.toFixed(2)} s`;
+            positionDisplay.textContent = `${x.toFixed(2)} m`;
+            velocityDisplay.textContent = `${v.toFixed(2)} m/s`;
+        }
+
+        // ==============================
+        // CONTROLLO ANIMAZIONE
+        // ==============================
+
+        /**
+         * Attiva/disattiva l'animazione (toggle)
+         */
+        function toggleAnimation() {
+            if (isRunning) {
+                // Pausa
+                isRunning = false;
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+                toggleBtn.textContent = '▶ Riprendi';
+            } else {
+                // Avvia
+                isRunning = true;
+                lastTimestamp = 0;
+                toggleBtn.textContent = '⏸ Pausa';
+                animationId = requestAnimationFrame(animationLoop);
+            }
+        }
+
+        /**
+         * Resetta l'animazione allo stato iniziale
+         */
+        function resetAnimation() {
+            // Ferma l'animazione
+            isRunning = false;
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+
+            // Resetta le variabili fisiche
+            t = 0;
+            x = 0;  // Posizione iniziale sempre 0
+            v = v0;
+
+            // Aggiorna i display
+            updateDisplays();
+            drawAnimation();
+
+            // Resetta i grafici
+            chartData.time = [];
+            chartData.position = [];
+            chartData.velocity = [];
+            updateCharts();
+
+            // Resetta il pulsante
+            toggleBtn.textContent = '▶ Avvia';
+        }
+
+        /**
+         * Esporta i dati in formato CSV
+         */
+        function exportCSV() {
+            if (chartData.time.length === 0) {
+                alert('Nessun dato da esportare. Avvia la simulazione prima.');
+                return;
+            }
+
+            // Crea l'intestazione CSV
+            let csv = 'tempo_s,posizione_m,velocita_ms\n';
+
+            // Aggiungi i dati
+            for (let i = 0; i < chartData.time.length; i++) {
+                csv += `${chartData.time[i]},${chartData.position[i]},${chartData.velocity[i]}\n`;
+            }
+
+            // Crea un blob e scarica il file
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', `moto_rettilineo_${Date.now()}.csv`);
+            link.style.visibility = 'hidden';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // ==============================
+        // LOOP ANIMAZIONE E FISICA
+        // ==============================
+
+        /**
+         * Loop principale dell'animazione (requestAnimationFrame)
+         */
+        function animationLoop(timestamp) {
+            if (!isRunning) return;
+
+            // Inizializza lastTimestamp al primo frame
+            if (lastTimestamp === 0) {
+                lastTimestamp = timestamp;
+            }
+
+            // Calcola il tempo trascorso dall'ultimo frame (in secondi)
+            // Limita il deltaTime per evitare salti troppo grandi
+            const deltaTime = Math.min((timestamp - lastTimestamp) / 1000, 0.1);
+            lastTimestamp = timestamp;
+
+            // Aggiorna la fisica
+            updatePhysics(deltaTime);
+
+            // Aggiorna i display
+            updateDisplays();
+
+            // Disegna l'animazione
+            drawAnimation();
+
+            // Aggiorna il grafico (ad intervalli)
+            if (timestamp - lastChartUpdate >= CHART_UPDATE_INTERVAL) {
+                addChartDataPoint();
+                lastChartUpdate = timestamp;
+            }
+
+            // Continua il loop
+            animationId = requestAnimationFrame(animationLoop);
+        }
+
+        /**
+         * Aggiorna le variabili fisiche in base alle leggi orarie
+         * @param {number} dt - Intervallo di tempo dall'ultimo aggiornamento (s)
+         */
+        function updatePhysics(dt) {
+            // Incrementa il tempo
+            t += dt;
+
+            if (motionType === 'mru') {
+                // MRU: x = v0 * t (posizione iniziale x0 = 0)
+                x = v0 * t;
+                v = v0; // La velocità rimane costante
+            } else {
+                // MRUA: 
+                // v(t) = v0 + a * t
+                // x(t) = v0 * t + 0.5 * a * t²
+                v = v0 + a * t;
+                x = v0 * t + 0.5 * a * t * t;
+            }
+        }
+
+        // ==============================
+        // RENDERING CANVAS
+        // ==============================
+
+        /**
+         * Disegna l'animazione sul canvas
+         */
+        function drawAnimation() {
+            if (!canvas || !ctx) {
+                console.error('Canvas non disponibile');
+                return;
+            }
+
+            // Pulisci il canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);            // Dimensioni e margini
+            const margin = 50;
+            const roadY = canvas.height / 2;
+            const roadStart = margin;
+            const roadEnd = canvas.width - margin;
+            const roadLength = roadEnd - roadStart;
+
+            // Scala: 100m = lunghezza della strada
+            const maxDistance = 100; // metri
+
+            // Disegna la strada (linea orizzontale)
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(roadStart, roadY);
+            ctx.lineTo(roadEnd, roadY);
+            ctx.stroke();
+
+            // Disegna le tacche di distanza (ogni 25m)
+            ctx.fillStyle = '#666';
+            ctx.font = '12px Roboto';
+            ctx.textAlign = 'center';
+            for (let d = 0; d <= maxDistance; d += 25) {
+                const x = roadStart + (d / maxDistance) * roadLength;
+
+                // Tacca
+                ctx.beginPath();
+                ctx.moveTo(x, roadY - 8);
+                ctx.lineTo(x, roadY + 8);
+                ctx.stroke();
+
+                // Etichetta
+                ctx.fillText(`${d}m`, x, roadY + 25);
+            }
+
+            // Calcola la posizione X dell'oggetto sul canvas
+            // Assicurati che la posizione sia mappata correttamente
+            let objectX;
+            if (x < 0) {
+                objectX = roadStart - 20; // Fuori dalla strada a sinistra
+            } else if (x > maxDistance) {
+                objectX = roadEnd + 20; // Fuori dalla strada a destra
+            } else {
+                objectX = roadStart + (x / maxDistance) * roadLength;
+            }
+
+            // Disegna l'oggetto (cerchio blu)
+            const objectRadius = 15;
+            ctx.fillStyle = '#007bff';
+            ctx.beginPath();
+            ctx.arc(objectX, roadY, objectRadius, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Bordo dell'oggetto
+            ctx.strokeStyle = '#0056b3';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Indicatore di direzione (freccia se in movimento)
+            if (Math.abs(v) > 0.5) {
+                ctx.fillStyle = '#ffc107';
+                ctx.beginPath();
+                if (v > 0) {
+                    // Freccia a destra
+                    ctx.moveTo(objectX + objectRadius + 5, roadY);
+                    ctx.lineTo(objectX + objectRadius + 15, roadY - 6);
+                    ctx.lineTo(objectX + objectRadius + 15, roadY + 6);
+                } else {
+                    // Freccia a sinistra
+                    ctx.moveTo(objectX - objectRadius - 5, roadY);
+                    ctx.lineTo(objectX - objectRadius - 15, roadY - 6);
+                    ctx.lineTo(objectX - objectRadius - 15, roadY + 6);
+                }
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+
+        // ==============================
+        // GRAFICO CHART.JS
+        // ==============================
+
+        /**
+         * Inizializza il grafico Chart.js
+         */
+        function setupCharts() {
+            console.log('Inizializzo i grafici...');
+
+            // Font size responsive in base alla larghezza dello schermo
+            const isMobile = window.innerWidth <= 768;
+            const titleFontSize = isMobile ? 10 : 14;
+            const labelFontSize = isMobile ? 9 : 11;
+            const legendFontSize = isMobile ? 10 : 12;
+
+            // Grafico Posizione-Tempo
+            const positionCanvas = document.getElementById('chartCanvas');
+            if (!positionCanvas) {
+                console.error('Canvas del grafico posizione non trovato');
+                return;
+            }
+            const positionCtx = positionCanvas.getContext('2d');
+            positionChart = new Chart(positionCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Posizione (m)',
+                        data: [],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: isMobile ? 2 : 3,
+                        pointRadius: isMobile ? 1 : 2,
+                        pointHoverRadius: isMobile ? 3 : 5,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Tempo (s)',
+                                font: { size: titleFontSize, weight: 'bold' }
+                            },
+                            ticks: {
+                                font: { size: labelFontSize }
+                            },
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Posizione (m)',
+                                font: { size: titleFontSize, weight: 'bold' }
+                            },
+                            ticks: {
+                                font: { size: labelFontSize }
+                            },
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: { size: legendFontSize }
+                            }
+                        },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    animation: { duration: 0 }
+                }
+            });
+
+            // Grafico Velocità-Tempo
+            const velocityCanvas = document.getElementById('velocityChartCanvas');
+            if (!velocityCanvas) {
+                console.error('Canvas del grafico velocità non trovato');
+                return;
+            }
+            const velocityCtx = velocityCanvas.getContext('2d');
+            velocityChart = new Chart(velocityCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Velocità (m/s)',
+                        data: [],
+                        borderColor: '#ff6b6b',
+                        backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                        borderWidth: isMobile ? 2 : 3,
+                        pointRadius: isMobile ? 1 : 2,
+                        pointHoverRadius: isMobile ? 3 : 5,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Tempo (s)',
+                                font: { size: titleFontSize, weight: 'bold' }
+                            },
+                            ticks: {
+                                font: { size: labelFontSize }
+                            },
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Velocità (m/s)',
+                                font: { size: titleFontSize, weight: 'bold' }
+                            },
+                            ticks: {
+                                font: { size: labelFontSize }
+                            },
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: { size: legendFontSize }
+                            }
+                        },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    animation: { duration: 0 }
+                }
+            });
+        }
+
+        /**
+         * Aggiunge un nuovo punto dati al grafico
+         */
+        function addChartDataPoint() {
+            chartData.time.push(parseFloat(t.toFixed(2)));
+            chartData.position.push(parseFloat(x.toFixed(2)));
+            chartData.velocity.push(parseFloat(v.toFixed(2)));
+            updateCharts();
+        }
+
+        /**
+         * Aggiorna i grafici con i dati correnti
+         */
+        function updateCharts() {
+            if (!positionChart || !velocityChart) {
+                console.error('Grafici non inizializzati');
+                return;
+            }
+
+            // Aggiorna grafico posizione
+            positionChart.data.labels = chartData.time;
+            positionChart.data.datasets[0].data = chartData.position;
+            positionChart.update();
+
+            // Aggiorna grafico velocità
+            velocityChart.data.labels = chartData.time;
+            velocityChart.data.datasets[0].data = chartData.velocity;
+            velocityChart.update();
+        }
+
+        // ==============================
+        // AVVIO APPLICAZIONE
+        // ==============================
+
+        // Inizializza l'applicazione quando il DOM è pronto
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>

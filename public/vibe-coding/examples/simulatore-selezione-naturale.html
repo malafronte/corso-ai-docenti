@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulatore di Evoluzione per Selezione Naturale</title>
+    <style>
+        :root {
+            --color-background: #fcfcf9;
+            --color-surface: #fffffe;
+            --color-text: #133452;
+            --color-text-secondary: #626c71;
+            --color-primary: #21808d;
+            --color-primary-hover: #1d7480;
+            --color-border: rgba(94, 82, 64, 0.2);
+            --color-secondary: rgba(94, 82, 64, 0.12);
+            --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-24: 24px;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            padding: var(--space-24);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: var(--space-16);
+            color: var(--color-text);
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: var(--space-12);
+            color: var(--color-text);
+        }
+
+        h3 {
+            font-size: 16px;
+            margin-bottom: var(--space-8);
+            color: var(--color-text);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: var(--space-24);
+            margin-bottom: var(--space-24);
+        }
+
+        .simulation-panel {
+            background-color: var(--color-surface);
+            padding: var(--space-16);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+        }
+
+        #simulationCanvas {
+            display: block;
+            width: 100%;
+            border-radius: var(--radius-base);
+            cursor: crosshair;
+        }
+
+        .controls-panel {
+            background-color: var(--color-surface);
+            padding: var(--space-16);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+        }
+
+        .control-group {
+            margin-bottom: var(--space-16);
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: var(--space-8);
+            font-size: 14px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--color-secondary);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+            border: none;
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 40px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            cursor: pointer;
+        }
+
+        .value-display {
+            float: right;
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        .buttons {
+            display: flex;
+            gap: var(--space-8);
+            margin-top: var(--space-16);
+        }
+
+        button {
+            flex: 1;
+            padding: var(--space-12) var(--space-16);
+            border: none;
+            border-radius: var(--radius-base);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--color-secondary);
+            color: var(--color-text);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--color-border);
+        }
+
+        .btn-export {
+            width: 100%;
+            margin-top: var(--space-12);
+            background-color: #2d6a4f;
+            color: white;
+        }
+
+        .btn-export:hover {
+            background-color: #1b4332;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-12);
+            margin-top: var(--space-16);
+        }
+
+        .stat-item {
+            background-color: var(--color-secondary);
+            padding: var(--space-12);
+            border-radius: var(--radius-base);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .charts-section {
+            background-color: var(--color-surface);
+            padding: var(--space-16);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+            margin-bottom: var(--space-24);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-24);
+            margin-top: var(--space-16);
+        }
+
+        .chart-container {
+            background-color: var(--color-background);
+            padding: var(--space-16);
+            border-radius: var(--radius-base);
+            position: relative;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-12);
+        }
+
+        .chart-info-btn {
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            min-height: 24px;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            padding: 0;
+            flex-shrink: 0;
+            flex: none;
+        }
+
+        .chart-info-btn:hover {
+            background-color: var(--color-primary-hover);
+            transform: scale(1.1);
+        }
+
+        canvas.chart {
+            width: 100%;
+            display: block;
+        }
+
+        .info-section {
+            background-color: var(--color-surface);
+            padding: var(--space-16);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+        }
+
+        .info-section p {
+            margin-bottom: var(--space-12);
+            line-height: 1.6;
+        }
+
+        .questions {
+            margin-top: var(--space-16);
+        }
+
+        .questions ol {
+            padding-left: var(--space-24);
+        }
+
+        .questions li {
+            margin-bottom: var(--space-8);
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--color-surface);
+            padding: var(--space-24);
+            border-radius: var(--radius-lg);
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-16);
+            padding-bottom: var(--space-16);
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--color-primary);
+        }
+
+        .close-btn {
+            background-color: var(--color-secondary);
+            border: none;
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            min-height: 28px;
+            border-radius: 50%;
+            font-size: 20px;
+            line-height: 1;
+            color: var(--color-text);
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            flex: none;
+        }
+
+        .close-btn:hover {
+            background-color: var(--color-secondary);
+            color: var(--color-text);
+        }
+
+        .modal-section {
+            margin-bottom: var(--space-24);
+        }
+
+        .modal-section h3 {
+            color: var(--color-text);
+            margin-bottom: var(--space-12);
+            font-size: 18px;
+        }
+
+        .modal-section h4 {
+            color: var(--color-text);
+            margin-bottom: var(--space-8);
+            margin-top: var(--space-16);
+            font-size: 15px;
+        }
+
+        .modal-section p {
+            margin-bottom: var(--space-12);
+            line-height: 1.7;
+        }
+
+        .modal-section ul {
+            margin-left: var(--space-24);
+            margin-bottom: var(--space-12);
+        }
+
+        .modal-section li {
+            margin-bottom: var(--space-8);
+        }
+
+        .equation {
+            background-color: var(--color-secondary);
+            padding: var(--space-16);
+            border-radius: var(--radius-base);
+            font-family: 'Courier New', monospace;
+            margin: var(--space-12) 0;
+            border-left: 3px solid var(--color-primary);
+            overflow-x: auto;
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-12);
+            margin: var(--space-16) 0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-12);
+            padding: var(--space-12);
+            background-color: var(--color-secondary);
+            border-radius: var(--radius-base);
+        }
+
+        .legend-circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-text {
+            font-size: 14px;
+        }
+
+        .help-btn {
+            position: fixed !important;
+            bottom: 24px !important;
+            right: 24px !important;
+            width: 56px !important;
+            height: 56px !important;
+            border-radius: 50% !important;
+            background-color: #21808d !important;
+            color: white !important;
+            border: none !important;
+            font-size: 24px !important;
+            font-weight: bold !important;
+            cursor: pointer !important;
+            box-shadow: 0 8px 20px rgba(33, 128, 141, 0.4) !important;
+            transition: all 0.3s !important;
+            z-index: 9999 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            outline: 3px solid rgba(33, 128, 141, 0.3) !important;
+        }
+
+        .help-btn:hover {
+            background-color: #1d7480 !important;
+            transform: scale(1.1) !important;
+            box-shadow: 0 12px 24px rgba(33, 128, 141, 0.6) !important;
+            outline: 3px solid rgba(33, 128, 141, 0.5) !important;
+        }
+
+        .highlight {
+            background-color: rgba(33, 128, 141, 0.2);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+
+        .reference-link {
+            color: var(--color-primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--color-primary);
+        }
+
+        .reference-link:hover {
+            border-bottom-style: solid;
+        }
+
+        .note-box {
+            background-color: rgba(33, 128, 141, 0.1);
+            border-left: 4px solid var(--color-primary);
+            padding: var(--space-12);
+            margin: var(--space-12) 0;
+            border-radius: var(--radius-base);
+        }
+
+        .legend-circle-mimetized {
+            background-color: #88b388;
+        }
+
+        .legend-circle-visible {
+            background-color: #ff5555;
+        }
+
+        .stats-section-title {
+            margin-top: 24px;
+        }
+
+        .stat-item-wide {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 1200px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                max-width: 95%;
+                padding: var(--space-16);
+            }
+
+            .legend {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Modal Esplicativo Principale -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🧬 Come Funziona la Simulazione</h2>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+
+            <div class="modal-section">
+                <h3>🎯 Cosa Rappresentano i Pallini?</h3>
+                <p>Ogni <span class="highlight">cerchio colorato</span> rappresenta un <strong>singolo
+                        organismo</strong> (una preda) che vive nell'ambiente. Gli organismi non sono visibili
+                    direttamente, ma la loro popolazione è soggetta a <strong>predazione</strong> da parte di predatori
+                    invisibili.</p>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-circle legend-circle-mimetized"></div>
+                        <div class="legend-text"><strong>Organismo mimetizzato</strong><br>Colore simile allo sfondo →
+                            alta sopravvivenza</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-circle legend-circle-visible"></div>
+                        <div class="legend-text"><strong>Organismo visibile</strong><br>Colore contrastante → bassa
+                            sopravvivenza</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <h3>🦅 Chi Sono i Predatori?</h3>
+                <p>I <strong>predatori sono invisibili</strong> nella simulazione, ma la loro azione è rappresentata dal
+                    meccanismo di <span class="highlight">selezione naturale</span>. I predatori cacciano visivamente:
+                    gli organismi più visibili (con colori che contrastano con lo sfondo) vengono predati più
+                    facilmente.</p>
+            </div>
+
+            <div class="modal-section">
+                <h3>💀 Quando Muoiono gli Organismi?</h3>
+                <p>Gli organismi muoiono in due modi:</p>
+                <ol>
+                    <li><strong>Predazione</strong>: Alla fine di ogni generazione (~10 secondi), i predatori cacciano.
+                        La probabilità di morte dipende dalla <span class="highlight">visibilità</span>.</li>
+                    <li><strong>Esaurimento energia</strong>: Muoversi consuma energia. Se l'energia raggiunge zero,
+                        l'organismo muore.</li>
+                </ol>
+            </div>
+
+            <div class="modal-section">
+                <h3>💑 Quando Si Accoppiano?</h3>
+                <p>La <strong>riproduzione avviene alla fine di ogni generazione</strong>, dopo la fase di selezione.
+                    Solo i <span class="highlight">sopravvissuti</span> si riproducono (riproduzione asessuata per
+                    semplicità). Ogni sopravvissuto può generare uno o più figli, fino a raggiungere la capacità
+                    portante dell'ambiente.</p>
+            </div>
+
+            <div class="modal-section">
+                <h3>📐 Le Equazioni della Selezione</h3>
+
+                <p><strong>1. Calcolo della Visibilità (Distanza Colore)</strong></p>
+                <div class="equation">
+                    Visibilità = √[(R_org - R_sfondo)² + (G_org - G_sfondo)² + (B_org - B_sfondo)²]
+
+                    Dove:
+                    - R, G, B = componenti colore (0-255)
+                    - Range: 0 (identico allo sfondo) a 441 (massimo contrasto)
+                </div>
+
+                <div class="note-box">
+                    <strong>Origine dell'equazione:</strong> La distanza euclidea nello spazio colore RGB è una metrica
+                    standard per quantificare la differenza tra colori. Sebbene non sia percettivamente uniforme
+                    (l'occhio umano è più sensibile ad alcune differenze cromatiche), è computazionalmente efficiente e
+                    adeguata per simulazioni evolutive. Metriche più avanzate come CIEDE2000 o distanza euclidea nello
+                    spazio LAB sono più accurate ma richiedono conversioni complesse.
+                </div>
+
+                <p><strong>2. Calcolo della Fitness (Capacità di Sopravvivenza)</strong></p>
+                <div class="equation">
+                    Fitness = 1 - (Visibilità / 441)
+
+                    Range: 0 (massima visibilità, fitness minima) a 1 (invisibile, fitness massima)
+                </div>
+
+                <div class="note-box">
+                    <strong>Origine dell'equazione:</strong> La fitness è definita come la <em>probabilità relativa di
+                        sopravvivenza</em> di un organismo. Normalizzando la visibilità (0-1) e invertendola, otteniamo
+                    una misura diretta: organismi perfettamente mimetizzati (visibilità = 0) hanno fitness = 1, mentre
+                    organismi completamente contrastanti hanno fitness ≈ 0. Questo modello è coerente con la teoria
+                    della selezione stabilizzante su tratti fenotipici continui.
+                </div>
+
+                <p><strong>3. Probabilità di Sopravvivenza alla Predazione</strong></p>
+                <div class="equation">
+                    P(sopravvivenza) = Fitness^(1 + PressioneSelettiva × 3)
+
+                    Dove:
+                    - PressioneSelettiva = 0 a 1 (controllata dal cursore)
+                    - Con pressione alta: solo fitness ~1 sopravvive
+                    - Con pressione bassa: anche fitness bassa può sopravvivere
+                </div>
+
+                <div class="note-box">
+                    <strong>Origine dell'equazione:</strong> Questa è una <em>funzione di selezione esponenziale</em>,
+                    comunemente usata negli algoritmi evolutivi. L'esponente (1 + PressioneSelettiva × 3) modula
+                    l'intensità della selezione:
+                    <ul>
+                        <li>Esponente = 1 (pressione 0%): selezione lineare debole</li>
+                        <li>Esponente = 4 (pressione 100%): selezione esponenziale forte</li>
+                    </ul>
+                    Modelli simili si trovano nella teoria della selezione dipendente dalla frequenza e negli studi su
+                    coevoluzione predatore-preda con selezione per il camouflage.
+                </div>
+
+                <p><strong>4. Consumo di Energia</strong></p>
+                <div class="equation">
+                    ΔEnergia = -(Velocità × 0.01 + Taglia × 0.001) per frame
+
+                    Gli organismi più veloci e grandi consumano più energia
+                </div>
+
+                <div class="note-box">
+                    <strong>Origine dell'equazione:</strong> Il consumo energetico proporzionale a velocità e taglia
+                    riflette principi di metabolismo basale e costo del movimento. Organismi più grandi hanno maggiori
+                    richieste metaboliche (legge di Kleiber, ~massa^0.75), mentre velocità maggiori richiedono più
+                    lavoro meccanico. I coefficienti (0.01, 0.001) sono calibrati per bilanciare la durata della
+                    simulazione.
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <h3>📚 Basi Teoriche del Modello</h3>
+
+                <h4>1. Teoria Darwiniana della Selezione Naturale</h4>
+                <p>Il modello implementa i tre principi fondamentali:</p>
+                <ul>
+                    <li><strong>Variazione</strong>: Gli organismi differiscono nei tratti ereditabili (colore,
+                        velocità, taglia)</li>
+                    <li><strong>Eredità</strong>: I tratti vengono trasmessi alla prole con mutazioni</li>
+                    <li><strong>Selezione</strong>: Gli individui con tratti vantaggiosi (mimetismo) sopravvivono e si
+                        riproducono di più</li>
+                </ul>
+
+                <h4>2. Sintesi Moderna dell'Evoluzione</h4>
+                <p>La simulazione integra genetica mendeliana e selezione naturale: i tratti sono ereditabili
+                    (codificati come valori numerici RGB, velocità, taglia), soggetti a mutazioni casuali, e la
+                    frequenza di questi "alleli" cambia nelle generazioni successive in base alla fitness.</p>
+
+                <h4>3. Principio di Hardy-Weinberg</h4>
+                <p>In assenza di mutazioni, migrazione, deriva genetica, e selezione, le frequenze alleliche
+                    resterebbero costanti. Questa simulazione <strong>viola deliberatamente</strong> queste condizioni
+                    (con mutazione e selezione attive), permettendo l'evoluzione.</p>
+
+                <h4>4. Fitness Landscape e Adaptive Peaks</h4>
+                <p>Il "paesaggio di fitness" è definito dalla similarità al colore ambientale. Cambiando il colore dello
+                    sfondo, si sposta il "picco adattativo", e la popolazione deve "arrampicarsi" verso il nuovo ottimo
+                    attraverso mutazione e selezione.</p>
+
+                <h4>5. Camouflage Evolution</h4>
+                <p>Il mimetismo è un classico esempio di selezione naturale studiato fin da Darwin. Organismi come le
+                    falene punteggiate (<em>Biston betularia</em>) durante la Rivoluzione Industriale mostrano
+                    adattamento rapido del colore in risposta a cambiamenti ambientali - esattamente ciò che questa
+                    simulazione replica.</p>
+            </div>
+
+            <div class="modal-section">
+                <h3>🔗 Link di Approfondimento</h3>
+                <ul>
+                    <li><a href="https://www.nature.com/scitable/knowledge/library/the-hardy-weinberg-principle-13235724/"
+                            class="reference-link" target="_blank" rel="noopener">Hardy-Weinberg Principle - Nature
+                            Education</a></li>
+                    <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2753274/" class="reference-link"
+                            target="_blank" rel="noopener">Fitness and its Role in Evolutionary Genetics - PMC</a></li>
+                    <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6798318/" class="reference-link"
+                            target="_blank" rel="noopener">Adaptation, Fitness Landscape Learning - PMC</a></li>
+                    <li><a href="https://arxiv.org/html/2304.11793v3" class="reference-link" target="_blank"
+                            rel="noopener">Coevolution
+                            of Camouflage - arXiv</a></li>
+                    <li><a href="https://academic.oup.com/evolut/article/75/3/614/6730289" class="reference-link"
+                            target="_blank" rel="noopener">Camouflage Machine: Optimizing Protective Coloration -
+                            Evolution</a></li>
+                    <li><a href="https://it.wikipedia.org/wiki/Sintesi_moderna_dell'evoluzione" class="reference-link"
+                            target="_blank" rel="noopener">Sintesi Moderna dell'Evoluzione - Wikipedia IT</a></li>
+                    <li><a href="https://www.treccani.it/enciclopedia/genetica-modelli-matematici-per-la-genetica-delle-popolazioni_(Enciclopedia-della-Scienza-e-della-Tecnica)/"
+                            class="reference-link" target="_blank" rel="noopener">Modelli Matematici per la Genetica
+                            delle Popolazioni
+                            - Treccani</a></li>
+                </ul>
+            </div>
+
+            <div class="modal-section">
+                <h3>🎨 Cosa Significa "Cambiare Colore e Vedere l'Adattamento"?</h3>
+                <p>Quando cambi il <span class="highlight">colore dell'ambiente</span> (sfondo), modifichi
+                    istantaneamente quale tipo di mimetismo è vantaggioso:</p>
+                <ul>
+                    <li>Gli organismi che per caso hanno colori simili al <strong>nuovo</strong> sfondo diventano
+                        improvvisamente più "fit" (sopravvivono meglio)</li>
+                    <li>Gli organismi che prima erano mimetizzati diventano <strong>visibili</strong> e vengono predati
+                    </li>
+                    <li>Nel corso delle generazioni, la popolazione si <span class="highlight">adatta</span>: attraverso
+                        riproduzione differenziale e mutazioni, i colori della popolazione convergeranno verso il nuovo
+                        colore dello sfondo</li>
+                    <li>Osserva il grafico "Fitness Media": aumenta gradualmente quando la popolazione si adatta</li>
+                </ul>
+            </div>
+
+            <div class="modal-section">
+                <h3>🔄 Ciclo della Simulazione</h3>
+                <ol>
+                    <li><strong>Fase di vita</strong> (~10 secondi): Gli organismi si muovono consumando energia</li>
+                    <li><strong>Selezione</strong>: I predatori cacciano in base alla visibilità</li>
+                    <li><strong>Riproduzione</strong>: I sopravvissuti generano prole con piccole mutazioni</li>
+                    <li><strong>Nuova generazione</strong>: Il ciclo ricomincia</li>
+                </ol>
+                <p>La <strong>barra bianca</strong> in basso al canvas mostra il progresso verso la prossima
+                    generazione.</p>
+            </div>
+
+            <div class="modal-section">
+                <h3>🎛️ Effetto dei Parametri</h3>
+                <ul>
+                    <li><strong>Tasso di Mutazione</strong>: Più alto = più variabilità genetica = adattamento più
+                        rapido ma fitness più instabile</li>
+                    <li><strong>Pressione Selettiva</strong>: Più alta = solo i meglio mimetizzati sopravvivono =
+                        selezione più forte</li>
+                    <li><strong>Capacità Portante</strong>: Limita il numero massimo di organismi = simula risorse
+                        limitate nell'ambiente</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Info Grafico Popolazione -->
+    <div id="popChartModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📊 Grafico: Popolazione vs Generazione</h2>
+                <button class="close-btn close-chart-modal">&times;</button>
+            </div>
+            <div class="modal-section">
+                <h3>Cosa Rappresenta</h3>
+                <p>Questo grafico mostra l'andamento della <strong>dimensione della popolazione</strong> nel tempo,
+                    misurata in numero di individui per ogni generazione completata.</p>
+
+                <h3>Significato Biologico</h3>
+                <p>Le fluttuazioni di popolazione riflettono la <span class="highlight">dinamica ecologica</span>:</p>
+                <ul>
+                    <li><strong>Crescita rapida</strong>: Quando la fitness media è alta e c'è spazio disponibile (sotto
+                        la capacità portante)</li>
+                    <li><strong>Declino</strong>: Quando pressione selettiva è forte e/o il colore ambientale cambia
+                        bruscamente</li>
+                    <li><strong>Stabilizzazione</strong>: Quando la popolazione raggiunge la capacità portante ed è ben
+                        adattata</li>
+                </ul>
+
+                <h3>Riferimenti Teorici</h3>
+                <p>Il modello riflette dinamiche da:</p>
+                <ul>
+                    <li><strong>Equazione logistica di Verhulst</strong>: Crescita limitata da risorse (capacità
+                        portante)</li>
+                    <li><strong>Modelli Lotka-Volterra</strong>: Interazioni predatore-preda che causano oscillazioni
+                    </li>
+                    <li><strong>Teoria delle metapopolazioni</strong>: Equilibrio estinzione-colonizzazione locale</li>
+                </ul>
+
+                <h3>Approfondimenti</h3>
+                <ul>
+                    <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6798318/" class="reference-link"
+                            target="_blank" rel="noopener">Adaptation and Population Dynamics - PMC</a></li>
+                    <li><a href="https://www.nature.com/scitable/knowledge/library/the-hardy-weinberg-principle-13235724/"
+                            class="reference-link" target="_blank" rel="noopener">Population Genetics Models - Nature
+                            Education</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Info Grafico Fitness -->
+    <div id="fitnessChartModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📈 Grafico: Fitness Media vs Generazione</h2>
+                <button class="close-btn close-chart-modal">&times;</button>
+            </div>
+            <div class="modal-section">
+                <h3>Cosa Rappresenta</h3>
+                <p>Questo grafico mostra la <strong>fitness media della popolazione</strong> (scala 0-1), dove fitness =
+                    1 indica perfetto mimetismo con l'ambiente e fitness = 0 indica massima visibilità.</p>
+
+                <h3>Significato Biologico</h3>
+                <p>La fitness media è un <span class="highlight">indicatore diretto dell'adattamento</span>:</p>
+                <ul>
+                    <li><strong>Aumento graduale</strong>: La selezione naturale sta favorendo organismi meglio
+                        mimetizzati</li>
+                    <li><strong>Calo improvviso</strong>: Cambiamento ambientale (colore sfondo) ha reso la popolazione
+                        inadatta</li>
+                    <li><strong>Plateau alto</strong>: La popolazione ha raggiunto un <em>picco adattativo</em>
+                        (equilibrio evoluzione-mutazione)</li>
+                </ul>
+
+                <h3>Riferimenti Teorici</h3>
+                <ul>
+                    <li><strong>Fitness Landscape Theory (Wright, 1932)</strong>: La popolazione "arrampica" verso
+                        picchi di fitness attraverso selezione</li>
+                    <li><strong>Fisher's Fundamental Theorem</strong>: Il tasso di aumento della fitness media è
+                        proporzionale alla varianza genetica nella popolazione</li>
+                    <li><strong>Mutation-Selection Balance</strong>: All'equilibrio, le mutazioni dannose sono
+                        bilanciate dalla selezione purificante</li>
+                </ul>
+
+                <h3>Approfondimenti</h3>
+                <ul>
+                    <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2753274/" class="reference-link"
+                            target="_blank" rel="noopener">Fitness and Its Role in Evolutionary Genetics - PMC</a></li>
+                    <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6798318/" class="reference-link"
+                            target="_blank" rel="noopener">Fitness Landscape Learning and Fast Evolution - PMC</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Info Distribuzione Visibilità -->
+    <div id="visibilityChartModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🎨 Istogramma: Distribuzione Visibilità</h2>
+                <button class="close-btn close-chart-modal">&times;</button>
+            </div>
+            <div class="modal-section">
+                <h3>Cosa Rappresenta</h3>
+                <p>Questo istogramma mostra la <strong>distribuzione della visibilità</strong> (0-1) nella popolazione
+                    attuale, dove 0 = perfettamente mimetizzato e 1 = massimamente visibile.</p>
+
+                <h3>Significato Biologico</h3>
+                <p>La forma della distribuzione rivela:</p>
+                <ul>
+                    <li><strong>Distribuzione concentrata a sinistra (bassa visibilità)</strong>: Popolazione ben
+                        adattata, selezione ha eliminato varianti visibili</li>
+                    <li><strong>Distribuzione ampia</strong>: Alta diversità genetica, popolazione in fase di
+                        adattamento o con alta mutazione</li>
+                    <li><strong>Distribuzione bimodale</strong>: Possibile selezione disruptiva o popolazione in
+                        transizione dopo cambio ambientale</li>
+                </ul>
+
+                <h3>Riferimenti Teorici</h3>
+                <ul>
+                    <li><strong>Varianza fenotipica</strong>: V_P = V_G + V_E (componenti genetica e ambientale)</li>
+                    <li><strong>Selezione direzionale</strong>: Sposta la distribuzione verso il fenotipo ottimale
+                        (bassa visibilità)</li>
+                    <li><strong>Selezione stabilizzante</strong>: Riduce la varianza attorno al fenotipo ottimale</li>
+                </ul>
+
+                <h3>Approfondimenti</h3>
+                <ul>
+                    <li><a href="https://arxiv.org/html/2304.11793v3" class="reference-link" target="_blank"
+                            rel="noopener">Coevolution
+                            of Camouflage - arXiv</a></li>
+                    <li><a href="https://academic.oup.com/evolut/article/75/3/614/6730289" class="reference-link"
+                            target="_blank" rel="noopener">Optimizing Protective Coloration - Evolution Journal</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Info Distribuzione Velocità -->
+    <div id="speedChartModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚡ Istogramma: Distribuzione Velocità</h2>
+                <button class="close-btn close-chart-modal">&times;</button>
+            </div>
+            <div class="modal-section">
+                <h3>Cosa Rappresenta</h3>
+                <p>Questo istogramma mostra la <strong>distribuzione della velocità di movimento</strong> (0.5-4.0
+                    unità/frame) nella popolazione corrente.</p>
+
+                <h3>Significato Biologico</h3>
+                <p>La velocità è un <span class="highlight">tratto sotto selezione bilanciata</span>:</p>
+                <ul>
+                    <li><strong>Vantaggio velocità alta</strong>: Maggiore accesso a risorse, fuga più efficace (non
+                        implementato direttamente, ma implicito)</li>
+                    <li><strong>Svantaggio velocità alta</strong>: Maggiore consumo energetico → morte per esaurimento
+                        se risorse scarseggiano</li>
+                    <li><strong>Equilibrio evolutivo</strong>: La popolazione converge verso velocità che bilanciano
+                        benefici e costi</li>
+                </ul>
+
+                <h3>Riferimenti Teorici</h3>
+                <ul>
+                    <li><strong>Trade-off energetici</strong>: Teoria della storia di vita (Life History Theory) predice
+                        equilibri tra riproduzione, crescita e sopravvivenza</li>
+                    <li><strong>Optimal Foraging Theory</strong>: Gli organismi evolvono comportamenti di movimento che
+                        massimizzano guadagno energetico netto</li>
+                    <li><strong>Legge di Kleiber</strong>: Metabolismo basale scala con massa^0.75, costi movimento con
+                        massa^1</li>
+                </ul>
+
+                <h3>Approfondimenti</h3>
+                <ul>
+                    <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5557360/" class="reference-link"
+                            target="_blank" rel="noopener">Selection and Evolution Driven by Recombination - PMC</a>
+                    </li>
+                    <li><a href="https://www.treccani.it/enciclopedia/genetica-modelli-matematici-per-la-genetica-delle-popolazioni_(Enciclopedia-della-Scienza-e-della-Tecnica)/"
+                            class="reference-link" target="_blank" rel="noopener">Modelli Matematici Genetica
+                            Popolazioni -
+                            Treccani</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pulsante Aiuto -->
+    <button class="help-btn" id="helpBtn" title="Spiegazione della simulazione">?</button>
+
+    <div class="container">
+        <h1>🧬 Simulatore di Evoluzione per Selezione Naturale</h1>
+
+        <div class="layout">
+            <div class="simulation-panel">
+                <h2>Ambiente di Simulazione</h2>
+                <canvas id="simulationCanvas" width="800" height="600"></canvas>
+            </div>
+
+            <div class="controls-panel">
+                <h2>Controlli</h2>
+
+                <div class="control-group">
+                    <label>
+                        Tasso di Mutazione
+                        <span class="value-display" id="mutationDisplay">5%</span>
+                    </label>
+                    <input type="range" id="mutationRate" min="0" max="10" value="5" step="0.5"
+                        aria-label="Tasso di Mutazione">
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        Pressione Selettiva
+                        <span class="value-display" id="selectionDisplay">50%</span>
+                    </label>
+                    <input type="range" id="selectionPressure" min="0" max="100" value="50" step="5"
+                        aria-label="Pressione Selettiva">
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        Capacità Portante
+                        <span class="value-display" id="capacityDisplay">200</span>
+                    </label>
+                    <input type="range" id="carryingCapacity" min="50" max="500" value="200" step="10"
+                        aria-label="Capacità Portante">
+                </div>
+
+                <div class="control-group">
+                    <label>Colore Ambiente</label>
+                    <input type="color" id="bgColor" value="#88b388" aria-label="Colore Ambiente">
+                </div>
+
+                <div class="buttons">
+                    <button class="btn-primary" id="startBtn">Start</button>
+                    <button class="btn-secondary" id="resetBtn">Reset</button>
+                </div>
+
+                <button class="btn-export" id="exportBtn">📊 Esporta Dati CSV</button>
+
+                <h3 class="stats-section-title">Statistiche</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Generazione</div>
+                        <div class="stat-value" id="generation">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Popolazione</div>
+                        <div class="stat-value" id="population">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Nati (totale)</div>
+                        <div class="stat-value" id="totalBorn">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Morti (totale)</div>
+                        <div class="stat-value" id="totalDead">0</div>
+                    </div>
+                    <div class="stat-item stat-item-wide">
+                        <div class="stat-label">Fitness Media</div>
+                        <div class="stat-value" id="avgFitness">0.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-section">
+            <h2>Visualizzazione Dati in Tempo Reale</h2>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Popolazione vs Generazione</h3>
+                        <button class="chart-info-btn" data-modal="popChartModal"
+                            title="Info su questo grafico">ℹ</button>
+                    </div>
+                    <canvas class="chart" id="popChart" width="400" height="250"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Fitness Media vs Generazione</h3>
+                        <button class="chart-info-btn" data-modal="fitnessChartModal"
+                            title="Info su questo grafico">ℹ</button>
+                    </div>
+                    <canvas class="chart" id="fitnessChart" width="400" height="250"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Distribuzione Visibilità</h3>
+                        <button class="chart-info-btn" data-modal="visibilityChartModal"
+                            title="Info su questo grafico">ℹ</button>
+                    </div>
+                    <canvas class="chart" id="colorChart" width="400" height="250"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Distribuzione Velocità</h3>
+                        <button class="chart-info-btn" data-modal="speedChartModal"
+                            title="Info su questo grafico">ℹ</button>
+                    </div>
+                    <canvas class="chart" id="speedChart" width="400" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h2>Istruzioni</h2>
+            <p>
+                <strong>Come usare il simulatore:</strong> Usa i cursori per regolare i parametri evolutivi.
+                Il <strong>Tasso di Mutazione</strong> controlla la frequenza delle mutazioni casuali.
+                La <strong>Pressione Selettiva</strong> determina quanto severamente i predatori eliminano gli organismi
+                visibili.
+                La <strong>Capacità Portante</strong> limita la popolazione massima dell'ambiente.
+                Cambia il <strong>Colore Ambiente</strong> per osservare come la popolazione si adatta in tempo reale.
+                Usa il pulsante <strong>Esporta Dati CSV</strong> per salvare i risultati della simulazione.
+            </p>
+
+            <div class="questions">
+                <h3>Domande Guida per l'Esplorazione:</h3>
+                <ol>
+                    <li>Cosa accade alla popolazione se cambi bruscamente il colore di sfondo durante la simulazione?
+                        Come si manifesta l'adattamento?</li>
+                    <li>Come un alto tasso di mutazione influenza la velocità di adattamento e la fitness media della
+                        popolazione?</li>
+                    <li>Qual è l'effetto della capacità portante sulla pressione selettiva? Una popolazione più piccola
+                        evolve più velocemente?</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * CLASSE ORGANISM
+         * Rappresenta un singolo organismo con tratti ereditabili
+         */
+        class Organism {
+            constructor(x, y, color, speed, size, energy = 100) {
+                this.x = x;
+                this.y = y;
+                // Tratti ereditabili
+                this.color = color; // {r, g, b}
+                this.speed = speed; // Velocità di movimento
+                this.size = size;   // Raggio del cerchio
+                this.energy = energy;
+
+                // Direzione casuale di movimento
+                this.angle = Math.random() * Math.PI * 2;
+                this.fitness = 0;
+            }
+
+            /**
+             * CALCOLO DELLA FITNESS
+             * La fitness è determinata dal mimetismo (distanza colore da sfondo)
+             * Minore è la visibilità, maggiore è la fitness
+             */
+            calculateFitness(bgColor) {
+                // Distanza euclidea nello spazio RGB
+                const dr = this.color.r - bgColor.r;
+                const dg = this.color.g - bgColor.g;
+                const db = this.color.b - bgColor.b;
+
+                // Visibilità (0-441, dove 441 = sqrt(255^2 * 3))
+                const visibility = Math.sqrt(dr * dr + dg * dg + db * db);
+
+                // Fitness inversamente proporzionale alla visibilità
+                // Normalizzata tra 0 e 1
+                this.fitness = 1 - (visibility / 441);
+
+                return this.fitness;
+            }
+
+            /**
+             * MOVIMENTO
+             * L'organismo si muove consumando energia
+             */
+            move(canvasWidth, canvasHeight) {
+                // Movimento basato su velocità e angolo
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed;
+
+                // Rimbalzo sui bordi
+                if (this.x <= this.size || this.x >= canvasWidth - this.size) {
+                    this.angle = Math.PI - this.angle;
+                    this.x = Math.max(this.size, Math.min(canvasWidth - this.size, this.x));
+                }
+                if (this.y <= this.size || this.y >= canvasHeight - this.size) {
+                    this.angle = -this.angle;
+                    this.y = Math.max(this.size, Math.min(canvasHeight - this.size, this.y));
+                }
+
+                // Piccole variazioni casuali di direzione
+                this.angle += (Math.random() - 0.5) * 0.1;
+
+                // Consumo energia: proporzionale a velocità e taglia
+                const energyCost = (this.speed * 0.01) + (this.size * 0.001);
+                this.energy -= energyCost;
+            }
+
+            /**
+             * RENDERING
+             */
+            draw(ctx) {
+                ctx.fillStyle = `rgb(${this.color.r}, ${this.color.g}, ${this.color.b})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        /**
+         * CLASSE SIMULATION
+         * Gestisce la logica evolutiva completa
+         */
+        class Simulation {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.organisms = [];
+                this.generation = 0;
+                this.totalBorn = 0;
+                this.totalDead = 0;
+                this.isRunning = false;
+
+                // Parametri evolutivi
+                this.mutationRate = 0.05;
+                this.selectionPressure = 0.5;
+                this.carryingCapacity = 200;
+                this.bgColor = this.hexToRgb('#88b388');
+
+                // Durata generazione (frames)
+                this.generationLength = 600; // ~10 secondi a 60fps
+                this.currentFrame = 0;
+
+                // Dati per grafici
+                this.populationHistory = [];
+                this.fitnessHistory = [];
+
+                // Dati dettagliati per esportazione
+                this.detailedHistory = [];
+
+                this.initializePopulation();
+            }
+
+            /**
+             * INIZIALIZZAZIONE POPOLAZIONE
+             * Crea organismi con tratti casuali
+             */
+            initializePopulation() {
+                this.organisms = [];
+                const initialPop = Math.floor(this.carryingCapacity * 0.5);
+
+                for (let i = 0; i < initialPop; i++) {
+                    const x = Math.random() * this.canvas.width;
+                    const y = Math.random() * this.canvas.height;
+                    const color = {
+                        r: Math.floor(Math.random() * 256),
+                        g: Math.floor(Math.random() * 256),
+                        b: Math.floor(Math.random() * 256)
+                    };
+                    const speed = 0.5 + Math.random() * 2; // 0.5 - 2.5
+                    const size = 3 + Math.random() * 7;    // 3 - 10
+
+                    this.organisms.push(new Organism(x, y, color, speed, size));
+                }
+
+                this.totalBorn = initialPop;
+                this.generation = 0;
+                this.currentFrame = 0;
+                this.populationHistory = [];
+                this.fitnessHistory = [];
+                this.detailedHistory = [];
+            }
+
+            /**
+             * SELEZIONE NATURALE (Predazione)
+             * Gli organismi con bassa fitness (alta visibilità) vengono rimossi
+             */
+            applySelection() {
+                const survivors = [];
+
+                for (let org of this.organisms) {
+                    // Calcola fitness basata sul mimetismo
+                    org.calculateFitness(this.bgColor);
+
+                    /**
+                     * PROBABILITÀ DI SOPRAVVIVENZA
+                     * Dipende da fitness e pressione selettiva
+                     * 
+                     * Con alta pressione: solo fitness alta garantisce sopravvivenza
+                     * Con bassa pressione: anche fitness bassa può sopravvivere
+                     */
+                    const survivalThreshold = Math.pow(org.fitness, 1 + this.selectionPressure * 3);
+
+                    // Organismi senza energia muoiono comunque
+                    if (org.energy > 0 && Math.random() < survivalThreshold) {
+                        survivors.push(org);
+                    } else {
+                        this.totalDead++;
+                    }
+                }
+
+                this.organisms = survivors;
+            }
+
+            /**
+             * RIPRODUZIONE
+             * I sopravvissuti generano prole con eredità e mutazione
+             */
+            reproduce() {
+                // Limite popolazione per capacità portante
+                if (this.organisms.length === 0) return;
+
+                const offspring = [];
+                const targetPopulation = Math.min(
+                    this.carryingCapacity,
+                    Math.floor(this.organisms.length * 1.5)
+                );
+
+                while (this.organisms.length + offspring.length < targetPopulation) {
+                    // Selezione casuale del genitore
+                    const parent = this.organisms[Math.floor(Math.random() * this.organisms.length)];
+
+                    // EREDITÀ: copia tratti del genitore
+                    let childColor = { ...parent.color };
+                    let childSpeed = parent.speed;
+                    let childSize = parent.size;
+
+                    /**
+                     * MUTAZIONE
+                     * Ogni tratto ha una probabilità di mutare
+                     */
+                    // Mutazione colore (ogni componente RGB può mutare)
+                    if (Math.random() < this.mutationRate) {
+                        childColor.r = Math.max(0, Math.min(255, childColor.r + (Math.random() - 0.5) * 50));
+                    }
+                    if (Math.random() < this.mutationRate) {
+                        childColor.g = Math.max(0, Math.min(255, childColor.g + (Math.random() - 0.5) * 50));
+                    }
+                    if (Math.random() < this.mutationRate) {
+                        childColor.b = Math.max(0, Math.min(255, childColor.b + (Math.random() - 0.5) * 50));
+                    }
+
+                    // Mutazione velocità
+                    if (Math.random() < this.mutationRate) {
+                        childSpeed = Math.max(0.3, Math.min(4, childSpeed + (Math.random() - 0.5) * 0.5));
+                    }
+
+                    // Mutazione taglia
+                    if (Math.random() < this.mutationRate) {
+                        childSize = Math.max(2, Math.min(12, childSize + (Math.random() - 0.5) * 2));
+                    }
+
+                    // Posizione casuale per il figlio
+                    const x = Math.random() * this.canvas.width;
+                    const y = Math.random() * this.canvas.height;
+
+                    offspring.push(new Organism(x, y, childColor, childSpeed, childSize));
+                    this.totalBorn++;
+                }
+
+                this.organisms.push(...offspring);
+            }
+
+            /**
+             * AVANZAMENTO GENERAZIONE
+             * Applica selezione e riproduzione
+             */
+            nextGeneration() {
+                this.applySelection();
+                this.reproduce();
+                this.generation++;
+                this.currentFrame = 0;
+
+                // Registra dati per grafici
+                this.populationHistory.push(this.organisms.length);
+                const avgFitness = this.calculateAverageFitness();
+                this.fitnessHistory.push(avgFitness);
+
+                // Registra dati dettagliati per esportazione
+                const visibilityDist = this.getVisibilityDistribution();
+                const speedDist = this.getSpeedDistribution();
+                const avgSpeed = this.calculateAverageSpeed();
+                const avgSize = this.calculateAverageSize();
+
+                this.detailedHistory.push({
+                    generation: this.generation,
+                    population: this.organisms.length,
+                    avgFitness: avgFitness,
+                    avgSpeed: avgSpeed,
+                    avgSize: avgSize,
+                    visibilityDist: visibilityDist,
+                    speedDist: speedDist,
+                    mutationRate: this.mutationRate,
+                    selectionPressure: this.selectionPressure,
+                    carryingCapacity: this.carryingCapacity,
+                    bgColor: `rgb(${this.bgColor.r},${this.bgColor.g},${this.bgColor.b})`
+                });
+
+                // Mantieni solo ultimi 100 dati per grafici
+                if (this.populationHistory.length > 100) {
+                    this.populationHistory.shift();
+                    this.fitnessHistory.shift();
+                }
+            }
+
+            /**
+             * CALCOLO FITNESS MEDIA
+             */
+            calculateAverageFitness() {
+                if (this.organisms.length === 0) return 0;
+
+                let sum = 0;
+                for (let org of this.organisms) {
+                    org.calculateFitness(this.bgColor);
+                    sum += org.fitness;
+                }
+
+                return sum / this.organisms.length;
+            }
+
+            /**
+             * CALCOLO VELOCITÀ MEDIA
+             */
+            calculateAverageSpeed() {
+                if (this.organisms.length === 0) return 0;
+                let sum = 0;
+                for (let org of this.organisms) {
+                    sum += org.speed;
+                }
+                return sum / this.organisms.length;
+            }
+
+            /**
+             * CALCOLO TAGLIA MEDIA
+             */
+            calculateAverageSize() {
+                if (this.organisms.length === 0) return 0;
+                let sum = 0;
+                for (let org of this.organisms) {
+                    sum += org.size;
+                }
+                return sum / this.organisms.length;
+            }
+
+            /**
+             * UPDATE LOOP
+             * Aggiorna movimento e controlla fine generazione
+             */
+            update() {
+                // Movimento organismi
+                for (let org of this.organisms) {
+                    org.move(this.canvas.width, this.canvas.height);
+                }
+
+                this.currentFrame++;
+
+                // Fine generazione
+                if (this.currentFrame >= this.generationLength) {
+                    this.nextGeneration();
+                }
+            }
+
+            /**
+             * RENDERING
+             */
+            draw() {
+                // Sfondo con colore ambiente
+                this.ctx.fillStyle = `rgb(${this.bgColor.r}, ${this.bgColor.g}, ${this.bgColor.b})`;
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Disegna organismi
+                for (let org of this.organisms) {
+                    org.draw(this.ctx);
+                }
+
+                // Indicatore progresso generazione
+                const progress = this.currentFrame / this.generationLength;
+                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                this.ctx.fillRect(0, this.canvas.height - 5, this.canvas.width * progress, 5);
+            }
+
+            /**
+             * UTILITÀ: Conversione colore
+             */
+            hexToRgb(hex) {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : { r: 136, g: 179, b: 136 };
+            }
+
+            /**
+             * DISTRIBUZIONE TRATTI (per istogrammi)
+             */
+            getVisibilityDistribution() {
+                const bins = new Array(10).fill(0);
+                for (let org of this.organisms) {
+                    org.calculateFitness(this.bgColor);
+                    const visibility = 1 - org.fitness;
+                    const binIndex = Math.min(9, Math.floor(visibility * 10));
+                    bins[binIndex]++;
+                }
+                return bins;
+            }
+
+            getSpeedDistribution() {
+                const bins = new Array(10).fill(0);
+                for (let org of this.organisms) {
+                    const binIndex = Math.min(9, Math.floor((org.speed / 4) * 10));
+                    bins[binIndex]++;
+                }
+                return bins;
+            }
+
+            /**
+             * ESPORTAZIONE DATI CSV
+             */
+            exportToCSV() {
+                let csv = 'Simulazione Evoluzione - Esportazione Dati\n\n';
+
+                // Metadata
+                csv += 'METADATA\n';
+                csv += `Data Esportazione,${new Date().toISOString()}\n`;
+                csv += `Generazioni Totali,${this.generation}\n`;
+                csv += `Popolazione Finale,${this.organisms.length}\n`;
+                csv += `Tasso Mutazione Attuale,${(this.mutationRate * 100).toFixed(1)}%\n`;
+                csv += `Pressione Selettiva Attuale,${(this.selectionPressure * 100).toFixed(0)}%\n`;
+                csv += `Capacità Portante,${this.carryingCapacity}\n`;
+                csv += `Colore Ambiente,"rgb(${this.bgColor.r},${this.bgColor.g},${this.bgColor.b})"\n\n`;
+
+                // Dati per generazione
+                csv += 'DATI PER GENERAZIONE\n';
+                csv += 'Generazione,Popolazione,Fitness Media,Velocità Media,Taglia Media,Tasso Mutazione,Pressione Selettiva,Capacità Portante,Colore Ambiente\n';
+
+                for (let record of this.detailedHistory) {
+                    csv += `${record.generation},${record.population},${record.avgFitness.toFixed(4)},${record.avgSpeed.toFixed(2)},${record.avgSize.toFixed(2)},${(record.mutationRate * 100).toFixed(1)}%,${(record.selectionPressure * 100).toFixed(0)}%,${record.carryingCapacity},"${record.bgColor}"\n`;
+                }
+
+                // Distribuzione tratti popolazione finale
+                csv += '\n\nDISTRIBUZIONE VISIBILITÀ (Popolazione Finale)\n';
+                csv += 'Bin,Frequenza\n';
+                const visibilityDist = this.getVisibilityDistribution();
+                visibilityDist.forEach((freq, i) => {
+                    csv += `${(i * 0.1).toFixed(1)}-${((i + 1) * 0.1).toFixed(1)},${freq}\n`;
+                });
+
+                csv += '\n\nDISTRIBUZIONE VELOCITÀ (Popolazione Finale)\n';
+                csv += 'Bin (unità/frame),Frequenza\n';
+                const speedDist = this.getSpeedDistribution();
+                speedDist.forEach((freq, i) => {
+                    csv += `${(i * 0.4).toFixed(1)}-${((i + 1) * 0.4).toFixed(1)},${freq}\n`;
+                });
+
+                // Download file
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `simulazione_evoluzione_gen${this.generation}_${Date.now()}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        /**
+         * CLASSE CHARTS
+         * Gestisce la visualizzazione dei grafici con unità di misura
+         */
+        class Charts {
+            constructor() {
+                this.popCanvas = document.getElementById('popChart');
+                this.fitnessCanvas = document.getElementById('fitnessChart');
+                this.colorCanvas = document.getElementById('colorChart');
+                this.speedCanvas = document.getElementById('speedChart');
+
+                this.popCtx = this.popCanvas.getContext('2d');
+                this.fitnessCtx = this.fitnessCanvas.getContext('2d');
+                this.colorCtx = this.colorCanvas.getContext('2d');
+                this.speedCtx = this.speedCanvas.getContext('2d');
+            }
+
+            /**
+             * GRAFICO A LINEE CON UNITÀ DI MISURA
+             */
+            drawLineChart(ctx, data, yLabel, xLabel, color, maxY = null) {
+                const width = ctx.canvas.width;
+                const height = ctx.canvas.height;
+                const padding = 50;
+
+                // Sfondo
+                ctx.fillStyle = getComputedStyle(document.documentElement)
+                    .getPropertyValue('--color-background');
+                ctx.fillRect(0, 0, width, height);
+
+                if (data.length === 0) return;
+
+                // Trova min/max
+                const max = maxY || Math.max(...data, 1);
+                const min = 0;
+
+                // Assi
+                ctx.strokeStyle = getComputedStyle(document.documentElement)
+                    .getPropertyValue('--color-border');
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padding, padding);
+                ctx.lineTo(padding, height - padding);
+                ctx.lineTo(width - padding / 2, height - padding);
+                ctx.stroke();
+
+                // Etichette asse Y con unità
+                ctx.fillStyle = getComputedStyle(document.documentElement)
+                    .getPropertyValue('--color-text-secondary');
+                ctx.font = '11px sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText(max.toFixed(yLabel === 'Fitness (0-1)' ? 2 : 0), padding - 5, padding + 5);
+                ctx.fillText((max / 2).toFixed(yLabel === 'Fitness (0-1)' ? 2 : 0), padding - 5, (height - padding + padding) / 2);
+                ctx.fillText('0', padding - 5, height - padding + 5);
+
+                // Etichetta asse Y (verticale)
+                ctx.save();
+                ctx.translate(15, height / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.textAlign = 'center';
+                ctx.font = 'bold 11px sans-serif';
+                ctx.fillText(yLabel, 0, 0);
+                ctx.restore();
+
+                // Etichetta asse X
+                ctx.textAlign = 'center';
+                ctx.font = 'bold 11px sans-serif';
+                ctx.fillText(xLabel, width / 2, height - 10);
+
+                // Linea dati
+                if (data.length > 1) {
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+
+                    const xStep = (width - padding - padding / 2) / (data.length - 1);
+
+                    for (let i = 0; i < data.length; i++) {
+                        const x = padding + i * xStep;
+                        const y = height - padding - ((data[i] - min) / (max - min)) * (height - 2 * padding);
+
+                        if (i === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    }
+
+                    ctx.stroke();
+                }
+            }
+
+            /**
+             * ISTOGRAMMA CON UNITÀ DI MISURA
+             */
+            drawHistogram(ctx, data, yLabel, xLabel, xRange, color) {
+                const width = ctx.canvas.width;
+                const height = ctx.canvas.height;
+                const padding = 50;
+
+                // Sfondo
+                ctx.fillStyle = getComputedStyle(document.documentElement)
+                    .getPropertyValue('--color-background');
+                ctx.fillRect(0, 0, width, height);
+
+                if (data.length === 0) return;
+
+                const max = Math.max(...data, 1);
+                const barWidth = (width - padding - padding / 2) / data.length;
+
+                // Assi
+                ctx.strokeStyle = getComputedStyle(document.documentElement)
+                    .getPropertyValue('--color-border');
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padding, padding);
+                ctx.lineTo(padding, height - padding);
+                ctx.lineTo(width - padding / 2, height - padding);
+                ctx.stroke();
+
+                // Etichette asse Y
+                ctx.fillStyle = getComputedStyle(document.documentElement)
+                    .getPropertyValue('--color-text-secondary');
+                ctx.font = '11px sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText(max.toFixed(0), padding - 5, padding + 5);
+
+                // Etichetta asse Y (verticale)
+                ctx.save();
+                ctx.translate(15, height / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.textAlign = 'center';
+                ctx.font = 'bold 11px sans-serif';
+                ctx.fillText(yLabel, 0, 0);
+                ctx.restore();
+
+                // Etichetta asse X
+                ctx.textAlign = 'center';
+                ctx.font = 'bold 11px sans-serif';
+                ctx.fillText(xLabel, width / 2, height - 10);
+
+                // Etichette range X (inizio e fine)
+                ctx.font = '10px sans-serif';
+                ctx.fillText(xRange[0], padding, height - padding + 15);
+                ctx.fillText(xRange[1], width - padding / 2, height - padding + 15);
+
+                // Barre
+                ctx.fillStyle = color;
+                for (let i = 0; i < data.length; i++) {
+                    const barHeight = (data[i] / max) * (height - 2 * padding);
+                    const x = padding + i * barWidth;
+                    const y = height - padding - barHeight;
+
+                    ctx.fillRect(x + 2, y, barWidth - 4, barHeight);
+                }
+            }
+
+            update(simulation) {
+                // Grafico popolazione
+                this.drawLineChart(
+                    this.popCtx,
+                    simulation.populationHistory,
+                    'N° individui',
+                    'Generazione',
+                    '#21808d',
+                    simulation.carryingCapacity
+                );
+
+                // Grafico fitness
+                this.drawLineChart(
+                    this.fitnessCtx,
+                    simulation.fitnessHistory,
+                    'Fitness (0-1)',
+                    'Generazione',
+                    '#32b8c6',
+                    1
+                );
+
+                // Istogramma visibilità
+                const visibilityDist = simulation.getVisibilityDistribution();
+                this.drawHistogram(
+                    this.colorCtx,
+                    visibilityDist,
+                    'Frequenza',
+                    'Visibilità (0 = mimetizzato, 1 = visibile)',
+                    ['0.0', '1.0'],
+                    '#a84b2f'
+                );
+
+                // Istogramma velocità
+                const speedDist = simulation.getSpeedDistribution();
+                this.drawHistogram(
+                    this.speedCtx,
+                    speedDist,
+                    'Frequenza',
+                    'Velocità (unità/frame)',
+                    ['0.5', '4.0'],
+                    '#626c71'
+                );
+            }
+        }
+
+        // ============================================
+        // INIZIALIZZAZIONE APPLICAZIONE
+        // ============================================
+
+        const simulation = new Simulation('simulationCanvas');
+        const charts = new Charts();
+
+        // Riferimenti UI
+        const mutationSlider = document.getElementById('mutationRate');
+        const selectionSlider = document.getElementById('selectionPressure');
+        const capacitySlider = document.getElementById('carryingCapacity');
+        const bgColorInput = document.getElementById('bgColor');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const exportBtn = document.getElementById('exportBtn');
+
+        // Display valori
+        const mutationDisplay = document.getElementById('mutationDisplay');
+        const selectionDisplay = document.getElementById('selectionDisplay');
+        const capacityDisplay = document.getElementById('capacityDisplay');
+
+        // Statistiche
+        const generationEl = document.getElementById('generation');
+        const populationEl = document.getElementById('population');
+        const totalBornEl = document.getElementById('totalBorn');
+        const totalDeadEl = document.getElementById('totalDead');
+        const avgFitnessEl = document.getElementById('avgFitness');
+
+        // Event listeners per controlli
+        mutationSlider.addEventListener('input', (e) => {
+            simulation.mutationRate = e.target.value / 100;
+            mutationDisplay.textContent = e.target.value + '%';
+        });
+
+        selectionSlider.addEventListener('input', (e) => {
+            simulation.selectionPressure = e.target.value / 100;
+            selectionDisplay.textContent = e.target.value + '%';
+        });
+
+        capacitySlider.addEventListener('input', (e) => {
+            simulation.carryingCapacity = parseInt(e.target.value);
+            capacityDisplay.textContent = e.target.value;
+        });
+
+        bgColorInput.addEventListener('input', (e) => {
+            simulation.bgColor = simulation.hexToRgb(e.target.value);
+        });
+
+        startBtn.addEventListener('click', () => {
+            simulation.isRunning = !simulation.isRunning;
+            startBtn.textContent = simulation.isRunning ? 'Pausa' : 'Start';
+        });
+
+        resetBtn.addEventListener('click', () => {
+            simulation.initializePopulation();
+            updateStats();
+            charts.update(simulation);
+        });
+
+        exportBtn.addEventListener('click', () => {
+            simulation.exportToCSV();
+        });
+
+        // Modal controlli
+        const helpModal = document.getElementById('helpModal');
+        const helpBtn = document.getElementById('helpBtn');
+        const closeModalBtn = document.getElementById('closeModal');
+
+        helpBtn.addEventListener('click', () => {
+            helpModal.classList.add('show');
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            helpModal.classList.remove('show');
+        });
+
+        // Chiudi modal cliccando fuori
+        helpModal.addEventListener('click', (e) => {
+            if (e.target === helpModal) {
+                helpModal.classList.remove('show');
+            }
+        });
+
+        // Gestione modal info grafici
+        const chartInfoBtns = document.querySelectorAll('.chart-info-btn');
+        const chartModals = {
+            'popChartModal': document.getElementById('popChartModal'),
+            'fitnessChartModal': document.getElementById('fitnessChartModal'),
+            'visibilityChartModal': document.getElementById('visibilityChartModal'),
+            'speedChartModal': document.getElementById('speedChartModal')
+        };
+
+        chartInfoBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const modalId = btn.getAttribute('data-modal');
+                chartModals[modalId].classList.add('show');
+            });
+        });
+
+        // Chiudi modal grafici
+        document.querySelectorAll('.close-chart-modal').forEach(btn => {
+            btn.addEventListener('click', function () {
+                this.closest('.modal').classList.remove('show');
+            });
+        });
+
+        // Chiudi modal cliccando fuori
+        Object.values(chartModals).forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+        });
+
+        // Chiudi modal con ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal.show').forEach(modal => {
+                    modal.classList.remove('show');
+                });
+            }
+        });
+
+        // Mostra modal principale automaticamente al primo caricamento
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                helpModal.classList.add('show');
+            }, 500);
+        });
+
+        // Aggiornamento statistiche UI
+        function updateStats() {
+            generationEl.textContent = simulation.generation;
+            populationEl.textContent = simulation.organisms.length;
+            totalBornEl.textContent = simulation.totalBorn;
+            totalDeadEl.textContent = simulation.totalDead;
+            avgFitnessEl.textContent = simulation.calculateAverageFitness().toFixed(2);
+        }
+
+        // Loop principale animazione
+        function animate() {
+            if (simulation.isRunning) {
+                simulation.update();
+            }
+
+            simulation.draw();
+            updateStats();
+
+            // Aggiorna grafici ogni 30 frame (circa 2 volte al secondo)
+            if (simulation.currentFrame % 30 === 0) {
+                charts.update(simulation);
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // Avvio iniziale
+        updateStats();
+        charts.update(simulation);
+        animate();
+    </script>
+</body>
+
+</html>

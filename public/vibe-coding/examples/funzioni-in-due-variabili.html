@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizzatore 3D - Funzioni di Due Variabili</title>
+
+    <!-- Librerie CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+
+    <style>
+        :root {
+            --color-primary: #2196F3;
+            --color-secondary: #424242;
+            --color-background: #fafafa;
+            --color-panel: #ffffff;
+            --color-border: #e0e0e0;
+            --color-text: #212121;
+            --color-text-secondary: #757575;
+            --color-error: #f44336;
+            --color-success: #4caf50;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        #container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+
+        #control-panel {
+            width: 380px;
+            background-color: var(--color-panel);
+            border-right: 1px solid var(--color-border);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #canvas-container {
+            flex: 1;
+            position: relative;
+            background: linear-gradient(to bottom, #e3f2fd 0%, #ffffff 100%);
+        }
+
+        #canvas-container canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .panel-header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #1976D2 100%);
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .panel-header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .panel-header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--color-border);
+            background-color: #f5f5f5;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: var(--color-text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+            background-color: #fff;
+        }
+
+        .tab:hover {
+            background-color: #eeeeee;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--color-text);
+        }
+
+        .control-group input[type="text"],
+        .control-group input[type="number"],
+        .control-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .domain-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .domain-inputs .control-group {
+            margin-bottom: 0;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #1976D2;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.4);
+        }
+
+        .btn-secondary {
+            background-color: #f5f5f5;
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            background-color: #eeeeee;
+        }
+
+        .slider-container {
+            margin-bottom: 15px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 6px;
+            align-items: center;
+            position: relative;
+        }
+
+        .slider-label span:first-child {
+            font-weight: 600;
+        }
+
+        .slider-label span:last-child {
+            color: var(--color-primary);
+            font-weight: 700;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border: none;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-container label {
+            cursor: pointer;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        #error-message {
+            display: none;
+            padding: 12px;
+            background-color: #ffebee;
+            color: var(--color-error);
+            border-left: 4px solid var(--color-error);
+            border-radius: 4px;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        #parameter-sliders {
+            display: none;
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        #legend {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            font-size: 12px;
+            min-width: 150px;
+        }
+
+        #fullscreenBtn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 10;
+            background-color: rgba(33, 150, 243, 0.95);
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #fullscreenBtn:hover {
+            background-color: #1976D2;
+        }
+
+        #legend h4 {
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: var(--color-text);
+        }
+
+        #color-gradient {
+            height: 20px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .legend-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--color-text-secondary);
+        }
+
+        /* Info icon (il precedente popover è stato rimosso) */
+        .info-wrapper {
+            display: inline-block;
+            position: relative;
+            margin-left: 6px;
+        }
+
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: var(--color-secondary);
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1;
+            cursor: pointer;
+            border: 1px solid #d5d5d5;
+            padding: 0;
+        }
+
+        .info-icon:focus-visible {
+            outline: 2px solid var(--color-primary);
+        }
+
+        /* Popover rimosso: nessuno stile residuo necessario */
+
+        /* ===== Modal overlay per info risoluzione ===== */
+        .modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal[aria-hidden="false"] {
+            display: flex;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            -webkit-backdrop-filter: blur(2px);
+            backdrop-filter: blur(2px);
+            opacity: 0;
+            transition: opacity 160ms ease-out;
+        }
+
+        .modal[aria-hidden="false"] .modal-overlay {
+            opacity: 1;
+        }
+
+        .modal-dialog {
+            position: relative;
+            background: #ffffff;
+            color: var(--color-text);
+            border-radius: 10px;
+            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+            width: min(720px, 92vw);
+            max-height: 85vh;
+            overflow: auto;
+            opacity: 0;
+            transform: translateY(8px) scale(0.98);
+            transition: opacity 180ms cubic-bezier(0.22, 1, 0.36, 1),
+                transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .modal[aria-hidden="false"] .modal-dialog {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #eef0f3;
+        }
+
+        .modal-header h2,
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: #f4f6f8;
+            border: 1px solid #e2e6ea;
+            color: #4a4f55;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:focus-visible {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+
+        .modal-close:hover {
+            background: #eef1f4;
+        }
+
+        .modal-body {
+            padding: 18px 20px 20px;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .modal-body p+ul {
+            margin-top: 8px;
+        }
+
+        .modal-body ul {
+            margin-left: 20px;
+        }
+
+        .modal-body li {
+            margin: 6px 0;
+        }
+
+        @media (max-width: 520px) {
+            .modal-header {
+                padding: 14px 16px;
+            }
+
+            .modal-body {
+                padding: 14px 16px 16px;
+                font-size: 14px;
+            }
+
+            .modal-dialog {
+                width: 96vw;
+                border-radius: 10px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .modal-overlay,
+            .modal-dialog {
+                transition: none !important;
+            }
+
+            .modal-dialog {
+                transform: none !important;
+                opacity: 1 !important;
+            }
+        }
+
+        .info-box {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid var(--color-primary);
+            margin-bottom: 15px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .info-box h4 {
+            margin-bottom: 8px;
+            color: var(--color-primary);
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+
+        .info-box li {
+            margin-bottom: 5px;
+        }
+
+        .question-box {
+            background-color: #fff3e0;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #ff9800;
+            margin-bottom: 15px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .question-box h4 {
+            margin-bottom: 8px;
+            color: #f57c00;
+        }
+
+        #dynamic-questions {
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            #control-panel {
+                width: 100%;
+                height: 50vh;
+                border-right: none;
+                border-bottom: 1px solid var(--color-border);
+            }
+
+            #container {
+                flex-direction: column;
+            }
+
+            #legend {
+                bottom: 15px;
+                right: 15px;
+                font-size: 11px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div id="control-panel">
+            <div class="panel-header">
+                <h1>Visualizzatore 3D</h1>
+                <p>Funzioni di Due Variabili z = f(x, y)</p>
+            </div>
+
+            <div class="tabs">
+                <button type="button" class="tab active" data-tab="controlli">Controlli</button>
+                <button type="button" class="tab" data-tab="istruzioni">Istruzioni</button>
+                <button type="button" class="tab" data-tab="domande">Domande Guida</button>
+            </div>
+
+            <div id="controlli" class="tab-content active">
+                <div id="error-message"></div>
+
+                <div class="control-group">
+                    <label for="exampleSelect">Esempi Predefiniti</label>
+                    <select id="exampleSelect">
+                        <option value="">-- Seleziona un esempio --</option>
+                        <option value="x^2 + y^2">Paraboloide</option>
+                        <option value="x^2 - y^2">Sella (Paraboloide Iperbolico)</option>
+                        <option value="sqrt(x^2 + y^2)">Cono</option>
+                        <option value="sin(sqrt(x^2+y^2)+1e-5) / (sqrt(x^2+y^2)+1e-5)">Funzione Sombrero</option>
+                        <option value="sin(3*x) + cos(2*y)">Onde Composte</option>
+                        <option value="20 + (x^2 - 10*cos(2*pi*x)) + (y^2 - 10*cos(2*pi*y))">Funzione di Rastrigin
+                        </option>
+                        <option value="param:a*x^2 + b*y^2">Paraboloide Parametrico (a·x² + b·y²)</option>
+                    </select>
+                </div>
+
+                <div id="parameter-sliders">
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Parametro a:</span>
+                            <span id="param-a-value">1.0</span>
+                        </div>
+                        <input type="range" id="param-a" min="-3" max="3" step="0.1" value="1">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Parametro b:</span>
+                            <span id="param-b-value">1.0</span>
+                        </div>
+                        <input type="range" id="param-b" min="-3" max="3" step="0.1" value="1">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="functionInput">Funzione f(x, y)</label>
+                    <input type="text" id="functionInput" placeholder="es. x^2 + y^2" value="x^2 + y^2">
+                </div>
+
+                <div class="control-group">
+                    <label>Dominio</label>
+                    <div class="domain-inputs">
+                        <div class="control-group">
+                            <label for="xMin">x<sub>min</sub></label>
+                            <input type="number" id="xMin" value="-5" step="0.1">
+                        </div>
+                        <div class="control-group">
+                            <label for="xMax">x<sub>max</sub></label>
+                            <input type="number" id="xMax" value="5" step="0.1">
+                        </div>
+                        <div class="control-group">
+                            <label for="yMin">y<sub>min</sub></label>
+                            <input type="number" id="yMin" value="-5" step="0.1">
+                        </div>
+                        <div class="control-group">
+                            <label for="yMax">y<sub>max</sub></label>
+                            <input type="number" id="yMax" value="5" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span
+                            title="Numero di campioni per lato (N×N). Passo = (xmax−xmin)/(N−1) e (ymax−ymin)/(N−1).">Risoluzione
+                            Griglia:</span>
+                        <span class="info-wrapper">
+                            <button type="button" class="info-icon" aria-label="Informazioni risoluzione"
+                                aria-controls="info-modal">i</button>
+                        </span>
+                        <span id="resolution-value">50</span>
+                    </div>
+                    <input type="range" id="resolution" min="20" max="100" step="5" value="50"
+                        aria-label="Risoluzione Griglia">
+                </div>
+
+                <button type="button" class="btn btn-primary" id="renderBtn">Visualizza / Aggiorna</button>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="showContours">
+                    <label for="showContours">Mostra Curve di Livello (piano base)</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="showContoursElevated">
+                    <label for="showContoursElevated">Mostra Curve in quota (su superficie)</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="showContourLabels">
+                    <label for="showContourLabels">Mostra valore sulle curve</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="showGradient">
+                    <label for="showGradient">Mostra Gradiente al Click</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="showAxes" checked>
+                    <label for="showAxes">Mostra Assi Cartesiani (X, Y, Z)</label>
+                </div>
+
+                <button type="button" class="btn btn-secondary" id="exportBtn">Esporta CSV</button>
+            </div>
+
+            <div id="istruzioni" class="tab-content">
+                <div class="info-box">
+                    <h4>Come Usare l'Applicazione</h4>
+                    <p><strong>Inserimento Funzioni:</strong></p>
+                    <ul>
+                        <li>Usa <code>x</code> e <code>y</code> come variabili</li>
+                        <li>Costanti: <code>pi</code>, <code>e</code></li>
+                        <li>Operatori: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>^</code>
+                        </li>
+                        <li>Funzioni: <code>sin()</code>, <code>cos()</code>, <code>tan()</code>, <code>sqrt()</code>,
+                            <code>exp()</code>, <code>log()</code>, <code>abs()</code>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h4>Navigazione 3D</h4>
+                    <ul>
+                        <li><strong>Rotazione:</strong> Tasto sinistro del mouse + trascinamento</li>
+                        <li><strong>Zoom:</strong> Rotella del mouse</li>
+                        <li><strong>Pan:</strong> Tasto destro del mouse + trascinamento</li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h4>Funzionalità Avanzate</h4>
+                    <ul>
+                        <li><strong>Curve di Livello:</strong> Attiva il checkbox per visualizzare le proiezioni sul
+                            piano xy</li>
+                        <li><strong>Gradiente:</strong> Attiva "Mostra Gradiente al Click" e clicca sulla superficie per
+                            vedere il vettore gradiente nel punto selezionato</li>
+                        <li><strong>Esporta CSV:</strong> Scarica i dati (x, y, z) della griglia corrente</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="domande" class="tab-content">
+                <div class="question-box">
+                    <h4>Domande Generali di Riflessione</h4>
+                    <ul>
+                        <li>Come varia la pendenza della superficie in diverse direzioni?</li>
+                        <li>Dove si trovano i punti critici (dove ∇f = 0)?</li>
+                        <li>Come sono orientati i vettori gradiente rispetto alle curve di livello?</li>
+                        <li>Quali zone della superficie hanno crescita più rapida?</li>
+                    </ul>
+                </div>
+
+                <div id="dynamic-questions"></div>
+            </div>
+        </div>
+
+        <div id="canvas-container">
+            <button id="fullscreenBtn" type="button" aria-label="Schermo intero">Schermo Intero</button>
+            <div id="legend">
+                <h4>Legenda Altezza</h4>
+                <div id="color-gradient"></div>
+                <div class="legend-labels">
+                    <span id="z-min">0.0</span>
+                    <span id="z-max">1.0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal informativo: sostituisce il precedente popover -->
+    <div id="info-modal" class="modal" aria-hidden="true">
+        <div class="modal-overlay" tabindex="-1"></div>
+        <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="info-modal-title"
+            aria-describedby="info-modal-desc">
+            <div class="modal-header">
+                <h2 id="info-modal-title">Risoluzione della griglia</h2>
+                <button id="info-modal-close" class="modal-close" type="button"
+                    aria-label="Chiudi finestra informativa">×</button>
+            </div>
+            <div class="modal-body" id="info-modal-desc">
+                <p>
+                    La <strong>risoluzione della griglia</strong> controlla quante volte campioniamo la funzione <em>z =
+                        f(x, y)</em>
+                    lungo gli assi X e Y. Valori più alti producono una superficie e linee di livello più dettagliate,
+                    ma richiedono
+                    più calcoli e quindi possono essere più lenti.
+                </p>
+                <ul>
+                    <li><strong>Bassa</strong> (più veloce): meno punti, superfici più “spigolose”.</li>
+                    <li><strong>Alta</strong> (più precisa): più punti, superfici e contorni più lisci e definiti.</li>
+                </ul>
+                <p>
+                    Nota: i <em>contour</em> sono calcolati con <em>marching squares</em> sui campioni della griglia;
+                    cambiare la risoluzione
+                    può leggermente spostare le linee rispetto alla vera soluzione continua. Se attivi le curve “in
+                    quota”, le linee
+                    vengono disegnate sopra la superficie per restare sempre visibili.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== VARIABILI GLOBALI ==========
+        let scene, camera, renderer, controls;
+        let surfaceMesh, contourLines = [], gradientArrow;
+        let contourLinesElevated = [], contourLabels = [];
+        let currentData = { x: [], y: [], z: [], grid: [] };
+        let currentFunction = 'x^2 + y^2';
+        let zMin = 0, zMax = 1;
+        let isParametric = false;
+        let paramA = 1, paramB = 1;
+        let axesGroup; // gruppo per frecce e label degli assi
+
+        // ========== INIZIALIZZAZIONE ==========
+        function init() {
+            const container = document.getElementById('canvas-container');
+
+            // Scena
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xffffff);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(
+                60,
+                container.clientWidth / container.clientHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(8, 8, 8);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            // Controlli
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 5;
+            controls.maxDistance = 50;
+
+            // Luci
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.5);
+            directionalLight1.position.set(5, 10, 5);
+            scene.add(directionalLight1);
+
+            const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.3);
+            directionalLight2.position.set(-5, -5, -5);
+            scene.add(directionalLight2);
+
+            // Assi di riferimento
+            const axesHelper = new THREE.AxesHelper(10);
+            scene.add(axesHelper);
+
+            // Griglia
+            const gridHelper = new THREE.GridHelper(20, 20, 0xcccccc, 0xeeeeee);
+            scene.add(gridHelper);
+
+            // Event Listeners
+            window.addEventListener('resize', onWindowResize);
+            renderer.domElement.addEventListener('click', onCanvasClick);
+            const onFsChange = () => {
+                updateFullscreenButton();
+                // Aggiorna il layout più volte per gestire ritardi nel ricalcolo
+                resizeToContainer();
+                requestAnimationFrame(resizeToContainer);
+                setTimeout(resizeToContainer, 50);
+            };
+            document.addEventListener('fullscreenchange', onFsChange);
+            document.addEventListener('webkitfullscreenchange', onFsChange);
+            document.addEventListener('MSFullscreenChange', onFsChange);
+
+            animate();
+        }
+
+        // ========== ANIMAZIONE ==========
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // ========== RESIZE ==========
+        function resizeToContainer() {
+            const container = document.getElementById('canvas-container');
+            if (!container || !renderer || !camera) return;
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            if (w > 0 && h > 0) {
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+                renderer.setSize(w, h, false);
+                if (renderer.domElement) {
+                    renderer.domElement.style.width = '100%';
+                    renderer.domElement.style.height = '100%';
+                }
+            }
+        }
+
+        function onWindowResize() {
+            resizeToContainer();
+        }
+
+        // ========== FULLSCREEN ==========
+        function isFullscreenActive() {
+            return document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+        }
+
+        function updateFullscreenButton() {
+            const btn = document.getElementById('fullscreenBtn');
+            if (!btn) return;
+            btn.textContent = isFullscreenActive() ? 'Esci Schermo Intero' : 'Schermo Intero';
+        }
+
+        function toggleFullscreen() {
+            const container = document.getElementById('canvas-container');
+            if (!isFullscreenActive()) {
+                const req = container.requestFullscreen || container.webkitRequestFullscreen || container.msRequestFullscreen;
+                if (req) req.call(container);
+            } else {
+                const exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+                if (exit) exit.call(document);
+            }
+        }
+
+        // ========== CALCOLO SUPERFICIE ==========
+        function computeSurface() {
+            const xMin = parseFloat(document.getElementById('xMin').value);
+            const xMax = parseFloat(document.getElementById('xMax').value);
+            const yMin = parseFloat(document.getElementById('yMin').value);
+            const yMax = parseFloat(document.getElementById('yMax').value);
+            const resolution = parseInt(document.getElementById('resolution').value);
+            const funcStr = document.getElementById('functionInput').value;
+
+            currentData = { x: [], y: [], z: [], grid: [] };
+            zMin = Infinity;
+            zMax = -Infinity;
+
+            try {
+                const compiledFunc = math.compile(funcStr);
+
+                // Crea griglia strutturata per curve di livello
+                for (let i = 0; i < resolution; i++) {
+                    currentData.grid[i] = [];
+                    for (let j = 0; j < resolution; j++) {
+                        const x = xMin + (xMax - xMin) * i / (resolution - 1);
+                        const y = yMin + (yMax - yMin) * j / (resolution - 1);
+
+                        let scope = { x, y, pi: Math.PI, e: Math.E };
+                        if (isParametric) {
+                            scope.a = paramA;
+                            scope.b = paramB;
+                        }
+
+                        const z = compiledFunc.evaluate(scope);
+
+                        if (isFinite(z)) {
+                            currentData.x.push(x);
+                            currentData.y.push(y);
+                            currentData.z.push(z);
+                            currentData.grid[i][j] = { x, y, z };
+
+                            if (z < zMin) zMin = z;
+                            if (z > zMax) zMax = z;
+                        } else {
+                            currentData.grid[i][j] = { x, y, z: NaN };
+                        }
+                    }
+                }
+
+                hideError();
+                return true;
+            } catch (error) {
+                showError('Errore nella sintassi della funzione: ' + error.message);
+                return false;
+            }
+        }
+
+        // ========== COLORE DA Z ==========
+        function getColorFromZ(z) {
+            if (zMax === zMin) return new THREE.Color(0x00ff00);
+
+            const normalized = (z - zMin) / (zMax - zMin);
+
+            // Mappa colori: Blu -> Ciano -> Verde -> Giallo -> Rosso
+            if (normalized < 0.25) {
+                const t = normalized / 0.25;
+                return new THREE.Color().setRGB(0, t, 1);
+            } else if (normalized < 0.5) {
+                const t = (normalized - 0.25) / 0.25;
+                return new THREE.Color().setRGB(0, 1, 1 - t);
+            } else if (normalized < 0.75) {
+                const t = (normalized - 0.5) / 0.25;
+                return new THREE.Color().setRGB(t, 1, 0);
+            } else {
+                const t = (normalized - 0.75) / 0.25;
+                return new THREE.Color().setRGB(1, 1 - t, 0);
+            }
+        }
+
+        // ========== RENDERING SUPERFICIE ==========
+        function renderSurface() {
+            if (!computeSurface()) return;
+
+            // Rimuovi superficie esistente
+            if (surfaceMesh) {
+                scene.remove(surfaceMesh);
+                surfaceMesh.geometry.dispose();
+                surfaceMesh.material.dispose();
+            }
+
+            // Rimuovi eventuale freccia del gradiente precedente per evitare artefatti
+            if (gradientArrow) {
+                scene.remove(gradientArrow);
+                gradientArrow = null;
+            }
+
+            const resolution = parseInt(document.getElementById('resolution').value);
+            const geometry = new THREE.BufferGeometry();
+
+            const vertices = [];
+            const colors = [];
+            const indices = [];
+
+            // Crea vertici e colori
+            for (let i = 0; i < currentData.x.length; i++) {
+                vertices.push(currentData.x[i], currentData.z[i], currentData.y[i]);
+                const color = getColorFromZ(currentData.z[i]);
+                colors.push(color.r, color.g, color.b);
+            }
+
+            // Crea indici per i triangoli
+            for (let i = 0; i < resolution - 1; i++) {
+                for (let j = 0; j < resolution - 1; j++) {
+                    const a = i * resolution + j;
+                    const b = i * resolution + (j + 1);
+                    const c = (i + 1) * resolution + j;
+                    const d = (i + 1) * resolution + (j + 1);
+
+                    indices.push(a, b, d);
+                    indices.push(a, d, c);
+                }
+            }
+
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            geometry.setIndex(indices);
+            geometry.computeVertexNormals();
+
+            const material = new THREE.MeshStandardMaterial({
+                vertexColors: true,
+                side: THREE.DoubleSide,
+                flatShading: false,
+                metalness: 0.1,
+                roughness: 0.6
+            });
+
+            surfaceMesh = new THREE.Mesh(geometry, material);
+            scene.add(surfaceMesh);
+
+            updateLegend();
+            updateContours();
+            updateAxes();
+        }
+
+        // ========== AGGIORNAMENTO LEGENDA ==========
+        function updateLegend() {
+            document.getElementById('z-min').textContent = zMin.toFixed(2);
+            document.getElementById('z-max').textContent = zMax.toFixed(2);
+
+            const gradient = document.getElementById('color-gradient');
+            gradient.style.background = 'linear-gradient(to right, rgb(0,0,255), rgb(0,255,255), rgb(0,255,0), rgb(255,255,0), rgb(255,0,0))';
+        }
+
+        // ========== INTERPOLAZIONE LINEARE ==========
+        function lerp(a, b, t) {
+            return a + (b - a) * t;
+        }
+
+        // ========== LABEL SPRITE PER ASSI ==========
+        function createAxisLabelSprite(text) {
+            // Canvas più piccolo e pill minimale attorno alla singola lettera
+            const canvas = document.createElement('canvas');
+            canvas.width = 128; canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Testo
+            ctx.font = 'bold 38px Segoe UI, Arial, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            const metrics = ctx.measureText(text);
+            const textW = Math.ceil(metrics.width);
+            const padX = 10, padY = 6;
+            const pillW = Math.min(canvas.width - 8, textW + padX * 2);
+            const pillH = 38 + padY * 2;
+            const pillX = Math.round((canvas.width - pillW) / 2);
+            const pillY = Math.round((canvas.height - pillH) / 2);
+
+            // Sfondo scuro compatto
+            ctx.fillStyle = 'rgba(8, 33, 53, 0.85)';
+            if (typeof ctx.roundRect === 'function') {
+                ctx.beginPath();
+                ctx.roundRect(pillX, pillY, pillW, pillH, 10);
+                ctx.fill();
+            } else {
+                ctx.fillRect(pillX, pillY, pillW, pillH);
+            }
+
+            ctx.fillStyle = '#ffffff';
+            // Testo centrato nel pill
+            ctx.textAlign = 'center';
+            ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.minFilter = THREE.LinearFilter;
+            const material = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: true, depthWrite: true });
+            const sprite = new THREE.Sprite(material);
+            // Sprite molto più compatto in unità mondo
+            sprite.scale.set(0.32, 0.18, 1);
+            return sprite;
+        }
+
+        // ========== FRECCE E LABEL ASSI ==========
+        function updateAxes() {
+            // Rimuovi precedente gruppo assi
+            if (axesGroup) {
+                scene.remove(axesGroup);
+                axesGroup.traverse(obj => {
+                    if (obj.geometry && obj.geometry.dispose) obj.geometry.dispose();
+                    if (obj.material && obj.material.dispose) obj.material.dispose();
+                });
+                axesGroup = null;
+            }
+
+            // Leggi dominio corrente per definire la lunghezza
+            const xMin = parseFloat(document.getElementById('xMin').value);
+            const xMax = parseFloat(document.getElementById('xMax').value);
+            const yMin = parseFloat(document.getElementById('yMin').value);
+            const yMax = parseFloat(document.getElementById('yMax').value);
+            const rangeX = Math.abs(xMax - xMin);
+            const rangeY = Math.abs(yMax - yMin);
+            const axisLen = Math.max(rangeX, rangeY) * 0.7 || 5;
+
+            axesGroup = new THREE.Group();
+            const origin = new THREE.Vector3(0, 0, 0);
+
+            function addAxis(dir, color, labelText) {
+                // Punte molto più piccole
+                const headLen = axisLen * 0.03;
+                const headWidth = axisLen * 0.02;
+                const arrow = new THREE.ArrowHelper(dir, origin, axisLen, color, headLen, headWidth);
+                // Lascia che la superficie stia in primo piano: usa depth test
+                arrow.line.material.depthTest = true; arrow.line.material.depthWrite = true;
+                arrow.cone.material.depthTest = true; arrow.cone.material.depthWrite = true;
+                // Leggera trasparenza per non coprire troppo la scena
+                arrow.line.material.transparent = true; arrow.line.material.opacity = 0.85;
+                arrow.cone.material.transparent = true; arrow.cone.material.opacity = 0.9;
+                axesGroup.add(arrow);
+
+                const label = createAxisLabelSprite(labelText);
+                const pos = dir.clone().multiplyScalar(axisLen + headLen * 0.7);
+                label.position.copy(pos);
+                axesGroup.add(label);
+            }
+
+            // Nota: asse Y della scena è l'altezza z della funzione
+            addAxis(new THREE.Vector3(1, 0, 0), 0xff0000, 'x'); // rosso
+            addAxis(new THREE.Vector3(0, 1, 0), 0x00aa00, 'z'); // verde (altezza)
+            addAxis(new THREE.Vector3(0, 0, 1), 0x0000ff, 'y'); // blu
+
+            scene.add(axesGroup);
+        }
+
+        // ========== LABEL SPRITE PER CONTOUR ==========
+        function createLabelSprite(text) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256; canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(0,0,0,0.6)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 52px Segoe UI, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.minFilter = THREE.LinearFilter;
+            const material = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false, depthWrite: false });
+            const sprite = new THREE.Sprite(material);
+            sprite.scale.set(1.8, 0.9, 1); // taglia in unità mondo
+            sprite.renderOrder = 999; // assicura il rendering sopra la superficie
+            return sprite;
+        }
+
+        // ========== CURVE DI LIVELLO (ALGORITMO MIGLIORATO) ==========
+        function updateContours() {
+            // Rimuovi curve (base + quota) esistenti
+            contourLines.forEach(line => {
+                scene.remove(line);
+                line.geometry.dispose();
+                line.material.dispose();
+            });
+            contourLines = [];
+
+            contourLinesElevated.forEach(line => {
+                scene.remove(line);
+                line.geometry.dispose();
+                line.material.dispose();
+            });
+            contourLinesElevated = [];
+
+            // Rimuovi etichette
+            contourLabels.forEach(lbl => {
+                if (lbl.material && lbl.material.map) lbl.material.map.dispose();
+                if (lbl.material) lbl.material.dispose();
+                scene.remove(lbl);
+            });
+            contourLabels = [];
+
+            if (!currentData.grid || currentData.grid.length === 0) return;
+
+            const showBase = document.getElementById('showContours').checked;
+            const showElevated = document.getElementById('showContoursElevated')?.checked;
+            const showLabels = document.getElementById('showContourLabels')?.checked;
+            if (!showBase && !showElevated && !showLabels) return;
+
+            const numContours = 12;
+            const resolution = currentData.grid.length;
+            const rangeZ = Math.abs(zMax - zMin) || 1;
+            const baseHeight = zMin - rangeZ * 0.02; // Leggermente sotto zMin
+            const elevEps = rangeZ * 0.003; // piccolo offset anti z-fighting per curve in quota
+
+            // Per ogni livello di contorno
+            for (let k = 0; k < numContours; k++) {
+                const zLevel = zMin + (zMax - zMin) * k / (numContours - 1);
+                const segments = [];
+
+                // Marching squares: controlla ogni cella della griglia
+                for (let i = 0; i < resolution - 1; i++) {
+                    for (let j = 0; j < resolution - 1; j++) {
+                        const tl = currentData.grid[i][j];       // top-left
+                        const tr = currentData.grid[i][j + 1];   // top-right
+                        const bl = currentData.grid[i + 1][j];   // bottom-left
+                        const br = currentData.grid[i + 1][j + 1]; // bottom-right
+
+                        if (!isFinite(tl.z) || !isFinite(tr.z) || !isFinite(bl.z) || !isFinite(br.z)) {
+                            continue;
+                        }
+
+                        // Calcola intersezioni sui lati
+                        const edges = [];
+
+                        if ((tl.z > zLevel && tr.z <= zLevel) || (tl.z <= zLevel && tr.z > zLevel)) {
+                            const t = (zLevel - tl.z) / (tr.z - tl.z);
+                            edges.push({ x: lerp(tl.x, tr.x, t), y: lerp(tl.y, tr.y, t) });
+                        }
+                        if ((tr.z > zLevel && br.z <= zLevel) || (tr.z <= zLevel && br.z > zLevel)) {
+                            const t = (zLevel - tr.z) / (br.z - tr.z);
+                            edges.push({ x: lerp(tr.x, br.x, t), y: lerp(tr.y, br.y, t) });
+                        }
+                        if ((bl.z > zLevel && br.z <= zLevel) || (bl.z <= zLevel && br.z > zLevel)) {
+                            const t = (zLevel - bl.z) / (br.z - bl.z);
+                            edges.push({ x: lerp(bl.x, br.x, t), y: lerp(bl.y, br.y, t) });
+                        }
+                        if ((tl.z > zLevel && bl.z <= zLevel) || (tl.z <= zLevel && bl.z > zLevel)) {
+                            const t = (zLevel - tl.z) / (bl.z - tl.z);
+                            edges.push({ x: lerp(tl.x, bl.x, t), y: lerp(tl.y, bl.y, t) });
+                        }
+
+                        if (edges.length >= 2) {
+                            for (let e = 0; e < edges.length - 1; e += 2) {
+                                segments.push([
+                                    { x: edges[e].x, y: edges[e].y },
+                                    { x: edges[e + 1].x, y: edges[e + 1].y }
+                                ]);
+                            }
+                        }
+                    }
+                }
+
+                if (segments.length > 0) {
+                    // Base plane contours
+                    if (showBase) {
+                        const points = [];
+                        segments.forEach(seg => {
+                            points.push(
+                                new THREE.Vector3(seg[0].x, baseHeight, seg[0].y),
+                                new THREE.Vector3(seg[1].x, baseHeight, seg[1].y)
+                            );
+                        });
+                        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                        const material = new THREE.LineBasicMaterial({ color: 0x444444, opacity: 0.85, transparent: true });
+                        const line = new THREE.LineSegments(geometry, material);
+                        scene.add(line);
+                        contourLines.push(line);
+                    }
+
+                    // Elevated contours (on surface)
+                    if (showElevated) {
+                        const pointsElev = [];
+                        segments.forEach(seg => {
+                            pointsElev.push(
+                                new THREE.Vector3(seg[0].x, zLevel + elevEps, seg[0].y),
+                                new THREE.Vector3(seg[1].x, zLevel + elevEps, seg[1].y)
+                            );
+                        });
+                        const geometryE = new THREE.BufferGeometry().setFromPoints(pointsElev);
+                        const materialE = new THREE.LineBasicMaterial({
+                            color: 0x222222, opacity: 0.95, transparent: true,
+                            depthTest: false, depthWrite: false
+                        });
+                        const lineE = new THREE.LineSegments(geometryE, materialE);
+                        lineE.renderOrder = 998; // disegna sopra la superficie
+                        scene.add(lineE);
+                        contourLinesElevated.push(lineE);
+                    }
+
+                    // Label for this level
+                    if (showLabels) {
+                        const first = segments[0];
+                        const midX = (first[0].x + first[1].x) / 2;
+                        const midZ = (first[0].y + first[1].y) / 2; // asse Z in scena
+                        // Offset più vicino per le curve in quota, un po' più alto per il piano base
+                        const labelOffset = showElevated
+                            ? Math.max(rangeZ * 0.012, elevEps * 2)
+                            : rangeZ * 0.03;
+                        const yPos = (showElevated ? zLevel : baseHeight) + labelOffset;
+                        const sprite = createLabelSprite(zLevel.toFixed(2));
+                        sprite.position.set(midX, yPos, midZ);
+                        scene.add(sprite);
+                        contourLabels.push(sprite);
+                    }
+                }
+            }
+        }
+
+        // ========== CALCOLO GRADIENTE (DIFFERENZE FINITE) ==========
+        function computeGradient(x0, y0) {
+            const h = 0.001; // Epsilon più piccolo per maggiore accuratezza
+            const funcStr = document.getElementById('functionInput').value;
+            const compiledFunc = math.compile(funcStr);
+
+            try {
+                let scope = { pi: Math.PI, e: Math.E };
+                if (isParametric) {
+                    scope.a = paramA;
+                    scope.b = paramB;
+                }
+
+                scope.x = x0 + h;
+                scope.y = y0;
+                const fxPlus = compiledFunc.evaluate(scope);
+
+                scope.x = x0 - h;
+                scope.y = y0;
+                const fxMinus = compiledFunc.evaluate(scope);
+
+                scope.x = x0;
+                scope.y = y0 + h;
+                const fyPlus = compiledFunc.evaluate(scope);
+
+                scope.y = y0 - h;
+                const fyMinus = compiledFunc.evaluate(scope);
+
+                const fx = (fxPlus - fxMinus) / (2 * h);
+                const fy = (fyPlus - fyMinus) / (2 * h);
+
+                return { fx, fy };
+            } catch (error) {
+                console.error('Errore nel calcolo del gradiente:', error);
+                return null;
+            }
+        }
+
+        // ========== CLICK SULLA SUPERFICIE ==========
+        function onCanvasClick(event) {
+            if (!document.getElementById('showGradient').checked || !surfaceMesh) return;
+
+            const rect = renderer.domElement.getBoundingClientRect();
+            const mouse = new THREE.Vector2();
+            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+
+            const intersects = raycaster.intersectObject(surfaceMesh);
+
+            if (intersects.length > 0) {
+                const point = intersects[0].point;
+                const x0 = point.x;
+                const y0 = point.z;
+                const z0 = point.y;
+
+                const gradient = computeGradient(x0, y0);
+
+                if (gradient) {
+                    // Rimuovi freccia esistente
+                    if (gradientArrow) {
+                        scene.remove(gradientArrow);
+                    }
+
+                    const dir = new THREE.Vector3(gradient.fx, 0, gradient.fy);
+                    const length = dir.length();
+
+                    // Scala il gradiente per visibilità
+                    const scale = Math.max(1, Math.abs(zMax - zMin) * 0.3);
+                    const minArrowLength = 0.5;
+
+                    if (length > 1e-6) { // Soglia molto bassa
+                        dir.normalize();
+                        const origin = new THREE.Vector3(x0, z0, y0);
+                        const arrowLength = Math.max(minArrowLength, Math.min(length * scale, 3));
+
+                        gradientArrow = new THREE.ArrowHelper(
+                            dir,
+                            origin,
+                            arrowLength,
+                            0xff0000,
+                            arrowLength * 0.25,
+                            arrowLength * 0.2
+                        );
+                        scene.add(gradientArrow);
+
+                        console.log(`Gradiente: (${gradient.fx.toFixed(4)}, ${gradient.fy.toFixed(4)}), Magnitudine: ${length.toFixed(4)}`);
+                    } else {
+                        console.log('Gradiente vicino a zero (punto critico?)');
+                    }
+                }
+            }
+        }
+
+        // ========== ESPORTAZIONE CSV ==========
+        function exportCSV() {
+            if (currentData.x.length === 0) {
+                alert('Nessun dato da esportare. Genera prima una superficie.');
+                return;
+            }
+
+            let csv = 'x,y,z\n';
+            for (let i = 0; i < currentData.x.length; i++) {
+                csv += `${currentData.x[i]},${currentData.y[i]},${currentData.z[i]}\n`;
+            }
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'superficie_3d.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // ========== GESTIONE ERRORI ==========
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        // ========== DOMANDE DINAMICHE ==========
+        function updateDynamicQuestions(example) {
+            const questionsDiv = document.getElementById('dynamic-questions');
+            let html = '';
+
+            switch (example) {
+                case 'x^2 + y^2':
+                    html = `
+                        <div class="question-box">
+                            <h4>Domande per il Paraboloide</h4>
+                            <ul>
+                                <li>Dove si trova il punto di minimo? Quali sono le sue coordinate?</li>
+                                <li>Come sono orientati i vettori gradiente? Puntano verso o lontano dall'origine?</li>
+                                <li>Le curve di livello sono circonferenze. Perché?</li>
+                                <li>In che direzione è massima la crescita della funzione?</li>
+                            </ul>
+                        </div>
+                    `;
+                    break;
+                case 'x^2 - y^2':
+                    html = `
+                        <div class="question-box">
+                            <h4>Domande per la Sella</h4>
+                            <ul>
+                                <li>Fai clic sull'origine (0,0). Cosa noti del gradiente?</li>
+                                <li>È un punto di massimo, minimo o sella? Come lo determini?</li>
+                                <li>In quali direzioni la superficie cresce e in quali decresce?</li>
+                                <li>Osserva le curve di livello. Che forma hanno vicino all'origine?</li>
+                            </ul>
+                        </div>
+                    `;
+                    break;
+                case 'sqrt(x^2 + y^2)':
+                    html = `
+                        <div class="question-box">
+                            <h4>Domande per il Cono</h4>
+                            <ul>
+                                <li>La funzione è derivabile nell'origine? Perché?</li>
+                                <li>Come si comporta il gradiente vicino all'origine?</li>
+                                <li>Le curve di livello sono circonferenze concentriche. Cosa rappresentano?</li>
+                            </ul>
+                        </div>
+                    `;
+                    break;
+                case 'sin(sqrt(x^2+y^2)+1e-5) / (sqrt(x^2+y^2)+1e-5)':
+                    html = `
+                        <div class="question-box">
+                            <h4>Domande per il Sombrero</h4>
+                            <ul>
+                                <li>Clicca sui punti di massimo e minimo locali. Come varia il gradiente?</li>
+                                <li>Osserva le curve di livello: sono anelli concentrici?</li>
+                                <li>Dove il gradiente è più intenso? Dove è più debole?</li>
+                                <li>Come si comporta la funzione all'aumentare della distanza dall'origine?</li>
+                            </ul>
+                        </div>
+                    `;
+                    break;
+                case 'sin(3*x) + cos(2*y)':
+                    html = `
+                        <div class="question-box">
+                            <h4>Domande per Onde Composte</h4>
+                            <ul>
+                                <li>Qual è il periodo lungo l'asse x e lungo l'asse y?</li>
+                                <li>Osserva le linee di cresta e di valle: come si distribuiscono nello spazio?</li>
+                                <li>In quali punti il gradiente è nullo? Sono massimi, minimi o punti di sella?</li>
+                            </ul>
+                        </div>
+                    `;
+                    break;
+                case 'param:a*x^2 + b*y^2':
+                    html = `
+                        <div class="question-box">
+                            <h4>Esplorazione Parametrica</h4>
+                            <ul>
+                                <li>Cosa succede quando a e b hanno segni opposti?</li>
+                                <li>Come cambiano le curve di livello al variare dei parametri?</li>
+                                <li>Quando la superficie rappresenta un paraboloide ellittico vs iperbolico?</li>
+                                <li>Sperimenta con valori estremi: a=3, b=-3 vs a=0.1, b=0.1</li>
+                            </ul>
+                        </div>
+                    `;
+                    break;
+            }
+
+            questionsDiv.innerHTML = html;
+        }
+
+        // ========== EVENT LISTENERS ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            init();
+
+            // Sincronizza il dropdown con la funzione di default
+            const exampleSelect = document.getElementById('exampleSelect');
+            if (exampleSelect) exampleSelect.value = 'x^2 + y^2';
+
+            // Tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.dataset.tab;
+
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                    tab.classList.add('active');
+                    document.getElementById(tabName).classList.add('active');
+                });
+            });
+
+            // Esempi predefiniti
+            document.getElementById('exampleSelect').addEventListener('change', (e) => {
+                const value = e.target.value;
+                const selectedText = e.target.options[e.target.selectedIndex]?.text || '';
+
+                if (value.startsWith('param:')) {
+                    isParametric = true;
+                    const func = value.substring(6);
+                    document.getElementById('functionInput').value = func;
+                    document.getElementById('parameter-sliders').style.display = 'block';
+                    updateDynamicQuestions(value);
+                    renderSurface();
+                } else if (value) {
+                    isParametric = false;
+                    document.getElementById('functionInput').value = value;
+                    document.getElementById('parameter-sliders').style.display = 'none';
+                    updateDynamicQuestions(value);
+
+                    // Adatta il dominio per alcuni esempi
+                    if (selectedText.includes('Rastrigin')) {
+                        document.getElementById('xMin').value = -5.12;
+                        document.getElementById('xMax').value = 5.12;
+                        document.getElementById('yMin').value = -5.12;
+                        document.getElementById('yMax').value = 5.12;
+                    } else if (selectedText.includes('Sombrero')) {
+                        document.getElementById('xMin').value = -10;
+                        document.getElementById('xMax').value = 10;
+                        document.getElementById('yMin').value = -10;
+                        document.getElementById('yMax').value = 10;
+                    }
+
+                    renderSurface();
+                }
+            });
+
+            // Sliders parametri
+            document.getElementById('param-a').addEventListener('input', (e) => {
+                paramA = parseFloat(e.target.value);
+                document.getElementById('param-a-value').textContent = paramA.toFixed(1);
+                if (isParametric) renderSurface();
+            });
+
+            document.getElementById('param-b').addEventListener('input', (e) => {
+                paramB = parseFloat(e.target.value);
+                document.getElementById('param-b-value').textContent = paramB.toFixed(1);
+                if (isParametric) renderSurface();
+            });
+
+            // Slider risoluzione
+            document.getElementById('resolution').addEventListener('input', (e) => {
+                document.getElementById('resolution-value').textContent = e.target.value;
+            });
+            document.getElementById('resolution').addEventListener('change', () => {
+                renderSurface();
+            });
+
+            // Auto-render su modifica del dominio
+            ['xMin', 'xMax', 'yMin', 'yMax'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('change', () => {
+                        renderSurface();
+                    });
+                }
+            });
+
+            // Render
+            document.getElementById('renderBtn').addEventListener('click', () => {
+                renderSurface();
+            });
+
+            // Curve di livello
+            document.getElementById('showContours').addEventListener('change', () => {
+                updateContours();
+            });
+
+            // Curve in quota (su superficie)
+            const chkElev = document.getElementById('showContoursElevated');
+            if (chkElev) chkElev.addEventListener('change', () => updateContours());
+
+            // Etichette livelli
+            const chkLabels = document.getElementById('showContourLabels');
+            if (chkLabels) chkLabels.addEventListener('change', () => updateContours());
+
+            // Gradiente
+            document.getElementById('showGradient').addEventListener('change', (e) => {
+                if (!e.target.checked && gradientArrow) {
+                    scene.remove(gradientArrow);
+                    gradientArrow = null;
+                }
+            });
+
+            // Toggle assi
+            document.getElementById('showAxes').addEventListener('change', (e) => {
+                if (axesGroup) {
+                    axesGroup.visible = e.target.checked;
+                }
+            });
+
+            // Export CSV
+            document.getElementById('exportBtn').addEventListener('click', exportCSV);
+
+            // Fullscreen
+            document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
+
+            // Modale informativo per la risoluzione
+            const infoBtn = document.querySelector('.info-icon');
+            const infoModal = document.getElementById('info-modal');
+            const modalClose = document.getElementById('info-modal-close');
+            const modalOverlay = document.querySelector('#info-modal .modal-overlay');
+            let lastFocused = null;
+
+            function openInfoModal() {
+                lastFocused = document.activeElement;
+                infoModal.setAttribute('aria-hidden', 'false');
+                infoBtn?.setAttribute('aria-expanded', 'true');
+                infoBtn?.setAttribute('aria-haspopup', 'dialog');
+                infoBtn?.setAttribute('aria-controls', 'info-modal');
+                modalClose?.focus();
+            }
+            function closeInfoModal() {
+                infoModal.setAttribute('aria-hidden', 'true');
+                infoBtn?.setAttribute('aria-expanded', 'false');
+                if (lastFocused && typeof lastFocused.focus === 'function') {
+                    lastFocused.focus();
+                }
+            }
+            if (infoBtn && infoModal) {
+                infoBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openInfoModal();
+                });
+                modalOverlay?.addEventListener('click', closeInfoModal);
+                modalClose?.addEventListener('click', closeInfoModal);
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && infoModal.getAttribute('aria-hidden') === 'false') {
+                        closeInfoModal();
+                    }
+                });
+
+                // Trap focus all'interno del dialog quando aperto
+                document.addEventListener('keydown', (e) => {
+                    if (e.key !== 'Tab') return;
+                    if (infoModal.getAttribute('aria-hidden') === 'true') return;
+                    const focusable = infoModal.querySelectorAll(
+                        'a[href], button:not([disabled]), textarea, input, select, details, [tabindex]:not([tabindex="-1"])'
+                    );
+                    if (!focusable.length) return;
+                    const first = focusable[0];
+                    const last = focusable[focusable.length - 1];
+                    if (e.shiftKey) {
+                        if (document.activeElement === first) {
+                            last.focus();
+                            e.preventDefault();
+                        }
+                    } else {
+                        if (document.activeElement === last) {
+                            first.focus();
+                            e.preventDefault();
+                        }
+                    }
+                });
+            }
+
+            // Rendering iniziale
+            renderSurface();
+            // Inizializza le domande per la funzione di default
+            updateDynamicQuestions('x^2 + y^2');
+            updateFullscreenButton();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio di Trasformazioni Geometriche 2D</title>
+    <style>
+        :root {
+            --color-primary: #2563eb;
+            --color-primary-hover: #1d4ed8;
+            --color-secondary: #64748b;
+            --color-background: #f8fafc;
+            --color-surface: #ffffff;
+            --color-border: #e2e8f0;
+            --color-text: #1e293b;
+            --color-text-secondary: #64748b;
+            --color-original: rgba(148, 163, 184, 0.3);
+            --color-transformed: #3b82f6;
+            --color-grid: rgba(203, 213, 225, 0.4);
+            --color-axis: #475569;
+            --color-trace: rgba(239, 68, 68, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            height: 100vh;
+            gap: 0;
+        }
+
+        .control-panel {
+            background-color: var(--color-surface);
+            border-right: 2px solid var(--color-border);
+            padding: 24px;
+            overflow-y: auto;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .visualization-panel {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: var(--color-primary);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: var(--color-text);
+            margin-top: 24px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            border-bottom: 2px solid var(--color-primary);
+            padding-bottom: 6px;
+        }
+
+        h3 {
+            font-size: 16px;
+            color: var(--color-text);
+            margin-top: 16px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--color-text);
+        }
+
+        select,
+        input[type="range"] {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: var(--color-surface);
+            color: var(--color-text);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+
+        input[type="range"] {
+            padding: 0;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: var(--color-border);
+            border: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--color-primary);
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: var(--color-primary);
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+        }
+
+        .slider-value {
+            display: inline-block;
+            background-color: var(--color-background);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-left: 8px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: var(--color-background);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--color-border);
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .canvas-container {
+            background-color: var(--color-surface);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            background-color: #fefefe;
+        }
+
+        .matrix-display {
+            background-color: var(--color-surface);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .matrix {
+            display: inline-block;
+            border-left: 2px solid var(--color-text);
+            border-right: 2px solid var(--color-text);
+            padding: 16px 24px;
+            margin: 16px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            background-color: var(--color-background);
+            border-radius: 4px;
+        }
+
+        .matrix-row {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 4px 0;
+        }
+
+        .matrix-cell {
+            min-width: 80px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .determinant {
+            margin-top: 16px;
+            padding: 12px;
+            background-color: var(--color-background);
+            border-left: 4px solid var(--color-primary);
+            border-radius: 4px;
+        }
+
+        .determinant-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .info-box {
+            background-color: #dbeafe;
+            border-left: 4px solid var(--color-primary);
+            padding: 16px;
+            border-radius: 4px;
+            margin-top: 16px;
+            font-size: 14px;
+        }
+
+        .info-box-mt {
+            margin-top: 12px;
+        }
+
+        .guide-questions {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 16px;
+            border-radius: 4px;
+            margin-top: 16px;
+        }
+
+        .guide-questions h3 {
+            margin-top: 0;
+            color: #92400e;
+        }
+
+        .guide-questions ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+
+        .guide-questions li {
+            margin: 8px 0;
+            color: #78350f;
+        }
+
+        .instructions {
+            background-color: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+
+        .instructions li {
+            margin: 6px 0;
+        }
+
+        .param-controls {
+            margin-top: 12px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .control-panel {
+                border-right: none;
+                border-bottom: 2px solid var(--color-border);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Pannello di Controllo -->
+        <div class="control-panel">
+            <h1>🔷 Laboratorio Trasformazioni</h1>
+            <p class="subtitle">Visualizza e comprendi le trasformazioni geometriche 2D</p>
+
+            <div class="instructions">
+                <strong>📋 Istruzioni:</strong>
+                <ol>
+                    <li>Seleziona una <strong>figura geometrica</strong></li>
+                    <li>Scegli una <strong>trasformazione</strong></li>
+                    <li>Regola i <strong>parametri</strong> con gli slider</li>
+                    <li>Premi <strong>"Applica"</strong> per comporre le trasformazioni</li>
+                    <li>Osserva la <strong>matrice</strong> e il <strong>determinante</strong></li>
+                </ol>
+            </div>
+
+            <div class="form-group">
+                <label for="shapeSelect">Figura Iniziale:</label>
+                <select id="shapeSelect">
+                    <option value="square">Quadrato</option>
+                    <option value="triangle">Triangolo</option>
+                    <option value="fshape">Forma F (personalizzata)</option>
+                </select>
+            </div>
+
+            <h2>Trasformazione</h2>
+
+            <div class="form-group">
+                <label for="transformSelect">Tipo di Trasformazione:</label>
+                <select id="transformSelect">
+                    <option value="translation">Traslazione</option>
+                    <option value="rotation">Rotazione</option>
+                    <option value="scaling">Dilatazione</option>
+                    <option value="reflection">Riflessione</option>
+                    <option value="shear">Distorsione (Shear)</option>
+                </select>
+            </div>
+
+            <div class="param-controls">
+                <!-- Traslazione -->
+                <div id="translationParams">
+                    <div class="form-group">
+                        <label>
+                            Traslazione X (t<sub>x</sub>):
+                            <span class="slider-value" id="txValue">0.0</span>
+                        </label>
+                        <input type="range" id="txSlider" min="-5" max="5" step="0.1" value="0"
+                            aria-label="Traslazione X">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            Traslazione Y (t<sub>y</sub>):
+                            <span class="slider-value" id="tyValue">0.0</span>
+                        </label>
+                        <input type="range" id="tySlider" min="-5" max="5" step="0.1" value="0"
+                            aria-label="Traslazione Y">
+                    </div>
+                </div>
+
+                <!-- Rotazione -->
+                <div id="rotationParams" class="hidden">
+                    <div class="form-group">
+                        <label>
+                            Angolo θ (gradi):
+                            <span class="slider-value" id="angleValue">0°</span>
+                        </label>
+                        <input type="range" id="angleSlider" min="-180" max="180" step="1" value="0"
+                            aria-label="Angolo di rotazione">
+                    </div>
+                </div>
+
+                <!-- Dilatazione -->
+                <div id="scalingParams" class="hidden">
+                    <div class="form-group">
+                        <label>
+                            Scala X (s<sub>x</sub>):
+                            <span class="slider-value" id="sxValue">1.0</span>
+                        </label>
+                        <input type="range" id="sxSlider" min="0.1" max="3" step="0.1" value="1" aria-label="Scala X">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            Scala Y (s<sub>y</sub>):
+                            <span class="slider-value" id="syValue">1.0</span>
+                        </label>
+                        <input type="range" id="sySlider" min="0.1" max="3" step="0.1" value="1" aria-label="Scala Y">
+                    </div>
+                </div>
+
+                <!-- Riflessione -->
+                <div id="reflectionParams" class="hidden">
+                    <div class="form-group">
+                        <label>
+                            Angolo linea di riflessione:
+                            <span class="slider-value" id="reflAngleValue">0°</span>
+                        </label>
+                        <input type="range" id="reflAngleSlider" min="0" max="180" step="1" value="0"
+                            aria-label="Angolo linea di riflessione">
+                    </div>
+                </div>
+
+                <!-- Shear -->
+                <div id="shearParams" class="hidden">
+                    <div class="form-group">
+                        <label>
+                            Shear X (k<sub>x</sub>):
+                            <span class="slider-value" id="kxValue">0.0</span>
+                        </label>
+                        <input type="range" id="kxSlider" min="-2" max="2" step="0.1" value="0" aria-label="Shear X">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            Shear Y (k<sub>y</sub>):
+                            <span class="slider-value" id="kyValue">0.0</span>
+                        </label>
+                        <input type="range" id="kySlider" min="-2" max="2" step="0.1" value="0" aria-label="Shear Y">
+                    </div>
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="showTrace">
+                <label for="showTrace">Mostra traccia vertici</label>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" id="applyBtn">✓ Applica Trasformazione</button>
+                <button class="btn-danger" id="resetBtn">⟲ Reset Totale</button>
+                <button class="btn-secondary" id="exportBtn">📥 Esporta Dati (CSV)</button>
+            </div>
+
+            <div class="guide-questions">
+                <h3>💡 Spunti di Riflessione</h3>
+                <ul>
+                    <li>Come puoi ottenere una rotazione usando solo due riflessioni?</li>
+                    <li>Cosa succede al determinante quando applichi uno shear?</li>
+                    <li>Quale trasformazione inverte l'orientamento della figura?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Pannello Visualizzazione -->
+        <div class="visualization-panel">
+            <div class="canvas-container">
+                <canvas id="mainCanvas" width="700" height="700"></canvas>
+            </div>
+
+            <div class="matrix-display">
+                <h2>📐 Matrice di Trasformazione Totale</h2>
+                <div id="matrixContainer"></div>
+                <div class="determinant">
+                    <strong>Determinante:</strong> <span class="determinant-value" id="detValue">1.000</span>
+                    <div class="info-box info-box-mt">
+                        <strong>Significato:</strong> Il determinante rappresenta il fattore di scala dell'area.
+                        Un valore di 1 indica che l'area è preservata.
+                        Se negativo, l'orientamento della figura è invertito (riflessione).
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // COSTANTI E CONFIGURAZIONE
+        // ==========================================
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        const CANVAS_SIZE = 700;
+        const SCALE = 50; // 1 unità = 50 pixel
+        const ORIGIN_X = CANVAS_SIZE / 2;
+        const ORIGIN_Y = CANVAS_SIZE / 2;
+        const GRID_STEP = 1; // Linee della griglia ogni 1 unità
+
+        // ==========================================
+        // STATO DELL'APPLICAZIONE
+        // ==========================================
+        let currentShape = 'square';
+        let currentTransform = 'translation';
+        let showTrace = false;
+        let tracePoints = []; // Array per memorizzare le tracce dei vertici
+
+        // Matrice di trasformazione totale (inizialmente identità)
+        // Rappresentata come array 3x3 in coordinate omogenee
+        let totalMatrix = [
+            [1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1]
+        ];
+
+        // ==========================================
+        // DEFINIZIONE DELLE FORME
+        // ==========================================
+        const shapes = {
+            square: [
+                [1, 1, 1],
+                [-1, 1, 1],
+                [-1, -1, 1],
+                [1, -1, 1]
+            ],
+            triangle: [
+                [0, 2, 1],
+                [-1.5, -1, 1],
+                [1.5, -1, 1]
+            ],
+            fshape: [
+                [0, 0, 1],
+                [0, 2, 1],
+                [1.5, 2, 1],
+                [1.5, 1.5, 1],
+                [0.5, 1.5, 1],
+                [0.5, 1, 1],
+                [1.5, 1, 1],
+                [1.5, 0.5, 1],
+                [0.5, 0.5, 1],
+                [0.5, 0, 1]
+            ]
+        };
+
+        // ==========================================
+        // FUNZIONI MATEMATICHE - ALGEBRA MATRICIALE
+        // ==========================================
+
+        /**
+         * Moltiplica due matrici 3x3
+         * @param {Array} A - Prima matrice 3x3
+         * @param {Array} B - Seconda matrice 3x3
+         * @returns {Array} Matrice prodotto C = A * B
+         */
+        function multiplyMatrices(A, B) {
+            const result = [
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0]
+            ];
+
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    for (let k = 0; k < 3; k++) {
+                        result[i][j] += A[i][k] * B[k][j];
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        /**
+         * Moltiplica una matrice 3x3 per un vettore (punto in coordinate omogenee)
+         * @param {Array} matrix - Matrice 3x3
+         * @param {Array} vector - Vettore [x, y, 1]
+         * @returns {Array} Vettore trasformato
+         */
+        function multiplyMatrixVector(matrix, vector) {
+            return [
+                matrix[0][0] * vector[0] + matrix[0][1] * vector[1] + matrix[0][2] * vector[2],
+                matrix[1][0] * vector[0] + matrix[1][1] * vector[1] + matrix[1][2] * vector[2],
+                matrix[2][0] * vector[0] + matrix[2][1] * vector[1] + matrix[2][2] * vector[2]
+            ];
+        }
+
+        /**
+         * Calcola il determinante della sottomatrice 2x2 (in alto a sinistra)
+         * @param {Array} matrix - Matrice 3x3
+         * @returns {number} Determinante
+         */
+        function calculateDeterminant(matrix) {
+            // det(A) = a*d - b*c per la matrice 2x2:
+            // [a b]
+            // [c d]
+            return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+        }
+
+        // ==========================================
+        // CREAZIONE MATRICI DI TRASFORMAZIONE
+        // ==========================================
+
+        /**
+         * Crea una matrice di traslazione
+         */
+        function createTranslationMatrix(tx, ty) {
+            return [
+                [1, 0, tx],
+                [0, 1, ty],
+                [0, 0, 1]
+            ];
+        }
+
+        /**
+         * Crea una matrice di rotazione (attorno all'origine)
+         * @param {number} angleDeg - Angolo in gradi
+         */
+        function createRotationMatrix(angleDeg) {
+            const angleRad = angleDeg * Math.PI / 180;
+            const cos = Math.cos(angleRad);
+            const sin = Math.sin(angleRad);
+            return [
+                [cos, -sin, 0],
+                [sin, cos, 0],
+                [0, 0, 1]
+            ];
+        }
+
+        /**
+         * Crea una matrice di dilatazione
+         */
+        function createScalingMatrix(sx, sy) {
+            return [
+                [sx, 0, 0],
+                [0, sy, 0],
+                [0, 0, 1]
+            ];
+        }
+
+        /**
+         * Crea una matrice di riflessione rispetto a una linea passante per l'origine
+         * @param {number} angleDeg - Angolo della linea in gradi
+         */
+        function createReflectionMatrix(angleDeg) {
+            const angleRad = angleDeg * Math.PI / 180;
+            const cos2 = Math.cos(2 * angleRad);
+            const sin2 = Math.sin(2 * angleRad);
+            return [
+                [cos2, sin2, 0],
+                [sin2, -cos2, 0],
+                [0, 0, 1]
+            ];
+        }
+
+        /**
+         * Crea una matrice di shear (distorsione)
+         */
+        function createShearMatrix(kx, ky) {
+            return [
+                [1, kx, 0],
+                [ky, 1, 0],
+                [0, 0, 1]
+            ];
+        }
+
+        // ==========================================
+        // FUNZIONI DI RENDERING
+        // ==========================================
+
+        /**
+         * Converte coordinate cartesiane in coordinate canvas
+         */
+        function toCanvasCoords(x, y) {
+            return {
+                x: ORIGIN_X + x * SCALE,
+                y: ORIGIN_Y - y * SCALE // Y invertita (in canvas cresce verso il basso)
+            };
+        }
+
+        /**
+         * Disegna la griglia cartesiana
+         */
+        function drawGrid(matrix) {
+            ctx.strokeStyle = 'rgba(203, 213, 225, 0.4)';
+            ctx.lineWidth = 1;
+
+            const gridRange = 10;
+
+            // Linee verticali
+            for (let x = -gridRange; x <= gridRange; x += GRID_STEP) {
+                const p1 = multiplyMatrixVector(matrix, [x, -gridRange, 1]);
+                const p2 = multiplyMatrixVector(matrix, [x, gridRange, 1]);
+                const c1 = toCanvasCoords(p1[0], p1[1]);
+                const c2 = toCanvasCoords(p2[0], p2[1]);
+
+                ctx.beginPath();
+                ctx.moveTo(c1.x, c1.y);
+                ctx.lineTo(c2.x, c2.y);
+                ctx.stroke();
+            }
+
+            // Linee orizzontali
+            for (let y = -gridRange; y <= gridRange; y += GRID_STEP) {
+                const p1 = multiplyMatrixVector(matrix, [-gridRange, y, 1]);
+                const p2 = multiplyMatrixVector(matrix, [gridRange, y, 1]);
+                const c1 = toCanvasCoords(p1[0], p1[1]);
+                const c2 = toCanvasCoords(p2[0], p2[1]);
+
+                ctx.beginPath();
+                ctx.moveTo(c1.x, c1.y);
+                ctx.lineTo(c2.x, c2.y);
+                ctx.stroke();
+            }
+        }
+
+        /**
+         * Disegna gli assi cartesiani
+         */
+        function drawAxes() {
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 2;
+
+            // Asse X
+            ctx.beginPath();
+            ctx.moveTo(0, ORIGIN_Y);
+            ctx.lineTo(CANVAS_SIZE, ORIGIN_Y);
+            ctx.stroke();
+
+            // Asse Y
+            ctx.beginPath();
+            ctx.moveTo(ORIGIN_X, 0);
+            ctx.lineTo(ORIGIN_X, CANVAS_SIZE);
+            ctx.stroke();
+
+            // Etichette assi
+            ctx.fillStyle = '#475569';
+            ctx.font = '14px Arial';
+            ctx.fillText('X', CANVAS_SIZE - 20, ORIGIN_Y - 10);
+            ctx.fillText('Y', ORIGIN_X + 10, 20);
+            ctx.fillText('0', ORIGIN_X + 5, ORIGIN_Y + 15);
+        }
+
+        /**
+         * Disegna un poligono
+         */
+        function drawPolygon(vertices, color, fillColor, lineWidth = 2) {
+            if (vertices.length === 0) return;
+
+            ctx.strokeStyle = color;
+            ctx.fillStyle = fillColor;
+            ctx.lineWidth = lineWidth;
+
+            const start = toCanvasCoords(vertices[0][0], vertices[0][1]);
+            ctx.beginPath();
+            ctx.moveTo(start.x, start.y);
+
+            for (let i = 1; i < vertices.length; i++) {
+                const p = toCanvasCoords(vertices[i][0], vertices[i][1]);
+                ctx.lineTo(p.x, p.y);
+            }
+
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Disegna i vertici
+            vertices.forEach(v => {
+                const p = toCanvasCoords(v[0], v[1]);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 4, 0, 2 * Math.PI);
+                ctx.fillStyle = color;
+                ctx.fill();
+            });
+        }
+
+        /**
+         * Disegna le tracce dei vertici
+         */
+        function drawTraces() {
+            if (tracePoints.length === 0) return;
+
+            ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
+            ctx.lineWidth = 1;
+
+            // Raggruppa per vertice
+            const vertexCount = shapes[currentShape].length;
+
+            for (let v = 0; v < vertexCount; v++) {
+                ctx.beginPath();
+                let firstPoint = true;
+
+                for (let i = 0; i < tracePoints.length; i++) {
+                    if (tracePoints[i].length > v) {
+                        const p = toCanvasCoords(tracePoints[i][v][0], tracePoints[i][v][1]);
+                        if (firstPoint) {
+                            ctx.moveTo(p.x, p.y);
+                            firstPoint = false;
+                        } else {
+                            ctx.lineTo(p.x, p.y);
+                        }
+                    }
+                }
+
+                ctx.stroke();
+            }
+        }
+
+        /**
+         * Trasforma tutti i vertici della forma usando la matrice
+         */
+        function transformShape(vertices, matrix) {
+            return vertices.map(v => multiplyMatrixVector(matrix, v));
+        }
+
+        /**
+         * Rendering principale
+         */
+        function render() {
+            // Pulisce il canvas
+            ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            // Disegna griglia trasformata
+            drawGrid(totalMatrix);
+
+            // Disegna assi (sempre fissi)
+            drawAxes();
+
+            // Ottiene i vertici della forma corrente
+            const originalVertices = shapes[currentShape];
+
+            // Disegna la forma originale (grigio chiaro)
+            drawPolygon(originalVertices, '#94a3b8', 'rgba(148, 163, 184, 0.1)', 1);
+
+            // Trasforma e disegna la forma trasformata
+            const transformedVertices = transformShape(originalVertices, totalMatrix);
+            drawPolygon(transformedVertices, '#3b82f6', 'rgba(59, 130, 246, 0.3)', 2);
+
+            // Disegna le tracce se abilitate
+            if (showTrace) {
+                drawTraces();
+            }
+
+            // Aggiorna display matrice e determinante
+            updateMatrixDisplay();
+        }
+
+        /**
+         * Aggiorna la visualizzazione della matrice e del determinante
+         */
+        function updateMatrixDisplay() {
+            const matrixContainer = document.getElementById('matrixContainer');
+            const detValue = document.getElementById('detValue');
+
+            // Formatta la matrice
+            let html = '<div class="matrix">';
+            for (let i = 0; i < 3; i++) {
+                html += '<div class="matrix-row">';
+                for (let j = 0; j < 3; j++) {
+                    html += `<span class="matrix-cell">${totalMatrix[i][j].toFixed(3)}</span>`;
+                }
+                html += '</div>';
+            }
+            html += '</div>';
+
+            matrixContainer.innerHTML = html;
+
+            // Calcola e mostra il determinante
+            const det = calculateDeterminant(totalMatrix);
+            detValue.textContent = det.toFixed(3);
+        }
+
+        // ==========================================
+        // GESTIONE INTERFACCIA UTENTE
+        // ==========================================
+
+        /**
+         * Mostra/nasconde i pannelli dei parametri in base alla trasformazione selezionata
+         */
+        function updateParamPanels() {
+            const allPanels = [
+                'translationParams',
+                'rotationParams',
+                'scalingParams',
+                'reflectionParams',
+                'shearParams'
+            ];
+
+            allPanels.forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+
+            switch (currentTransform) {
+                case 'translation':
+                    document.getElementById('translationParams').classList.remove('hidden');
+                    break;
+                case 'rotation':
+                    document.getElementById('rotationParams').classList.remove('hidden');
+                    break;
+                case 'scaling':
+                    document.getElementById('scalingParams').classList.remove('hidden');
+                    break;
+                case 'reflection':
+                    document.getElementById('reflectionParams').classList.remove('hidden');
+                    break;
+                case 'shear':
+                    document.getElementById('shearParams').classList.remove('hidden');
+                    break;
+            }
+        }
+
+        /**
+         * Ottiene la matrice corrente basata sui parametri degli slider
+         */
+        function getCurrentTransformMatrix() {
+            switch (currentTransform) {
+                case 'translation':
+                    const tx = parseFloat(document.getElementById('txSlider').value);
+                    const ty = parseFloat(document.getElementById('tySlider').value);
+                    return createTranslationMatrix(tx, ty);
+
+                case 'rotation':
+                    const angle = parseFloat(document.getElementById('angleSlider').value);
+                    return createRotationMatrix(angle);
+
+                case 'scaling':
+                    const sx = parseFloat(document.getElementById('sxSlider').value);
+                    const sy = parseFloat(document.getElementById('sySlider').value);
+                    return createScalingMatrix(sx, sy);
+
+                case 'reflection':
+                    const reflAngle = parseFloat(document.getElementById('reflAngleSlider').value);
+                    return createReflectionMatrix(reflAngle);
+
+                case 'shear':
+                    const kx = parseFloat(document.getElementById('kxSlider').value);
+                    const ky = parseFloat(document.getElementById('kySlider').value);
+                    return createShearMatrix(kx, ky);
+
+                default:
+                    return [[1, 0, 0], [0, 1, 0], [0, 0, 1]]; // Identità
+            }
+        }
+
+        /**
+         * Aggiorna la preview in tempo reale mentre si muovono gli slider
+         */
+        function updatePreview() {
+            const currentMatrix = getCurrentTransformMatrix();
+            const composedMatrix = multiplyMatrices(currentMatrix, totalMatrix);
+
+            // Salva la matrice totale originale
+            const savedMatrix = totalMatrix;
+
+            // Temporaneamente usa la matrice composta per il preview
+            totalMatrix = composedMatrix;
+
+            // Se la traccia è attiva, salva i punti trasformati
+            if (showTrace) {
+                const transformedVertices = transformShape(shapes[currentShape], totalMatrix);
+                tracePoints.push(transformedVertices);
+
+                // Limita la lunghezza della traccia per performance
+                if (tracePoints.length > 100) {
+                    tracePoints.shift();
+                }
+            }
+
+            render();
+
+            // Ripristina la matrice originale
+            totalMatrix = savedMatrix;
+        }
+
+        // ==========================================
+        // EVENT LISTENERS
+        // ==========================================
+
+        // Selezione forma
+        document.getElementById('shapeSelect').addEventListener('change', (e) => {
+            currentShape = e.target.value;
+            tracePoints = []; // Reset tracce quando si cambia forma
+            render();
+        });
+
+        // Selezione trasformazione
+        document.getElementById('transformSelect').addEventListener('change', (e) => {
+            currentTransform = e.target.value;
+            updateParamPanels();
+            resetSliders();
+            tracePoints = []; // Reset tracce
+            render();
+        });
+
+        // Slider traslazione
+        document.getElementById('txSlider').addEventListener('input', (e) => {
+            document.getElementById('txValue').textContent = parseFloat(e.target.value).toFixed(1);
+            updatePreview();
+        });
+
+        document.getElementById('tySlider').addEventListener('input', (e) => {
+            document.getElementById('tyValue').textContent = parseFloat(e.target.value).toFixed(1);
+            updatePreview();
+        });
+
+        // Slider rotazione
+        document.getElementById('angleSlider').addEventListener('input', (e) => {
+            document.getElementById('angleValue').textContent = e.target.value + '°';
+            updatePreview();
+        });
+
+        // Slider dilatazione
+        document.getElementById('sxSlider').addEventListener('input', (e) => {
+            document.getElementById('sxValue').textContent = parseFloat(e.target.value).toFixed(1);
+            updatePreview();
+        });
+
+        document.getElementById('sySlider').addEventListener('input', (e) => {
+            document.getElementById('syValue').textContent = parseFloat(e.target.value).toFixed(1);
+            updatePreview();
+        });
+
+        // Slider riflessione
+        document.getElementById('reflAngleSlider').addEventListener('input', (e) => {
+            document.getElementById('reflAngleValue').textContent = e.target.value + '°';
+            updatePreview();
+        });
+
+        // Slider shear
+        document.getElementById('kxSlider').addEventListener('input', (e) => {
+            document.getElementById('kxValue').textContent = parseFloat(e.target.value).toFixed(1);
+            updatePreview();
+        });
+
+        document.getElementById('kySlider').addEventListener('input', (e) => {
+            document.getElementById('kyValue').textContent = parseFloat(e.target.value).toFixed(1);
+            updatePreview();
+        });
+
+        // Checkbox traccia
+        document.getElementById('showTrace').addEventListener('change', (e) => {
+            showTrace = e.target.checked;
+            if (!showTrace) {
+                tracePoints = []; // Pulisce le tracce quando disabilitato
+            }
+            render();
+        });
+
+        // Pulsante Applica
+        document.getElementById('applyBtn').addEventListener('click', () => {
+            // Compone la trasformazione corrente con quella totale
+            const currentMatrix = getCurrentTransformMatrix();
+            totalMatrix = multiplyMatrices(currentMatrix, totalMatrix);
+
+            // Reset degli slider
+            resetSliders();
+
+            // Pulisce le tracce
+            tracePoints = [];
+
+            render();
+        });
+
+        // Pulsante Reset
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            // Reset alla matrice identità
+            totalMatrix = [
+                [1, 0, 0],
+                [0, 1, 0],
+                [0, 0, 1]
+            ];
+
+            resetSliders();
+            tracePoints = [];
+            render();
+        });
+
+        // Pulsante Esporta CSV
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            exportToCSV();
+        });
+
+        /**
+         * Reset di tutti gli slider ai valori di default
+         */
+        function resetSliders() {
+            document.getElementById('txSlider').value = 0;
+            document.getElementById('tySlider').value = 0;
+            document.getElementById('txValue').textContent = '0.0';
+            document.getElementById('tyValue').textContent = '0.0';
+
+            document.getElementById('angleSlider').value = 0;
+            document.getElementById('angleValue').textContent = '0°';
+
+            document.getElementById('sxSlider').value = 1;
+            document.getElementById('sySlider').value = 1;
+            document.getElementById('sxValue').textContent = '1.0';
+            document.getElementById('syValue').textContent = '1.0';
+
+            document.getElementById('reflAngleSlider').value = 0;
+            document.getElementById('reflAngleValue').textContent = '0°';
+
+            document.getElementById('kxSlider').value = 0;
+            document.getElementById('kySlider').value = 0;
+            document.getElementById('kxValue').textContent = '0.0';
+            document.getElementById('kyValue').textContent = '0.0';
+        }
+
+        /**
+         * Esporta i dati dei vertici in formato CSV
+         */
+        function exportToCSV() {
+            const originalVertices = shapes[currentShape];
+            const transformedVertices = transformShape(originalVertices, totalMatrix);
+
+            // Intestazioni CSV
+            let csv = 'vertex_index,original_x,original_y,transformed_x,transformed_y\n';
+
+            // Dati
+            for (let i = 0; i < originalVertices.length; i++) {
+                const orig = originalVertices[i];
+                const trans = transformedVertices[i];
+                csv += `${i},${orig[0].toFixed(4)},${orig[1].toFixed(4)},${trans[0].toFixed(4)},${trans[1].toFixed(4)}\n`;
+            }
+
+            // Crea e scarica il file
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'geometric_transform_data.csv');
+            link.style.visibility = 'hidden';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // ==========================================
+        // INIZIALIZZAZIONE
+        // ==========================================
+        updateParamPanels();
+        render();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio Vettori Liberi - Metodo Punta-Coda</title>
+    <style>
+        :root {
+            --color-primary: #21808d;
+            --color-primary-hover: #1d7480;
+            --color-surface: #fffffe;
+            --color-background: #fcfcf9;
+            --color-text: #13343b;
+            --color-text-secondary: #626c71;
+            --color-border: rgba(94, 82, 64, 0.2);
+            --color-red: #c0152f;
+            --color-blue: #2563eb;
+            --color-green: #16a34a;
+            --color-card-border: rgba(94, 82, 64, 0.12);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        /* Tema fisso chiaro: sezione dark rimossa per coerenza con il tema light del sito */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.5;
+            padding: var(--space-16);
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: var(--space-20);
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: var(--space-8);
+            color: var(--color-text);
+        }
+
+        .subtitle {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-24);
+            font-size: 14px;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-16);
+            margin-bottom: var(--space-16);
+        }
+
+        @media (min-width: 768px) {
+            .main-layout {
+                gap: var(--space-20);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr 380px;
+                height: calc(100vh - 140px);
+            }
+        }
+
+        .controls-row {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-24);
+        }
+
+        @media (min-width: 768px) {
+            .controls-row {
+                overflow-y: auto;
+                height: 100%;
+            }
+        }
+
+        .canvas-section {
+            position: relative;
+            background-color: var(--color-surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-card-border);
+            box-shadow: var(--shadow-sm);
+            padding: var(--space-8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 768px) {
+            .canvas-section {
+                aspect-ratio: auto;
+                height: 100%;
+                padding: var(--space-8);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .canvas-section {
+                padding: var(--space-8);
+                aspect-ratio: auto;
+                min-height: 500px;
+                height: 70vh;
+                max-height: 800px;
+            }
+        }
+
+        .canvas-overlay {
+            position: absolute;
+            top: var(--space-16);
+            left: var(--space-16);
+            background-color: rgba(255, 255, 254, 0.95);
+            border-radius: var(--radius-base);
+            border: 1px solid var(--color-card-border);
+            box-shadow: var(--shadow-md);
+            padding: 0;
+            font-size: 15px;
+            max-width: 280px;
+            z-index: 10;
+            -webkit-user-select: none;
+            user-select: none;
+            transition: box-shadow 0.2s;
+        }
+
+        .canvas-overlay:hover {
+            box-shadow: 0 8px 16px -2px rgba(0, 0, 0, 0.08), 0 4px 8px -2px rgba(0, 0, 0, 0.04);
+        }
+
+        .canvas-overlay.dragging {
+            box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.12), 0 6px 12px -4px rgba(0, 0, 0, 0.06);
+            cursor: grabbing;
+        }
+
+        .overlay-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-12);
+            cursor: move;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .canvas-overlay.collapsed .overlay-header {
+            border-bottom: none;
+        }
+
+        .overlay-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            color: var(--color-text);
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-text-secondary);
+            transition: color 0.2s, transform 0.2s;
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .toggle-btn:hover {
+            color: var(--color-primary);
+        }
+
+        .canvas-overlay.collapsed .toggle-btn {
+            transform: rotate(180deg);
+        }
+
+        .overlay-content {
+            padding: var(--space-12);
+            max-height: 500px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+        }
+
+        .canvas-overlay.collapsed .overlay-content {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        @media (max-width: 768px) {
+            .canvas-overlay {
+                top: var(--space-8);
+                left: var(--space-8);
+                font-size: 14px;
+                max-width: 220px;
+            }
+
+            .overlay-header {
+                padding: var(--space-8);
+            }
+
+            .overlay-header h3 {
+                font-size: 14px;
+            }
+
+            .overlay-content {
+                padding: var(--space-8);
+            }
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        .controls-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-24);
+        }
+
+        .card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-24);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: var(--space-16);
+            color: var(--color-text);
+        }
+
+        .card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: var(--space-12);
+            color: var(--color-text);
+        }
+
+        .vector-controls {
+            margin-bottom: var(--space-24);
+            padding-bottom: var(--space-24);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .vector-controls:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .vector-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            margin-bottom: var(--space-16);
+        }
+
+        .vector-label {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .vector-a {
+            background-color: var(--color-red);
+        }
+
+        .vector-b {
+            background-color: var(--color-blue);
+        }
+
+        .vector-r {
+            background-color: var(--color-green);
+        }
+
+        .control-group {
+            margin-bottom: var(--space-16);
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-8);
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        .slider-value {
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--color-border);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: var(--color-primary-hover);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+            border: none;
+            transition: background 0.15s;
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .data-display {
+            display: grid;
+            gap: var(--space-8);
+        }
+
+        .data-row {
+            padding: var(--space-8);
+            background-color: var(--color-background);
+            border-radius: var(--radius-base);
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .data-row.position-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--space-8);
+        }
+
+        .data-row.position-row .position-values {
+            display: flex;
+            gap: var(--space-12);
+            width: 100%;
+            justify-content: flex-start;
+            padding-left: var(--space-8);
+        }
+
+        .data-row.position-row .position-point {
+            white-space: nowrap;
+        }
+
+        .data-row strong {
+            color: var(--color-text);
+            font-size: 13px;
+        }
+
+        .data-section {
+            margin-bottom: var(--space-8);
+        }
+
+        .data-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .data-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: var(--space-8);
+            padding-bottom: var(--space-8);
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: var(--radius-base);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s;
+            border: none;
+            background: var(--color-primary);
+            color: white;
+            width: 100%;
+            margin-top: var(--space-16);
+        }
+
+        .btn:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--color-primary);
+            border: 1px solid var(--color-card-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-background);
+        }
+
+        details {
+            margin-top: var(--space-24);
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            padding: var(--space-12);
+            background-color: var(--color-surface);
+            border-radius: var(--radius-base);
+            border: 1px solid var(--color-card-border);
+            margin-bottom: var(--space-12);
+        }
+
+        summary:hover {
+            background-color: var(--color-background);
+        }
+
+        .instructions {
+            background-color: var(--color-surface);
+            border-radius: var(--radius-base);
+            border: 1px solid var(--color-card-border);
+            padding: var(--space-16);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .instructions p {
+            margin-bottom: var(--space-12);
+        }
+
+        .instructions ol,
+        .instructions ul {
+            margin-left: var(--space-24);
+        }
+
+        .instructions li {
+            margin-bottom: var(--space-8);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Laboratorio Vettori Liberi - Metodo Punta-Coda</h1>
+        <p class="subtitle">Trascina i vettori per comprendere il metodo punta-coda e la natura dei vettori liberi</p>
+
+        <div class="main-layout">
+            <!-- Area Canvas -->
+            <div class="canvas-section">
+                <canvas id="canvas" width="700" height="700" role="img"
+                    aria-label="Canvas per la visualizzazione dei vettori"></canvas>
+
+                <!-- Dati in Tempo Reale - Overlay -->
+                <div class="canvas-overlay">
+                    <div class="overlay-header">
+                        <h3>Dati in Tempo Reale</h3>
+                        <button class="toggle-btn" id="toggleOverlay" aria-label="Riduci/Espandi overlay">▼</button>
+                    </div>
+                    <div class="overlay-content">
+                        <div class="data-display">
+                            <!-- Vettore A -->
+                            <div class="data-section">
+                                <div class="data-section-title">
+                                    <span class="vector-label vector-a"></span>
+                                    Vettore A
+                                </div>
+                                <div class="data-row">
+                                    <strong>Componenti:</strong> <span>(<span id="dispAx">0.00</span>, <span
+                                            id="dispAy">0.00</span>)</span>
+                                </div>
+                                <div class="data-row">
+                                    <strong>|A|, θ:</strong> <span><span id="dispAmag">0.00</span>, <span
+                                            id="dispAangle">0.0°</span></span>
+                                </div>
+                                <div class="data-row position-row">
+                                    <strong>Posizione:</strong>
+                                    <div class="position-values">
+                                        <span class="position-point" id="dispAtail">(0.0, 0.0)</span>
+                                        <span>→</span>
+                                        <span class="position-point" id="dispAtip">(0.0, 0.0)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Vettore B -->
+                            <div class="data-section">
+                                <div class="data-section-title">
+                                    <span class="vector-label vector-b"></span>
+                                    Vettore B
+                                </div>
+                                <div class="data-row">
+                                    <strong>Componenti:</strong> <span>(<span id="dispBx">0.00</span>, <span
+                                            id="dispBy">0.00</span>)</span>
+                                </div>
+                                <div class="data-row">
+                                    <strong>|B|, θ:</strong> <span><span id="dispBmag">0.00</span>, <span
+                                            id="dispBangle">0.0°</span></span>
+                                </div>
+                                <div class="data-row position-row">
+                                    <strong>Posizione:</strong>
+                                    <div class="position-values">
+                                        <span class="position-point" id="dispBtail">(0.0, 0.0)</span>
+                                        <span>→</span>
+                                        <span class="position-point" id="dispBtip">(0.0, 0.0)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Risultante -->
+                            <div class="data-section">
+                                <div class="data-section-title">
+                                    <span class="vector-label vector-r"></span>
+                                    Risultante R
+                                </div>
+                                <div class="data-row">
+                                    <strong>Componenti:</strong> <span>(<span id="dispRx">0.00</span>, <span
+                                            id="dispRy">0.00</span>)</span>
+                                </div>
+                                <div class="data-row">
+                                    <strong>|R|, θ:</strong> <span><span id="dispRmag">0.00</span>, <span
+                                            id="dispRangle">0.0°</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controlli Vettori -->
+            <div class="controls-row">
+                <div class="card" aria-label="Pannello dei controlli per i vettori">
+                    <h2>Controlli Vettori</h2>
+
+                    <div class="vector-controls">
+                        <div class="vector-title">
+                            <div class="vector-label vector-a"></div>
+                            <h3>Vettore a (Rosso)</h3>
+                        </div>
+                        <div class="control-group">
+                            <div class="slider-label">
+                                <label for="moduloA">Modulo |a|</label>
+                                <span class="slider-value" id="moduloA-value">40.0</span>
+                            </div>
+                            <input type="range" id="moduloA" min="0" max="100" value="40" step="1"
+                                aria-label="Modulo vettore A">
+                        </div>
+                        <div class="control-group">
+                            <div class="slider-label">
+                                <label for="angoloA">Angolo θ<sub>a</sub> (gradi)</label>
+                                <span class="slider-value" id="angoloA-value">15°</span>
+                            </div>
+                            <input type="range" id="angoloA" min="-180" max="360" value="15" step="1"
+                                aria-label="Angolo vettore A">
+                        </div>
+                    </div>
+
+                    <div class="vector-controls">
+                        <div class="vector-title">
+                            <div class="vector-label vector-b"></div>
+                            <h3>Vettore b (Blu)</h3>
+                        </div>
+                        <div class="control-group">
+                            <div class="slider-label">
+                                <label for="moduloB">Modulo |b|</label>
+                                <span class="slider-value" id="moduloB-value">38.0</span>
+                            </div>
+                            <input type="range" id="moduloB" min="0" max="100" value="38" step="1"
+                                aria-label="Modulo vettore B">
+                        </div>
+                        <div class="control-group">
+                            <div class="slider-label">
+                                <label for="angoloB">Angolo θ<sub>b</sub> (gradi)</label>
+                                <span class="slider-value" id="angoloB-value">115°</span>
+                            </div>
+                            <input type="range" id="angoloB" min="-180" max="360" value="115" step="1"
+                                aria-label="Angolo vettore B">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Azioni</h2>
+                    <button class="btn" id="resetBtn">Reimposta</button>
+                    <button class="btn btn-secondary" id="exportBtn">Esporta Dati (CSV)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Istruzioni -->
+        <details>
+            <summary>Istruzioni e Domande Guida</summary>
+            <div class="instructions">
+                <p><strong>Istruzioni:</strong> Questa è una simulazione di "Vettori Liberi". Un vettore libero può
+                    essere traslato (spostato) sul piano senza che cambino le sue proprietà fondamentali (modulo,
+                    direzione, componenti).</p>
+
+                <p><strong>Come Interagire:</strong></p>
+                <ul>
+                    <li><strong>Trascina la PUNTA (freccia)</strong> di un vettore per modificarne modulo (lunghezza) e
+                        angolo (direzione).</li>
+                    <li><strong>Trascina la CODA (punto di origine)</strong> di un vettore per spostarlo (traslarlo) sul
+                        piano.
+                        Osserva nel pannello "Dati in Tempo Reale" che le sue proprietà (componenti, modulo, angolo)
+                        rimangono
+                        invariate durante la traslazione!</li>
+                    <li>Usa gli <strong>slider</strong> sotto il canvas per un controllo preciso di modulo e angolo.
+                    </li>
+                    <li>Il <strong>pannello "Dati in Tempo Reale"</strong> (in basso a destra) può essere trascinato,
+                        ridotto/espanso cliccando sulla freccia.</li>
+                </ul>
+
+                <p><strong>Domande Guida:</strong></p>
+                <ol>
+                    <li><strong>Metodo Punta-Coda:</strong> Trascina il vettore b (blu) in modo che la sua coda coincida
+                        esattamente con la punta del vettore a (rosso). Cosa rappresenta il segmento che va dalla coda
+                        di a alla punta di b?</li>
+                    <li><strong>Verifica Grafica:</strong> Il vettore che va dalla coda di a alla punta di b ha lo
+                        stesso modulo e la stessa direzione del vettore R
+                        (verde tratteggiato) mostrato all'origine? Confronta i valori numerici!</li>
+                    <li><strong>Commutatività:</strong> Prova a invertire l'ordine: posiziona la coda di a sulla punta
+                        di b. Il risultato della somma cambia? Cosa puoi concludere sull'operazione di somma vettoriale?
+                    </li>
+                    <li><strong>Invarianza per Traslazione:</strong> Trascina solo la coda di un vettore per spostarlo.
+                        Le sue componenti
+                        cambiano? E il suo modulo? Perché si chiamano vettori "liberi"?</li>
+                    <li><strong>Dipendenza dalla Posizione:</strong> Le coordinate della coda e della punta cambiano
+                        quando sposti un vettore?
+                        Le sue proprietà intrinseche (componenti, modulo, direzione) dipendono dalla posizione?</li>
+                </ol>
+
+                <p><em>Suggerimento: Il vettore verde R (tratteggiato) rappresenta sempre la somma algebrica a + b
+                        calcolata
+                        dall'origine. Usa questo come riferimento per verificare la tua costruzione grafica col metodo
+                        punta-coda!</em></p>
+            </div>
+        </details>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Scala: 1 unità logica = 5 pixel
+        let SCALE = 5;
+        let CANVAS_WIDTH = 800;
+        let CANVAS_HEIGHT = 600;
+        let ORIGIN_X = CANVAS_WIDTH / 2;
+        let ORIGIN_Y = CANVAS_HEIGHT / 2;
+        const HIT_RADIUS = 10;
+        const ARROW_SIZE = 8;
+
+        // Colori
+        const COLOR_RED = '#c0152f';
+        const COLOR_BLUE = '#2563eb';
+        const COLOR_GREEN = '#16a34a';
+        const COLOR_GRID = 'rgba(119, 124, 124, 0.2)';
+        const COLOR_AXIS = 'rgba(119, 124, 124, 0.5)';
+
+        // Stato vettori
+        const vectorA = {
+            tailX: 0,
+            tailY: 0,
+            magnitude: 40,
+            angle: 15,
+            color: COLOR_RED
+        };
+
+        const vectorB = {
+            tailX: 0,
+            tailY: 0,
+            magnitude: 38,
+            angle: 115,
+            color: COLOR_BLUE
+        };
+
+        // Stato interazione
+        let dragState = {
+            active: false,
+            vector: null,
+            part: null, // 'tail' o 'tip'
+            offsetX: 0,
+            offsetY: 0
+        };
+
+        // Conversioni coordinate
+        function canvasToLogical(canvasX, canvasY) {
+            return {
+                x: (canvasX - ORIGIN_X) / SCALE,
+                y: (ORIGIN_Y - canvasY) / SCALE
+            };
+        }
+
+        function logicalToCanvas(logicalX, logicalY) {
+            return {
+                x: logicalX * SCALE + ORIGIN_X,
+                y: ORIGIN_Y - logicalY * SCALE
+            };
+        }
+
+        // Ridimensiona il canvas in base al contenitore
+        function resizeCanvas() {
+            const canvasContainer = document.querySelector('.canvas-section');
+            if (!canvasContainer) return;
+            const dpr = window.devicePixelRatio || 1;
+
+            // Calcola il padding effettivo dal CSS
+            const computedStyle = window.getComputedStyle(canvasContainer);
+            const paddingLeft = parseFloat(computedStyle.paddingLeft);
+            const paddingRight = parseFloat(computedStyle.paddingRight);
+            const paddingTop = parseFloat(computedStyle.paddingTop);
+            const paddingBottom = parseFloat(computedStyle.paddingBottom);
+
+            // Calcola dimensioni disponibili
+            const availableWidth = canvasContainer.clientWidth - paddingLeft - paddingRight;
+            const availableHeight = canvasContainer.clientHeight - paddingTop - paddingBottom;
+
+            // Usa tutto lo spazio disponibile
+            let cssWidth = availableWidth;
+            let cssHeight = availableHeight;
+
+            // Imposta dimensioni CSS
+            canvas.style.width = cssWidth + 'px';
+            canvas.style.height = cssHeight + 'px';
+
+            // Imposta dimensioni pixel (con DPR per nitidezza)
+            canvas.width = Math.round(cssWidth * dpr);
+            canvas.height = Math.round(cssHeight * dpr);
+
+            // Scala il contesto per disegnare in unità CSS
+            ctx.scale(dpr, dpr);
+
+            // Aggiorna variabili globali
+            CANVAS_WIDTH = cssWidth;
+            CANVAS_HEIGHT = cssHeight;
+            ORIGIN_X = CANVAS_WIDTH / 2;
+            ORIGIN_Y = CANVAS_HEIGHT / 2;
+
+            render();
+        }
+
+        // Calcola componenti vettore
+        function getComponents(vector) {
+            const angleRad = vector.angle * Math.PI / 180;
+            return {
+                x: vector.magnitude * Math.cos(angleRad),
+                y: vector.magnitude * Math.sin(angleRad)
+            };
+        }
+
+        // Calcola posizione punta
+        function getTipPosition(vector) {
+            const comp = getComponents(vector);
+            return {
+                x: vector.tailX + comp.x,
+                y: vector.tailY + comp.y
+            };
+        }
+
+        // Disegna griglia
+        function drawGrid() {
+            ctx.strokeStyle = COLOR_GRID;
+            ctx.lineWidth = 0.5;
+
+            // Linee verticali
+            for (let i = -ORIGIN_X / SCALE; i <= ORIGIN_X / SCALE; i += 10) {
+                const canvasPos = logicalToCanvas(i, 0);
+                ctx.beginPath();
+                ctx.moveTo(canvasPos.x, 0);
+                ctx.lineTo(canvasPos.x, CANVAS_HEIGHT);
+                ctx.stroke();
+            }
+
+            // Linee orizzontali
+            for (let i = -ORIGIN_Y / SCALE; i <= ORIGIN_Y / SCALE; i += 10) {
+                const canvasPos = logicalToCanvas(0, i);
+                ctx.beginPath();
+                ctx.moveTo(0, canvasPos.y);
+                ctx.lineTo(CANVAS_WIDTH, canvasPos.y);
+                ctx.stroke();
+            }
+
+            // Assi
+            ctx.strokeStyle = COLOR_AXIS;
+            ctx.lineWidth = 1.5;
+
+            // Asse X
+            ctx.beginPath();
+            ctx.moveTo(0, ORIGIN_Y);
+            ctx.lineTo(CANVAS_WIDTH, ORIGIN_Y);
+            ctx.stroke();
+
+            // Asse Y
+            ctx.beginPath();
+            ctx.moveTo(ORIGIN_X, 0);
+            ctx.lineTo(ORIGIN_X, CANVAS_HEIGHT);
+            ctx.stroke();
+
+            // Etichette assi
+            ctx.fillStyle = COLOR_AXIS;
+            ctx.font = '12px sans-serif';
+            ctx.fillText('X', CANVAS_WIDTH - 20, ORIGIN_Y - 10);
+            ctx.fillText('Y', ORIGIN_X + 10, 15);
+            ctx.fillText('(0,0)', ORIGIN_X + 5, ORIGIN_Y + 15);
+        }
+
+        // Disegna vettore
+        function drawVector(vector, label) {
+            const tail = logicalToCanvas(vector.tailX, vector.tailY);
+            const tip = getTipPosition(vector);
+            const tipCanvas = logicalToCanvas(tip.x, tip.y);
+
+            ctx.strokeStyle = vector.color;
+            ctx.fillStyle = vector.color;
+            ctx.lineWidth = 2;
+
+            // Linea vettore
+            ctx.beginPath();
+            ctx.moveTo(tail.x, tail.y);
+            ctx.lineTo(tipCanvas.x, tipCanvas.y);
+            ctx.stroke();
+
+            // Freccia
+            const angle = Math.atan2(tipCanvas.y - tail.y, tipCanvas.x - tail.x);
+            ctx.beginPath();
+            ctx.moveTo(tipCanvas.x, tipCanvas.y);
+            ctx.lineTo(
+                tipCanvas.x - ARROW_SIZE * Math.cos(angle - Math.PI / 6),
+                tipCanvas.y - ARROW_SIZE * Math.sin(angle - Math.PI / 6)
+            );
+            ctx.lineTo(
+                tipCanvas.x - ARROW_SIZE * Math.cos(angle + Math.PI / 6),
+                tipCanvas.y - ARROW_SIZE * Math.sin(angle + Math.PI / 6)
+            );
+            ctx.closePath();
+            ctx.fill();
+
+            // Coda (punto interattivo)
+            ctx.beginPath();
+            ctx.arc(tail.x, tail.y, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Punta (punto interattivo)
+            ctx.beginPath();
+            ctx.arc(tipCanvas.x, tipCanvas.y, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Etichetta
+            ctx.font = 'bold 14px sans-serif';
+            const midX = (tail.x + tipCanvas.x) / 2;
+            const midY = (tail.y + tipCanvas.y) / 2;
+            ctx.fillText(label, midX + 10, midY - 10);
+        }
+
+        // Disegna vettore risultante
+        function drawResultant() {
+            const compA = getComponents(vectorA);
+            const compB = getComponents(vectorB);
+            const rx = compA.x + compB.x;
+            const ry = compA.y + compB.y;
+
+            const origin = logicalToCanvas(0, 0);
+            const tip = logicalToCanvas(rx, ry);
+
+            ctx.strokeStyle = COLOR_GREEN;
+            ctx.fillStyle = COLOR_GREEN;
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+
+            // Linea vettore
+            ctx.beginPath();
+            ctx.moveTo(origin.x, origin.y);
+            ctx.lineTo(tip.x, tip.y);
+            ctx.stroke();
+
+            ctx.setLineDash([]);
+
+            // Freccia
+            const angle = Math.atan2(tip.y - origin.y, tip.x - origin.x);
+            ctx.beginPath();
+            ctx.moveTo(tip.x, tip.y);
+            ctx.lineTo(
+                tip.x - ARROW_SIZE * Math.cos(angle - Math.PI / 6),
+                tip.y - ARROW_SIZE * Math.sin(angle - Math.PI / 6)
+            );
+            ctx.lineTo(
+                tip.x - ARROW_SIZE * Math.cos(angle + Math.PI / 6),
+                tip.y - ARROW_SIZE * Math.sin(angle + Math.PI / 6)
+            );
+            ctx.closePath();
+            ctx.fill();
+
+            // Etichetta
+            ctx.font = 'bold 14px sans-serif';
+            ctx.fillText('R', tip.x + 10, tip.y - 10);
+        }
+
+        // Renderizza
+        function render() {
+            // Reset transform e pulisci
+            const dpr = window.devicePixelRatio || 1;
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.scale(dpr, dpr);
+
+            drawGrid();
+            drawResultant();
+            drawVector(vectorA, 'a');
+            drawVector(vectorB, 'b');
+            updateDisplay();
+        }
+
+        // Aggiorna display dati
+        function updateDisplay() {
+            const compA = getComponents(vectorA);
+            const compB = getComponents(vectorB);
+            const tipA = getTipPosition(vectorA);
+            const tipB = getTipPosition(vectorB);
+
+            // Vettore A
+            document.getElementById('dispAx').textContent = compA.x.toFixed(2);
+            document.getElementById('dispAy').textContent = compA.y.toFixed(2);
+            document.getElementById('dispAmag').textContent = vectorA.magnitude.toFixed(2);
+            document.getElementById('dispAangle').textContent = vectorA.angle.toFixed(1) + '°';
+            document.getElementById('dispAtail').textContent = `(${vectorA.tailX.toFixed(1)}, ${vectorA.tailY.toFixed(1)})`;
+            document.getElementById('dispAtip').textContent = `(${tipA.x.toFixed(1)}, ${tipA.y.toFixed(1)})`;
+
+            // Vettore B
+            document.getElementById('dispBx').textContent = compB.x.toFixed(2);
+            document.getElementById('dispBy').textContent = compB.y.toFixed(2);
+            document.getElementById('dispBmag').textContent = vectorB.magnitude.toFixed(2);
+            document.getElementById('dispBangle').textContent = vectorB.angle.toFixed(1) + '°';
+            document.getElementById('dispBtail').textContent = `(${vectorB.tailX.toFixed(1)}, ${vectorB.tailY.toFixed(1)})`;
+            document.getElementById('dispBtip').textContent = `(${tipB.x.toFixed(1)}, ${tipB.y.toFixed(1)})`;
+
+            // Risultante
+            const rx = compA.x + compB.x;
+            const ry = compA.y + compB.y;
+            const rMag = Math.sqrt(rx * rx + ry * ry);
+            const rAngle = Math.atan2(ry, rx) * 180 / Math.PI;
+
+            document.getElementById('dispRx').textContent = rx.toFixed(2);
+            document.getElementById('dispRy').textContent = ry.toFixed(2);
+            document.getElementById('dispRmag').textContent = rMag.toFixed(2);
+            document.getElementById('dispRangle').textContent = rAngle.toFixed(1) + '°';
+        }
+
+        // Hit detection
+        function checkHit(canvasX, canvasY, vector) {
+            const tail = logicalToCanvas(vector.tailX, vector.tailY);
+            const tip = getTipPosition(vector);
+            const tipCanvas = logicalToCanvas(tip.x, tip.y);
+
+            const distTail = Math.sqrt(Math.pow(canvasX - tail.x, 2) + Math.pow(canvasY - tail.y, 2));
+            const distTip = Math.sqrt(Math.pow(canvasX - tipCanvas.x, 2) + Math.pow(canvasY - tipCanvas.y, 2));
+
+            if (distTip < HIT_RADIUS) return 'tip';
+            if (distTail < HIT_RADIUS) return 'tail';
+            return null;
+        }
+
+        // Event handlers
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const canvasX = e.clientX - rect.left;
+            const canvasY = e.clientY - rect.top;
+
+            // Prova A poi B (priorità visiva)
+            let hit = checkHit(canvasX, canvasY, vectorB);
+            if (hit) {
+                dragState = { active: true, vector: vectorB, part: hit, offsetX: 0, offsetY: 0 };
+                return;
+            }
+
+            hit = checkHit(canvasX, canvasY, vectorA);
+            if (hit) {
+                dragState = { active: true, vector: vectorA, part: hit, offsetX: 0, offsetY: 0 };
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!dragState.active) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const canvasX = e.clientX - rect.left;
+            const canvasY = e.clientY - rect.top;
+            const logical = canvasToLogical(canvasX, canvasY);
+
+            if (dragState.part === 'tail') {
+                // Trasla il vettore
+                dragState.vector.tailX = logical.x;
+                dragState.vector.tailY = logical.y;
+            } else if (dragState.part === 'tip') {
+                // Modifica modulo e angolo
+                const dx = logical.x - dragState.vector.tailX;
+                const dy = logical.y - dragState.vector.tailY;
+                dragState.vector.magnitude = Math.sqrt(dx * dx + dy * dy);
+                dragState.vector.angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+                // Aggiorna slider
+                if (dragState.vector === vectorA) {
+                    document.getElementById('moduloA').value = dragState.vector.magnitude;
+                    document.getElementById('angoloA').value = dragState.vector.angle;
+                    document.getElementById('moduloA-value').textContent = dragState.vector.magnitude.toFixed(1);
+                    document.getElementById('angoloA-value').textContent = dragState.vector.angle.toFixed(0) + '°';
+                } else {
+                    document.getElementById('moduloB').value = dragState.vector.magnitude;
+                    document.getElementById('angoloB').value = dragState.vector.angle;
+                    document.getElementById('moduloB-value').textContent = dragState.vector.magnitude.toFixed(1);
+                    document.getElementById('angoloB-value').textContent = dragState.vector.angle.toFixed(0) + '°';
+                }
+            }
+
+            render();
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            dragState.active = false;
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            dragState.active = false;
+        });
+
+        // Slider controls
+        document.getElementById('moduloA').addEventListener('input', (e) => {
+            vectorA.magnitude = parseFloat(e.target.value);
+            document.getElementById('moduloA-value').textContent = vectorA.magnitude.toFixed(1);
+            render();
+        });
+
+        document.getElementById('angoloA').addEventListener('input', (e) => {
+            vectorA.angle = parseFloat(e.target.value);
+            document.getElementById('angoloA-value').textContent = vectorA.angle.toFixed(0) + '°';
+            render();
+        });
+
+        document.getElementById('moduloB').addEventListener('input', (e) => {
+            vectorB.magnitude = parseFloat(e.target.value);
+            document.getElementById('moduloB-value').textContent = vectorB.magnitude.toFixed(1);
+            render();
+        });
+
+        document.getElementById('angoloB').addEventListener('input', (e) => {
+            vectorB.angle = parseFloat(e.target.value);
+            document.getElementById('angoloB-value').textContent = vectorB.angle.toFixed(0) + '°';
+            render();
+        });
+
+        // Reset button
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            vectorA.tailX = 0;
+            vectorA.tailY = 0;
+            vectorA.magnitude = 40;
+            vectorA.angle = 15;
+            vectorB.tailX = 0;
+            vectorB.tailY = 0;
+            vectorB.magnitude = 38;
+            vectorB.angle = 115;
+
+            document.getElementById('moduloA').value = '40';
+            document.getElementById('angoloA').value = '15';
+            document.getElementById('moduloB').value = '38';
+            document.getElementById('angoloB').value = '115';
+            document.getElementById('moduloA-value').textContent = '40.0';
+            document.getElementById('angoloA-value').textContent = '15°';
+            document.getElementById('moduloB-value').textContent = '38.0';
+            document.getElementById('angoloB-value').textContent = '115°';
+
+            render();
+        });
+
+        // Export CSV
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            const compA = getComponents(vectorA);
+            const compB = getComponents(vectorB);
+            const tipA = getTipPosition(vectorA);
+            const tipB = getTipPosition(vectorB);
+            const rx = compA.x + compB.x;
+            const ry = compA.y + compB.y;
+            const rMag = Math.sqrt(rx * rx + ry * ry);
+            const rAngle = Math.atan2(ry, rx) * 180 / Math.PI;
+
+            const csv = [
+                'Vettore,Proprieta_Modulo,Proprieta_Angolo,Proprieta_X,Proprieta_Y,Pos_Coda_X,Pos_Coda_Y,Pos_Punta_X,Pos_Punta_Y',
+                `A (Rosso),${vectorA.magnitude.toFixed(2)},${vectorA.angle.toFixed(2)},${compA.x.toFixed(2)},${compA.y.toFixed(2)},${vectorA.tailX.toFixed(2)},${vectorA.tailY.toFixed(2)},${tipA.x.toFixed(2)},${tipA.y.toFixed(2)}`,
+                `B (Blu),${vectorB.magnitude.toFixed(2)},${vectorB.angle.toFixed(2)},${compB.x.toFixed(2)},${compB.y.toFixed(2)},${vectorB.tailX.toFixed(2)},${vectorB.tailY.toFixed(2)},${tipB.x.toFixed(2)},${tipB.y.toFixed(2)}`,
+                `R (Verde),${rMag.toFixed(2)},${rAngle.toFixed(2)},${rx.toFixed(2)},${ry.toFixed(2)},0.00,0.00,${rx.toFixed(2)},${ry.toFixed(2)}`
+            ].join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'dati_vettori_liberi.csv';
+            link.click();
+        });
+
+        // Toggle collapse overlay
+        const canvasOverlay = document.querySelector('.canvas-overlay');
+        const toggleOverlayBtn = document.getElementById('toggleOverlay');
+        if (toggleOverlayBtn) {
+            toggleOverlayBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                canvasOverlay.classList.toggle('collapsed');
+            });
+        }
+
+        // Drag functionality for canvas overlay
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        const overlayHeader = document.querySelector('.overlay-header');
+
+        overlayHeader.addEventListener('mousedown', dragStart);
+        overlayHeader.addEventListener('touchstart', dragStart);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('touchmove', drag);
+        document.addEventListener('mouseup', dragEnd);
+        document.addEventListener('touchend', dragEnd);
+
+        function dragStart(e) {
+            // Don't start drag if clicking the toggle button
+            if (e.target.closest('.toggle-btn')) {
+                return;
+            }
+
+            if (e.type === 'touchstart') {
+                initialX = e.touches[0].clientX - xOffset;
+                initialY = e.touches[0].clientY - yOffset;
+            } else {
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
+            }
+
+            isDragging = true;
+            canvasOverlay.classList.add('dragging');
+        }
+
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault();
+
+                if (e.type === 'touchmove') {
+                    currentX = e.touches[0].clientX - initialX;
+                    currentY = e.touches[0].clientY - initialY;
+                } else {
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                }
+
+                xOffset = currentX;
+                yOffset = currentY;
+
+                setTranslate(currentX, currentY, canvasOverlay);
+            }
+        }
+
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+            canvasOverlay.classList.remove('dragging');
+        }
+
+        function setTranslate(xPos, yPos, el) {
+            el.style.transform = `translate(${xPos}px, ${yPos}px)`;
+        }
+
+        // Reset overlay position on resize
+        function resetOverlayPosition() {
+            xOffset = 0;
+            yOffset = 0;
+            currentX = 0;
+            currentY = 0;
+            if (canvasOverlay) {
+                canvasOverlay.style.transform = 'translate(0px, 0px)';
+            }
+        }
+
+        // Inizializza
+        resizeCanvas();
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            resetOverlayPosition();
+        });
+        render();
+    </script>
+</body>
+
+</html>

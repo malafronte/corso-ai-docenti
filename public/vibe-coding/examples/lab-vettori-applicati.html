@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio Virtuale - Composizione di Vettori</title>
+    <style>
+        :root {
+            --color-primary: #21808d;
+            --color-primary-hover: #1d7480;
+            --color-surface: #fffffe;
+            --color-background: #fcfcf9;
+            --color-text: #13343b;
+            --color-text-secondary: #626c71;
+            --color-border: rgba(94, 82, 64, 0.2);
+            --color-red: #c0152f;
+            --color-blue: #2563eb;
+            --color-green: #16a34a;
+            --color-card-border: rgba(94, 82, 64, 0.12);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-24: 24px;
+            --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        /* Tema fisso chiaro: sezione dark rimossa per coerenza con il tema light del sito */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.5;
+            padding: var(--space-24);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: var(--space-8);
+            color: var(--color-text);
+        }
+
+        .subtitle {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-24);
+            font-size: 14px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: var(--space-24);
+            margin-bottom: var(--space-24);
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--color-surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-card-border);
+            box-shadow: var(--shadow-sm);
+            padding: var(--space-24);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: var(--space-16);
+            color: var(--color-text);
+        }
+
+        .control-group {
+            margin-bottom: var(--space-24);
+            padding-bottom: var(--space-24);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .control-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .control-group h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: var(--space-16);
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+        }
+
+        .vector-label {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .vector-a {
+            background-color: var(--color-red);
+        }
+
+        .vector-b {
+            background-color: var(--color-blue);
+        }
+
+        .vector-r {
+            background-color: var(--color-green);
+        }
+
+        .slider-control {
+            margin-bottom: var(--space-16);
+        }
+
+        .slider-control:last-child {
+            margin-bottom: 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-8);
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        .slider-value {
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--color-border);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: var(--color-primary-hover);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+            border: none;
+            transition: background 0.15s;
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .canvas-container {
+            position: relative;
+            background-color: var(--color-surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-card-border);
+            box-shadow: var(--shadow-sm);
+            padding: var(--space-16);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
+            .canvas-container {
+                padding: var(--space-8);
+                aspect-ratio: auto;
+                /* Rimuovi vincolo quadrato su mobile */
+                min-height: 500px;
+                /* Altezza minima */
+                height: 70vh;
+                /* Usa altezza viewport su mobile */
+                max-height: 800px;
+            }
+        }
+
+        .canvas-overlay {
+            position: absolute;
+            top: var(--space-16);
+            right: var(--space-16);
+            background-color: rgba(255, 255, 254, 0.95);
+            border-radius: var(--radius-base);
+            border: 1px solid var(--color-card-border);
+            box-shadow: var(--shadow-md);
+            padding: 0;
+            font-size: 13px;
+            max-width: 240px;
+            z-index: 10;
+            -webkit-user-select: none;
+            user-select: none;
+            transition: box-shadow 0.2s;
+        }
+
+        .canvas-overlay:hover {
+            box-shadow: 0 8px 16px -2px rgba(0, 0, 0, 0.08), 0 4px 8px -2px rgba(0, 0, 0, 0.04);
+        }
+
+        .canvas-overlay.dragging {
+            box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.12), 0 6px 12px -4px rgba(0, 0, 0, 0.06);
+            cursor: grabbing;
+        }
+
+        .overlay-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-12);
+            cursor: move;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .canvas-overlay.collapsed .overlay-header {
+            border-bottom: none;
+        }
+
+        .overlay-header h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+            color: var(--color-text);
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-text-secondary);
+            transition: color 0.2s, transform 0.2s;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .toggle-btn:hover {
+            color: var(--color-primary);
+        }
+
+        .canvas-overlay.collapsed .toggle-btn {
+            transform: rotate(180deg);
+        }
+
+        .overlay-content {
+            padding: var(--space-12);
+            max-height: 500px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+        }
+
+        .canvas-overlay.collapsed .overlay-content {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        @media (max-width: 768px) {
+            .canvas-overlay {
+                top: var(--space-8);
+                right: var(--space-8);
+                font-size: 12px;
+                max-width: 200px;
+            }
+
+            .overlay-header {
+                padding: var(--space-8);
+            }
+
+            .overlay-header h3 {
+                font-size: 13px;
+            }
+
+            .overlay-content {
+                padding: var(--space-8);
+            }
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .data-display {
+            display: grid;
+            gap: var(--space-12);
+        }
+
+        .data-row {
+            padding: var(--space-12);
+            background-color: var(--color-background);
+            border-radius: var(--radius-base);
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .data-row strong {
+            color: var(--color-text);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: var(--radius-base);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s;
+            border: none;
+            background: var(--color-primary);
+            color: white;
+            width: 100%;
+            margin-top: var(--space-16);
+        }
+
+        .btn:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--color-primary);
+            border: 1px solid var(--color-card-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-background);
+        }
+
+        details {
+            margin-top: var(--space-24);
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            padding: var(--space-12);
+            background-color: var(--color-surface);
+            border-radius: var(--radius-base);
+            border: 1px solid var(--color-card-border);
+            margin-bottom: var(--space-12);
+        }
+
+        summary:hover {
+            background-color: var(--color-background);
+        }
+
+        .instructions {
+            background-color: var(--color-surface);
+            border-radius: var(--radius-base);
+            border: 1px solid var(--color-card-border);
+            padding: var(--space-16);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .instructions p {
+            margin-bottom: var(--space-12);
+        }
+
+        .instructions ol {
+            margin-left: var(--space-24);
+        }
+
+        .instructions li {
+            margin-bottom: var(--space-8);
+        }
+
+        /* Controlli aggiuntivi */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        .nudge-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-8);
+            margin-top: var(--space-8);
+        }
+
+        .nudge-btn {
+            padding: 6px 10px;
+            background: var(--color-background);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-base);
+            color: var(--color-text);
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .nudge-btn:hover {
+            background: var(--color-surface);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Laboratorio Virtuale - Composizione di Vettori nel Piano</h1>
+        <p class="subtitle">Manipola i vettori e osserva in tempo reale la loro somma vettoriale</p>
+
+        <div class="main-grid">
+            <!-- Pannello Controlli -->
+            <div>
+                <div class="card" aria-label="Pannello dei controlli per i vettori">
+                    <h2>Controlli</h2>
+
+                    <!-- Vettore A -->
+                    <div class="control-group">
+                        <h3><span class="vector-label vector-a"></span> Vettore A (Rosso)</h3>
+
+                        <div class="slider-control">
+                            <div class="slider-label">
+                                <span>Modulo |A|</span>
+                                <span class="slider-value" id="moduloA-value">50.00</span>
+                            </div>
+                            <input type="range" id="moduloA" min="0" max="100" step="0.1" value="50"
+                                aria-label="Modulo del vettore A" title="Modulo del vettore A">
+                        </div>
+
+                        <div class="slider-control">
+                            <div class="slider-label">
+                                <span>Angolo θ<sub>a</sub></span>
+                                <span class="slider-value" id="angoloA-value">45.0°</span>
+                            </div>
+                            <input type="range" id="angoloA" min="0" max="360" step="0.5" value="45"
+                                aria-label="Angolo del vettore A in gradi" title="Angolo del vettore A (gradi)">
+                            <div class="nudge-group" aria-label="Regolazioni rapide angolo A">
+                                <button type="button" class="nudge-btn" data-target="A" data-delta="-15"
+                                    aria-label="Riduci angolo A di 15 gradi">−15°</button>
+                                <button type="button" class="nudge-btn" data-target="A" data-delta="-1"
+                                    aria-label="Riduci angolo A di 1 grado">−1°</button>
+                                <button type="button" class="nudge-btn" data-target="A" data-delta="1"
+                                    aria-label="Aumenta angolo A di 1 grado">+1°</button>
+                                <button type="button" class="nudge-btn" data-target="A" data-delta="15"
+                                    aria-label="Aumenta angolo A di 15 gradi">+15°</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vettore B -->
+                    <div class="control-group">
+                        <h3><span class="vector-label vector-b"></span> Vettore B (Blu)</h3>
+
+                        <div class="slider-control">
+                            <div class="slider-label">
+                                <span>Modulo |B|</span>
+                                <span class="slider-value" id="moduloB-value">40.00</span>
+                            </div>
+                            <input type="range" id="moduloB" min="0" max="100" step="0.1" value="40"
+                                aria-label="Modulo del vettore B" title="Modulo del vettore B">
+                        </div>
+
+                        <div class="slider-control">
+                            <div class="slider-label">
+                                <span>Angolo θ<sub>b</sub></span>
+                                <span class="slider-value" id="angoloB-value">120.0°</span>
+                            </div>
+                            <input type="range" id="angoloB" min="0" max="360" step="0.5" value="120"
+                                aria-label="Angolo del vettore B in gradi" title="Angolo del vettore B (gradi)">
+                            <div class="nudge-group" aria-label="Regolazioni rapide angolo B">
+                                <button type="button" class="nudge-btn" data-target="B" data-delta="-15"
+                                    aria-label="Riduci angolo B di 15 gradi">−15°</button>
+                                <button type="button" class="nudge-btn" data-target="B" data-delta="-1"
+                                    aria-label="Riduci angolo B di 1 grado">−1°</button>
+                                <button type="button" class="nudge-btn" data-target="B" data-delta="1"
+                                    aria-label="Aumenta angolo B di 1 grado">+1°</button>
+                                <button type="button" class="nudge-btn" data-target="B" data-delta="15"
+                                    aria-label="Aumenta angolo B di 15 gradi">+15°</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Impostazioni Canvas -->
+                    <div class="control-group">
+                        <h3>Impostazioni Canvas</h3>
+                        <div class="slider-control">
+                            <div class="slider-label">
+                                <span>Scala (px per unità)</span>
+                                <span class="slider-value" id="scale-value">3.0</span>
+                            </div>
+                            <input type="range" id="scaleSlider" min="1" max="10" step="0.5" value="3"
+                                aria-label="Scala del canvas in pixel per unità"
+                                title="Scala del canvas (pixel per unità)">
+                        </div>
+                    </div>
+
+                    <!-- Opzioni di Visualizzazione -->
+                    <div class="control-group">
+                        <h3>Opzioni di Visualizzazione</h3>
+                        <label class="toggle-row">
+                            <input type="checkbox" id="toggleParallelogram" checked
+                                aria-label="Mostra parallelogramma tratteggiato"
+                                title="Mostra/Nascondi il parallelogramma tratteggiato">
+                            Mostra parallelogramma (tratteggiato)
+                        </label>
+                    </div>
+
+                    <button class="btn" id="resetBtn" aria-label="Reimposta i valori dei vettori"
+                        title="Reimposta i valori">Reimposta</button>
+                    <button class="btn btn-secondary" id="exportBtn" aria-label="Esporta i dati in formato CSV"
+                        title="Esporta i dati in CSV">Esporta Dati (CSV)</button>
+                </div>
+            </div>
+
+            <!-- Area Canvas -->
+            <div class="canvas-container">
+                <canvas id="vectorCanvas" width="700" height="700" role="img"
+                    aria-label="Piano cartesiano con vettori A, B e risultante R"></canvas>
+
+                <!-- Dati in Tempo Reale - Overlay -->
+                <div class="canvas-overlay">
+                    <div class="overlay-header">
+                        <h3>Dati in Tempo Reale</h3>
+                        <button class="toggle-btn" id="toggleOverlay" aria-label="Comprimi/Espandi pannello dati"
+                            title="Comprimi/Espandi">
+                            ▼
+                        </button>
+                    </div>
+                    <div class="overlay-content">
+                        <div class="data-display">
+                            <div class="data-row">
+                                <strong>Vettore A:</strong><br>
+                                A<sub>x</sub> = <span id="ax">0.00</span>, A<sub>y</sub> = <span id="ay">0.00</span>
+                            </div>
+                            <div class="data-row">
+                                <strong>Vettore B:</strong><br>
+                                B<sub>x</sub> = <span id="bx">0.00</span>, B<sub>y</sub> = <span id="by">0.00</span>
+                            </div>
+                            <div class="data-row">
+                                <strong>Vettore Risultante R:</strong><br>
+                                R<sub>x</sub> = <span id="rx">0.00</span>, R<sub>y</sub> = <span id="ry">0.00</span><br>
+                                |R| = <span id="moduloR">0.00</span>, θ<sub>R</sub> = <span id="angoloR">0.0°</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Istruzioni -->
+        <details>
+            <summary>Istruzioni e Domande Guida</summary>
+            <div class="instructions">
+                <p><strong>Istruzioni:</strong> Usa gli slider per modificare il modulo (lunghezza) e l'angolo di A
+                    (rosso) e B (blu). Osserva come cambiano le loro componenti (x, y) e come si aggiorna il vettore
+                    risultante R (verde).</p>
+
+                <p><strong>Domande Guida:</strong></p>
+                <ol>
+                    <li>Cosa succede a R se rendi A e B uguali e opposti (stesso modulo, angoli differenti di 180°)?
+                    </li>
+                    <li>Come puoi ottenere il vettore R con il modulo più grande possibile? E quello con il modulo più
+                        piccolo?</li>
+                    <li>Imposta A a (Modulo=50, Angolo=0°) e B a (Modulo=50, Angolo=90°). Quali sono il modulo e
+                        l'angolo di R? Verifica la tua previsione.</li>
+                </ol>
+            </div>
+        </details>
+    </div>
+
+    <script>
+        // Riferimenti agli elementi DOM
+        const canvas = document.getElementById('vectorCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const moduloASlider = document.getElementById('moduloA');
+        const angoloASlider = document.getElementById('angoloA');
+        const moduloBSlider = document.getElementById('moduloB');
+        const angoloBSlider = document.getElementById('angoloB');
+
+        const moduloAValue = document.getElementById('moduloA-value');
+        const angoloAValue = document.getElementById('angoloA-value');
+        const moduloBValue = document.getElementById('moduloB-value');
+        const angoloBValue = document.getElementById('angoloB-value');
+
+        const axDisplay = document.getElementById('ax');
+        const ayDisplay = document.getElementById('ay');
+        const bxDisplay = document.getElementById('bx');
+        const byDisplay = document.getElementById('by');
+        const rxDisplay = document.getElementById('rx');
+        const ryDisplay = document.getElementById('ry');
+        const moduloRDisplay = document.getElementById('moduloR');
+        const angoloRDisplay = document.getElementById('angoloR');
+
+        const exportBtn = document.getElementById('exportBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const scaleSlider = document.getElementById('scaleSlider');
+        const scaleValue = document.getElementById('scale-value');
+        const canvasContainer = document.querySelector('.canvas-container');
+        const canvasOverlay = document.querySelector('.canvas-overlay');
+
+        // Dimensioni canvas (responsive, aggiornate dinamicamente)
+        let CANVAS_WIDTH = 700;
+        let CANVAS_HEIGHT = 700;
+        let CENTER_X = CANVAS_WIDTH / 2;
+        let CENTER_Y = CANVAS_HEIGHT / 2;
+        let SCALE = 3; // Pixel per unità (regolabile)
+
+        // Colori
+        const COLOR_RED = '#c0152f';
+        const COLOR_BLUE = '#2563eb';
+        const COLOR_GREEN = '#16a34a';
+        const COLOR_GRID = 'rgba(119, 124, 124, 0.2)';
+        const COLOR_AXIS = 'rgba(119, 124, 124, 0.5)';
+        const COLOR_DASHED = 'rgba(119, 124, 124, 0.4)';
+        let SHOW_PARALLELOGRAM = true;
+
+        // Dati dei vettori
+        let vectorData = {
+            a: { modulo: 50, angolo: 45, x: 0, y: 0 },
+            b: { modulo: 40, angolo: 120, x: 0, y: 0 },
+            r: { x: 0, y: 0, modulo: 0, angolo: 0 }
+        };
+
+        // Conversione gradi -> radianti
+        function toRadians(degrees) {
+            return degrees * Math.PI / 180;
+        }
+
+        // Conversione radianti -> gradi
+        function toDegrees(radians) {
+            return radians * 180 / Math.PI;
+        }
+
+        // Normalizza angolo tra 0 e 360
+        function normalizeAngle(degrees) {
+            let angle = degrees % 360;
+            if (angle < 0) angle += 360;
+            return angle;
+        }
+
+        // Ridimensiona il canvas in base al contenitore
+        function resizeCanvas() {
+            if (!canvasContainer) return;
+            const dpr = window.devicePixelRatio || 1;
+
+            // Calcola il padding effettivo dal CSS
+            const computedStyle = window.getComputedStyle(canvasContainer);
+            const paddingLeft = parseFloat(computedStyle.paddingLeft);
+            const paddingRight = parseFloat(computedStyle.paddingRight);
+            const paddingTop = parseFloat(computedStyle.paddingTop);
+            const paddingBottom = parseFloat(computedStyle.paddingBottom);
+
+            // Calcola dimensioni disponibili
+            const availableWidth = canvasContainer.clientWidth - paddingLeft - paddingRight;
+            const availableHeight = canvasContainer.clientHeight - paddingTop - paddingBottom;
+
+            // Su schermi larghi mantieni quadrato, su mobile usa tutto lo spazio disponibile
+            let cssWidth, cssHeight;
+            if (window.innerWidth > 768) {
+                // Desktop: mantieni quadrato
+                const size = Math.min(availableWidth, availableHeight);
+                cssWidth = size;
+                cssHeight = size;
+            } else {
+                // Mobile: usa larghezza disponibile e altezza massima
+                cssWidth = availableWidth;
+                cssHeight = Math.max(availableWidth, availableHeight);
+            }
+
+            // Imposta dimensioni CSS
+            canvas.style.width = cssWidth + 'px';
+            canvas.style.height = cssHeight + 'px';
+
+            // Imposta dimensioni pixel (con DPR per nitidezza)
+            canvas.width = Math.round(cssWidth * dpr);
+            canvas.height = Math.round(cssHeight * dpr);
+
+            // Scala il contesto per disegnare in unità CSS
+            ctx.scale(dpr, dpr);
+
+            // Aggiorna variabili globali
+            CANVAS_WIDTH = cssWidth;
+            CANVAS_HEIGHT = cssHeight;
+            CENTER_X = CANVAS_WIDTH / 2;
+            CENTER_Y = CANVAS_HEIGHT / 2;
+
+            render();
+        }        // Calcola componenti e risultante
+        function calculateVectors() {
+            // Vettore A
+            const radiansA = toRadians(vectorData.a.angolo);
+            vectorData.a.x = vectorData.a.modulo * Math.cos(radiansA);
+            vectorData.a.y = vectorData.a.modulo * Math.sin(radiansA);
+
+            // Vettore B
+            const radiansB = toRadians(vectorData.b.angolo);
+            vectorData.b.x = vectorData.b.modulo * Math.cos(radiansB);
+            vectorData.b.y = vectorData.b.modulo * Math.sin(radiansB);
+
+            // Vettore Risultante
+            vectorData.r.x = vectorData.a.x + vectorData.b.x;
+            vectorData.r.y = vectorData.a.y + vectorData.b.y;
+            vectorData.r.modulo = Math.sqrt(vectorData.r.x * vectorData.r.x + vectorData.r.y * vectorData.r.y);
+            vectorData.r.angolo = normalizeAngle(toDegrees(Math.atan2(vectorData.r.y, vectorData.r.x)));
+        }
+
+        // Aggiorna i display numerici
+        function updateDisplays() {
+            moduloAValue.textContent = vectorData.a.modulo.toFixed(2);
+            angoloAValue.textContent = vectorData.a.angolo.toFixed(1) + '°';
+            moduloBValue.textContent = vectorData.b.modulo.toFixed(2);
+            angoloBValue.textContent = vectorData.b.angolo.toFixed(1) + '°';
+
+            axDisplay.textContent = vectorData.a.x.toFixed(2);
+            ayDisplay.textContent = vectorData.a.y.toFixed(2);
+            bxDisplay.textContent = vectorData.b.x.toFixed(2);
+            byDisplay.textContent = vectorData.b.y.toFixed(2);
+            rxDisplay.textContent = vectorData.r.x.toFixed(2);
+            ryDisplay.textContent = vectorData.r.y.toFixed(2);
+            moduloRDisplay.textContent = vectorData.r.modulo.toFixed(2);
+            angoloRDisplay.textContent = vectorData.r.angolo.toFixed(1) + '°';
+        }
+
+        // Disegna freccia
+        function drawArrow(fromX, fromY, toX, toY, color, lineWidth = 2, dashed = false) {
+            ctx.save();
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = lineWidth;
+
+            if (dashed) {
+                ctx.setLineDash([5, 5]);
+                ctx.globalAlpha = 0.6;
+            }
+
+            // Linea
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.stroke();
+
+            // Punta della freccia
+            const headLength = 12;
+            const dx = toX - fromX;
+            const dy = toY - fromY;
+            const angle = Math.atan2(dy, dx);
+
+            ctx.beginPath();
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(
+                toX - headLength * Math.cos(angle - Math.PI / 6),
+                toY - headLength * Math.sin(angle - Math.PI / 6)
+            );
+            ctx.lineTo(
+                toX - headLength * Math.cos(angle + Math.PI / 6),
+                toY - headLength * Math.sin(angle + Math.PI / 6)
+            );
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        // Disegna griglia e assi
+        function drawGrid() {
+            ctx.save();
+
+            // Griglia
+            ctx.strokeStyle = COLOR_GRID;
+            ctx.lineWidth = 1;
+            const gridSpacing = 20 * SCALE; // 20 unità
+
+            for (let x = 0; x <= CANVAS_WIDTH; x += gridSpacing) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, CANVAS_HEIGHT);
+                ctx.stroke();
+            }
+
+            for (let y = 0; y <= CANVAS_HEIGHT; y += gridSpacing) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(CANVAS_WIDTH, y);
+                ctx.stroke();
+            }
+
+            // Assi principali
+            ctx.strokeStyle = COLOR_AXIS;
+            ctx.lineWidth = 2;
+
+            // Asse X
+            ctx.beginPath();
+            ctx.moveTo(0, CENTER_Y);
+            ctx.lineTo(CANVAS_WIDTH, CENTER_Y);
+            ctx.stroke();
+
+            // Asse Y
+            ctx.beginPath();
+            ctx.moveTo(CENTER_X, 0);
+            ctx.lineTo(CENTER_X, CANVAS_HEIGHT);
+            ctx.stroke();
+
+            // Etichette assi
+            ctx.fillStyle = COLOR_AXIS;
+            ctx.font = '14px sans-serif';
+            ctx.fillText('X', CANVAS_WIDTH - 20, CENTER_Y - 10);
+            ctx.fillText('Y', CENTER_X + 10, 20);
+
+            ctx.restore();
+        }
+
+        // Disegna vettori
+        function drawVectors() {
+            // Converti coordinate da unità a pixel
+            const aEndX = CENTER_X + vectorData.a.x * SCALE;
+            const aEndY = CENTER_Y - vectorData.a.y * SCALE;
+
+            const bEndX = CENTER_X + vectorData.b.x * SCALE;
+            const bEndY = CENTER_Y - vectorData.b.y * SCALE;
+
+            const rEndX = CENTER_X + vectorData.r.x * SCALE;
+            const rEndY = CENTER_Y - vectorData.r.y * SCALE;
+
+            // Disegna parallelogramma (vettori tratteggiati)
+            if (SHOW_PARALLELOGRAM && vectorData.a.modulo > 0 && vectorData.b.modulo > 0) {
+                // Copia di B partendo dalla punta di A
+                drawArrow(aEndX, aEndY, rEndX, rEndY, COLOR_DASHED, 1.5, true);
+
+                // Copia di A partendo dalla punta di B
+                drawArrow(bEndX, bEndY, rEndX, rEndY, COLOR_DASHED, 1.5, true);
+            }
+
+            // Disegna vettori principali dall'origine
+            if (vectorData.a.modulo > 0) {
+                drawArrow(CENTER_X, CENTER_Y, aEndX, aEndY, COLOR_RED, 2.5);
+            }
+
+            if (vectorData.b.modulo > 0) {
+                drawArrow(CENTER_X, CENTER_Y, bEndX, bEndY, COLOR_BLUE, 2.5);
+            }
+
+            if (vectorData.r.modulo > 0) {
+                drawArrow(CENTER_X, CENTER_Y, rEndX, rEndY, COLOR_GREEN, 3);
+            }
+
+            // Etichette vettori
+            ctx.font = 'bold 16px sans-serif';
+
+            if (vectorData.a.modulo > 0) {
+                ctx.fillStyle = COLOR_RED;
+                ctx.fillText('A', aEndX + 10, aEndY - 10);
+            }
+
+            if (vectorData.b.modulo > 0) {
+                ctx.fillStyle = COLOR_BLUE;
+                ctx.fillText('B', bEndX + 10, bEndY - 10);
+            }
+
+            if (vectorData.r.modulo > 0) {
+                ctx.fillStyle = COLOR_GREEN;
+                ctx.fillText('R', rEndX + 10, rEndY - 10);
+            }
+        }
+
+        // Ridisegna tutto
+        function render() {
+            // Reset transform e pulisci
+            const dpr = window.devicePixelRatio || 1;
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.scale(dpr, dpr);
+
+            drawGrid();
+            drawVectors();
+        }
+
+        // Aggiorna tutto
+        function update() {
+            calculateVectors();
+            updateDisplays();
+            render();
+        }
+
+        // Event listeners per gli slider
+        moduloASlider.oninput = function () {
+            vectorData.a.modulo = parseFloat(this.value);
+            update();
+        };
+
+        angoloASlider.oninput = function () {
+            vectorData.a.angolo = parseFloat(this.value);
+            update();
+        };
+
+        moduloBSlider.oninput = function () {
+            vectorData.b.modulo = parseFloat(this.value);
+            update();
+        };
+
+        angoloBSlider.oninput = function () {
+            vectorData.b.angolo = parseFloat(this.value);
+            update();
+        };
+
+        // Cambio scala canvas
+        if (scaleSlider && scaleValue) {
+            scaleSlider.oninput = function () {
+                SCALE = parseFloat(this.value);
+                scaleValue.textContent = SCALE.toFixed(1);
+                render(); // la scala non influisce sui dati numerici, solo sul disegno
+            };
+        }
+
+        // Pulsante Reimposta
+        if (resetBtn) {
+            resetBtn.onclick = function () {
+                // Valori di default
+                vectorData = {
+                    a: { modulo: 50, angolo: 45, x: 0, y: 0 },
+                    b: { modulo: 40, angolo: 120, x: 0, y: 0 },
+                    r: { x: 0, y: 0, modulo: 0, angolo: 0 }
+                };
+                // Aggiorna slider
+                moduloASlider.value = '50';
+                angoloASlider.value = '45';
+                moduloBSlider.value = '40';
+                angoloBSlider.value = '120';
+                // Scala
+                if (scaleSlider && scaleValue) {
+                    SCALE = 3;
+                    scaleSlider.value = '3';
+                    scaleValue.textContent = '3.0';
+                }
+                // Parallelogramma
+                const toggleParallelogram = document.getElementById('toggleParallelogram');
+                if (toggleParallelogram) {
+                    SHOW_PARALLELOGRAM = true;
+                    toggleParallelogram.checked = true;
+                }
+                update();
+            };
+        }
+
+        // Toggle parallelogramma tratteggiato
+        const toggleParallelogram = document.getElementById('toggleParallelogram');
+        if (toggleParallelogram) {
+            toggleParallelogram.onchange = function () {
+                SHOW_PARALLELOGRAM = this.checked;
+                render();
+            };
+        }
+
+        // Bottoni nudge angoli
+        function nudgeAngle(target, delta) {
+            if (target === 'A') {
+                vectorData.a.angolo = normalizeAngle(vectorData.a.angolo + delta);
+                angoloASlider.value = vectorData.a.angolo.toString();
+            } else if (target === 'B') {
+                vectorData.b.angolo = normalizeAngle(vectorData.b.angolo + delta);
+                angoloBSlider.value = vectorData.b.angolo.toString();
+            }
+            update();
+        }
+
+        document.querySelectorAll('.nudge-btn').forEach(btn => {
+            btn.onclick = function () {
+                const target = this.getAttribute('data-target');
+                const delta = parseFloat(this.getAttribute('data-delta'));
+                nudgeAngle(target, delta);
+            };
+        });
+
+        // Funzione di esportazione CSV
+        exportBtn.onclick = function () {
+            const csvContent =
+                'Vettore,Modulo,Angolo(°),Componente_X,Componente_Y\n' +
+                `A (Rosso),${vectorData.a.modulo.toFixed(2)},${vectorData.a.angolo.toFixed(1)},${vectorData.a.x.toFixed(2)},${vectorData.a.y.toFixed(2)}\n` +
+                `B (Blu),${vectorData.b.modulo.toFixed(2)},${vectorData.b.angolo.toFixed(1)},${vectorData.b.x.toFixed(2)},${vectorData.b.y.toFixed(2)}\n` +
+                `R (Verde),${vectorData.r.modulo.toFixed(2)},${vectorData.r.angolo.toFixed(1)},${vectorData.r.x.toFixed(2)},${vectorData.r.y.toFixed(2)}`;
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'dati_vettori.csv');
+            link.style.visibility = 'hidden';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        // Toggle collapse overlay
+        const toggleOverlayBtn = document.getElementById('toggleOverlay');
+        if (toggleOverlayBtn) {
+            toggleOverlayBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent dragging when clicking toggle
+                canvasOverlay.classList.toggle('collapsed');
+            });
+        }
+
+        // Drag functionality for canvas overlay
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        const overlayHeader = document.querySelector('.overlay-header');
+
+        overlayHeader.addEventListener('mousedown', dragStart);
+        overlayHeader.addEventListener('touchstart', dragStart);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('touchmove', drag);
+        document.addEventListener('mouseup', dragEnd);
+        document.addEventListener('touchend', dragEnd);
+
+        function dragStart(e) {
+            // Don't start drag if clicking the toggle button
+            if (e.target.closest('.toggle-btn')) {
+                return;
+            }
+
+            if (e.type === 'touchstart') {
+                initialX = e.touches[0].clientX - xOffset;
+                initialY = e.touches[0].clientY - yOffset;
+            } else {
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
+            }
+
+            isDragging = true;
+            canvasOverlay.classList.add('dragging');
+        }
+
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault();
+
+                if (e.type === 'touchmove') {
+                    currentX = e.touches[0].clientX - initialX;
+                    currentY = e.touches[0].clientY - initialY;
+                } else {
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                }
+
+                xOffset = currentX;
+                yOffset = currentY;
+
+                setTranslate(currentX, currentY, canvasOverlay);
+            }
+        }
+
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+            canvasOverlay.classList.remove('dragging');
+        }
+
+        function setTranslate(xPos, yPos, el) {
+            el.style.transform = `translate(${xPos}px, ${yPos}px)`;
+        }
+
+        // Inizializzazione
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        update();
+    </script>
+</body>
+
+</html>

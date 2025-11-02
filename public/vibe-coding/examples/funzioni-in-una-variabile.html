@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisi Interattiva di Funzioni</title>
+
+    <!-- Librerie Esterne -->
+    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+
+    <style>
+        :root {
+            --color-primary: #2563eb;
+            --color-primary-hover: #1d4ed8;
+            --color-secondary: #64748b;
+            --color-success: #10b981;
+            --color-danger: #ef4444;
+            --color-warning: #f59e0b;
+            --color-background: #f8fafc;
+            --color-surface: #ffffff;
+            --color-border: #e2e8f0;
+            --color-text: #1e293b;
+            --color-text-secondary: #64748b;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            grid-template-rows: auto 1fr;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        header {
+            grid-column: 1 / -1;
+            background: var(--color-surface);
+            padding: 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--color-primary);
+        }
+
+        .subtitle {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+        }
+
+        .input-section {
+            background: var(--color-surface);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: var(--color-text);
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--color-secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .btn-success {
+            background: var(--color-success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: var(--color-danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-warning {
+            background: var(--color-warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        #plotArea {
+            background: var(--color-surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 16px;
+            min-height: 600px;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .analysis-section {
+            background: var(--color-surface);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .analysis-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--color-text);
+            border-bottom: 2px solid var(--color-primary);
+            padding-bottom: 8px;
+        }
+
+        .integral-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .result-area {
+            background: #f1f5f9;
+            padding: 12px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            color: var(--color-text);
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 12px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+        }
+
+        .result-area.error {
+            background: #fee;
+            color: var(--color-danger);
+        }
+
+        .result-area.success {
+            background: #efe;
+            color: var(--color-success);
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        th {
+            background: #f1f5f9;
+            font-weight: 600;
+        }
+
+        .table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 12px;
+        }
+
+        .function-list {
+            margin-top: 12px;
+        }
+
+        .function-item {
+            padding: 8px;
+            background: #f1f5f9;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .function-item:hover {
+            background: #e2e8f0;
+            transform: translateX(2px);
+        }
+
+        .function-item.selected {
+            background: #dbeafe;
+            border: 2px solid var(--color-primary);
+            font-weight: 500;
+        }
+
+        .function-item .color-badge {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .input-group-with-margin {
+            margin-top: 8px;
+        }
+
+        .button-group-column {
+            flex-direction: column;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+
+            .sidebar {
+                grid-column: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Analisi Interattiva di Funzioni</h1>
+            <p class="subtitle">Strumento didattico per visualizzare e analizzare funzioni matematiche y = f(x)</p>
+        </header>
+
+        <div class="main-content">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="functionInput">Inserisci una funzione y = f(x)</label>
+                    <input type="text" id="functionInput" placeholder="Es: x^2 + sin(x), exp(-x^2), log(x), 1/x">
+                    <p class="help-text">Funzioni supportate: sin, cos, tan, exp, log, log10, sqrt, abs, ^, +, -, *, /,
+                        ( )</p>
+                </div>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="plotFunction()">📈 Traccia Grafico</button>
+                    <button class="btn-danger" onclick="clearPlot()">🗑️ Pulisci Grafico</button>
+                </div>
+
+                <div class="function-list" id="functionList"></div>
+            </div>
+
+            <div id="plotArea"></div>
+        </div>
+
+        <div class="sidebar">
+            <div class="analysis-section">
+                <h3>🔬 Derivata</h3>
+                <button class="btn-success" onclick="calculateDerivative()">Calcola e Traccia Derivata</button>
+                <div class="result-area" id="derivativeResult">Seleziona una funzione e premi il pulsante</div>
+            </div>
+
+            <div class="analysis-section">
+                <h3>∫ Integrale Definito</h3>
+                <div class="integral-inputs">
+                    <div>
+                        <label for="integralA">Limite a:</label>
+                        <input type="number" id="integralA" value="0" step="0.1">
+                    </div>
+                    <div>
+                        <label for="integralB">Limite b:</label>
+                        <input type="number" id="integralB" value="1" step="0.1">
+                    </div>
+                </div>
+                <button class="btn-success" onclick="calculateIntegral()">Calcola Integrale</button>
+                <div class="result-area" id="integralResult">Inserisci i limiti e premi il pulsante</div>
+            </div>
+
+            <div class="analysis-section">
+                <h3>📋 Analisi Funzione</h3>
+                <button class="btn-warning" onclick="analyzeFunction()">Trova Zeri e Estremi</button>
+                <div class="result-area" id="analysisResult">Analizza la funzione corrente</div>
+            </div>
+
+            <div class="analysis-section">
+                <h3>📊 Tabella Valori</h3>
+                <div class="integral-inputs">
+                    <div>
+                        <label for="tableXMin">x min:</label>
+                        <input type="number" id="tableXMin" value="-10" step="0.1">
+                    </div>
+                    <div>
+                        <label for="tableXMax">x max:</label>
+                        <input type="number" id="tableXMax" value="10" step="0.1">
+                    </div>
+                </div>
+                <div class="input-group input-group-with-margin">
+                    <label for="tableStep">Step (Δx):</label>
+                    <input type="number" id="tableStep" value="0.5" step="0.1" min="0.01">
+                </div>
+                <button class="btn-secondary" onclick="generateTable()">Genera Tabella</button>
+                <div class="table-container" id="tableContainer"></div>
+            </div>
+
+            <div class="analysis-section">
+                <h3>💾 Esportazione</h3>
+                <div class="button-group button-group-column">
+                    <button class="btn-primary" onclick="exportCSV(false)">Esporta Funzione Corrente</button>
+                    <button class="btn-secondary" onclick="exportCSV(true)">Esporta Tutte le Funzioni</button>
+                </div>
+                <p class="help-text">Esporta i dati in formato CSV</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configurazione globale
+        const config = {
+            xRange: [-10, 10],
+            numPoints: 500,
+            colors: ['#2563eb', '#dc2626', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#14b8a6']
+        };
+
+        // Array per memorizzare le funzioni tracciate
+        let functions = [];
+        let currentFunctionIndex = -1;
+
+        // Inizializzazione del grafico Plotly
+        function initPlot() {
+            const layout = {
+                title: 'Grafico delle Funzioni',
+                xaxis: {
+                    title: 'x',
+                    gridcolor: '#e2e8f0',
+                    zeroline: true,
+                    zerolinecolor: '#94a3b8',
+                    zerolinewidth: 2
+                },
+                yaxis: {
+                    title: 'y = f(x)',
+                    gridcolor: '#e2e8f0',
+                    zeroline: true,
+                    zerolinecolor: '#94a3b8',
+                    zerolinewidth: 2
+                },
+                plot_bgcolor: '#ffffff',
+                paper_bgcolor: '#ffffff',
+                hovermode: 'closest',
+                showlegend: true
+            };
+
+            const plotConfig = {
+                responsive: true,
+                displayModeBar: true,
+                displaylogo: false
+            };
+
+            Plotly.newPlot('plotArea', [], layout, plotConfig);
+        }
+
+        /**
+         * Funzione principale per tracciare una funzione matematica
+         * Usa math.js per il parsing sicuro dell'espressione
+         */
+        function plotFunction() {
+            const input = document.getElementById('functionInput').value.trim();
+
+            if (!input) {
+                showError('Inserisci un\'espressione valida');
+                return;
+            }
+
+            try {
+                // Parsing dell'espressione con math.js
+                const node = math.parse(input);
+                const compiledFunc = node.compile();
+
+                // Generazione dei punti (x, y)
+                const xValues = [];
+                const yValues = [];
+                const step = (config.xRange[1] - config.xRange[0]) / config.numPoints;
+
+                for (let i = 0; i <= config.numPoints; i++) {
+                    const x = config.xRange[0] + i * step;
+                    try {
+                        const y = compiledFunc.evaluate({ x: x });
+
+                        // Gestione degli infiniti e NaN (asintoti)
+                        if (!isFinite(y) || isNaN(y)) {
+                            xValues.push(x);
+                            yValues.push(null); // null crea interruzioni nel grafico
+                        } else {
+                            xValues.push(x);
+                            yValues.push(y);
+                        }
+                    } catch (e) {
+                        // Errore di valutazione per questo punto
+                        xValues.push(x);
+                        yValues.push(null);
+                    }
+                }
+
+                // Aggiungi la funzione all'array
+                const funcData = {
+                    expression: input,
+                    node: node,
+                    compiled: compiledFunc,
+                    x: xValues,
+                    y: yValues,
+                    color: config.colors[functions.length % config.colors.length]
+                };
+
+                functions.push(funcData);
+                currentFunctionIndex = functions.length - 1;
+
+                // Crea la traccia per Plotly
+                const trace = {
+                    x: xValues,
+                    y: yValues,
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: `f(x) = ${input}`,
+                    line: { color: funcData.color, width: 2 }
+                };
+
+                // Aggiungi la traccia al grafico
+                Plotly.addTraces('plotArea', trace);
+
+                // Aggiorna la lista delle funzioni
+                updateFunctionList();
+
+                // Pulisci l'input
+                document.getElementById('functionInput').value = '';
+
+                showSuccess(`Funzione "${input}" aggiunta al grafico`);
+
+            } catch (error) {
+                showError(`Errore nel parsing: ${error.message}`);
+            }
+        }
+
+        /**
+         * Calcola e traccia la derivata prima della funzione corrente
+         * Usa math.derivative() per il calcolo simbolico
+         */
+        function calculateDerivative() {
+            if (currentFunctionIndex < 0 || !functions[currentFunctionIndex]) {
+                showError('Nessuna funzione selezionata', 'derivativeResult');
+                return;
+            }
+
+            try {
+                const func = functions[currentFunctionIndex];
+
+                // Calcolo simbolico della derivata con math.js
+                const derivative = math.derivative(func.node, 'x');
+                const derivativeStr = derivative.toString();
+                const compiledDerivative = derivative.compile();
+
+                // Genera i punti per la derivata
+                const xValues = [];
+                const yValues = [];
+                const step = (config.xRange[1] - config.xRange[0]) / config.numPoints;
+
+                for (let i = 0; i <= config.numPoints; i++) {
+                    const x = config.xRange[0] + i * step;
+                    try {
+                        const y = compiledDerivative.evaluate({ x: x });
+
+                        if (!isFinite(y) || isNaN(y)) {
+                            xValues.push(x);
+                            yValues.push(null);
+                        } else {
+                            xValues.push(x);
+                            yValues.push(y);
+                        }
+                    } catch (e) {
+                        xValues.push(x);
+                        yValues.push(null);
+                    }
+                }
+
+                // Aggiungi la derivata come nuova funzione
+                const derivData = {
+                    expression: derivativeStr,
+                    node: derivative,
+                    compiled: compiledDerivative,
+                    x: xValues,
+                    y: yValues,
+                    color: config.colors[functions.length % config.colors.length],
+                    isDerivative: true
+                };
+
+                functions.push(derivData);
+
+                // Traccia la derivata
+                const trace = {
+                    x: xValues,
+                    y: yValues,
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: `f'(x) = ${derivativeStr}`,
+                    line: { color: derivData.color, width: 2, dash: 'dash' }
+                };
+
+                Plotly.addTraces('plotArea', trace);
+                updateFunctionList();
+
+                document.getElementById('derivativeResult').className = 'result-area success';
+                document.getElementById('derivativeResult').textContent =
+                    `Derivata calcolata:\nf'(x) = ${derivativeStr}`;
+
+            } catch (error) {
+                showError(`Errore nel calcolo della derivata: ${error.message}`, 'derivativeResult');
+            }
+        }
+
+        /**
+         * Calcola l'integrale definito usando la regola di Simpson
+         * Implementazione numerica senza librerie esterne
+         */
+        function calculateIntegral() {
+            if (currentFunctionIndex < 0 || !functions[currentFunctionIndex]) {
+                showError('Nessuna funzione selezionata', 'integralResult');
+                return;
+            }
+
+            const a = parseFloat(document.getElementById('integralA').value);
+            const b = parseFloat(document.getElementById('integralB').value);
+
+            if (isNaN(a) || isNaN(b)) {
+                showError('Inserisci limiti numerici validi', 'integralResult');
+                return;
+            }
+
+            if (a >= b) {
+                showError('Il limite superiore deve essere maggiore di quello inferiore', 'integralResult');
+                return;
+            }
+
+            try {
+                const func = functions[currentFunctionIndex];
+
+                // Regola di Simpson per integrazione numerica
+                // ∫[a,b] f(x)dx ≈ (h/3)[f(x₀) + 4f(x₁) + 2f(x₂) + 4f(x₃) + ... + f(xₙ)]
+                const n = 1000; // Numero di sottointervalli (deve essere pari)
+                const h = (b - a) / n;
+
+                let sum = func.compiled.evaluate({ x: a }) + func.compiled.evaluate({ x: b });
+
+                for (let i = 1; i < n; i++) {
+                    const x = a + i * h;
+                    const y = func.compiled.evaluate({ x: x });
+
+                    if (!isFinite(y) || isNaN(y)) {
+                        throw new Error('La funzione ha discontinuità nell\'intervallo');
+                    }
+
+                    // Coefficienti alternati 4 e 2
+                    sum += (i % 2 === 0 ? 2 : 4) * y;
+                }
+
+                const integral = (h / 3) * sum;
+
+                document.getElementById('integralResult').className = 'result-area success';
+                document.getElementById('integralResult').textContent =
+                    `Integrale definito:\n∫[${a}, ${b}] f(x)dx = ${integral.toFixed(6)}\n\n` +
+                    `Metodo: Regola di Simpson\nSottointervalli: ${n}`;
+
+            } catch (error) {
+                showError(`Errore nel calcolo dell'integrale: ${error.message}`, 'integralResult');
+            }
+        }
+
+        /**
+         * Analizza la funzione per trovare zeri e punti estremi
+         * Usa metodi numerici semplificati e visualizza i punti sul grafico
+         */
+        function analyzeFunction() {
+            if (currentFunctionIndex < 0 || !functions[currentFunctionIndex]) {
+                showError('Nessuna funzione selezionata', 'analysisResult');
+                return;
+            }
+
+            const func = functions[currentFunctionIndex];
+            const results = [];
+
+            // Trova gli zeri (cambiamenti di segno)
+            const zeros = [];
+            for (let i = 0; i < func.y.length - 1; i++) {
+                const y1 = func.y[i];
+                const y2 = func.y[i + 1];
+
+                if (y1 !== null && y2 !== null) {
+                    // Cambio di segno indica uno zero
+                    if ((y1 < 0 && y2 > 0) || (y1 > 0 && y2 < 0)) {
+                        // Approssimazione lineare dello zero
+                        const x1 = func.x[i];
+                        const x2 = func.x[i + 1];
+                        const xZero = x1 - y1 * (x2 - x1) / (y2 - y1);
+                        zeros.push(xZero);
+                    }
+
+                    // Valore molto vicino a zero
+                    if (Math.abs(y1) < 0.001) {
+                        zeros.push(func.x[i]);
+                    }
+                }
+            }
+
+            // Rimuovi duplicati vicini
+            const uniqueZeros = zeros.filter((z, idx) =>
+                idx === 0 || Math.abs(z - zeros[idx - 1]) > 0.1
+            );
+
+            if (uniqueZeros.length > 0) {
+                results.push('ZERI APPROSSIMATI:');
+                uniqueZeros.forEach((z, i) => {
+                    results.push(`  x₍${i + 1}₎ ≈ ${z.toFixed(4)}`);
+                });
+            } else {
+                results.push('ZERI: Nessuno trovato nell\'intervallo visibile');
+            }
+
+            // Trova massimi e minimi locali
+            const extrema = [];
+            for (let i = 1; i < func.y.length - 1; i++) {
+                const y_prev = func.y[i - 1];
+                const y_curr = func.y[i];
+                const y_next = func.y[i + 1];
+
+                if (y_prev !== null && y_curr !== null && y_next !== null) {
+                    // Massimo locale
+                    if (y_curr > y_prev && y_curr > y_next) {
+                        extrema.push({
+                            type: 'MAX',
+                            x: func.x[i],
+                            y: y_curr
+                        });
+                    }
+                    // Minimo locale
+                    if (y_curr < y_prev && y_curr < y_next) {
+                        extrema.push({
+                            type: 'MIN',
+                            x: func.x[i],
+                            y: y_curr
+                        });
+                    }
+                }
+            }
+
+            // Filtra punti estremi vicini
+            const uniqueExtrema = [];
+            for (let ext of extrema) {
+                const isDuplicate = uniqueExtrema.some(e =>
+                    Math.abs(e.x - ext.x) < 0.2 && e.type === ext.type
+                );
+                if (!isDuplicate) {
+                    uniqueExtrema.push(ext);
+                }
+            }
+
+            results.push('\nPUNTI ESTREMI LOCALI:');
+            if (uniqueExtrema.length > 0) {
+                uniqueExtrema.forEach((ext, i) => {
+                    results.push(`  ${ext.type}: (${ext.x.toFixed(4)}, ${ext.y.toFixed(4)})`);
+                });
+            } else {
+                results.push('  Nessuno trovato nell\'intervallo visibile');
+            }
+
+            document.getElementById('analysisResult').className = 'result-area success';
+            document.getElementById('analysisResult').textContent = results.join('\n');
+
+            // Visualizza i punti sul grafico
+            visualizeAnalysisPoints(uniqueZeros, uniqueExtrema, func);
+        }
+
+        /**
+         * Visualizza gli zeri e i punti estremi sul grafico
+         */
+        function visualizeAnalysisPoints(zeros, extrema, func) {
+            // Rimuovi eventuali tracce di analisi precedenti
+            const plotDiv = document.getElementById('plotArea');
+            const currentTraces = plotDiv.data || [];
+            const tracesToRemove = [];
+
+            currentTraces.forEach((trace, idx) => {
+                if (trace.name && (trace.name.includes('Zero') || trace.name.includes('Massimo') || trace.name.includes('Minimo'))) {
+                    tracesToRemove.push(idx);
+                }
+            });
+
+            if (tracesToRemove.length > 0) {
+                Plotly.deleteTraces('plotArea', tracesToRemove);
+            }
+
+            // Aggiungi i punti degli zeri
+            if (zeros.length > 0) {
+                const zeroTrace = {
+                    x: zeros,
+                    y: zeros.map(z => {
+                        try {
+                            return func.compiled.evaluate({ x: z });
+                        } catch (e) {
+                            return 0;
+                        }
+                    }),
+                    type: 'scatter',
+                    mode: 'markers',
+                    name: 'Zeri',
+                    marker: {
+                        color: '#dc2626',
+                        size: 12,
+                        symbol: 'x',
+                        line: { width: 2 }
+                    }
+                };
+                Plotly.addTraces('plotArea', zeroTrace);
+            }
+
+            // Aggiungi i punti di massimo
+            const maxima = extrema.filter(e => e.type === 'MAX');
+            if (maxima.length > 0) {
+                const maxTrace = {
+                    x: maxima.map(m => m.x),
+                    y: maxima.map(m => m.y),
+                    type: 'scatter',
+                    mode: 'markers',
+                    name: 'Massimi Locali',
+                    marker: {
+                        color: '#10b981',
+                        size: 10,
+                        symbol: 'triangle-up'
+                    }
+                };
+                Plotly.addTraces('plotArea', maxTrace);
+            }
+
+            // Aggiungi i punti di minimo
+            const minima = extrema.filter(e => e.type === 'MIN');
+            if (minima.length > 0) {
+                const minTrace = {
+                    x: minima.map(m => m.x),
+                    y: minima.map(m => m.y),
+                    type: 'scatter',
+                    mode: 'markers',
+                    name: 'Minimi Locali',
+                    marker: {
+                        color: '#f59e0b',
+                        size: 10,
+                        symbol: 'triangle-down'
+                    }
+                };
+                Plotly.addTraces('plotArea', minTrace);
+            }
+        }
+
+        /**
+         * Genera una tabella di valori (x, y) per la funzione corrente
+         * L'utente può specificare l'intervallo [xMin, xMax] e lo step Δx
+         */
+        function generateTable() {
+            if (currentFunctionIndex < 0 || !functions[currentFunctionIndex]) {
+                showError('Nessuna funzione selezionata', 'tableContainer');
+                return;
+            }
+
+            const func = functions[currentFunctionIndex];
+
+            // Leggi i parametri dall'interfaccia
+            const xMin = parseFloat(document.getElementById('tableXMin').value);
+            const xMax = parseFloat(document.getElementById('tableXMax').value);
+            const step = parseFloat(document.getElementById('tableStep').value);
+
+            // Validazione input
+            if (isNaN(xMin) || isNaN(xMax) || isNaN(step)) {
+                showError('Inserisci valori numerici validi per l\'intervallo e lo step', 'tableContainer');
+                return;
+            }
+
+            if (xMin >= xMax) {
+                showError('x max deve essere maggiore di x min', 'tableContainer');
+                return;
+            }
+
+            if (step <= 0) {
+                showError('Lo step deve essere maggiore di zero', 'tableContainer');
+                return;
+            }
+
+            // Genera la tabella con i parametri specificati
+            let tableHTML = '<table><thead><tr><th>x</th><th>y = f(x)</th></tr></thead><tbody>';
+
+            let numRows = 0;
+            const maxRows = 1000; // Limite di sicurezza
+
+            for (let x = xMin; x <= xMax && numRows < maxRows; x += step) {
+                try {
+                    const y = func.compiled.evaluate({ x: x });
+                    const yDisplay = y !== null && isFinite(y) ? y.toFixed(6) : '-';
+                    tableHTML += `<tr><td>${x.toFixed(6)}</td><td>${yDisplay}</td></tr>`;
+                    numRows++;
+                } catch (e) {
+                    tableHTML += `<tr><td>${x.toFixed(6)}</td><td>Errore</td></tr>`;
+                    numRows++;
+                }
+            }
+
+            tableHTML += '</tbody></table>';
+
+            if (numRows >= maxRows) {
+                tableHTML += '<p style="color: var(--color-warning); font-size: 12px; margin-top: 8px;">⚠️ Tabella limitata a 1000 righe. Aumenta lo step per vedere più valori.</p>';
+            }
+
+            document.getElementById('tableContainer').innerHTML = tableHTML;
+        }
+
+        /**
+         * Esporta i dati delle funzioni in formato CSV
+         * @param {boolean} exportAll - Se true esporta tutte le funzioni, altrimenti solo quella selezionata
+         */
+        function exportCSV(exportAll = false) {
+            if (functions.length === 0) {
+                showError('Nessuna funzione da esportare');
+                return;
+            }
+
+            if (!exportAll && (currentFunctionIndex < 0 || !functions[currentFunctionIndex])) {
+                showError('Nessuna funzione selezionata. Seleziona una funzione o esporta tutte.');
+                return;
+            }
+
+            let csv = '';
+            let filename = '';
+            let functionsToExport = [];
+
+            if (exportAll) {
+                functionsToExport = functions;
+                filename = 'tutte_funzioni_analisi.csv';
+
+                // Crea l'header del CSV con tutte le funzioni
+                csv = 'x';
+                functions.forEach((func, i) => {
+                    csv += `,y${i + 1} (${func.expression})`;
+                });
+                csv += '\n';
+
+                // Trova la lunghezza massima
+                const maxLength = Math.max(...functions.map(f => f.x.length));
+
+                // Aggiungi i dati
+                for (let i = 0; i < maxLength; i++) {
+                    const row = [];
+
+                    // Usa i valori x della prima funzione come riferimento
+                    if (i < functions[0].x.length) {
+                        row.push(functions[0].x[i].toFixed(6));
+                    } else {
+                        row.push('');
+                    }
+
+                    // Aggiungi i valori y di ogni funzione
+                    functions.forEach(func => {
+                        if (i < func.y.length && func.y[i] !== null && isFinite(func.y[i])) {
+                            row.push(func.y[i].toFixed(6));
+                        } else {
+                            row.push('');
+                        }
+                    });
+
+                    csv += row.join(',') + '\n';
+                }
+            } else {
+                // Esporta solo la funzione corrente
+                const func = functions[currentFunctionIndex];
+                filename = `funzione_${func.expression.replace(/[^a-z0-9]/gi, '_')}.csv`;
+
+                csv = 'x,y\n';
+
+                for (let i = 0; i < func.x.length; i++) {
+                    const x = func.x[i].toFixed(6);
+                    const y = func.y[i] !== null && isFinite(func.y[i]) ? func.y[i].toFixed(6) : '';
+                    csv += `${x},${y}\n`;
+                }
+            }
+
+            // Crea il link di download
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            const message = exportAll ?
+                `File CSV con tutte le funzioni esportato` :
+                `File CSV della funzione "${functions[currentFunctionIndex].expression}" esportato`;
+            showSuccess(message);
+        }
+
+        /**
+         * Pulisce il grafico e resetta tutte le funzioni
+         */
+        function clearPlot() {
+            functions = [];
+            currentFunctionIndex = -1;
+            Plotly.purge('plotArea');
+            initPlot();
+            updateFunctionList();
+
+            // Pulisci i risultati
+            document.getElementById('derivativeResult').className = 'result-area';
+            document.getElementById('derivativeResult').textContent = 'Seleziona una funzione e premi il pulsante';
+            document.getElementById('integralResult').className = 'result-area';
+            document.getElementById('integralResult').textContent = 'Inserisci i limiti e premi il pulsante';
+            document.getElementById('analysisResult').className = 'result-area';
+            document.getElementById('analysisResult').textContent = 'Analizza la funzione corrente';
+            document.getElementById('tableContainer').innerHTML = '';
+
+            showSuccess('Grafico pulito');
+        }
+
+        /**
+         * Aggiorna la lista visuale delle funzioni tracciate
+         */
+        function updateFunctionList() {
+            const listDiv = document.getElementById('functionList');
+
+            if (functions.length === 0) {
+                listDiv.innerHTML = '';
+                return;
+            }
+
+            let html = '<h4 style="font-size: 14px; margin: 12px 0 8px 0; color: var(--color-text);">Funzioni Tracciate (clicca per selezionare):</h4>';
+
+            functions.forEach((func, i) => {
+                const isSelected = i === currentFunctionIndex;
+                const selectedClass = isSelected ? 'selected' : '';
+                html += `
+                    <div class="function-item ${selectedClass}" onclick="selectFunction(${i})">
+                        <span>
+                            <span class="color-badge" style="background: ${func.color};"></span>
+                            ${func.expression}
+                            ${func.isDerivative ? ' (derivata)' : ''}
+                        </span>
+                        ${isSelected ? '<span style="color: var(--color-primary); font-weight: bold;">✓</span>' : ''}
+                    </div>
+                `;
+            });
+
+            listDiv.innerHTML = html;
+        }
+
+        /**
+         * Seleziona una funzione come quella corrente per l'analisi
+         */
+        function selectFunction(index) {
+            currentFunctionIndex = index;
+            updateFunctionList();
+            showSuccess(`Funzione "${functions[index].expression}" selezionata`);
+        }
+
+        /**
+         * Mostra un messaggio di errore
+         */
+        function showError(message, targetId = null) {
+            if (targetId) {
+                const element = document.getElementById(targetId);
+                element.className = 'result-area error';
+                element.textContent = `❌ ${message}`;
+            } else {
+                alert(`❌ Errore: ${message}`);
+            }
+        }
+
+        /**
+         * Mostra un messaggio di successo
+         */
+        function showSuccess(message) {
+            console.log(`✅ ${message}`);
+        }
+
+        // Inizializzazione al caricamento della pagina
+        window.addEventListener('DOMContentLoaded', () => {
+            initPlot();
+
+            // Permetti di premere Enter per tracciare
+            document.getElementById('functionInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    plotFunction();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

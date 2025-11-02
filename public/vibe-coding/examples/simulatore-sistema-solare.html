@@ -1,0 +1,2611 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulatore Sistema Solare Interattivo 3D</title>
+    <style>
+        :root {
+            --color-background: #0a0e27;
+            --color-surface: #151b3d;
+            --color-text: #e8eaf6;
+            --color-text-secondary: #9fa8da;
+            --color-primary: #5c6bc0;
+            --color-primary-hover: #7986cb;
+            --color-accent: #00bcd4;
+            --color-warning: #ffc107;
+            --color-success: #4caf50;
+            --color-border: rgba(159, 168, 218, 0.3);
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: var(--color-text);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background: rgba(21, 27, 61, 0.95);
+            padding: var(--space-16) var(--space-24);
+            border-bottom: 2px solid var(--color-primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #5c6bc0 0%, #00bcd4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        #canvas-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(ellipse at center, #1a1f3a 0%, #0a0e27 100%);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .controls-panel {
+            width: 340px;
+            background: rgba(21, 27, 61, 0.95);
+            border-left: 2px solid var(--color-border);
+            overflow-y: auto;
+            padding: var(--space-20);
+        }
+
+        .controls-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .controls-panel::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .controls-panel::-webkit-scrollbar-thumb {
+            background: var(--color-primary);
+            border-radius: 4px;
+        }
+
+        .control-section {
+            margin-bottom: var(--space-24);
+        }
+
+        .control-section h3 {
+            font-size: 1rem;
+            color: var(--color-accent);
+            margin-bottom: var(--space-12);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: var(--space-12) var(--space-20);
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 4px;
+        }
+
+        .btn:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(92, 107, 192, 0.4);
+        }
+
+        .btn-small {
+            padding: var(--space-8) var(--space-12);
+            font-size: 0.85rem;
+        }
+
+        .btn-success {
+            background: var(--color-success);
+        }
+
+        .btn-warning {
+            background: var(--color-warning);
+            color: #000;
+        }
+
+        .slider-group {
+            margin-bottom: var(--space-16);
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-8);
+            font-size: 0.9rem;
+        }
+
+        .slider-label span:last-child {
+            color: var(--color-accent);
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--color-primary);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(92, 107, 192, 0.6);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: var(--color-primary);
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1f3a 0%, #151b3d 100%);
+            margin: 5% auto;
+            padding: var(--space-24);
+            border: 2px solid var(--color-primary);
+            border-radius: var(--radius-lg);
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: var(--color-primary);
+            border-radius: 4px;
+        }
+
+        .close {
+            float: right;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: var(--color-accent);
+        }
+
+        .modal-content h2 {
+            color: var(--color-accent);
+            margin-bottom: var(--space-16);
+            font-size: 1.8rem;
+        }
+
+        .modal-content h3 {
+            color: var(--color-primary-hover);
+            margin-top: var(--space-20);
+            margin-bottom: var(--space-12);
+        }
+
+        .modal-content p {
+            line-height: 1.7;
+            margin-bottom: var(--space-12);
+            color: var(--color-text-secondary);
+        }
+
+        .formula {
+            background: rgba(92, 107, 192, 0.15);
+            padding: var(--space-12);
+            border-radius: var(--radius-base);
+            margin: var(--space-12) 0;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--color-accent);
+            border-left: 3px solid var(--color-primary);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-12);
+            margin: var(--space-16) 0;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: var(--space-12);
+            border-radius: var(--radius-base);
+            border-left: 3px solid var(--color-accent);
+        }
+
+        .info-item strong {
+            color: var(--color-accent);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .stats-panel {
+            position: absolute;
+            top: var(--space-16);
+            left: var(--space-16);
+            background: rgba(21, 27, 61, 0.95);
+            padding: var(--space-16);
+            border-radius: var(--radius-base);
+            border: 1px solid var(--color-border);
+            min-width: 200px;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        .stats-panel h4 {
+            color: var(--color-accent);
+            margin-bottom: var(--space-8);
+            font-size: 0.9rem;
+        }
+
+        .stats-panel p {
+            font-size: 0.85rem;
+            margin: 4px 0;
+            color: var(--color-text-secondary);
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-8);
+            margin-top: var(--space-12);
+        }
+
+        .experiment-btn {
+            width: 100%;
+            text-align: center;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin: var(--space-12) 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: var(--space-8);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .planet-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-8);
+        }
+
+        .info-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-8);
+        }
+
+        .warning-text {
+            color: var(--color-warning);
+            font-size: 0.85rem;
+            margin-top: 4px;
+            font-style: italic;
+            display: none;
+        }
+
+        .warning-text.visible {
+            display: block;
+        }
+
+        .calc-result {
+            background: rgba(0, 188, 212, 0.1);
+            padding: var(--space-12);
+            border-radius: var(--radius-base);
+            border-left: 3px solid var(--color-accent);
+            margin: var(--space-8) 0;
+            font-size: 0.9rem;
+        }
+
+        .calc-input {
+            width: 100%;
+            padding: var(--space-8);
+            margin: var(--space-8) 0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            color: var(--color-text);
+            font-size: 0.9rem;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-12);
+            margin: var(--space-16) 0;
+        }
+
+        .warning-box {
+            background: rgba(255, 152, 0, 0.15);
+            padding: var(--space-12);
+            border-radius: var(--radius-base);
+            border-left: 3px solid var(--color-warning);
+            margin-top: var(--space-16);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .warning-box h4 {
+            color: var(--color-warning);
+            margin-bottom: var(--space-8);
+            font-size: 0.9rem;
+        }
+
+        .warning-box p {
+            margin-bottom: var(--space-8);
+            color: var(--color-text-secondary);
+        }
+
+        .warning-box ul {
+            margin-left: 20px;
+            margin-bottom: var(--space-8);
+            color: var(--color-text-secondary);
+        }
+
+        .warning-box p:last-child {
+            margin-bottom: 0;
+            font-style: italic;
+        }
+
+        .info-box {
+            background: rgba(0, 188, 212, 0.1);
+            padding: var(--space-12);
+            border-radius: var(--radius-base);
+            border-left: 3px solid var(--color-accent);
+            margin-top: var(--space-12);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .info-box h4 {
+            color: var(--color-accent);
+            margin-bottom: var(--space-8);
+            font-size: 0.9rem;
+        }
+
+        .info-box p {
+            margin-bottom: var(--space-8);
+            color: var(--color-text-secondary);
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-8);
+        }
+
+        .info-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-box strong {
+            color: var(--color-accent);
+        }
+
+        .experiment-explanation {
+            background: rgba(0, 188, 212, 0.1);
+            padding: var(--space-12);
+            border-radius: var(--radius-base);
+            margin-top: var(--space-12);
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .modal-content ul {
+            margin-left: 20px;
+            color: var(--color-text-secondary);
+        }
+
+        .modal-content h4 {
+            margin-top: var(--space-16);
+        }
+
+        .modal-content .highlight {
+            color: var(--color-accent);
+        }
+
+        .modal-content .section-title {
+            color: var(--color-primary-hover);
+            margin-top: var(--space-16);
+        }
+
+        .kepler-box {
+            margin: var(--space-16) 0;
+            background: rgba(255, 193, 7, 0.1);
+        }
+
+        .kepler-box strong {
+            color: var(--color-warning);
+        }
+
+        .kepler-box p {
+            margin-top: var(--space-8);
+        }
+
+        .implementation-box {
+            margin: var(--space-16) 0;
+            background: rgba(0, 188, 212, 0.1);
+        }
+
+        .implementation-box strong {
+            color: var(--color-accent);
+        }
+
+        .implementation-box p {
+            margin-top: var(--space-8);
+        }
+
+        .implementation-box ul {
+            margin-left: 20px;
+            margin-top: var(--space-8);
+        }
+
+        .conservation-box {
+            background: rgba(76, 175, 80, 0.1);
+            margin: var(--space-12) 0;
+        }
+
+        .conservation-box strong {
+            color: var(--color-success);
+        }
+
+        .conservation-box p {
+            margin-top: var(--space-8);
+        }
+
+        .orbital-box {
+            background: rgba(92, 107, 192, 0.1);
+            margin: var(--space-12) 0;
+        }
+
+        .orbital-box strong {
+            color: var(--color-primary);
+        }
+
+        .orbital-box p {
+            margin-top: var(--space-8);
+        }
+
+        .full-width-btn {
+            width: 100%;
+            margin: var(--space-16) 0;
+        }
+
+        .checkbox-spaced {
+            margin-top: var(--space-16);
+        }
+
+        .emphasis-text {
+            margin-top: var(--space-12);
+        }
+
+        .example-list {
+            margin-left: 20px;
+            color: var(--color-text-secondary);
+        }
+
+        .formula-special {
+            text-align: left;
+            background: rgba(255, 193, 7, 0.1);
+            border-left: 3px solid var(--color-warning);
+        }
+
+        .modal-content a {
+            color: var(--color-accent);
+        }
+
+        .modal-content .resources-list {
+            line-height: 1.8;
+        }
+
+        .modal-content .quote {
+            margin-top: var(--space-20);
+            font-style: italic;
+            color: var(--color-text-secondary);
+        }
+
+        .formula-inline {
+            margin-top: var(--space-8);
+        }
+
+        .didactic-suggestion {
+            margin-top: var(--space-20);
+        }
+
+        .didactic-suggestion ol {
+            margin-left: 20px;
+            margin-top: var(--space-8);
+            line-height: 1.8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <h1>🌌 Simulatore Sistema Solare Interattivo 3D</h1>
+        </header>
+
+        <div class="main-content">
+            <div id="canvas-container">
+                <canvas id="canvas3d"></canvas>
+                <div class="stats-panel" id="stats-panel">
+                    <h4>Statistiche Live</h4>
+                    <p><strong>Pianeta:</strong> <span id="stat-planet">Nessuno</span></p>
+                    <p><strong>Distanza:</strong> <span id="stat-distance">-</span></p>
+                    <p><strong>Velocità:</strong> <span id="stat-velocity">-</span></p>
+                    <p><strong>Periodo Orbitale:</strong> <span id="stat-period">-</span></p>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="control-section">
+                    <h3>📚 Informazioni</h3>
+                    <div class="info-buttons">
+                        <button class="btn" onclick="openModal('kepler-modal')">Leggi di Keplero</button>
+                        <button class="btn" onclick="openModal('gravity-modal')">Teoria della Gravità</button>
+                        <button class="btn" onclick="openModal('orbits-modal')">Distanze Orbitali</button>
+                        <button class="btn" onclick="openModal('elliptical-info-modal')">Orbite Ellittiche</button>
+                        <button class="btn" onclick="openModal('calculator-modal')">Calcolatore Orbitale</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>🪐 Pianeti</h3>
+                    <div class="planet-buttons">
+                        <button class="btn btn-small" onclick="openModal('sun-modal')">Sole</button>
+                        <button class="btn btn-small" onclick="openModal('mercury-modal')">Mercurio</button>
+                        <button class="btn btn-small" onclick="openModal('venus-modal')">Venere</button>
+                        <button class="btn btn-small" onclick="openModal('earth-modal')">Terra</button>
+                        <button class="btn btn-small" onclick="openModal('mars-modal')">Marte</button>
+                        <button class="btn btn-small" onclick="openModal('jupiter-modal')">Giove</button>
+                        <button class="btn btn-small" onclick="openModal('saturn-modal')">Saturno</button>
+                        <button class="btn btn-small" onclick="openModal('uranus-modal')">Urano</button>
+                        <button class="btn btn-small" onclick="openModal('neptune-modal')">Nettuno</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>⚙️ Controlli Simulazione</h3>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Velocità Simulazione</span>
+                            <span id="speed-value">1.0x</span>
+                        </div>
+                        <input type="range" id="speed-slider" min="1" max="1000000" value="1" step="1"
+                            aria-label="Controllo velocità simulazione">
+                    </div>
+                    <button class="btn btn-success" id="play-pause-btn" onclick="togglePlayPause()">⏸ Pausa</button>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="show-orbits" checked>
+                        <label for="show-orbits">Mostra Orbite</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="elliptical-orbits">
+                        <label for="elliptical-orbits">Orbite Ellittiche Reali e Fisica Accurata</label>
+                    </div>
+
+                    <!-- Warning dimensioni non in scala -->
+                    <div class="warning-box">
+                        <h4>⚠️ Avviso: Dimensioni Non in Scala Reale</h4>
+                        <p>
+                            <strong>Le dimensioni dei pianeti sono esagerate per renderli visibili.</strong>
+                        </p>
+                        <ul>
+                            <li><strong>Rapporto reale Giove/Sole:</strong> 0.10x (Giove è 10 volte più piccolo)</li>
+                            <li><strong>Rapporto nel simulatore:</strong> ~0.53x (Giove limitato a metà del Sole)</li>
+                            <li><strong>Pianeti terrestri:</strong> ingranditi ~50x per essere visibili</li>
+                        </ul>
+                        <p>
+                            ✓ Le <strong>distanze orbitali</strong> e le <strong>orbite ellittiche</strong> sono in
+                            scala corretta.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>☀️ Massa del Sole</h3>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Massa Solare</span>
+                            <span id="sun-mass-value">1.0x</span>
+                        </div>
+                        <input type="range" id="sun-mass-slider" min="50" max="300" value="100" step="1"
+                            aria-label="Controllo massa del Sole">
+                        <p class="warning-text" id="sun-warning">⚠️ Valori estremi!</p>
+                    </div>
+                    <div class="info-box">
+                        <h4 class="info-box-title">📘
+                            Fisica del Simulatore: Due Modalità</h4>
+
+                        <p class="info-box-text">
+                            <strong>🔵 Modalità "Orbite Circolari"</strong> (checkbox disattivata):
+                        </p>
+                        <ul class="info-box-list">
+                            <li>Fisica <em>semplificata</em> per scopi didattici</li>
+                            <li>Il <strong>raggio orbitale r</strong> resta <em>fisso</em> quando cambi la massa del
+                                Sole</li>
+                            <li>Cambiano solo <strong>velocità v</strong> e <strong>periodo T</strong>: v = √(GM/r), T =
+                                2π√(r³/GM)</li>
+                            <li>Utile per capire come v e T dipendono dalla massa M del Sole</li>
+                        </ul>
+
+                        <p class="info-box-text">
+                            <strong>⭐ Modalità "Orbite Ellittiche Reali"</strong> (checkbox attivata):
+                        </p>
+                        <ul class="info-box-list">
+                            <li>Fisica <em>accurata</em> con conservazione del momento angolare</li>
+                            <li>Si conserva: <strong>L = m·v·r</strong> (momento angolare del pianeta)</li>
+                            <li>Il <strong>semiasse maggiore a</strong> (distanza media) cambia quando cambi la massa
+                                del Sole</li>
+                            <li>Formula: a<sub>nuovo</sub> = a<sub>originale</sub> ×
+                                (M<sub>originale</sub>/M<sub>nuovo</sub>)<sup>2/3</sup></li>
+                            <li>L'<strong>eccentricità e</strong> (forma ellisse) viene ricalcolata automaticamente</li>
+                        </ul>
+
+                        <p class="info-box-text-last">
+                            <strong>📊 Esempio pratico:</strong> Se raddoppi la massa del Sole (M → 2M) in modalità
+                            ellittica,
+                            il semiasse maggiore si riduce a ≈ 0.79× quello originale (pianeti si avvicinano) e la
+                            velocità
+                            aumenta. Apri la Console (F12) per vedere i calcoli dettagliati in tempo reale!
+                        </p>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>🪐 Masse Pianeti</h3>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Mercurio</span>
+                            <span id="mercury-mass-value">1.0x</span>
+                        </div>
+                        <input type="range" id="mercury-mass-slider" min="10" max="1000" value="100" step="1"
+                            aria-label="Controllo massa Mercurio">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Venere</span>
+                            <span id="venus-mass-value">1.0x</span>
+                        </div>
+                        <input type="range" id="venus-mass-slider" min="10" max="1000" value="100" step="1"
+                            aria-label="Controllo massa Venere">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Terra</span>
+                            <span id="earth-mass-value">1.0x</span>
+                        </div>
+                        <input type="range" id="earth-mass-slider" min="10" max="1000" value="100" step="1"
+                            aria-label="Controllo massa Terra">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Marte</span>
+                            <span id="mars-mass-value">1.0x</span>
+                        </div>
+                        <input type="range" id="mars-mass-slider" min="10" max="1000" value="100" step="1"
+                            aria-label="Controllo massa Marte">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Giove</span>
+                            <span id="jupiter-mass-value">1.0x</span>
+                        </div>
+                        <input type="range" id="jupiter-mass-slider" min="10" max="1000" value="100" step="1"
+                            aria-label="Controllo massa Giove">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Saturno</span>
+                            <span id="saturn-mass-value">1.0x</span>
+                        </div>
+                        <input type="range" id="saturn-mass-slider" min="10" max="1000" value="100" step="1"
+                            aria-label="Controllo massa Saturno">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Urano</span>
+                            <span id="uranus-mass-value">1.0x</span>
+                        </div>
+                        <input type="range" id="uranus-mass-slider" min="10" max="1000" value="100" step="1"
+                            aria-label="Controllo massa Urano">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Nettuno</span>
+                            <span id="neptune-mass-value">1.0x</span>
+                        </div>
+                        <input type="range" id="neptune-mass-slider" min="10" max="1000" value="100" step="1"
+                            aria-label="Controllo massa Nettuno">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>🔬 Esperimenti Gravitazionali</h3>
+                    <button class="btn experiment-btn" onclick="doubleSunMass()">☀️ Sole Raddoppia Massa</button>
+                    <button class="btn experiment-btn" onclick="earthLikeJupiter()">🌍 Terra come Giove</button>
+                    <button class="btn experiment-btn" onclick="sunRedGiant()">🔴 Sole Gigante Rossa</button>
+                    <button class="btn btn-warning experiment-btn" onclick="resetAll()">♻️ Reset Tutto</button>
+                    <div id="experiment-explanation" class="experiment-explanation">
+                    </div>
+                    <div class="checkbox-group checkbox-group-spacing">
+                        <input type="checkbox" id="show-original-orbit">
+                        <label for="show-original-orbit">Mostra orbita originale</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <div id="kepler-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('kepler-modal')">&times;</span>
+            <h2>Le Leggi del Movimento Planetario</h2>
+
+            <h3>Prima Legge di Keplero - Legge delle Orbite</h3>
+            <p>I pianeti descrivono orbite ellittiche, di cui il Sole occupa uno dei due fuochi.</p>
+            <p>Un'ellisse è una curva chiusa con due punti focali. La distanza tra un pianeta e il Sole varia durante
+                l'orbita, raggiungendo un minimo (perielio) e un massimo (afelio).</p>
+
+            <h3>Seconda Legge di Keplero - Legge delle Aree</h3>
+            <p>Il raggio vettore che congiunge il pianeta al Sole descrive aree uguali in tempi uguali.</p>
+            <p>Questo significa che un pianeta si muove più velocemente quando è più vicino al Sole e più lentamente
+                quando è più distante.</p>
+
+            <h3>Terza Legge di Keplero - Legge dei Periodi</h3>
+            <p>Il quadrato del periodo di rivoluzione di un pianeta è proporzionale al cubo del semiasse maggiore della
+                sua orbita.</p>
+            <div class="formula">T² ∝ a³</div>
+            <p>Dove T è il periodo orbitale e a è il semiasse maggiore. In forma completa:</p>
+            <div class="formula">T² = (4π²/GM) × a³</div>
+            <p>Dove G è la costante gravitazionale universale (6.674 × 10⁻¹¹ N·m²/kg²) e M è la massa del Sole.</p>
+
+            <h3>Legge di Gravitazione Universale di Newton</h3>
+            <p>Ogni particella nell'universo attrae ogni altra particella con una forza direttamente proporzionale al
+                prodotto delle loro masse e inversamente proporzionale al quadrato della distanza tra loro.</p>
+            <div class="formula">F = G × (m₁ × m₂) / r²</div>
+            <p>Dove F è la forza gravitazionale, m₁ e m₂ sono le masse dei due corpi, r è la distanza tra i loro centri,
+                e G è la costante gravitazionale.</p>
+
+            <h3>Velocità Orbitale</h3>
+            <p>La velocità con cui un pianeta orbita attorno al Sole dipende dalla sua distanza:</p>
+            <div class="formula">v = √(GM/r)</div>
+            <p>Pianeti più vicini al Sole si muovono più velocemente. Mercurio orbita a ~48 km/s, mentre Nettuno a soli
+                ~5 km/s.</p>
+
+            <h3>Esempio Pratico</h3>
+            <p><strong>La Terra:</strong></p>
+            <ul>
+                <li>Distanza media dal Sole: 1 UA (149.6 milioni di km)</li>
+                <li>Periodo orbitale: 365.25 giorni</li>
+                <li>Velocità orbitale media: 29.78 km/s</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="gravity-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('gravity-modal')">&times;</span>
+            <h2>Teoria della Gravità</h2>
+
+            <h3>La Forza Gravitazionale</h3>
+            <p>La gravità è una delle quattro forze fondamentali della natura. È sempre attrattiva e agisce tra tutte le
+                masse nell'universo.</p>
+            <p>Isaac Newton formulò la legge di gravitazione universale nel 1687, rivoluzionando la nostra comprensione
+                del moto celeste.</p>
+
+            <h3>Come Funziona la Gravità?</h3>
+            <p>La forza gravitazionale dipende da due fattori principali:</p>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Massa</strong>
+                    Più massa hanno i corpi, maggiore è l'attrazione. Se raddoppi la massa di un corpo, raddoppi la
+                    forza.
+                </div>
+                <div class="info-item">
+                    <strong>Distanza</strong>
+                    Più sono lontani i corpi, minore è l'attrazione. La forza diminuisce con il quadrato della distanza.
+                </div>
+            </div>
+
+            <h3>Equilibrio Gravitazionale</h3>
+            <p>Un pianeta rimane in orbita perché esiste un equilibrio perfetto tra due forze:</p>
+            <ul>
+                <li><strong>Forza gravitazionale:</strong> attira il pianeta verso il Sole</li>
+                <li><strong>Forza centrifuga:</strong> "spinge" il pianeta verso l'esterno a causa del suo moto</li>
+            </ul>
+            <p>Senza gravità, il pianeta volerebbe via in linea retta. Senza velocità tangenziale, cadrebbe nel Sole.
+            </p>
+
+            <h3>Relazione Massa-Velocità-Distanza</h3>
+            <p>Per mantenere un'orbita stabile attorno al Sole:</p>
+            <div class="formula">v = √(GM/r)</div>
+            <p>Questo significa che:</p>
+            <ul>
+                <li>Se aumenta la massa del Sole (M), il pianeta deve muoversi più veloce</li>
+                <li>Se aumenta la distanza (r), il pianeta può muoversi più lentamente</li>
+                <li>Se aumenta la massa del pianeta, non cambia la velocità orbitale (sorprendente!)</li>
+            </ul>
+
+            <h3>Energia nell'Orbita</h3>
+            <p><strong>Energia Cinetica (movimento):</strong></p>
+            <div class="formula">Eₖ = ½mv²</div>
+            <p><strong>Energia Potenziale Gravitazionale:</strong></p>
+            <div class="formula">Eₚ = -GMm/r</div>
+            <p>L'energia totale di un'orbita è costante (conservazione dell'energia). Quando un pianeta si avvicina al
+                Sole, perde energia potenziale ma guadagna energia cinetica (si muove più veloce).</p>
+
+            <h3>Velocità di Fuga</h3>
+            <p>La velocità minima necessaria per sfuggire completamente all'attrazione gravitazionale:</p>
+            <div class="formula">v_fuga = √(2GM/r)</div>
+            <p>Dalla Terra: ~11.2 km/s. È √2 volte la velocità orbitale.</p>
+
+            <h3>Curiosità Storica</h3>
+            <p>Newton sviluppò la teoria della gravità osservando fenomeni terrestri (la famosa mela) e collegandoli ai
+                movimenti celesti. Fu il primo a comprendere che la stessa forza che fa cadere gli oggetti sulla Terra
+                tiene i pianeti in orbita.</p>
+        </div>
+    </div>
+
+    <div id="orbits-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('orbits-modal')">&times;</span>
+            <h2>🌌 Distanze Orbitali dei Pianeti</h2>
+
+            <h3>Da Cosa Dipendono le Distanze Orbitali?</h3>
+            <p>La distanza orbitale dei pianeti dal Sole dipende principalmente dalle <strong>condizioni iniziali di
+                    formazione del sistema solare</strong> e dal <strong>momento angolare</strong> di ciascun pianeta,
+                non direttamente dalla massa del Sole.</p>
+
+            <h3>Formazione del Sistema Solare</h3>
+            <p>Circa 4,6 miliardi di anni fa, durante il collasso della nebulosa protoplanetaria:</p>
+            <ul>
+                <li>Ogni pianeta si formò a una specifica distanza dal Sole proto-stellare</li>
+                <li>Questa distanza fu determinata dalla temperatura, densità e composizione del disco protoplanetario
+                </li>
+                <li>I pianeti rocciosi si formarono più vicini (dove il calore del Sole permetteva solo materiali
+                    refrattari)</li>
+                <li>I giganti gassosi si formarono più lontani (oltre la "linea del ghiaccio")</li>
+            </ul>
+
+            <h3>Conservazione del Momento Angolare</h3>
+            <p>Una volta formato, ogni pianeta possiede un <strong>momento angolare orbitale</strong> che si conserva:
+            </p>
+            <div class="formula">L = m × v × r = costante</div>
+            <p>Dove:</p>
+            <ul>
+                <li><strong>m</strong> = massa del pianeta</li>
+                <li><strong>v</strong> = velocità orbitale</li>
+                <li><strong>r</strong> = distanza dal Sole</li>
+            </ul>
+
+            <h3>Cosa Succede Cambiando la Massa del Sole</h3>
+            <p>Se la massa del Sole cambiasse, il moto orbitale cambierebbe secondo le leggi di Keplero e la dinamica
+                newtoniana.</p>
+
+            <h3>Cambio istantaneo di massa</h3>
+            <p>Se la massa del Sole variasse all'istante, in quell'istante <strong>posizione r e velocità v dei pianeti
+                    non cambiano</strong> (nessuna spinta aggiuntiva). Il campo gravitazionale però cambia, quindi
+                l'orbita risultante diventa in generale un'<strong>ellisse diversa</strong> (o un'iperbole se l'energia
+                diventa positiva). Il <strong>momento angolare</strong> resta conservato (campo centrale ⇒ coppia
+                nulla), mentre l'<strong>energia</strong> cambia.</p>
+            <div class="formula">v² = GM\,(2/r - 1/a) &nbsp;&nbsp; (equazione vis-viva)</div>
+            <p>Con M maggiore, il semiasse maggiore <em>a</em> tende a ridursi (orbita più stretta); con M minore,
+                <em>a</em> tende ad aumentare. Il raggio <em>non</em> resta costante nel tempo: resta uguale solo
+                nell'istante del cambio.
+            </p>
+
+            <h3>Cambio graduale di massa</h3>
+            <p>Se M cambia lentamente (adiabatico), gli elementi orbitali evolvono dolcemente. Per orbite quasi
+                circolari vale approssimativamente <strong>a ∝ 1/M</strong>: meno massa ⇒ orbite più ampie e periodi più
+                lunghi.</p>
+
+            <div class="info-item">
+                <strong>Semplificazione usata nel simulatore</strong>
+                Per scopi didattici qui <strong>forziamo orbite circolari</strong> con raggio fisso e aggiorniamo solo
+                la velocità secondo v = √(GM/r). Questo equivale a "ri-circularizzare" l'orbita ad ogni cambio di M: è
+                utile per visualizzare l'effetto di M su v e T, ma <em>non</em> descrive l'evoluzione reale dopo un
+                cambio improvviso di massa.
+            </div>
+
+            <h3>Come Può Cambiare la Distanza Orbitale</h3>
+            <p>Le distanze orbitali possono cambiare solo attraverso processi molto lenti:</p>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Migrazione Planetaria</strong>
+                    Durante la formazione, interazioni con il disco di gas/polvere possono spostare i pianeti verso il
+                    Sole o allontanarli.
+                </div>
+                <div class="info-item">
+                    <strong>Interazioni Gravitazionali</strong>
+                    Perturbazioni di altri pianeti massicci possono alterare lentamente le orbite su milioni di anni.
+                </div>
+                <div class="info-item">
+                    <strong>Effetti Mareali</strong>
+                    La dissipazione dell'energia mareale può far spiralare i pianeti verso la stella su tempi geologici.
+                </div>
+                <div class="info-item">
+                    <strong>Perdita di Massa Stellare</strong>
+                    Se una stella perde massa gradualmente (vento stellare), le orbite si espandono lentamente.
+                </div>
+            </div>
+
+            <h3>Esempio Pratico: Gigante Rossa</h3>
+            <p>Quando il Sole diventerà una gigante rossa (tra ~5 miliardi di anni):</p>
+            <ul>
+                <li>Perderà circa il 30% della sua massa tramite vento stellare</li>
+                <li>Le orbite di tutti i pianeti si espanderanno gradualmente</li>
+                <li>La Terra si sposterà da 1.0 UA a circa 1.4 UA</li>
+                <li>I periodi orbitali diventeranno più lunghi</li>
+            </ul>
+
+            <h3>Conclusione Importante</h3>
+            <p class="formula formula-special">
+                📍 Le distanze orbitali dei pianeti sono "fossili" della formazione del Sistema Solare, determinate 4.6
+                miliardi di anni fa dalle condizioni del disco protoplanetario, NON dalla massa attuale del Sole.
+            </p>
+        </div>
+    </div>
+
+    <div id="calculator-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('calculator-modal')">&times;</span>
+            <h2>🧮 Calcolatore Orbitale</h2>
+
+            <h3>Calcola Periodi e Velocità Orbitali</h3>
+            <p>Inserisci i parametri per calcolare periodo di rivoluzione e velocità orbitale di qualsiasi pianeta:</p>
+
+            <div class="calc-grid">
+                <div>
+                    <label><strong>Distanza dal Sole (UA):</strong></label>
+                    <input type="number" id="calc-distance" class="calc-input" value="1.0" step="0.1" min="0.1">
+                </div>
+                <div>
+                    <label><strong>Massa del Sole (masse solari):</strong></label>
+                    <input type="number" id="calc-sun-mass" class="calc-input" value="1.0" step="0.1" min="0.1">
+                </div>
+            </div>
+
+            <button class="btn full-width-btn" onclick="calculateOrbit()">🚀 Calcola Orbita</button>
+
+            <div id="calc-results"></div>
+
+            <h3>Esempi Predefiniti</h3>
+            <div class="calc-grid">
+                <button class="btn btn-small" onclick="loadPlanetExample('mercury')">Mercurio</button>
+                <button class="btn btn-small" onclick="loadPlanetExample('venus')">Venere</button>
+                <button class="btn btn-small" onclick="loadPlanetExample('earth')">Terra</button>
+                <button class="btn btn-small" onclick="loadPlanetExample('mars')">Marte</button>
+                <button class="btn btn-small" onclick="loadPlanetExample('jupiter')">Giove</button>
+                <button class="btn btn-small" onclick="loadPlanetExample('saturn')">Saturno</button>
+                <button class="btn btn-small" onclick="loadPlanetExample('uranus')">Urano</button>
+                <button class="btn btn-small" onclick="loadPlanetExample('neptune')">Nettuno</button>
+            </div>
+
+            <h3>Esperimenti di Massa Solare</h3>
+            <div class="calc-grid">
+                <button class="btn btn-small" onclick="setSunMass(0.5)">Sole 0.5x</button>
+                <button class="btn btn-small" onclick="setSunMass(2.0)">Sole 2.0x</button>
+                <button class="btn btn-small" onclick="setSunMass(10.0)">Sole 10x</button>
+                <button class="btn btn-small" onclick="setSunMass(0.1)">Sole 0.1x</button>
+            </div>
+
+            <h3>Formule Utilizzate</h3>
+            <div class="formula">
+                <strong>Periodo Orbitale:</strong><br>
+                T = 2π × √(r³ / (G × M))<br><br>
+                <strong>Velocità Orbitale:</strong><br>
+                v = √(G × M / r)
+            </div>
+
+            <p><strong>Dove:</strong></p>
+            <ul>
+                <li>T = periodo orbitale (secondi)</li>
+                <li>r = distanza dal Sole (metri)</li>
+                <li>G = costante gravitazionale (6.674 × 10⁻¹¹ m³/kg⋅s²)</li>
+                <li>M = massa del Sole (kg)</li>
+                <li>v = velocità orbitale (m/s)</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Sun Modal -->
+    <div id="sun-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('sun-modal')">&times;</span>
+            <h2>☀️ Il Sole</h2>
+            <div class="info-grid">
+                <div class="info-item"><strong>Tipo:</strong> Stella nana gialla (G2V)</div>
+                <div class="info-item"><strong>Massa:</strong> 1.989 × 10³⁰ kg</div>
+                <div class="info-item"><strong>Raggio:</strong> 696,340 km</div>
+                <div class="info-item"><strong>Temperatura Superficie:</strong> 5,778 K</div>
+                <div class="info-item"><strong>Temperatura Nucleo:</strong> 15 milioni K</div>
+                <div class="info-item"><strong>Età:</strong> 4.6 miliardi di anni</div>
+                <div class="info-item"><strong>Composizione:</strong> 73% H, 25% He</div>
+                <div class="info-item"><strong>Luminosità:</strong> 3.828 × 10²⁶ W</div>
+            </div>
+            <h3>Descrizione</h3>
+            <p>Il Sole è la stella al centro del Sistema Solare. Contiene il 99.86% della massa totale del sistema ed è
+                responsabile della gravità che mantiene tutti i pianeti in orbita.</p>
+            <p>Nel nucleo solare avviene la fusione nucleare: 4 atomi di idrogeno si fondono per formare elio,
+                rilasciando energia. Ogni secondo il Sole converte 600 milioni di tonnellate di idrogeno in elio.</p>
+            <h3>Curiosità</h3>
+            <p>• La luce del Sole impiega 8 minuti e 20 secondi per raggiungere la Terra</p>
+            <p>• Nel Sole potrebbero entrare 1.3 milioni di Terre</p>
+            <p>• Il Sole ruota su se stesso in circa 25 giorni (all'equatore)</p>
+            <p>• Tra 5 miliardi di anni diventerà una gigante rossa</p>
+        </div>
+    </div>
+
+    <!-- Mercury Modal -->
+    <div id="mercury-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('mercury-modal')">&times;</span>
+            <h2>☿️ Mercurio</h2>
+            <div class="info-grid">
+                <div class="info-item"><strong>Massa:</strong> 3.30 × 10²³ kg</div>
+                <div class="info-item"><strong>Raggio:</strong> 2,439 km</div>
+                <div class="info-item"><strong>Distanza dal Sole:</strong> 0.39 UA (57.9 milioni km)</div>
+                <div class="info-item"><strong>Periodo Orbitale:</strong> 88 giorni</div>
+                <div class="info-item"><strong>Velocità Orbitale:</strong> 47.87 km/s</div>
+                <div class="info-item"><strong>Temperatura:</strong> -173°C a 427°C</div>
+                <div class="info-item"><strong>Satelliti:</strong> 0</div>
+                <div class="info-item"><strong>Densità:</strong> 5.43 g/cm³</div>
+            </div>
+            <h3>Descrizione</h3>
+            <p>Mercurio è il pianeta più piccolo e più interno del Sistema Solare. Ha una superficie fortemente
+                craterizzata simile alla Luna.</p>
+            <p>Nonostante sia il più vicino al Sole, non è il pianeta più caldo (quello è Venere). La sua atmosfera è
+                praticamente inesistente.</p>
+            <h3>Composizione</h3>
+            <p>Superficie rocciosa con nucleo di ferro molto grande (70% della sua massa). Atmosfera: tracce di
+                ossigeno, sodio, idrogeno, elio e potassio.</p>
+            <h3>Curiosità</h3>
+            <p>• Un giorno su Mercurio (rotazione) dura 59 giorni terrestri</p>
+            <p>• La variazione termica è la più estrema del Sistema Solare: 600°C</p>
+            <p>• Il cratere Caloris Basin è largo 1,550 km</p>
+            <p>• Prende il nome dal veloce messaggero degli dei romani</p>
+        </div>
+    </div>
+
+    <!-- Venus Modal -->
+    <div id="venus-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('venus-modal')">&times;</span>
+            <h2>♀️ Venere</h2>
+            <div class="info-grid">
+                <div class="info-item"><strong>Massa:</strong> 4.87 × 10²⁴ kg</div>
+                <div class="info-item"><strong>Raggio:</strong> 6,052 km</div>
+                <div class="info-item"><strong>Distanza dal Sole:</strong> 0.72 UA (108.2 milioni km)</div>
+                <div class="info-item"><strong>Periodo Orbitale:</strong> 225 giorni</div>
+                <div class="info-item"><strong>Velocità Orbitale:</strong> 35.02 km/s</div>
+                <div class="info-item"><strong>Temperatura:</strong> 462°C (media)</div>
+                <div class="info-item"><strong>Satelliti:</strong> 0</div>
+                <div class="info-item"><strong>Pressione:</strong> 92 atm</div>
+            </div>
+            <h3>Descrizione</h3>
+            <p>Venere è il secondo pianeta dal Sole e il più caldo del Sistema Solare grazie al suo fortissimo effetto
+                serra. È spesso chiamato il "gemello della Terra" per dimensioni simili, ma le condizioni sono
+                estremamente diverse.</p>
+            <h3>Composizione</h3>
+            <p>Atmosfera densa: 96.5% CO₂, 3.5% azoto, tracce di acido solforico. Superficie rocciosa con vasti pianori
+                lavici e vulcani.</p>
+            <h3>Curiosità</h3>
+            <p>• Ruota in senso opposto rispetto agli altri pianeti (retrogrado)</p>
+            <p>• Un giorno venusiano (243 giorni terrestri) è più lungo del suo anno (225 giorni)</p>
+            <p>• È l'oggetto più luminoso nel cielo notturno dopo la Luna</p>
+            <p>• La pressione atmosferica è 92 volte quella terrestre</p>
+            <p>• Prende il nome dalla dea romana dell'amore e della bellezza</p>
+        </div>
+    </div>
+
+    <!-- Earth Modal -->
+    <div id="earth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('earth-modal')">&times;</span>
+            <h2>🌍 Terra</h2>
+            <div class="info-grid">
+                <div class="info-item"><strong>Massa:</strong> 5.97 × 10²⁴ kg</div>
+                <div class="info-item"><strong>Raggio:</strong> 6,371 km</div>
+                <div class="info-item"><strong>Distanza dal Sole:</strong> 1.00 UA (149.6 milioni km)</div>
+                <div class="info-item"><strong>Periodo Orbitale:</strong> 365.25 giorni</div>
+                <div class="info-item"><strong>Velocità Orbitale:</strong> 29.78 km/s</div>
+                <div class="info-item"><strong>Temperatura:</strong> -88°C a 58°C</div>
+                <div class="info-item"><strong>Satelliti:</strong> 1 (Luna)</div>
+                <div class="info-item"><strong>Superficie:</strong> 71% acqua</div>
+            </div>
+            <h3>Descrizione</h3>
+            <p>La Terra è il terzo pianeta dal Sole e l'unico corpo celeste noto ad ospitare la vita. Ha un'atmosfera
+                respirabile, acqua liquida in superficie e un campo magnetico che protegge dalla radiazione solare.</p>
+            <h3>Composizione</h3>
+            <p>Atmosfera: 78% azoto, 21% ossigeno, 1% altri gas. Nucleo di ferro e nichel, mantello di silicati, crosta
+                rocciosa.</p>
+            <h3>Curiosità</h3>
+            <p>• È l'unico pianeta non nominato da una divinità greco-romana</p>
+            <p>• La Luna sta lentamente allontanandosi di circa 3.8 cm all'anno</p>
+            <p>• Il punto più distante dal centro è il monte Chimborazo (Ecuador), non l'Everest</p>
+            <p>• Viaggiamo nello spazio a 107,000 km/h attorno al Sole</p>
+            <p>• Il campo magnetico terrestre si inverte ogni 200,000-300,000 anni</p>
+        </div>
+    </div>
+
+    <!-- Mars Modal -->
+    <div id="mars-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('mars-modal')">&times;</span>
+            <h2>♂️ Marte</h2>
+            <div class="info-grid">
+                <div class="info-item"><strong>Massa:</strong> 6.42 × 10²³ kg</div>
+                <div class="info-item"><strong>Raggio:</strong> 3,390 km</div>
+                <div class="info-item"><strong>Distanza dal Sole:</strong> 1.52 UA (227.9 milioni km)</div>
+                <div class="info-item"><strong>Periodo Orbitale:</strong> 687 giorni</div>
+                <div class="info-item"><strong>Velocità Orbitale:</strong> 24.07 km/s</div>
+                <div class="info-item"><strong>Temperatura:</strong> -125°C a 20°C</div>
+                <div class="info-item"><strong>Satelliti:</strong> 2 (Phobos, Deimos)</div>
+                <div class="info-item"><strong>Giorno:</strong> 24.6 ore</div>
+            </div>
+            <h3>Descrizione</h3>
+            <p>Marte è il quarto pianeta dal Sole, noto come il "Pianeta Rosso" per il colore dato dall'ossido di ferro
+                sulla superficie. È uno degli obiettivi principali per future missioni umane.</p>
+            <h3>Composizione</h3>
+            <p>Atmosfera sottile: 95% CO₂, 3% azoto, 1.6% argon. Superficie desertica con calotte polari di ghiaccio
+                d'acqua e CO₂.</p>
+            <h3>Curiosità</h3>
+            <p>• Ospita il vulcano più grande del Sistema Solare: Olympus Mons (25 km di altezza)</p>
+            <p>• La Valles Marineris è lunga 4,000 km (¼ della circonferenza marziana)</p>
+            <p>• Un tempo aveva acqua liquida in superficie</p>
+            <p>• Le calotte polari si espandono e riducono con le stagioni</p>
+            <p>• Prende il nome dal dio romano della guerra</p>
+        </div>
+    </div>
+
+    <!-- Jupiter Modal -->
+    <div id="jupiter-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('jupiter-modal')">&times;</span>
+            <h2>♃ Giove</h2>
+            <div class="info-grid">
+                <div class="info-item"><strong>Massa:</strong> 1.90 × 10²⁷ kg</div>
+                <div class="info-item"><strong>Raggio:</strong> 69,911 km</div>
+                <div class="info-item"><strong>Distanza dal Sole:</strong> 5.20 UA (778.5 milioni km)</div>
+                <div class="info-item"><strong>Periodo Orbitale:</strong> 11.86 anni</div>
+                <div class="info-item"><strong>Velocità Orbitale:</strong> 13.07 km/s</div>
+                <div class="info-item"><strong>Temperatura:</strong> -145°C (nubi)</div>
+                <div class="info-item"><strong>Satelliti:</strong> 95+ (4 galileiani)</div>
+                <div class="info-item"><strong>Giorno:</strong> 9.9 ore</div>
+            </div>
+            <h3>Descrizione</h3>
+            <p>Giove è il gigante gassoso più grande del Sistema Solare. La sua massa è 2.5 volte quella di tutti gli
+                altri pianeti messi insieme. Ha un potente campo magnetico e un sistema di anelli sottili.</p>
+            <h3>Composizione</h3>
+            <p>Atmosfera: 90% idrogeno, 10% elio, tracce di metano, ammoniaca, vapor d'acqua. Nessuna superficie solida,
+                solo pressione crescente verso il nucleo.</p>
+            <h3>Curiosità</h3>
+            <p>• La Grande Macchia Rossa è un uragano grande 2-3 volte la Terra, attivo da almeno 350 anni</p>
+            <p>• Ha la rotazione più veloce di tutti i pianeti (9.9 ore)</p>
+            <p>• Europa, una sua luna, potrebbe avere un oceano sotterraneo con vita</p>
+            <p>• Il suo campo magnetico è 20,000 volte più forte di quello terrestre</p>
+            <p>• Prende il nome dal re degli dei romani (Zeus per i greci)</p>
+        </div>
+    </div>
+
+    <!-- Saturn Modal -->
+    <div id="saturn-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('saturn-modal')">&times;</span>
+            <h2>♄ Saturno</h2>
+            <div class="info-grid">
+                <div class="info-item"><strong>Massa:</strong> 5.68 × 10²⁶ kg</div>
+                <div class="info-item"><strong>Raggio:</strong> 58,232 km</div>
+                <div class="info-item"><strong>Distanza dal Sole:</strong> 9.54 UA (1.43 miliardi km)</div>
+                <div class="info-item"><strong>Periodo Orbitale:</strong> 29.46 anni</div>
+                <div class="info-item"><strong>Velocità Orbitale:</strong> 9.69 km/s</div>
+                <div class="info-item"><strong>Temperatura:</strong> -178°C (nubi)</div>
+                <div class="info-item"><strong>Satelliti:</strong> 146+ (Titano)</div>
+                <div class="info-item"><strong>Giorno:</strong> 10.7 ore</div>
+            </div>
+            <h3>Descrizione</h3>
+            <p>Saturno è famoso per il suo spettacolare sistema di anelli, composto da miliardi di particelle di
+                ghiaccio e roccia. È il secondo pianeta più grande ed è classificato come gigante gassoso.</p>
+            <h3>Composizione</h3>
+            <p>Atmosfera: 96% idrogeno, 3% elio, tracce di metano e ammoniaca. Gli anelli sono fatti di ghiaccio d'acqua
+                (99%) e polvere di roccia.</p>
+            <h3>Curiosità</h3>
+            <p>• Ha la densità più bassa di tutti i pianeti: galleggerebbe nell'acqua!</p>
+            <p>• Gli anelli si estendono per 282,000 km ma sono spessi solo 10-100 metri</p>
+            <p>• Titano, la sua luna più grande, ha un'atmosfera più densa della Terra</p>
+            <p>• Ha un esagono perfetto al polo nord, largo 30,000 km</p>
+            <p>• Prende il nome dal dio romano dell'agricoltura e del tempo</p>
+        </div>
+    </div>
+
+    <!-- Uranus Modal -->
+    <div id="uranus-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('uranus-modal')">&times;</span>
+            <h2>♅ Urano</h2>
+            <div class="info-grid">
+                <div class="info-item"><strong>Massa:</strong> 8.68 × 10²⁵ kg</div>
+                <div class="info-item"><strong>Raggio:</strong> 25,362 km</div>
+                <div class="info-item"><strong>Distanza dal Sole:</strong> 19.19 UA (2.87 miliardi km)</div>
+                <div class="info-item"><strong>Periodo Orbitale:</strong> 84.01 anni</div>
+                <div class="info-item"><strong>Velocità Orbitale:</strong> 6.81 km/s</div>
+                <div class="info-item"><strong>Temperatura:</strong> -224°C</div>
+                <div class="info-item"><strong>Satelliti:</strong> 27+ (5 maggiori)</div>
+                <div class="info-item"><strong>Giorno:</strong> 17.2 ore</div>
+            </div>
+            <h3>Descrizione</h3>
+            <p>Urano è un gigante di ghiaccio con una peculiarità unica: ruota "di lato" con un'inclinazione assiale di
+                98°. Questo rende le sue stagioni estremamente estreme, con ogni polo che riceve 42 anni di luce solare
+                continua seguiti da 42 anni di buio.</p>
+            <h3>Composizione</h3>
+            <p>Atmosfera: 83% idrogeno, 15% elio, 2% metano. Il metano assorbe la luce rossa, dando al pianeta il suo
+                caratteristico colore azzurro-verde. Interno di ghiacci d'acqua, metano e ammoniaca.</p>
+            <h3>Curiosità</h3>
+            <p>• È stato il primo pianeta scoperto con un telescopio (William Herschel, 1781)</p>
+            <p>• Ha 13 anelli molto deboli e scuri</p>
+            <p>• Il campo magnetico è inclinato di 59° rispetto all'asse di rotazione</p>
+            <p>• È il pianeta più freddo del Sistema Solare (-224°C)</p>
+            <p>• Prende il nome dal dio greco del cielo, padre di Saturno</p>
+        </div>
+    </div>
+
+    <!-- Neptune Modal -->
+    <div id="neptune-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('neptune-modal')">&times;</span>
+            <h2>♆ Nettuno</h2>
+            <div class="info-grid">
+                <div class="info-item"><strong>Massa:</strong> 1.02 × 10²⁶ kg</div>
+                <div class="info-item"><strong>Raggio:</strong> 24,622 km</div>
+                <div class="info-item"><strong>Distanza dal Sole:</strong> 30.07 UA (4.50 miliardi km)</div>
+                <div class="info-item"><strong>Periodo Orbitale:</strong> 164.79 anni</div>
+                <div class="info-item"><strong>Velocità Orbitale:</strong> 5.43 km/s</div>
+                <div class="info-item"><strong>Temperatura:</strong> -214°C</div>
+                <div class="info-item"><strong>Satelliti:</strong> 14+ (Tritone)</div>
+                <div class="info-item"><strong>Giorno:</strong> 16.1 ore</div>
+            </div>
+            <h3>Descrizione</h3>
+            <p>Nettuno è l'ottavo e più lontano pianeta dal Sole. È un gigante di ghiaccio con i venti più veloci del
+                Sistema Solare, che raggiungono 2,100 km/h. Ha un intenso colore blu dovuto al metano atmosferico.</p>
+            <h3>Composizione</h3>
+            <p>Atmosfera: 80% idrogeno, 19% elio, 1.5% metano. Interno di ghiacci d'acqua, metano e ammoniaca con
+                possibile nucleo roccioso.</p>
+            <h3>Curiosità</h3>
+            <p>• È stato scoperto matematicamente prima di essere osservato (1846, Urbain Le Verrier)</p>
+            <p>• La Grande Macchia Scura era un sistema di tempeste grande quanto la Terra</p>
+            <p>• Ha completato solo una orbita completa dalla sua scoperta (2011)</p>
+            <p>• Tritone, la sua luna più grande, orbita in direzione retrograda</p>
+            <p>• Ha 6 anelli sottili e oscuri</p>
+            <p>• Prende il nome dal dio romano del mare</p>
+        </div>
+    </div>
+
+    <!-- Elliptical Orbits Info Modal -->
+    <div id="elliptical-info-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('elliptical-info-modal')">&times;</span>
+            <h2>🌌 Orbite Circolari vs Orbite Ellittiche: La Fisica del Moto Planetario</h2>
+
+            <h3>📜 Contesto Storico: La Rivoluzione Copernicana</h3>
+            <p>Per quasi 2000 anni, dall'antica Grecia fino al Rinascimento, gli astronomi credevano che i pianeti si
+                muovessero su orbite perfettamente <strong>circolari</strong>. Questa convinzione derivava da:</p>
+            <ul class="modal-list">
+                <li><strong>Aristotele e Tolomeo (150 d.C.):</strong> ritenevano il cerchio la "forma perfetta" per i
+                    corpi celesti</li>
+                <li><strong>Modello geocentrico:</strong> la Terra al centro, con pianeti su sfere cristalline circolari
+                </li>
+                <li><strong>Epicicli e deferenti:</strong> cerchi su cerchi per spiegare il moto retrogrado</li>
+            </ul>
+
+            <div class="info-item kepler-box">
+                <strong>💡 La Svolta di Keplero (1609-1619)</strong>
+                <p>Johannes Kepler, analizzando le accurate osservazioni di Marte
+                    fatte da Tycho Brahe, scoprì che le orbite circolari non potevano spiegare i dati con precisione.
+                    Dopo anni di calcoli tormentosi (che chiamò "la mia guerra con Marte"), pubblicò le sue tre leggi
+                    rivoluzionarie che dimostravano che le orbite sono <strong>ellittiche</strong>, non circolari.</p>
+            </div>
+
+            <h3>🔬 Geometria delle Orbite</h3>
+
+            <h4 class="section-title">Orbita Circolare (Modello Semplificato)</h4>
+            <p>Un'orbita circolare è un caso speciale di ellisse dove:</p>
+            <div class="formula">e = 0 &nbsp;&nbsp; (eccentricità nulla)</div>
+            <ul>
+                <li><strong>Centro:</strong> Il Sole è al centro geometrico dell'orbita</li>
+                <li><strong>Distanza costante:</strong> r = a (sempre uguale al semiasse maggiore)</li>
+                <li><strong>Velocità costante:</strong> v = √(GM/r) non varia durante l'orbita</li>
+                <li><strong>Periodo:</strong> T = 2π√(a³/GM)</li>
+            </ul>
+            <p class="emphasis-text"><em>Questa è un'approssimazione utile per scopi didattici, ma non
+                    descrive accuratamente nessuna orbita reale del Sistema Solare.</em></p>
+
+            <h4 class="section-title">Orbita Ellittica (Realtà Fisica)</h4>
+            <p>Un'ellisse è una curva definita da due punti focali (F₁ e F₂). Per ogni punto P sull'ellisse:</p>
+            <div class="formula">PF₁ + PF₂ = 2a = costante</div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Semiasse Maggiore (a)</strong>
+                    Metà della dimensione massima dell'ellisse. Determina il periodo orbitale.
+                </div>
+                <div class="info-item">
+                    <strong>Semiasse Minore (b)</strong>
+                    Metà della dimensione minima. Relazione: b = a√(1-e²)
+                </div>
+                <div class="info-item">
+                    <strong>Eccentricità (e)</strong>
+                    Misura quanto l'ellisse è "schiacciata": e = 0 (cerchio), 0 < e < 1 (ellisse) </div>
+                        <div class="info-item">
+                            <strong>Distanza Focale (c)</strong>
+                            Distanza dal centro a ciascun fuoco: c = ae
+                        </div>
+                </div>
+
+                <p class="emphasis-text"><strong class="highlight">CRUCIALE:</strong>
+                    Il Sole non è al centro dell'ellisse, ma in uno dei due <strong>fuochi</strong>! L'altro fuoco è un
+                    punto vuoto nello spazio.</p>
+
+                <h3>📐 Parametri Orbitali nel Tempo</h3>
+
+                <h4 class="section-title">Distanza Variabile</h4>
+                <p>In un'orbita ellittica, la distanza dal Sole varia continuamente secondo l'equazione:</p>
+                <div class="formula">r = a(1 - e cos E)</div>
+                <p>dove E è l'<strong>anomalia eccentrica</strong> (parametro angolare dell'ellisse).</p>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Perielio (punto più vicino)</strong>
+                        r<sub>min</sub> = a(1 - e)
+                    </div>
+                    <div class="info-item">
+                        <strong>Afelio (punto più lontano)</strong>
+                        r<sub>max</sub> = a(1 + e)
+                    </div>
+                </div>
+
+                <p class="modal-text-spaced"><strong>Esempio - Mercurio (e = 0.2056):</strong></p>
+                <ul class="modal-list">
+                    <li>Semiasse maggiore: a = 0.387 UA</li>
+                    <li>Perielio: 0.387 × (1 - 0.2056) ≈ <strong>0.307 UA</strong> (46 milioni km)</li>
+                    <li>Afelio: 0.387 × (1 + 0.2056) ≈ <strong>0.467 UA</strong> (70 milioni km)</li>
+                    <li>Variazione: <strong>+52%</strong> di differenza tra perielio e afelio!</li>
+                </ul>
+
+                <h4 class="modal-subtitle">Velocità Variabile - Seconda
+                    Legge di Keplero</h4>
+                <p>La velocità di un pianeta <strong>non è costante</strong> su un'orbita ellittica. È governata
+                    dall'<strong>equazione vis-viva</strong>:</p>
+                <div class="formula">v² = GM(2/r - 1/a)</div>
+
+                <p class="modal-text-spaced">Questa equazione ci dice che:</p>
+                <ul class="modal-list">
+                    <li><strong>Al perielio</strong> (r minimo): v è <strong>massima</strong> → il pianeta accelera!
+                    </li>
+                    <li><strong>All'afelio</strong> (r massimo): v è <strong>minima</strong> → il pianeta rallenta!</li>
+                </ul>
+
+                <div class="formula formula-special">
+                    <strong>Seconda Legge di Keplero (Legge delle Aree)</strong><br>
+                    Il raggio vettore Sole-Pianeta spazza aree uguali in tempi uguali<br>
+                    dA/dt = (L/2m) = costante
+                </div>
+
+                <p class="modal-text-spaced"><strong>Esempio - Terra (e = 0.0167):</strong></p>
+                <ul class="modal-list">
+                    <li>Velocità al perielio (3 gennaio): <strong>30.29 km/s</strong></li>
+                    <li>Velocità all'afelio (4 luglio): <strong>29.29 km/s</strong></li>
+                    <li>Differenza: ~3.4% (ecco perché le stagioni NON dipendono dalla distanza!)</li>
+                </ul>
+
+                <h3>⚙️ Le Tre Anomalie: Descrivere la Posizione</h3>
+                <p>Per descrivere dove si trova un pianeta su un'orbita ellittica usiamo tre angoli diversi:</p>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Anomalia Media (M)</strong>
+                        Angolo che cresce <em>uniformemente</em> nel tempo: M = n·t, dove n = √(GM/a³) è il moto medio.
+                    </div>
+                    <div class="info-item">
+                        <strong>Anomalia Eccentrica (E)</strong>
+                        Parametro geometrico dell'ellisse. Legato a M dall'<strong>equazione di Keplero</strong>: M = E
+                        - e sin E
+                    </div>
+                    <div class="info-item">
+                        <strong>Anomalia Vera (ν)</strong>
+                        Angolo <em>reale</em> del pianeta visto dal Sole (dal perielio). Relazione: tan(ν/2) =
+                        √[(1+e)/(1-e)] tan(E/2)
+                    </div>
+                </div>
+
+                <h4 class="section-title">L'Equazione di Keplero</h4>
+                <p>Questa è l'equazione fondamentale che collega tempo e posizione:</p>
+                <div class="formula">M = E - e sin E</div>
+                <p>Questa equazione <strong>trascendente</strong> non ha soluzione algebrica! Deve essere risolta
+                    numericamente
+                    (es. metodo di Newton-Raphson) ad ogni step temporale per trovare E, e poi calcolare la posizione
+                    reale.</p>
+
+                <div class="info-item implementation-box">
+                    <strong>🖥️ Implementazione nel Simulatore</strong>
+                    <p>Quando attivi "Orbite Ellittiche Reali", il simulatore:</p>
+                    <ul>
+                        <li>Calcola M che avanza uniformemente: M(t) = M₀ + n·Δt</li>
+                        <li>Risolve l'equazione di Keplero per trovare E (Newton-Raphson)</li>
+                        <li>Calcola ν (anomalia vera) da E</li>
+                        <li>Determina posizione: x = r cos ν, z = r sin ν</li>
+                        <li>Aggiorna velocità con vis-viva: v = √[GM(2/r - 1/a)]</li>
+                    </ul>
+                </div>
+
+                <h3>🌍 Eccentricità dei Pianeti del Sistema Solare</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Mercurio: e = 0.2056</strong>
+                        L'orbita più ellittica! Variazione distanza: 52%
+                    </div>
+                    <div class="info-item">
+                        <strong>Venere: e = 0.0068</strong>
+                        Quasi perfettamente circolare
+                    </div>
+                    <div class="info-item">
+                        <strong>Terra: e = 0.0167</strong>
+                        Orbita quasi circolare (variazione 3.4%)
+                    </div>
+                    <div class="info-item">
+                        <strong>Marte: e = 0.0934</strong>
+                        Moderatamente ellittica (osservazioni chiave per Keplero!)
+                    </div>
+                    <div class="info-item">
+                        <strong>Giove: e = 0.0484</strong>
+                        Leggermente ellittica
+                    </div>
+                    <div class="info-item">
+                        <strong>Saturno: e = 0.0539</strong>
+                        Leggermente ellittica
+                    </div>
+                    <div class="info-item">
+                        <strong>Urano: e = 0.0472</strong>
+                        Leggermente ellittica
+                    </div>
+                    <div class="info-item">
+                        <strong>Nettuno: e = 0.0086</strong>
+                        Quasi circolare
+                    </div>
+                </div>
+
+                <h3>🔍 Conseguenze Fisiche Osservabili</h3>
+
+                <div class="info-item conservation-energy-box">
+                    <strong class="conservation-title-energy">Conservazione dell'Energia</strong>
+                    <p class="conservation-text">L'energia totale E = E<sub>k</sub> + E<sub>p</sub> si
+                        conserva:</p>
+                    <div class="formula formula-conservation">E = -GMm/(2a) = costante</div>
+                    <p class="conservation-text">Quando il pianeta si avvicina (E<sub>p</sub> diminuisce),
+                        accelera (E<sub>k</sub> aumenta) e viceversa.</p>
+                </div>
+
+                <div class="info-item conservation-momentum-box">
+                    <strong class="conservation-title-momentum">Conservazione del Momento Angolare</strong>
+                    <p class="conservation-text">Il momento angolare L = mvr si conserva:</p>
+                    <div class="formula formula-conservation">L = m√(GMa(1-e²)) = costante</div>
+                    <p class="conservation-text">Questo è il motivo per cui il pianeta va più veloce
+                        quando è più vicino: r↓ ⇒ v↑ per mantenere L costante!</p>
+                </div>
+
+                <h3>📚 Approfondimenti e Fonti Affidabili</h3>
+
+                <h4 class="modal-subtitle">Testi Classici</h4>
+                <ul class="modal-list">
+                    <li><strong>"Astronomia Nova"</strong> (1609) - Johannes Kepler (opera originale dove annuncia la
+                        Prima e Seconda Legge)</li>
+                    <li><strong>"Harmonices Mundi"</strong> (1619) - Johannes Kepler (contiene la Terza Legge)</li>
+                    <li><strong>"Principia Mathematica"</strong> (1687) - Isaac Newton (deriva le leggi di Keplero dalla
+                        gravitazione)</li>
+                </ul>
+
+                <h4 class="modal-subtitle">Risorse Online Accademiche
+                </h4>
+                <ul class="modal-list-resources">
+                    <li><strong>NASA - Basics of Space Flight:</strong><br>
+                        <a href="https://solarsystem.nasa.gov/basics/chapter4-1/" target="_blank" rel="noopener"
+                            class="link-accent">
+                            https://solarsystem.nasa.gov/basics/chapter4-1/</a>
+                    </li>
+
+                    <li><strong>NASA - Planetary Fact Sheets (dati orbitali ufficiali):</strong><br>
+                        <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/" target="_blank" rel="noopener"
+                            class="link-accent">
+                            https://nssdc.gsfc.nasa.gov/planetary/factsheet/</a>
+                    </li>
+
+                    <li><strong>JPL - Small-Body Database (parametri orbitali precisi):</strong><br>
+                        <a href="https://ssd.jpl.nasa.gov/planets/phys_par.html" target="_blank" rel="noopener"
+                            class="link-accent">
+                            https://ssd.jpl.nasa.gov/planets/phys_par.html</a>
+                    </li>
+
+                    <li><strong>Kepler's Laws - HyperPhysics (Georgia State University):</strong><br>
+                        <a href="http://hyperphysics.phy-astr.gsu.edu/hbase/kepler.html" target="_blank" rel="noopener"
+                            class="link-accent">
+                            http://hyperphysics.phy-astr.gsu.edu/hbase/kepler.html</a>
+                    </li>
+
+                    <li><strong>ESA - Kepler's Laws:</strong><br>
+                        <a href="https://www.esa.int/Science_Exploration/Space_Science/Kepler_s_laws_of_planetary_motion"
+                            target="_blank" rel="noopener" class="link-accent">
+                            https://www.esa.int/Science_Exploration/Space_Science/Kepler_s_laws_of_planetary_motion</a>
+                    </li>
+                </ul>
+
+                <h4 class="modal-subtitle">Video Didattici</h4>
+                <ul class="modal-list">
+                    <li><strong>Khan Academy - Kepler's Laws:</strong> corso completo gratuito su meccanica orbitale
+                    </li>
+                    <li><strong>PBS Space Time (YouTube):</strong> "The Brightest Part of a Shadow is in the Middle" -
+                        spiega le leggi di Keplero</li>
+                    <li><strong>3Blue1Brown:</strong> "But what is a Fourier Series?" - include visualizzazioni su
+                        epicicli e orbite</li>
+                </ul>
+
+                <h4 class="modal-subtitle">Simulatori Interattivi</h4>
+                <ul class="modal-list-resources">
+                    <li><strong>PhET Interactive Simulations (University of Colorado):</strong><br>
+                        <a href="https://phet.colorado.edu/en/simulations/gravity-and-orbits" target="_blank"
+                            rel="noopener" class="link-accent">
+                            https://phet.colorado.edu/en/simulations/gravity-and-orbits</a>
+                    </li>
+
+                    <li><strong>Orbital Mechanics Explorer:</strong><br>
+                        <a href="https://orbitalmechanics.info/" target="_blank" rel="noopener" class="link-accent">
+                            https://orbitalmechanics.info/</a>
+                    </li>
+                </ul>
+
+                <div class="info-item didactic-suggestion-box">
+                    <strong class="didactic-title">💡 Suggerimento Didattico</strong>
+                    <p class="conservation-text">Prova a confrontare le due modalità nel simulatore:</p>
+                    <ol class="didactic-ordered-list">
+                        <li>Seleziona Mercurio (il più ellittico) e osserva la sua orbita circolare</li>
+                        <li>Attiva "Orbite Ellittiche Reali" e nota come cambia la forma</li>
+                        <li>Guarda le statistiche live: la distanza e la velocità ora <em>variano</em> durante l'orbita!
+                        </li>
+                        <li>Aumenta la massa del Sole e osserva come le orbite si aggiornano correttamente in entrambe
+                            le modalità</li>
+                    </ol>
+                </div>
+
+                <p class="final-quote">
+                    "La natura ama la semplicità e ama l'unità. Le orbite dei pianeti sono ellissi, non perché il
+                    cerchio sia imperfetto, ma perché l'ellisse emerge naturalmente dalle leggi della fisica."
+                    - Ispirato da Johannes Kepler
+                </p>
+            </div>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+        <script>
+            // Costanti fisiche
+            const G = 6.674e-11; // Costante gravitazionale
+            const AU = 1.496e11; // Unità Astronomica in metri
+            const SCALE_DISTANCE = 80; // Scala per distanze visuali
+            const SCALE_SIZE = 0.00001; // Scala per dimensioni visuali
+
+            // Dati pianeti reali (distance = semiasse maggiore in UA, eccentricity = eccentricità orbitale reale)
+            const planetsData = {
+                mercury: { name: 'Mercurio', mass: 3.30e23, radius: 2439, distance: 0.387, eccentricity: 0.2056, color: 0x8c7853, orbitColor: 0xaaaaaa },
+                venus: { name: 'Venere', mass: 4.87e24, radius: 6052, distance: 0.723, eccentricity: 0.0068, color: 0xffc649, orbitColor: 0xcccccc },
+                earth: { name: 'Terra', mass: 5.97e24, radius: 6371, distance: 1.0, eccentricity: 0.0167, color: 0x4169e1, orbitColor: 0x00bcd4 },
+                mars: { name: 'Marte', mass: 6.42e23, radius: 3390, distance: 1.524, eccentricity: 0.0934, color: 0xcd5c5c, orbitColor: 0xff6b6b },
+                jupiter: { name: 'Giove', mass: 1.90e27, radius: 69911, distance: 5.203, eccentricity: 0.0484, color: 0xdaa520, orbitColor: 0xffaa00 },
+                saturn: { name: 'Saturno', mass: 5.68e26, radius: 58232, distance: 9.537, eccentricity: 0.0539, color: 0xfad5a5, orbitColor: 0xffcc99 },
+                uranus: { name: 'Urano', mass: 8.68e25, radius: 25362, distance: 19.191, eccentricity: 0.0472, color: 0x4fd0e7, orbitColor: 0x66ddff },
+                neptune: { name: 'Nettuno', mass: 1.02e26, radius: 24622, distance: 30.069, eccentricity: 0.0086, color: 0x4169e1, orbitColor: 0x3355ff }
+            };
+
+            const sunData = { name: 'Sole', mass: 1.989e30, radius: 696340 };
+
+            // Variabili globali
+            let scene, camera, renderer, sun, planets = {}, orbits = {}, trailLines = {}, originalOrbits = {};
+            let originalMasses = {};
+            let planetMassMultipliers = {}; // Memorizza i moltiplicatori di massa per ogni pianeta
+            let simulationSpeed = 1;
+            let isPaused = false;
+            let selectedPlanet = null;
+            let currentSunMass = sunData.mass;
+            let useEllipticalOrbits = false; // Controlla se usare orbite ellittiche o circolari
+            const MAX_TRAIL_POINTS = 200;
+
+            // Inizializzazione
+            function init() {
+                // Scena
+                scene = new THREE.Scene();
+
+                // Camera
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+                camera.position.set(0, 150, 250);
+                camera.lookAt(0, 0, 0);
+
+                // Renderer
+                const canvas = document.getElementById('canvas3d');
+                renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+                // Migliora la nitidezza su schermi ad alta densità di pixel
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+                renderer.setSize(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight);
+
+                // Stelle di sfondo
+                createStarfield();
+
+                // Luci
+                const ambientLight = new THREE.AmbientLight(0x222222);
+                scene.add(ambientLight);
+
+                const sunLight = new THREE.PointLight(0xffffff, 2, 5000);
+                sunLight.position.set(0, 0, 0);
+                scene.add(sunLight);
+
+                // Sole
+                const sunGeometry = new THREE.SphereGeometry(15, 32, 32);
+                const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+                sun = new THREE.Mesh(sunGeometry, sunMaterial);
+                scene.add(sun);
+
+                // Pianeti
+                createPlanets();
+
+                // Salva masse originali e inizializza moltiplicatori
+                for (let key in planetsData) {
+                    originalMasses[key] = planetsData[key].mass;
+                    planetMassMultipliers[key] = 1.0; // Inizia con moltiplicatore 1.0x
+                }
+                originalMasses.sun = sunData.mass;
+
+                // Event listeners
+                window.addEventListener('resize', onWindowResize);
+                canvas.addEventListener('mousedown', onMouseDown);
+                canvas.addEventListener('mousemove', onMouseMove);
+                canvas.addEventListener('wheel', onMouseWheel);
+
+                document.getElementById('speed-slider').addEventListener('input', (e) => {
+                    simulationSpeed = parseFloat(e.target.value);
+                    if (simulationSpeed < 10) {
+                        document.getElementById('speed-value').textContent = simulationSpeed.toFixed(1) + 'x';
+                    } else {
+                        document.getElementById('speed-value').textContent = simulationSpeed.toFixed(0) + 'x';
+                    }
+                });
+
+                document.getElementById('sun-mass-slider').addEventListener('input', (e) => {
+                    const multiplier = parseFloat(e.target.value) / 100;
+                    currentSunMass = sunData.mass * multiplier;
+                    document.getElementById('sun-mass-value').textContent = multiplier.toFixed(2) + 'x';
+
+                    const warning = document.getElementById('sun-warning');
+                    if (multiplier < 0.7 || multiplier > 2.5) {
+                        warning.classList.add('visible');
+                    } else {
+                        warning.classList.remove('visible');
+                    }
+
+                    updateAllOrbits();
+                });
+
+                document.getElementById('show-orbits').addEventListener('change', (e) => {
+                    for (let key in orbits) {
+                        orbits[key].visible = e.target.checked;
+                        if (trailLines[key]) {
+                            trailLines[key].line.visible = e.target.checked;
+                        }
+                    }
+                });
+
+                document.getElementById('elliptical-orbits').addEventListener('change', (e) => {
+                    useEllipticalOrbits = e.target.checked;
+
+                    // Ricrea tutte le orbite con la nuova modalità
+                    updateAllOrbits();
+
+                    // Reset delle tracce per evitare confusione visiva
+                    for (let key in trailLines) {
+                        if (trailLines[key]) {
+                            trailLines[key].points = [];
+                            const positions = trailLines[key].line.geometry.attributes.position.array;
+                            positions.fill(0);
+                            trailLines[key].line.geometry.attributes.position.needsUpdate = true;
+                            trailLines[key].line.geometry.setDrawRange(0, 0);
+                        }
+                    }
+
+                    // Reset anomalia media per ripartire dalla stessa posizione
+                    for (let key in planets) {
+                        planets[key].mesh.userData.meanAnomaly = planets[key].mesh.userData.meanAnomaly || 0;
+                    }
+                });
+
+                document.getElementById('show-original-orbit').addEventListener('change', (e) => {
+                    for (let key in originalOrbits) {
+                        if (originalOrbits[key]) {
+                            originalOrbits[key].visible = e.target.checked;
+                        }
+                    }
+                });
+
+                // Event listener per slider masse pianeti
+                const planetKeys = ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune'];
+                planetKeys.forEach(key => {
+                    const slider = document.getElementById(`${key}-mass-slider`);
+                    if (slider) {
+                        slider.addEventListener('input', (e) => {
+                            const multiplier = parseFloat(e.target.value) / 100;
+                            planetMassMultipliers[key] = multiplier;
+                            planetsData[key].mass = originalMasses[key] * multiplier;
+                            document.getElementById(`${key}-mass-value`).textContent = multiplier.toFixed(2) + 'x';
+
+                            // Aggiorna dimensione visiva del pianeta (feedback visivo)
+                            const planet = planets[key];
+                            if (planet && planet.mesh) {
+                                // La scala visiva cresce con la radice cubica della massa (densità costante)
+                                const sizeMultiplier = Math.pow(multiplier, 1 / 3);
+                                planet.mesh.scale.set(sizeMultiplier, sizeMultiplier, sizeMultiplier);
+
+                                // Aggiorna userData
+                                planet.mesh.userData.mass = planetsData[key].mass;
+                            }
+
+                            // Mostra spiegazione fisica
+                            const explanation = document.getElementById('experiment-explanation');
+                            explanation.style.display = 'block';
+                            explanation.innerHTML = `<strong>ℹ️ Massa ${planetsData[key].name}: ${multiplier.toFixed(2)}x</strong><br>
+                                Nota: nella fisica reale, la massa di un pianeta NON influenza la sua orbita attorno al Sole! 
+                                L'orbita dipende solo dalla massa del Sole (M☉ >> M⊕). Tuttavia, la dimensione del pianeta 
+                                è cambiata proporzionalmente (raggio ∝ massa^(1/3) assumendo densità costante).`;
+
+                            updateOrbit(key);
+                        });
+                    }
+                });
+
+                animate();
+            }
+
+            function createStarfield() {
+                const starsGeometry = new THREE.BufferGeometry();
+                const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.7 });
+
+                const starsVertices = [];
+                for (let i = 0; i < 10000; i++) {
+                    const x = (Math.random() - 0.5) * 4000;
+                    const y = (Math.random() - 0.5) * 4000;
+                    const z = (Math.random() - 0.5) * 4000;
+                    starsVertices.push(x, y, z);
+                }
+
+                starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsVertices, 3));
+                const stars = new THREE.Points(starsGeometry, starsMaterial);
+                scene.add(stars);
+            }
+
+            function createPlanets() {
+                for (let key in planetsData) {
+                    const data = planetsData[key];
+                    const planetGroup = new THREE.Group();
+
+                    // Pianeta con texture procedurale
+                    // Limita la dimensione max per evitare pianeti giganti più grandi del Sole
+                    // Giove e Saturno sarebbero troppo grandi senza questo limite
+                    const baseSize = data.radius * SCALE_SIZE * 50;
+                    const size = Math.min(Math.max(baseSize, 1.5), 8); // Min 1.5, Max 8 (vs Sole = 15)
+                    const geometry = new THREE.SphereGeometry(size, 32, 32);
+
+                    // Crea texture procedurale con pattern per vedere la rotazione
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 512;
+                    canvas.height = 512;
+                    const ctx = canvas.getContext('2d');
+
+                    // Sfondo base del colore del pianeta
+                    ctx.fillStyle = '#' + data.color.toString(16).padStart(6, '0');
+                    ctx.fillRect(0, 0, 512, 512);
+
+                    // Aggiungi pattern di linee/strisce per vedere la rotazione
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+                    ctx.lineWidth = 3;
+                    for (let i = 0; i < 512; i += 30) {
+                        ctx.beginPath();
+                        ctx.moveTo(i, 0);
+                        ctx.lineTo(i, 512);
+                        ctx.stroke();
+                    }
+
+                    // Aggiungi alcune macchie casuali
+                    for (let i = 0; i < 20; i++) {
+                        const x = Math.random() * 512;
+                        const y = Math.random() * 512;
+                        const radius = Math.random() * 30 + 10;
+                        ctx.fillStyle = `rgba(${Math.random() * 100}, ${Math.random() * 100}, ${Math.random() * 100}, 0.3)`;
+                        ctx.beginPath();
+                        ctx.arc(x, y, radius, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+
+                    const texture = new THREE.CanvasTexture(canvas);
+                    const material = new THREE.MeshStandardMaterial({ map: texture, color: data.color });
+                    const planet = new THREE.Mesh(geometry, material);
+
+                    const distance = data.distance * SCALE_DISTANCE;
+                    planet.position.x = distance;
+
+                    const initialAngle = Math.random() * Math.PI * 2;
+                    planet.userData = {
+                        key: key,
+                        name: data.name,
+                        distance: data.distance,
+                        angle: initialAngle,
+                        meanAnomaly: initialAngle, // Inizializza anomalia media
+                        originalDistance: distance,
+                        currentDistance: distance,
+                        trueAnomaly: initialAngle,
+                        mass: data.mass,
+                        semiMajorAxis: data.distance * AU, // in metri
+                        eccentricity: data.eccentricity,
+                        lastSunMass: currentSunMass
+                    };
+
+                    planetGroup.add(planet);
+                    scene.add(planetGroup);
+
+                    planets[key] = { group: planetGroup, mesh: planet, data: data };
+
+                    // Orbita
+                    createOrbit(key, distance, data.orbitColor);
+
+                    // Anelli di Saturno
+                    if (key === 'saturn') {
+                        const ringGeometry = new THREE.RingGeometry(size * 1.5, size * 2.5, 64);
+                        const ringMaterial = new THREE.MeshBasicMaterial({
+                            color: 0xc9b376,
+                            side: THREE.DoubleSide,
+                            transparent: true,
+                            opacity: 0.7
+                        });
+                        const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+                        ring.rotation.x = Math.PI / 2;
+                        planet.add(ring);
+                    }
+                }
+            }
+
+            function createOrbit(key, radius, color, saveAsOriginal = false) {
+                const data = planetsData[key];
+                const planetMesh = planets[key]?.mesh;
+                let points;
+
+                if (useEllipticalOrbits && data.eccentricity > 0) {
+                    // Orbita ellittica reale - usa elementi orbitali da userData se disponibili
+                    let a_meters, e;
+
+                    if (planetMesh && planetMesh.userData.semiMajorAxis) {
+                        // Usa elementi orbitali aggiornati (fisica reale)
+                        a_meters = planetMesh.userData.semiMajorAxis;
+                        e = planetMesh.userData.eccentricity;
+                    } else {
+                        // Usa elementi orbitali originali
+                        a_meters = data.distance * AU;
+                        e = data.eccentricity;
+                    }
+
+                    // Converti da metri a unità di scena: metri → AU → unità scena
+                    const a = (a_meters / AU) * SCALE_DISTANCE;
+                    const b = a * Math.sqrt(1 - e * e); // semiasse minore
+                    const c = a * e; // distanza dal centro al fuoco
+
+                    // Crea ellisse con il Sole in uno dei fuochi
+                    const curve = new THREE.EllipseCurve(
+                        -c, 0,  // centro spostato in modo che il Sole sia al fuoco
+                        a, b,   // semiassi
+                        0, 2 * Math.PI,
+                        false,
+                        0
+                    );
+                    points = curve.getPoints(200); // Più punti per ellissi più accurate
+                } else {
+                    // Orbita circolare semplificata
+                    const curve = new THREE.EllipseCurve(0, 0, radius, radius, 0, 2 * Math.PI, false, 0);
+                    points = curve.getPoints(100);
+                }
+
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const material = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.5 });
+                const orbit = new THREE.Line(geometry, material);
+                orbit.rotation.x = Math.PI / 2;
+                scene.add(orbit);
+                orbits[key] = orbit;
+
+                // Salva orbita originale se richiesto
+                if (saveAsOriginal) {
+                    const origGeometry = new THREE.BufferGeometry().setFromPoints(points);
+                    const origMaterial = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.3, linewidth: 1 });
+                    const origOrbit = new THREE.Line(origGeometry, origMaterial);
+                    origOrbit.rotation.x = Math.PI / 2;
+                    origOrbit.visible = false;
+                    scene.add(origOrbit);
+                    originalOrbits[key] = origOrbit;
+                }
+
+                // Crea traccia orbitale persistente
+                const trailGeometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(MAX_TRAIL_POINTS * 3);
+                trailGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                const trailMaterial = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.8, linewidth: 2 });
+                const trailLine = new THREE.Line(trailGeometry, trailMaterial);
+                scene.add(trailLine);
+                trailLines[key] = { line: trailLine, points: [], maxPoints: MAX_TRAIL_POINTS };
+            }
+
+            // Utility: smaltisce in sicurezza geometrie e materiali per evitare memory leak
+            function disposeLine(line) {
+                if (!line) return;
+                if (line.geometry) line.geometry.dispose();
+                if (line.material) {
+                    if (Array.isArray(line.material)) {
+                        line.material.forEach(m => m && m.dispose());
+                    } else {
+                        line.material.dispose();
+                    }
+                }
+            }
+
+            /**
+             * Ricalcola elementi orbitali dopo cambio istantaneo di massa del Sole
+             * Conserva: posizione, velocità, momento angolare
+             * Cambia: energia, semiasse maggiore, eccentricità
+             */
+            function recalculateOrbitalElements(planetMesh, oldSunMass, newSunMass) {
+                // FISICA: Quando la massa del Sole cambia ISTANTANEAMENTE, si conserva il momento angolare
+                // L = m*v*r, ma l'energia cambia: E = v²/2 - GM/r
+
+                // Usa il semiasse maggiore ORIGINALE (prima del cambio di massa)
+                const a_old = planetMesh.userData.semiMajorAxis;
+                const e_old = planetMesh.userData.eccentricity || 0;
+
+                // Formula derivata dalla conservazione di L e dalla terza legge di Keplero:
+                // a_new = a_old × (M_old / M_new)^(2/3)
+                // Questa formula è valida sia per orbite circolari che ellittiche
+                const massRatio = oldSunMass / newSunMass;
+                const a_new = a_old * Math.pow(massRatio, 2 / 3);
+
+                // Calcola la posizione attuale per determinare la nuova eccentricità
+                const pos = planetMesh.position;
+                const r = Math.sqrt(pos.x * pos.x + pos.z * pos.z); // distanza attuale (in unità di scena)
+                const r_m = r / SCALE_DISTANCE * AU; // converti in metri
+
+                // Velocità orbitale PRIMA del cambio di massa (usando vis-viva con massa vecchia)
+                const v_old = Math.sqrt(G * oldSunMass * (2 / r_m - 1 / a_old));
+
+                // Momento angolare specifico (conservato): L = r × v
+                // Per orbite planari: L = r * v_perp
+                const L = r_m * v_old; // assumiamo v perpendicolare a r
+
+                // DOPO il cambio di massa: L resta uguale, ma E cambia
+                // E_new = v²/2 - G*M_new/r
+                // Ma v deve soddisfare: L = r*v, quindi v = L/r (conservazione L)
+                const v_new = L / r_m;
+                const E_new = (v_new * v_new) / 2 - (G * newSunMass) / r_m;
+
+                // Calcola la nuova eccentricità dalla formula:
+                // e = √(1 + 2*E*L²/(G*M)²)
+                let e_new;
+                if (E_new < 0) {
+                    e_new = Math.sqrt(1 + (2 * E_new * L * L) / Math.pow(G * newSunMass, 2));
+                } else {
+                    // Orbita non legata - limitiamo a orbita molto eccentrica
+                    console.warn(`Orbita non legata per ${planetMesh.userData.name}: E=${E_new.toExponential(2)}`);
+                    e_new = 0.95;
+                }
+
+                // Limitiamo eccentricità per evitare orbite troppo estreme o collisioni col Sole
+                const e_clamped = Math.max(0, Math.min(e_new, 0.95));
+
+                // Verifica che il perielio (punto più vicino) non sia troppo vicino al Sole VISUALE
+                const perihelion = a_new * (1 - e_clamped); // distanza minima dal Sole in metri
+
+                // IMPORTANTE: Il Sole ha raggio GRAFICO di 15 unità (molto più grande del raggio reale)
+                // Raggio grafico in metri: 15 unità / SCALE_DISTANCE * AU
+                const sunVisualRadius = (15 / SCALE_DISTANCE) * AU;
+
+                // Distanza minima accettabile: raggio visuale del Sole + margine di sicurezza (50%)
+                const minSafeDistance = sunVisualRadius * 1.5;
+
+                if (perihelion < minSafeDistance) {
+                    // Se il pianeta si avvicina troppo al Sole VISUALE, riduciamo l'eccentricità
+                    const e_safe = 1 - minSafeDistance / a_new;
+                    const perihelionVisual = perihelion / SCALE_DISTANCE * AU; // converti in unità di scena
+                    console.warn(`${planetMesh.userData.name}: perielio troppo vicino al Sole visuale (${(perihelion / AU).toFixed(3)} UA, ${perihelionVisual.toFixed(1)} unità), riduco eccentricità da ${e_clamped.toFixed(3)} a ${Math.max(0, e_safe).toFixed(3)}`);
+                    planetMesh.userData.semiMajorAxis = a_new;
+                    planetMesh.userData.eccentricity = Math.max(0, Math.min(e_safe, 0.95));
+                } else {
+                    // Salva nuovi elementi orbitali
+                    planetMesh.userData.semiMajorAxis = a_new;
+                    planetMesh.userData.eccentricity = e_clamped;
+                }
+
+                console.log(`${planetMesh.userData.name}: a: ${(a_new / AU).toFixed(3)} UA, e: ${planetMesh.userData.eccentricity.toFixed(4)}, perielio: ${(perihelion / AU).toFixed(3)} UA`);
+
+                return { semiMajorAxis: a_new, eccentricity: planetMesh.userData.eccentricity };
+            }
+
+            function updateOrbit(key) {
+                const planet = planets[key];
+                const data = planet.data;
+
+                // Calcola nuova distanza e velocità orbitale usando v = sqrt(GM/r)
+                const newDistance = calculateOrbitalRadius(data.mass, data.distance);
+                const scaledDistance = newDistance * SCALE_DISTANCE;
+
+                // Salva orbita originale se non esiste ancora
+                const needsOriginal = !originalOrbits[key];
+
+                // Aggiorna orbita visiva
+                if (orbits[key]) {
+                    scene.remove(orbits[key]);
+                    disposeLine(orbits[key]);
+                    delete orbits[key];
+                }
+                if (trailLines[key]) {
+                    scene.remove(trailLines[key].line);
+                    disposeLine(trailLines[key].line);
+                    delete trailLines[key];
+                }
+                createOrbit(key, scaledDistance, data.orbitColor, needsOriginal);
+
+                // Aggiorna posizione pianeta
+                planet.mesh.userData.originalDistance = scaledDistance;
+            }
+
+            function updateAllOrbits() {
+                // Salva massa precedente per ricalcolo elementi orbitali
+                const oldSunMass = planets.earth?.mesh.userData.lastSunMass || currentSunMass;
+
+                for (let key in planets) {
+                    const planet = planets[key];
+                    const planetMesh = planet.mesh;
+
+                    // Se la massa del Sole è cambiata E stiamo usando orbite ellittiche,
+                    // ricalcola elementi orbitali in modo fisicamente accurato
+                    // Soglia: 0.1% della massa solare (~2e29 kg)
+                    const threshold = sunData.mass * 0.001;
+                    if (useEllipticalOrbits && Math.abs(oldSunMass - currentSunMass) > threshold) {
+                        const newElements = recalculateOrbitalElements(planetMesh, oldSunMass, currentSunMass);
+                        // Gli elementi sono già salvati in userData dalla funzione
+                    }
+
+                    // Salva massa attuale per futuro confronto
+                    planetMesh.userData.lastSunMass = currentSunMass;
+
+                    updateOrbit(key);
+                }
+            }
+
+            function calculateOrbitalRadius(planetMass, originalDistanceAU) {
+                // Semplificazione didattica: manteniamo il raggio orbitale costante (orbite circolari forzate)
+                // anche se la massa solare cambia. In realtà, un cambiamento di M modifica gli elementi orbitali.
+                // Qui aggiorniamo solo la velocità (v = √(GM/r)).
+                return originalDistanceAU;
+            }
+
+            function calculateOrbitalVelocity(distance, sunMass) {
+                const r = distance * AU;
+                return Math.sqrt(G * sunMass / r);
+            }
+
+            // Risolve l'equazione di Keplero: M = E - e*sin(E)
+            // M = anomalia media, E = anomalia eccentrica, e = eccentricità
+            // Usa il metodo di Newton-Raphson per trovare E
+            function solveKeplerEquation(M, e, tolerance = 1e-6, maxIterations = 30) {
+                let E = M; // Prima stima
+                for (let i = 0; i < maxIterations; i++) {
+                    const dE = (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
+                    E -= dE;
+                    if (Math.abs(dE) < tolerance) break;
+                }
+                return E;
+            }
+
+            // Calcola la posizione di un pianeta su un'orbita ellittica
+            // Restituisce {x, z, r} dove r è la distanza attuale dal Sole
+            function calculateEllipticalPosition(meanAnomaly, semiMajorAxis, eccentricity) {
+                // Limita eccentricità per evitare problemi numerici
+                const e = Math.max(0, Math.min(0.99, eccentricity || 0));
+
+                // Risolvi l'equazione di Keplero per trovare l'anomalia eccentrica
+                const E = solveKeplerEquation(meanAnomaly, e);
+
+                // Calcola l'anomalia vera (true anomaly) ν
+                const nu = 2 * Math.atan2(
+                    Math.sqrt(Math.max(0, 1 + e)) * Math.sin(E / 2),
+                    Math.sqrt(Math.max(0, 1 - e)) * Math.cos(E / 2)
+                );
+
+                // Calcola la distanza dal fuoco (Sole)
+                const r = semiMajorAxis * (1 - e * Math.cos(E));
+
+                // Posizione in coordinate polari centrate sul fuoco
+                const x = r * Math.cos(nu);
+                const z = r * Math.sin(nu);
+
+                return { x, z, r, trueAnomaly: nu };
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                if (!isPaused) {
+                    // Aggiorna posizioni pianeti
+                    for (let key in planets) {
+                        const planet = planets[key].mesh;
+                        const data = planets[key].data;
+
+                        // Calcola velocità angolare media: n = √(GM/a³)
+                        // Usa semiMajorAxis da userData (aggiornato dalla fisica reale)
+                        const semiMajorAxis_m = planet.userData.semiMajorAxis; // in metri
+                        const n = Math.sqrt(G * currentSunMass / Math.pow(semiMajorAxis_m, 3));
+
+                        // Incrementa l'anomalia media
+                        planet.userData.meanAnomaly = (planet.userData.meanAnomaly || 0) + n * simulationSpeed * 0.01;
+
+                        if (useEllipticalOrbits) {
+                            // Usa orbite ellittiche reali con elementi orbitali dinamici
+                            const currentEccentricity = planet.userData.eccentricity;
+
+                            // Calcola posizione usando equazione di Keplero (ritorna coordinate in metri)
+                            const pos = calculateEllipticalPosition(
+                                planet.userData.meanAnomaly,
+                                semiMajorAxis_m,
+                                currentEccentricity
+                            );
+
+                            // Converti da metri a unità di scena: metri → AU → unità scena
+                            // pos.x è in metri, divido per AU per ottenere AU, poi moltiplico per SCALE_DISTANCE
+                            planet.position.x = (pos.x / AU) * SCALE_DISTANCE;
+                            planet.position.z = (pos.z / AU) * SCALE_DISTANCE;
+
+                            // Salva per le statistiche (in metri per calcoli fisici)
+                            planet.userData.currentDistance = pos.r;
+                            planet.userData.trueAnomaly = pos.trueAnomaly;
+                        } else {
+                            // Orbita circolare semplificata
+                            const semiMajorAxis = planet.userData.originalDistance;
+                            planet.userData.angle = planet.userData.meanAnomaly;
+
+                            planet.position.x = Math.cos(planet.userData.angle) * semiMajorAxis;
+                            planet.position.z = Math.sin(planet.userData.angle) * semiMajorAxis;
+
+                            planet.userData.currentDistance = semiMajorAxis;
+                            planet.userData.trueAnomaly = planet.userData.angle;
+                        }
+
+                        // Rotazione ridotta del pianeta su se stesso
+                        planet.rotation.y += n * simulationSpeed * 0.01 * 0.01;
+
+                        // Aggiorna traccia orbitale
+                        if (trailLines[key]) {
+                            const trail = trailLines[key];
+                            trail.points.push(new THREE.Vector3(planet.position.x, planet.position.y, planet.position.z));
+
+                            if (trail.points.length > trail.maxPoints) {
+                                trail.points.shift();
+                            }
+
+                            const positions = trail.line.geometry.attributes.position.array;
+                            for (let i = 0; i < trail.points.length; i++) {
+                                positions[i * 3] = trail.points[i].x;
+                                positions[i * 3 + 1] = trail.points[i].y;
+                                positions[i * 3 + 2] = trail.points[i].z;
+                            }
+                            trail.line.geometry.attributes.position.needsUpdate = true;
+                            trail.line.geometry.setDrawRange(0, trail.points.length);
+                        }
+                    }
+
+                    // Aggiorna statistiche se pianeta selezionato
+                    if (selectedPlanet) {
+                        updateStats(selectedPlanet);
+                    }
+                }
+
+                renderer.render(scene, camera);
+            }
+
+            function updateStats(planetKey) {
+                const planet = planets[planetKey].mesh;
+                const data = planets[planetKey].data;
+
+                // Usa la distanza corrente salvata in userData (gestisce sia circolare che ellittica)
+                const distanceScaled = planet.userData.currentDistance || planet.userData.originalDistance;
+                const distance = distanceScaled / SCALE_DISTANCE;
+
+                // Calcola velocità istantanea usando l'equazione vis-viva: v² = GM(2/r - 1/a)
+                const r = distance * AU; // distanza corrente in metri
+                const a = data.distance * AU; // semiasse maggiore in metri
+                const velocity = Math.sqrt(G * currentSunMass * (2 / r - 1 / a)) / 1000; // km/s
+
+                // Calcola periodo orbitale: T = 2π√(a³/GM)
+                const period = 2 * Math.PI * Math.sqrt(Math.pow(a, 3) / (G * currentSunMass)); // secondi
+                const periodDays = period / (24 * 3600); // giorni
+                const periodYears = periodDays / 365.25; // anni
+
+                document.getElementById('stat-planet').textContent = data.name;
+                document.getElementById('stat-distance').textContent = `${distance.toFixed(3)} UA (${(distance * 149.6).toFixed(1)} M km)`;
+                document.getElementById('stat-velocity').textContent = `${velocity.toFixed(2)} km/s`;
+
+                if (periodYears >= 1) {
+                    document.getElementById('stat-period').textContent = `${periodYears.toFixed(2)} anni (${periodDays.toFixed(0)} giorni)`;
+                } else {
+                    document.getElementById('stat-period').textContent = `${periodDays.toFixed(1)} giorni`;
+                }
+            }
+
+            // Mouse controls
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+
+            function onMouseDown(e) {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+
+                // Ray casting per selezione pianeti
+                const raycaster = new THREE.Raycaster();
+                const mouse = new THREE.Vector2();
+                const rect = renderer.domElement.getBoundingClientRect();
+
+                mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+
+                const meshes = Object.values(planets).map(p => p.mesh);
+                const intersects = raycaster.intersectObjects(meshes);
+
+                if (intersects.length > 0) {
+                    selectedPlanet = intersects[0].object.userData.key;
+                }
+            }
+
+            function onMouseMove(e) {
+                if (isDragging) {
+                    const deltaX = e.clientX - previousMousePosition.x;
+                    const deltaY = e.clientY - previousMousePosition.y;
+
+                    const rotationSpeed = 0.005;
+
+                    // Rotazione orizzontale (attorno all'asse Y)
+                    camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), -deltaX * rotationSpeed);
+
+                    // Rotazione verticale (calcola asse perpendicolare)
+                    const axis = new THREE.Vector3();
+                    axis.crossVectors(camera.position, new THREE.Vector3(0, 1, 0)).normalize();
+
+                    const newPosition = camera.position.clone();
+                    newPosition.applyAxisAngle(axis, deltaY * rotationSpeed);
+
+                    // Limita rotazione verticale per evitare capovolgimenti
+                    const angle = newPosition.angleTo(new THREE.Vector3(0, 1, 0));
+                    if (angle > 0.1 && angle < Math.PI - 0.1) {
+                        camera.position.copy(newPosition);
+                    }
+
+                    camera.lookAt(0, 0, 0);
+
+                    previousMousePosition = { x: e.clientX, y: e.clientY };
+                }
+            }
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            function onMouseWheel(e) {
+                e.preventDefault();
+                const zoomSpeed = 0.1;
+                const direction = e.deltaY > 0 ? 1 : -1;
+
+                camera.position.multiplyScalar(1 + direction * zoomSpeed);
+            }
+
+            function onWindowResize() {
+                const container = document.getElementById('canvas-container');
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            }
+
+            // UI Functions
+            function openModal(id) {
+                document.getElementById(id).style.display = 'block';
+            }
+
+            function closeModal(id) {
+                document.getElementById(id).style.display = 'none';
+            }
+
+            // Chiudi modale con ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    const modals = document.querySelectorAll('.modal');
+                    modals.forEach(modal => modal.style.display = 'none');
+                }
+            });
+
+            // Chiudi modale cliccando fuori
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
+            });
+
+            function togglePlayPause() {
+                isPaused = !isPaused;
+                const btn = document.getElementById('play-pause-btn');
+                btn.textContent = isPaused ? '▶ Play' : '⏸ Pausa';
+            }
+
+            // Calculator functions
+            function calculateOrbit() {
+                const distance = parseFloat(document.getElementById('calc-distance').value);
+                const sunMass = parseFloat(document.getElementById('calc-sun-mass').value);
+
+                if (distance <= 0 || sunMass <= 0) {
+                    alert('Inserisci valori positivi!');
+                    return;
+                }
+
+                // Conversioni
+                const distanceM = distance * AU; // metri
+                const sunMassKg = sunMass * sunData.mass; // kg
+
+                // Calcoli
+                const velocity = Math.sqrt(G * sunMassKg / distanceM); // m/s
+                const velocityKmS = velocity / 1000; // km/s
+
+                const period = 2 * Math.PI * Math.sqrt(Math.pow(distanceM, 3) / (G * sunMassKg)); // secondi
+                const periodDays = period / (24 * 3600); // giorni
+                const periodYears = periodDays / 365.25; // anni
+
+                // Confronto con la Terra
+                const earthVelocity = 29.78; // km/s
+                const velocityRatio = velocityKmS / earthVelocity;
+                const periodRatio = periodYears / 1.0;
+
+                const resultsHtml = `
+                <div class="calc-result">
+                    <h4 style="color: var(--color-accent); margin-bottom: 8px;">📊 Risultati Calcolati</h4>
+                    <p><strong>Velocità Orbitale:</strong> ${velocityKmS.toFixed(2)} km/s (${velocityRatio.toFixed(2)}x la Terra)</p>
+                    <p><strong>Periodo Orbitale:</strong> ${periodDays.toFixed(1)} giorni (${periodYears.toFixed(2)} anni)</p>
+                    <p><strong>Rapporto con la Terra:</strong> ${periodRatio.toFixed(2)}x più lungo</p>
+                </div>
+
+                <div class="calc-result">
+                    <h4 style="color: var(--color-primary-hover); margin-bottom: 8px;">🔬 Analisi Fisica</h4>
+                    <p><strong>Forza Gravitazionale:</strong> ${(G * sunMassKg * 5.97e24 / (distanceM * distanceM) / 1e22).toFixed(2)} × 10²² N</p>
+                    <p><strong>Energia Cinetica:</strong> ${(0.5 * 5.97e24 * velocity * velocity / 1e33).toFixed(2)} × 10³³ J</p>
+                    <p><strong>Velocità di Fuga:</strong> ${(Math.sqrt(2 * G * sunMassKg / distanceM) / 1000).toFixed(2)} km/s</p>
+                </div>
+            `;
+
+                document.getElementById('calc-results').innerHTML = resultsHtml;
+            }
+
+            function loadPlanetExample(planetKey) {
+                const data = planetsData[planetKey];
+                document.getElementById('calc-distance').value = data.distance;
+                document.getElementById('calc-sun-mass').value = 1.0;
+                calculateOrbit();
+            }
+
+            function setSunMass(mass) {
+                document.getElementById('calc-sun-mass').value = mass;
+            }
+
+            function doubleSunMass() {
+                document.getElementById('sun-mass-slider').value = 200; // 2.0x
+                document.getElementById('sun-mass-slider').dispatchEvent(new Event('input'));
+
+                const explanation = document.getElementById('experiment-explanation');
+                explanation.style.display = 'block';
+                explanation.innerHTML = `<strong>🔬 Esperimento: Sole Raddoppia la Massa</strong><br>
+                    Se il Sole raddoppiasse la massa, i pianeti accelererebbero verso orbite più strette e veloci per mantenere l'equilibrio gravitazionale. 
+                    La velocità orbitale aumenta di √2 ≈ 1.41x, mentre il periodo si riduce a T/√2 ≈ 0.71x (più veloce!).`;
+            }
+
+            function earthLikeJupiter() {
+                const jupiterMass = originalMasses.jupiter;
+                const earthOriginalMass = originalMasses.earth;
+                const multiplier = jupiterMass / earthOriginalMass;
+
+                document.getElementById('earth-mass-slider').value = Math.min(multiplier * 100, 1000);
+                document.getElementById('earth-mass-slider').dispatchEvent(new Event('input'));
+
+                const explanation = document.getElementById('experiment-explanation');
+                explanation.style.display = 'block';
+                explanation.innerHTML = `<strong>🔬 Esperimento: Terra Massiccia come Giove</strong><br>
+                    Se la Terra avesse la massa di Giove (${multiplier.toFixed(0)}x più massiccia), la sua orbita cambierebbe drasticamente. 
+                    In questo simulatore semplificato, vediamo come l'orbita si adatta alla nuova massa mantenendo il momento angolare.`;
+            }
+
+            function sunRedGiant() {
+                document.getElementById('sun-mass-slider').value = 70; // 0.7x
+                document.getElementById('sun-mass-slider').dispatchEvent(new Event('input'));
+
+                const explanation = document.getElementById('experiment-explanation');
+                explanation.style.display = 'block';
+                explanation.innerHTML = `<strong>🔬 Esperimento: Sole Perde Massa (Gigante Rossa)</strong><br>
+                    Quando il Sole diventerà una gigante rossa (tra ~5 miliardi di anni), perderà circa il 30% della sua massa tramite vento stellare. 
+                    Il sistema solare si espanderebbe: le orbite diventano più ampie e i periodi più lunghi. La velocità orbitale si riduce.`;
+            }
+
+            function resetAll() {
+                // Reset sole
+                document.getElementById('sun-mass-slider').value = 100;
+                document.getElementById('sun-mass-slider').dispatchEvent(new Event('input'));
+
+                // Reset masse pianeti E elementi orbitali
+                const planetKeys = ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune'];
+                planetKeys.forEach(key => {
+                    const slider = document.getElementById(`${key}-mass-slider`);
+                    if (slider) {
+                        slider.value = 100;
+                        slider.dispatchEvent(new Event('input'));
+                    }
+
+                    // Reset dimensione visiva del pianeta
+                    const planet = planets[key];
+                    if (planet && planet.mesh) {
+                        planet.mesh.scale.set(1, 1, 1);
+                    }
+
+                    // Reset elementi orbitali ai valori originali
+                    if (planet && planet.mesh && planet.mesh.userData) {
+                        const data = planetsData[key];
+                        planet.mesh.userData.semiMajorAxis = data.distance * AU; // ripristina semiasse originale
+                        planet.mesh.userData.eccentricity = data.eccentricity; // ripristina eccentricità originale
+                        planet.mesh.userData.lastSunMass = currentSunMass; // aggiorna massa Sole corrente
+                    }
+                });                // Reset velocità
+                document.getElementById('speed-slider').value = 1;
+                document.getElementById('speed-slider').dispatchEvent(new Event('input'));
+
+                // Rigenera le orbite con i valori originali
+                updateAllOrbits();
+
+                selectedPlanet = null;
+                document.getElementById('stat-planet').textContent = 'Nessuno';
+                document.getElementById('stat-distance').textContent = '-';
+                document.getElementById('stat-velocity').textContent = '-';
+                document.getElementById('stat-period').textContent = '-';
+
+                const explanation = document.getElementById('experiment-explanation');
+                explanation.style.display = 'none';
+
+                const warning = document.getElementById('sun-warning');
+                warning.classList.remove('visible');
+
+                alert('Sistema resettato ai valori originali!');
+            }            // Inizializza quando il documento è pronto
+            window.addEventListener('DOMContentLoaded', init);
+        </script>
+</body>
+
+</html>

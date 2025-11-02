@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Pendolo Semplice</title>
+    <!-- Chart.js per i grafici -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- MathJax per le formule matematiche -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .panel h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .value-display {
+            min-width: 80px;
+            text-align: right;
+            font-weight: 600;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        .switch-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider-switch {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider-switch:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider-switch {
+            background-color: #667eea;
+        }
+
+        input:checked+.slider-switch:before {
+            transform: translateX(26px);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+            transform: translateY(-2px);
+        }
+
+        .btn-info {
+            background: #4299e1;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+
+        .btn-export {
+            background: #ed8936;
+            color: white;
+        }
+
+        .btn-export:hover {
+            background: #dd6b20;
+            transform: translateY(-2px);
+        }
+
+        #animationCanvas {
+            width: 100%;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            background: white;
+            display: block;
+        }
+
+        #chartCanvas {
+            width: 100%;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            background: white;
+            display: block;
+        }
+
+        .comparison-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .comparison-box h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .comparison-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        .comparison-item strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        .instructions h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+            color: #856404;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 3% auto;
+            padding: 0;
+            border: none;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow: hidden;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+
+        .close {
+            color: white;
+            float: right;
+            font-size: 32px;
+            font-weight: bold;
+            line-height: 1;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .close:hover {
+            transform: scale(1.2);
+        }
+
+        .modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 25px;
+            gap: 5px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: #f0f0f0;
+            border-radius: 8px 8px 0 0;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .tab:hover {
+            background: #e0e0e0;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .formula {
+            background: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .highlight-box {
+            background: #e7f3ff;
+            border: 2px solid #4299e1;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .equation {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .friction-label {
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .status-warning {
+            display: none;
+            background: rgba(255, 215, 0, 0.3);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .comparison-table tr:first-child {
+            background: #667eea;
+            color: white;
+        }
+
+        .table-note {
+            margin-top: 10px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎯 Simulazione Pendolo Semplice</h1>
+        <p class="subtitle">Analisi dinamica con integrazione numerica e confronto teorico-sperimentale</p>
+
+        <div class="main-grid">
+            <!-- Pannello Controlli -->
+            <div class="panel">
+                <h2>⚙️ Parametri del Sistema</h2>
+
+                <div class="control-group">
+                    <label>Lunghezza (L): <span id="lengthVal">1.00</span> m</label>
+                    <div class="slider-container">
+                        <input type="range" id="length" min="0.5" max="5" step="0.1" value="1"
+                            title="Regola la lunghezza del pendolo">
+                        <span class="value-display"><span id="lengthDisplay">1.00</span> m</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Gravità (g): <span id="gravityVal">9.81</span> m/s²</label>
+                    <div class="slider-container">
+                        <input type="range" id="gravity" min="1" max="20" step="0.1" value="9.81"
+                            title="Regola l'accelerazione di gravità">
+                        <span class="value-display"><span id="gravityDisplay">9.81</span> m/s²</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Angolo Iniziale (θ₀): <span id="angleVal">30</span>°</label>
+                    <div class="slider-container">
+                        <input type="range" id="angle" min="1" max="179" step="1" value="30"
+                            title="Regola l'angolo iniziale">
+                        <span class="value-display"><span id="angleDisplay">30</span>°</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Passo Temporale (dt): <span id="dtVal">0.02</span> s</label>
+                    <div class="slider-container">
+                        <input type="range" id="dt" min="0.001" max="0.1" step="0.001" value="0.02"
+                            title="Regola il passo temporale">
+                        <span class="value-display"><span id="dtDisplay">0.02</span> s</span>
+                    </div>
+                </div>
+
+                <div class="switch-container">
+                    <label class="switch">
+                        <input type="checkbox" id="frictionToggle">
+                        <span class="slider-switch"></span>
+                    </label>
+                    <label for="frictionToggle" class="friction-label">Attrito dell'aria</label>
+                </div>
+
+                <div class="control-group hidden" id="frictionControl">
+                    <label>Coeff. Smorzamento (γ): <span id="frictionVal">0.1</span> s⁻¹</label>
+                    <div class="slider-container">
+                        <input type="range" id="friction" min="0" max="2" step="0.01" value="0.1"
+                            title="Regola il coefficiente di smorzamento">
+                        <span class="value-display"><span id="frictionDisplay">0.10</span> s⁻¹</span>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="startSimulation()">▶️ Avvia</button>
+                    <button class="btn-secondary" onclick="pauseSimulation()">⏸️ Pausa</button>
+                    <button class="btn-danger" onclick="resetSimulation()">🔄 Reset</button>
+                    <button class="btn-info" onclick="stepSimulation()">⏭️ Step</button>
+                    <button class="btn-export" onclick="exportCSV()">📊 Esporta CSV</button>
+                    <button class="btn-info" onclick="showExplanation()">💡 Spiega</button>
+                </div>
+
+                <div class="comparison-box">
+                    <h3>📊 Analisi dei Periodi</h3>
+                    <div class="comparison-item">
+                        <strong>Periodo Teorico (piccole osc.):</strong>
+                        <span id="theoreticalPeriod">--</span>
+                    </div>
+                    <div class="comparison-item">
+                        <strong>Periodo Simulato (numerico):</strong>
+                        <span id="simulatedPeriod">--</span>
+                    </div>
+                    <div class="comparison-item">
+                        <strong>Differenza Relativa:</strong>
+                        <span id="periodDifference">--</span>
+                    </div>
+                    <div class="comparison-item">
+                        <strong>Tempo di Simulazione:</strong>
+                        <span id="simTime">0.00</span> s
+                    </div>
+                    <div class="comparison-item status-warning" id="statusItem">
+                        <strong>⚠️ Stato:</strong>
+                        <span id="simStatus">In esecuzione</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pannello Animazione -->
+            <div class="panel">
+                <h2>🎬 Animazione del Pendolo</h2>
+                <canvas id="animationCanvas" width="500" height="400"></canvas>
+            </div>
+        </div>
+
+        <!-- Grafico -->
+        <div class="panel">
+            <h2>📈 Grafico Angolo θ(t) nel Tempo</h2>
+            <canvas id="chartCanvas"></canvas>
+        </div>
+
+        <!-- Istruzioni -->
+        <div class="instructions">
+            <h3>📚 Istruzioni e Domande Guida</h3>
+            <ul>
+                <li><strong>Esplora i parametri:</strong> Modifica lunghezza, gravità e angolo iniziale per osservare
+                    come cambiano il periodo e il comportamento del pendolo.</li>
+                <li><strong>Confronta le approssimazioni:</strong> Per angoli piccoli (< 15°), nota come il periodo
+                        teorico e quello simulato coincidono. Che succede con angoli grandi?</li>
+                <li><strong>Attrito dell'aria:</strong> Attiva l'attrito e osserva il decadimento dell'ampiezza. Come
+                    influenza il periodo effettivo?</li>
+                <li><strong>Domande di riflessione:</strong>
+                    <ul>
+                        <li>Perché la formula semplice T = 2π√(L/g) funziona solo per piccole oscillazioni?</li>
+                        <li>Come cambia l'energia del sistema con l'attrito?</li>
+                        <li>Cosa rappresenta fisicamente il coefficiente b/m?</li>
+                        <li>Come varia il periodo con l'angolo iniziale?</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Modal per le spiegazioni -->
+    <div id="explanationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="closeExplanation()">&times;</span>
+                <h2>💡 Spiegazione Scientifica del Pendolo</h2>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <button class="tab active" onclick="showTab(0)">Equazioni</button>
+                    <button class="tab" onclick="showTab(1)">Metodo Numerico</button>
+                    <button class="tab" onclick="showTab(2)">Approssimazioni</button>
+                    <button class="tab" onclick="showTab(3)">Attrito</button>
+                </div>
+
+                <div class="tab-content active" id="tab0">
+                    <h3>📐 Equazioni del Pendolo Semplice</h3>
+
+                    <div class="highlight-box">
+                        <h4>Equazione Differenziale Fondamentale</h4>
+                        <p>L'equazione del moto per un pendolo semplice deriva dall'applicazione della seconda legge di
+                            Newton alla componente tangenziale della forza:</p>
+                        <div class="equation">
+                            \[\frac{d^2\theta}{dt^2} + \frac{g}{L}\sin(\theta) = 0\]
+                        </div>
+                        <p>Dove:</p>
+                        <ul>
+                            <li><strong>θ</strong> = angolo rispetto alla verticale (radianti)</li>
+                            <li><strong>L</strong> = lunghezza del pendolo (metri)</li>
+                            <li><strong>g</strong> = accelerazione di gravità (m/s²)</li>
+                            <li><strong>t</strong> = tempo (secondi)</li>
+                        </ul>
+                    </div>
+
+                    <div class="formula">
+                        <h4>Derivazione:</h4>
+                        <p>1. Forza tangenziale: \(F = -m \cdot g \cdot \sin(\theta)\)</p>
+                        <p>2. Accelerazione tangenziale: \(a = L \cdot \frac{d^2\theta}{dt^2}\)</p>
+                        <p>3. Applicando \(F = m \cdot a\): \(m \cdot L \cdot \frac{d^2\theta}{dt^2} = -m \cdot g \cdot
+                            \sin(\theta)\)</p>
+                        <p>4. Semplificando: \(\frac{d^2\theta}{dt^2} = -\frac{g}{L}\sin(\theta)\)</p>
+                    </div>
+
+                    <h4>Periodo per Piccole Oscillazioni</h4>
+                    <div class="equation">
+                        \[T \approx 2\pi\sqrt{\frac{L}{g}}\]
+                    </div>
+                    <p>Questa formula è valida quando sin(θ) ≈ θ (approssimazione per θ < 15° ≈ 0.26 rad).</p>
+
+                            <div class="warning-box">
+                                <strong>⚠️ Importante:</strong> Il periodo dipende SOLO da L e g, non dall'ampiezza (per
+                                piccole oscillazioni). Questo è il principio dell'isocronismo del pendolo, scoperto da
+                                Galileo.
+                            </div>
+                </div>
+
+                <div class="tab-content" id="tab1">
+                    <h3>🔢 Metodo di Integrazione Numerica: Runge-Kutta 4° Ordine (RK4)</h3>
+
+                    <div class="highlight-box">
+                        <p>Per angoli grandi, l'equazione differenziale non ha soluzione analitica semplice. Usiamo il
+                            metodo RK4, uno dei più accurati metodi numerici.</p>
+                    </div>
+
+                    <h4>Sistema di Equazioni di Primo Ordine</h4>
+                    <div class="formula">
+                        <p>Trasformiamo l'equazione del secondo ordine in un sistema di due equazioni del primo ordine:
+                        </p>
+                        <p>\(\frac{d\theta}{dt} = \omega\) (velocità angolare)</p>
+                        <p>\(\frac{d\omega}{dt} = -\frac{g}{L}\sin(\theta)\) (accelerazione angolare)</p>
+                    </div>
+
+                    <h4>Algoritmo RK4</h4>
+                    <div class="formula">
+                        <p>Per ogni passo temporale dt, calcoliamo 4 pendenze intermedie:</p>
+                        <p>\(k_1 = f(t, y)\) - pendenza all'inizio</p>
+                        <p>\(k_2 = f(t + \frac{dt}{2}, y + k_1 \cdot \frac{dt}{2})\) - pendenza a metà step con \(k_1\)
+                        </p>
+                        <p>\(k_3 = f(t + \frac{dt}{2}, y + k_2 \cdot \frac{dt}{2})\) - pendenza a metà step con \(k_2\)
+                        </p>
+                        <p>\(k_4 = f(t + dt, y + k_3 \cdot dt)\) - pendenza alla fine con \(k_3\)</p>
+                        <br>
+                        <p>Aggiornamento finale (media ponderata):</p>
+                        <p>\[y(t+dt) = y(t) + \frac{dt}{6}(k_1 + 2k_2 + 2k_3 + k_4)\]</p>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>Vantaggi del RK4</h4>
+                        <ul>
+                            <li><strong>Errore locale:</strong> O(dt⁵) - molto piccolo!</li>
+                            <li><strong>Errore globale:</strong> O(dt⁴)</li>
+                            <li><strong>Stabilità:</strong> Ottima conservazione dell'energia</li>
+                            <li><strong>Precisione:</strong> Molto superiore al metodo di Eulero semplice</li>
+                        </ul>
+                    </div>
+
+                    <h4>Implementazione nel Codice</h4>
+                    <div class="formula">
+                        <p>Nel nostro simulatore, ad ogni step:</p>
+                        <p>1. Calcoliamo le 4 pendenze per θ e ω</p>
+                        <p>2. Combiniamo le pendenze con i pesi (1, 2, 2, 1)</p>
+                        <p>3. Aggiorniamo le variabili di stato</p>
+                        <p>4. Registriamo i dati per il grafico</p>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>🔬 Confronto: RK4 vs Eulero-Cromer</h4>
+                        <p><strong>Metodo di Runge-Kutta 4 (utilizzato):</strong></p>
+                        <ul>
+                            <li>✅ <strong>Precisione superiore:</strong> Errore O(dt⁴)</li>
+                            <li>✅ <strong>Ottimo per angoli grandi:</strong> Gestisce meglio oscillazioni ampie</li>
+                            <li>✅ <strong>Versatile:</strong> Funziona bene con e senza attrito</li>
+                            <li>❌ <strong>Costo computazionale:</strong> 4 valutazioni per step</li>
+                        </ul>
+                        <br>
+                        <p><strong>Metodo di Eulero-Cromer (alternativa):</strong></p>
+                        <ul>
+                            <li>✅ <strong>Simplectico:</strong> Conserva perfettamente l'energia (senza attrito)</li>
+                            <li>✅ <strong>Più veloce:</strong> Solo 2 valutazioni per step</li>
+                            <li>✅ <strong>Stabilità:</strong> Nessuna deriva energetica nel lungo periodo</li>
+                            <li>❌ <strong>Precisione minore:</strong> Errore O(dt²)</li>
+                        </ul>
+                        <br>
+                        <p><strong>📌 Scelta per questa simulazione:</strong> RK4 è preferibile perché gestisce
+                            ottimamente sia il caso senza attrito (alta precisione) che con attrito (dove la natura
+                            simplettica non è più rilevante). Con dt=0.02s, offre un eccellente compromesso tra
+                            accuratezza e performance.</p>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab2">
+                    <h3>🔍 Differenza tra Approssimazione e Formula Generale</h3>
+
+                    <div class="highlight-box">
+                        <h4>Approssimazione per Piccole Oscillazioni</h4>
+                        <div class="equation">
+                            \[T \approx 2\pi\sqrt{\frac{L}{g}}\]
+                        </div>
+                        <p><strong>Valida quando:</strong> \(\sin(\theta) \approx \theta\) (θ in radianti)</p>
+                        <p>Questa approssimazione è eccellente per θ < 15° (errore < 0.5%)</p>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>Perché l'approssimazione funziona?</h4>
+                        <p>Lo sviluppo in serie di Taylor del seno è:</p>
+                        <div class="equation">
+                            \[\sin(\theta) = \theta - \frac{\theta^3}{6} + \frac{\theta^5}{120} - \ldots\]
+                        </div>
+                        <p>Per angoli piccoli, i termini \(\frac{\theta^3}{6}\), \(\frac{\theta^5}{120}\), ... diventano
+                            trascurabili, quindi \(\sin(\theta) \approx \theta\).</p>
+                        <p><strong>Esempio:</strong> Per θ = 15° = 0.262 rad:<br>
+                            sin(0.262) = 0.2588<br>
+                            θ = 0.2620<br>
+                            Errore = 1.2%</p>
+                    </div>
+
+                    <h4>Formula Generale per Grandi Angoli</h4>
+                    <div class="formula">
+                        <p>Per oscillazioni di ampiezza \(\theta_0\), il periodo esatto è dato da un integrale
+                            ellittico:</p>
+                        <div class="equation">
+                            \[T = 4\sqrt{\frac{L}{g}} \cdot K\left(\sin^2\left(\frac{\theta_0}{2}\right)\right)\]
+                        </div>
+                        <p>Dove K è l'integrale ellittico completo di prima specie.</p>
+                        <p>Alternativamente, serie di approssimazione:</p>
+                        <div class="equation">
+                            \[T \approx 2\pi\sqrt{\frac{L}{g}} \left[1 + \frac{1}{16}\theta_0^2 +
+                            \frac{11}{3072}\theta_0^4 + \ldots\right]\]
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>Confronto Numerico</h4>
+                        <table class="comparison-table">
+                            <tr>
+                                <th>Angolo θ₀</th>
+                                <th>Formula Semplice</th>
+                                <th>Periodo Reale</th>
+                                <th>Errore %</th>
+                            </tr>
+                            <tr>
+                                <td>10°</td>
+                                <td>2.006 s</td>
+                                <td>2.007 s</td>
+                                <td>0.05%</td>
+                            </tr>
+                            <tr>
+                                <td>30°</td>
+                                <td>2.006 s</td>
+                                <td>2.023 s</td>
+                                <td>0.84%</td>
+                            </tr>
+                            <tr>
+                                <td>90°</td>
+                                <td>2.006 s</td>
+                                <td>2.348 s</td>
+                                <td>17.0%</td>
+                            </tr>
+                            <tr>
+                                <td>150°</td>
+                                <td>2.006 s</td>
+                                <td>3.364 s</td>
+                                <td>67.7%</td>
+                            </tr>
+                        </table>
+                        <p class="table-note"><em>(Valori per L=1m, g=9.81m/s²)</em></p>
+                    </div>
+
+                    <div class="warning-box">
+                        <strong>📌 Conclusione:</strong> La formula semplice sottostima sempre il periodo reale.
+                        Maggiore è l'angolo, maggiore è la discrepanza. La nostra simulazione numerica cattura
+                        perfettamente questo comportamento!
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab3">
+                    <h3>💨 Attrito dell'Aria e Smorzamento</h3>
+
+                    <div class="highlight-box">
+                        <h4>Equazione con Attrito Viscoso</h4>
+                        <p>Quando includiamo l'attrito dell'aria (proporzionale alla velocità), l'equazione diventa:</p>
+                        <div class="equation">
+                            \[\frac{d^2\theta}{dt^2} + \gamma\frac{d\theta}{dt} + \frac{g}{L}\sin(\theta) = 0\]
+                        </div>
+                        <p>Dove:</p>
+                        <ul>
+                            <li>\(\gamma = \frac{b}{m}\) = coefficiente di smorzamento (s⁻¹)</li>
+                            <li><strong>b</strong> = coefficiente di attrito viscoso (kg/s)</li>
+                            <li><strong>m</strong> = massa del pendolo (kg)</li>
+                        </ul>
+                    </div>
+
+                    <div class="formula">
+                        <h4>Significato Fisico del Coefficiente γ (gamma)</h4>
+                        <p>Il coefficiente \(\gamma = \frac{b}{m}\) ha dimensioni di \([1/\text{tempo}]\), ovvero s⁻¹.
+                        </p>
+                        <p><strong>Cosa significa 1/s (s⁻¹)?</strong></p>
+                        <ul>
+                            <li>È una <strong>frequenza di smorzamento</strong></li>
+                            <li>Rappresenta quanto rapidamente l'energia viene dissipata</li>
+                            <li><strong>Tempo caratteristico:</strong> \(\tau = \frac{1}{\gamma}\) = tempo per diminuire
+                                l'ampiezza di un fattore \(e^{-1} \approx 37\%\)</li>
+                        </ul>
+                        <p><strong>Esempi pratici:</strong></p>
+                        <ul>
+                            <li>\(\gamma = 0.1\) s⁻¹: \(\tau = 10\) s (smorzamento lento)</li>
+                            <li>\(\gamma = 0.5\) s⁻¹: \(\tau = 2\) s (smorzamento moderato)</li>
+                            <li>\(\gamma = 1.0\) s⁻¹: \(\tau = 1\) s (smorzamento rapido)</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>Interpretazione Fisica</h4>
+                        <p>La forza di attrito è: \(F_{attrito} = -\gamma m v = -\gamma m L \frac{d\theta}{dt}\)</p>
+                        <p>Questa forza:</p>
+                        <ul>
+                            <li>È sempre <strong>opposta al moto</strong> (segno negativo)</li>
+                            <li>È <strong>proporzionale alla velocità</strong> (attrito viscoso)</li>
+                            <li>Causa <strong>dissipazione di energia</strong></li>
+                            <li>Non è conservativa (l'energia meccanica diminuisce)</li>
+                        </ul>
+                    </div>
+
+                    <h4>Effetti sul Periodo</h4>
+                    <div class="formula">
+                        <p>Con attrito, il periodo effettivo diventa:</p>
+                        <div class="equation">
+                            \[T_{smorzato} \approx \frac{2\pi}{\sqrt{\omega_0^2 - \left(\frac{\gamma}{2}\right)^2}}\]
+                        </div>
+                        <p>Dove \(\omega_0 = \sqrt{\frac{g}{L}}\) è la frequenza angolare naturale (senza attrito).</p>
+                        <p><strong>Conseguenze:</strong></p>
+                        <ul>
+                            <li>Il periodo <strong>aumenta leggermente</strong> con l'attrito</li>
+                            <li>L'<strong>ampiezza diminuisce esponenzialmente</strong>: \(\theta(t) \propto
+                                e^{-\frac{\gamma}{2}t}\)</li>
+                            <li>Se \(\frac{\gamma}{2} > \omega_0\), il sistema è <strong>sovrasmorzato</strong> (non
+                                oscilla più)</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>Energia e Smorzamento</h4>
+                        <p>L'energia totale diminuisce nel tempo secondo:</p>
+                        <div class="equation">
+                            \[E(t) = E_0 \cdot e^{-\gamma t}\]
+                        </div>
+                        <p>La potenza dissipata dall'attrito è: \(P = \gamma m v^2\)</p>
+                        <p>Questa energia viene convertita in calore!</p>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>Da cosa Dipende il Periodo?</h4>
+                        <p><strong>SENZA ATTRITO:</strong></p>
+                        <ul>
+                            <li>✅ Dipende da: <strong>Lunghezza L</strong> e <strong>gravità g</strong></li>
+                            <li>✅ Per piccole oscillazioni: NON dipende dall'ampiezza</li>
+                            <li>✅ Per grandi oscillazioni: DIPENDE dall'angolo iniziale θ₀</li>
+                            <li>❌ NON dipende da: massa, forma del peso</li>
+                        </ul>
+                        <p><strong>CON ATTRITO:</strong></p>
+                        <ul>
+                            <li>✅ Dipende anche da: <strong>coefficiente b/m</strong></li>
+                            <li>✅ Il periodo aumenta leggermente</li>
+                            <li>✅ L'ampiezza diminuisce nel tempo</li>
+                            <li>✅ L'energia si dissipa continuamente</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variabili globali
+        let L = 1.0;
+        let g = 9.81;
+        let theta0 = 30 * Math.PI / 180;
+        let dt = 0.02;
+        let friction = 0;
+        let hasFriction = false;
+
+        let theta = theta0;
+        let omega = 0;
+        let time = 0;
+        let isRunning = false;
+        let animationId = null;
+
+        let dataPoints = [];
+        let maxDataPoints = 10000; // Aumentato per visualizzare simulazioni più lunghe
+
+        // Soglia minima per fermare la simulazione (circa 0.057 gradi)
+        const MIN_AMPLITUDE_THRESHOLD = 0.001; // radianti
+
+        // Canvas
+        const animCanvas = document.getElementById('animationCanvas');
+        const animCtx = animCanvas.getContext('2d');
+        const chartCanvas = document.getElementById('chartCanvas');
+
+        // Inizializza Chart.js
+        let myChart = null;
+        let chartData = {
+            labels: [],
+            datasets: [{
+                label: 'Angolo θ (rad)',
+                data: [],
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                borderWidth: 2,
+                pointRadius: 0,
+                tension: 0.1
+            }]
+        };
+
+        function initChart() {
+            if (myChart) {
+                myChart.destroy();
+            }
+            myChart = new Chart(chartCanvas, {
+                type: 'line',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 3,
+                    animation: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: {
+                                display: true,
+                                text: 'Tempo (s)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: '#e0e0e0'
+                            },
+                            // Configurazione per far scorrere il grafico quando si riempie
+                            min: undefined,
+                            max: undefined
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Angolo θ (rad)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: '#e0e0e0'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Calcolo periodo
+        let theoreticalPeriod = 0;
+        let peakTimes = [];
+        let lastTheta = 0;
+        let lastOmega = 0;
+
+        // Event Listeners
+        document.getElementById('length').addEventListener('input', (e) => {
+            L = parseFloat(e.target.value);
+            document.getElementById('lengthDisplay').textContent = L.toFixed(2);
+            updateTheory();
+        });
+
+        document.getElementById('gravity').addEventListener('input', (e) => {
+            g = parseFloat(e.target.value);
+            document.getElementById('gravityDisplay').textContent = g.toFixed(2);
+            updateTheory();
+        });
+
+        document.getElementById('angle').addEventListener('input', (e) => {
+            theta0 = parseFloat(e.target.value) * Math.PI / 180;
+            document.getElementById('angleDisplay').textContent = e.target.value;
+            updateTheory();
+        });
+
+        document.getElementById('dt').addEventListener('input', (e) => {
+            dt = parseFloat(e.target.value);
+            document.getElementById('dtDisplay').textContent = dt.toFixed(3);
+        });
+
+        document.getElementById('frictionToggle').addEventListener('change', (e) => {
+            hasFriction = e.target.checked;
+            document.getElementById('frictionControl').style.display = hasFriction ? 'block' : 'none';
+            friction = hasFriction ? parseFloat(document.getElementById('friction').value) : 0;
+        });
+
+        document.getElementById('friction').addEventListener('input', (e) => {
+            friction = parseFloat(e.target.value);
+            document.getElementById('frictionDisplay').textContent = friction.toFixed(2);
+        });
+
+        // Funzioni di controllo
+        function startSimulation() {
+            if (!isRunning) {
+                isRunning = true;
+                animate();
+            }
+        }
+
+        function pauseSimulation() {
+            isRunning = false;
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+        }
+
+        function resetSimulation() {
+            pauseSimulation();
+            theta = theta0;
+            omega = 0;
+            time = 0;
+            dataPoints = [];
+            peakTimes = [];
+            lastTheta = theta;
+            lastOmega = 0;
+
+            // Reset grafico Chart.js
+            chartData.datasets[0].data = [];
+            if (myChart) {
+                myChart.update();
+            }
+
+            updateTheory();
+            drawAnimation();
+            document.getElementById('simulatedPeriod').textContent = '--';
+            document.getElementById('periodDifference').textContent = '--';
+            document.getElementById('simTime').textContent = '0.00';
+            // Nascondi il messaggio di stato
+            document.getElementById('statusItem').style.display = 'none';
+        }
+
+        function stepSimulation() {
+            rk4Step();
+            time += dt;
+            dataPoints.push({ t: time, theta: theta });
+            if (dataPoints.length > maxDataPoints) {
+                dataPoints.shift();
+            }
+
+            // Aggiorna Chart.js
+            chartData.datasets[0].data.push({ x: time, y: theta });
+            // Rimuovi i punti più vecchi solo se si supera il limite
+            if (chartData.datasets[0].data.length > maxDataPoints) {
+                chartData.datasets[0].data.shift();
+            }
+
+            // Configura lo scroll automatico del grafico quando si riempie il buffer
+            if (myChart) {
+                // Se abbiamo raggiunto il limite, fai scorrere il grafico
+                if (chartData.datasets[0].data.length >= maxDataPoints) {
+                    const oldestTime = chartData.datasets[0].data[0].x;
+                    const newestTime = time;
+                    myChart.options.scales.x.min = oldestTime;
+                    myChart.options.scales.x.max = newestTime;
+                } else {
+                    // Altrimenti mostra tutto dall'inizio
+                    myChart.options.scales.x.min = 0;
+                    myChart.options.scales.x.max = undefined; // Auto-scala
+                }
+                myChart.update('none'); // 'none' evita animazioni per performance
+            }
+
+            detectPeriod();
+            drawAnimation();
+            updateDisplay();
+        }
+
+        function updateTheory() {
+            theoreticalPeriod = 2 * Math.PI * Math.sqrt(L / g);
+            document.getElementById('theoreticalPeriod').textContent =
+                theoreticalPeriod.toFixed(4) + ' s';
+        }
+
+        // Metodo Runge-Kutta 4° ordine
+        function rk4Step() {
+            // Funzioni derivate
+            function f_theta(t, th, om) {
+                return om;
+            }
+
+            function f_omega(t, th, om) {
+                return -(g / L) * Math.sin(th) - friction * om;
+            }
+
+            // Calcolo k1
+            const k1_theta = f_theta(time, theta, omega);
+            const k1_omega = f_omega(time, theta, omega);
+
+            // Calcolo k2
+            const k2_theta = f_theta(time + dt / 2, theta + k1_theta * dt / 2, omega + k1_omega * dt / 2);
+            const k2_omega = f_omega(time + dt / 2, theta + k1_theta * dt / 2, omega + k1_omega * dt / 2);
+
+            // Calcolo k3
+            const k3_theta = f_theta(time + dt / 2, theta + k2_theta * dt / 2, omega + k2_omega * dt / 2);
+            const k3_omega = f_omega(time + dt / 2, theta + k2_theta * dt / 2, omega + k2_omega * dt / 2);
+
+            // Calcolo k4
+            const k4_theta = f_theta(time + dt, theta + k3_theta * dt, omega + k3_omega * dt);
+            const k4_omega = f_omega(time + dt, theta + k3_theta * dt, omega + k3_omega * dt);
+
+            // Aggiornamento con media ponderata
+            lastTheta = theta;
+            lastOmega = omega;
+            theta += (dt / 6) * (k1_theta + 2 * k2_theta + 2 * k3_theta + k4_theta);
+            omega += (dt / 6) * (k1_omega + 2 * k2_omega + 2 * k3_omega + k4_omega);
+        }
+
+        function detectPeriod() {
+            // Rileva picchi (passaggi per zero della velocità con angolo massimo)
+            if (dataPoints.length > 2 && lastOmega > 0 && omega <= 0 && theta > 0.01) {
+                peakTimes.push(time);
+
+                if (peakTimes.length >= 3) {
+                    // Calcola periodo medio dagli ultimi picchi
+                    const periods = [];
+                    for (let i = 1; i < peakTimes.length; i++) {
+                        periods.push(peakTimes[i] - peakTimes[i - 1]);
+                    }
+                    const avgPeriod = periods.reduce((a, b) => a + b, 0) / periods.length;
+
+                    document.getElementById('simulatedPeriod').textContent = avgPeriod.toFixed(4) + ' s';
+
+                    const diff = ((avgPeriod - theoreticalPeriod) / theoreticalPeriod * 100);
+                    document.getElementById('periodDifference').textContent =
+                        diff.toFixed(2) + '% ' + (diff > 0 ? '(maggiore)' : '(minore)');
+
+                    // Mantieni solo gli ultimi 5 picchi
+                    if (peakTimes.length > 5) {
+                        peakTimes.shift();
+                    }
+                }
+            }
+        }
+
+        function drawAnimation() {
+            const w = animCanvas.width;
+            const h = animCanvas.height;
+            const scale = Math.min(w, h) * 0.35;
+            const originX = w / 2;
+            const originY = h * 0.2;
+
+            // Clear
+            animCtx.fillStyle = '#ffffff';
+            animCtx.fillRect(0, 0, w, h);
+
+            // Griglia
+            animCtx.strokeStyle = '#f0f0f0';
+            animCtx.lineWidth = 1;
+            for (let i = 0; i < w; i += 20) {
+                animCtx.beginPath();
+                animCtx.moveTo(i, 0);
+                animCtx.lineTo(i, h);
+                animCtx.stroke();
+            }
+            for (let i = 0; i < h; i += 20) {
+                animCtx.beginPath();
+                animCtx.moveTo(0, i);
+                animCtx.lineTo(w, i);
+                animCtx.stroke();
+            }
+
+            // Supporto
+            animCtx.fillStyle = '#444';
+            animCtx.fillRect(originX - 30, originY - 10, 60, 10);
+
+            // Traiettoria
+            animCtx.strokeStyle = 'rgba(102, 126, 234, 0.2)';
+            animCtx.lineWidth = 2;
+            animCtx.beginPath();
+            const arcRadius = scale * L;
+            animCtx.arc(originX, originY, arcRadius, -Math.PI, 0);
+            animCtx.stroke();
+
+            // Posizione pendolo
+            const x = originX + scale * L * Math.sin(theta);
+            const y = originY + scale * L * Math.cos(theta);
+
+            // Filo
+            animCtx.strokeStyle = '#333';
+            animCtx.lineWidth = 2;
+            animCtx.beginPath();
+            animCtx.moveTo(originX, originY);
+            animCtx.lineTo(x, y);
+            animCtx.stroke();
+
+            // Massa
+            const bobRadius = 15;
+            animCtx.fillStyle = '#667eea';
+            animCtx.beginPath();
+            animCtx.arc(x, y, bobRadius, 0, 2 * Math.PI);
+            animCtx.fill();
+            animCtx.strokeStyle = '#444';
+            animCtx.lineWidth = 2;
+            animCtx.stroke();
+
+            // Vettore velocità
+            if (Math.abs(omega) > 0.01) {
+                const velScale = 30;
+                animCtx.strokeStyle = '#48bb78';
+                animCtx.lineWidth = 3;
+                animCtx.beginPath();
+                animCtx.moveTo(x, y);
+                const vx = velScale * omega * Math.cos(theta);
+                const vy = -velScale * omega * Math.sin(theta);
+                animCtx.lineTo(x + vx, y + vy);
+                animCtx.stroke();
+
+                // Freccia
+                const angle = Math.atan2(vy, vx);
+                animCtx.beginPath();
+                animCtx.moveTo(x + vx, y + vy);
+                animCtx.lineTo(x + vx - 8 * Math.cos(angle - 0.3), y + vy - 8 * Math.sin(angle - 0.3));
+                animCtx.moveTo(x + vx, y + vy);
+                animCtx.lineTo(x + vx - 8 * Math.cos(angle + 0.3), y + vy - 8 * Math.sin(angle + 0.3));
+                animCtx.stroke();
+            }
+
+            // Info
+            animCtx.fillStyle = '#333';
+            animCtx.font = 'bold 14px Arial';
+            animCtx.fillText('θ = ' + (theta * 180 / Math.PI).toFixed(1) + '° = ' + theta.toFixed(3) + ' rad', 10, 25);
+            animCtx.fillText('ω = ' + omega.toFixed(3) + ' rad/s', 10, 45);
+            animCtx.fillText('t = ' + time.toFixed(2) + ' s', 10, 65);
+
+            // Angolo
+            animCtx.strokeStyle = 'rgba(237, 137, 54, 0.5)';
+            animCtx.lineWidth = 2;
+            animCtx.beginPath();
+            animCtx.arc(originX, originY, 40, Math.PI / 2, Math.PI / 2 + theta, theta < 0);
+            animCtx.stroke();
+        }
+
+        function updateDisplay() {
+            document.getElementById('simTime').textContent = time.toFixed(2);
+        }
+
+        function animate() {
+            if (!isRunning) return;
+
+            stepSimulation();
+
+            // Controlla se l'ampiezza è diventata troppo piccola
+            if (Math.abs(theta) < MIN_AMPLITUDE_THRESHOLD && Math.abs(omega) < MIN_AMPLITUDE_THRESHOLD) {
+                pauseSimulation();
+                // Mostra messaggio di stop nell'interfaccia
+                const statusItem = document.getElementById('statusItem');
+                const statusText = document.getElementById('simStatus');
+                statusItem.style.display = 'block';
+                statusText.textContent = 'Fermato - Oscillazioni < ' +
+                    (MIN_AMPLITUDE_THRESHOLD * 180 / Math.PI).toFixed(2) + '°';
+                return;
+            }
+
+            animationId = requestAnimationFrame(animate);
+        }
+
+        function exportCSV() {
+            if (dataPoints.length === 0) {
+                alert('Nessun dato da esportare. Avvia prima la simulazione!');
+                return;
+            }
+
+            let csv = 'Tempo (s),Angolo (rad),Angolo (gradi)\n';
+            dataPoints.forEach(p => {
+                csv += p.t.toFixed(4) + ',' + p.theta.toFixed(6) + ',' + (p.theta * 180 / Math.PI).toFixed(4) + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pendolo_simulazione.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function showExplanation() {
+            document.getElementById('explanationModal').style.display = 'block';
+        }
+
+        function closeExplanation() {
+            document.getElementById('explanationModal').style.display = 'none';
+        }
+
+        function showTab(index) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach((tab, i) => {
+                if (i === index) {
+                    tab.classList.add('active');
+                    contents[i].classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                    contents[i].classList.remove('active');
+                }
+            });
+        }
+
+        // Chiudi modal cliccando fuori
+        window.onclick = function (event) {
+            const modal = document.getElementById('explanationModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Inizializzazione
+        updateTheory();
+        resetSimulation();
+        initChart();
+    </script>
+</body>
+
+</html>

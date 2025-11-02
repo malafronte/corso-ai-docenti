@@ -1,0 +1,2108 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solidi di Rotazione - Visualizzatore Interattivo</title>
+    <style>
+        :root {
+            --color-primary: #2563eb;
+            --color-primary-dark: #1e40af;
+            --color-surface: #ffffff;
+            --color-text: #1f2937;
+            --color-text-light: #6b7280;
+            --color-border: #e5e7eb;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --space-xs: 0.5rem;
+            --space-sm: 0.75rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: var(--space-lg);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            color: white;
+            padding: var(--space-xl);
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: var(--space-sm);
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            min-height: 70vh;
+        }
+
+        .control-panel {
+            background: #f8fafc;
+            padding: var(--space-xl);
+            border-right: 1px solid var(--color-border);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+            color: var(--color-text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: var(--space-sm);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+        }
+
+        .btn {
+            padding: var(--space-sm) var(--space-lg);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-xs);
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--color-border);
+            color: var(--color-text);
+        }
+
+        .btn-outline:hover {
+            background: #f1f5f9;
+            border-color: var(--color-primary);
+        }
+
+        .btn-full {
+            width: 100%;
+            margin-bottom: var(--space-md);
+        }
+
+        .visualization-area {
+            position: relative;
+            padding: var(--space-lg);
+            transition: all 0.3s ease;
+        }
+
+        .visualization-area.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 999;
+            background: #1f2937;
+            padding: 0;
+            margin: 0;
+        }
+
+        #three-canvas {
+            width: 100%;
+            height: 600px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+        }
+
+        .fullscreen #three-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+        }
+
+        .fullscreen-btn {
+            position: absolute;
+            top: var(--space-lg);
+            right: var(--space-lg);
+            background: rgba(37, 99, 235, 0.9);
+            color: white;
+            border: none;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .fullscreen-btn:hover {
+            background: rgba(30, 64, 175, 0.9);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .fullscreen .fullscreen-btn {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
+        .fullscreen .fullscreen-btn:hover {
+            background: rgba(220, 38, 38, 0.9);
+        }
+
+        .visualization-controls {
+            position: absolute;
+            top: var(--space-lg);
+            left: var(--space-lg);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .visualization-controls.show {
+            display: flex;
+        }
+
+        .viz-checkbox {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .fullscreen .viz-checkbox {
+            background: rgba(31, 41, 55, 0.9);
+            color: white;
+        }
+
+        .viz-checkbox:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .viz-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .viz-checkbox label {
+            cursor: pointer;
+            margin: 0;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .results-section {
+            background: #f8fafc;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin-top: var(--space-lg);
+        }
+
+        .results-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-sm) 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        .modal.show {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            margin: var(--space-lg);
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            max-width: 900px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: var(--space-xs);
+            border-radius: var(--radius-sm);
+            color: var(--color-text-light);
+        }
+
+        .close:hover {
+            background: #f1f5f9;
+            color: var(--color-text);
+        }
+
+        .modal-tabs {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .modal-tab {
+            padding: var(--space-sm) var(--space-md);
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-text-light);
+            border-bottom: 2px solid transparent;
+        }
+
+        .modal-tab.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .formula {
+            background: #f8fafc;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin: var(--space-md) 0;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .math-section {
+            margin: var(--space-lg) 0;
+        }
+
+        .math-section h3 {
+            color: var(--color-primary);
+            margin-bottom: var(--space-md);
+            font-size: 1.2rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            border: 2px solid #fca5a5;
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            color: #dc2626;
+            margin-top: var(--space-md);
+        }
+
+        .success-message {
+            background: #dcfce7;
+            border: 2px solid #86efac;
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            color: #16a34a;
+            margin-top: var(--space-md);
+        }
+
+        .paradox-box {
+            background: #fee2e2;
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin: var(--space-md) 0;
+        }
+
+        .hint-box {
+            background: #dcfce7;
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+        }
+
+        .label-text {
+            color: var(--color-text-light);
+            margin-top: var(--space-xs);
+            display: block;
+        }
+
+        .link-primary {
+            color: var(--color-primary);
+        }
+
+        .label-spacing {
+            margin-top: var(--space-md);
+        }
+
+        .italic-text {
+            color: var(--color-text-light);
+            font-style: italic;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--space-md) 0;
+        }
+
+        .comparison-table th {
+            background: #f8fafc;
+            font-weight: bold;
+            border: 1px solid var(--color-border);
+            padding: var(--space-sm);
+        }
+
+        .comparison-table td {
+            border: 1px solid var(--color-border);
+            padding: var(--space-sm);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+            padding: var(--space-sm);
+            background: #f8fafc;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-container label {
+            cursor: pointer;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .control-panel {
+                border-right: none;
+                border-bottom: 1px solid var(--color-border);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: var(--space-sm);
+            }
+
+            .container {
+                border-radius: var(--radius-md);
+            }
+
+            header {
+                padding: var(--space-lg);
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            .control-panel,
+            .visualization-area {
+                padding: var(--space-md);
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: var(--space-sm);
+                max-height: 90vh;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🔄 Solidi di Rotazione</h1>
+            <p>Visualizzatore Interattivo 3D per la Matematica degli Istituti Tecnici</p>
+        </header>
+
+        <div class="main-content">
+            <div class="control-panel">
+                <div class="form-group">
+                    <label for="solid-type">Tipo di Solido</label>
+                    <select id="solid-type" class="form-control">
+                        <option value="generic">Solido generico da y = f(x)</option>
+                        <option value="sphere">Sfera</option>
+                        <option value="cylinder">Cilindro</option>
+                        <option value="cone">Cono</option>
+                        <option value="truncated-cone">Tronco di Cono</option>
+                        <option value="ellipsoid">Ellissoide di Rotazione</option>
+                        <option value="gabriel">Tromba di Torricelli</option>
+                    </select>
+                </div>
+
+                <!-- Generic Function Inputs -->
+                <div id="generic-inputs" class="form-group">
+                    <label for="function-input">Funzione y = f(x)</label>
+                    <input type="text" id="function-input" class="form-control"
+                        placeholder="es: sin(x), x^2, sqrt(x), 1/x" value="abs(sin(x))">
+                    <small class="label-text">
+                        <a href="#" id="syntax-help-link" class="link-primary">📖 Guida alla
+                            Sintassi</a>
+                    </small>
+
+                    <label class="label-spacing">Intervallo [a, b]</label>
+                    <div class="input-grid">
+                        <input type="number" id="interval-a" class="form-control" placeholder="a" value="0" step="0.1">
+                        <input type="number" id="interval-b" class="form-control" placeholder="b" value="4" step="0.1">
+                    </div>
+
+                    <label for="rotation-axis" class="label-spacing">Asse di Rotazione</label>
+                    <select id="rotation-axis" class="form-control">
+                        <option value="x">Asse X</option>
+                        <option value="y">Asse Y</option>
+                    </select>
+
+                    <label for="resolution" class="label-spacing">Risoluzione 3D: <span id="resolution-value">100</span>
+                        segmenti</label>
+                    <input type="range" id="resolution" class="form-control" min="50" max="500" value="100" step="50">
+                    <small class="label-text">Aumentare per funzioni con variazioni rapide</small>
+
+                    <label for="numerical-precision" class="label-spacing">Precisione Calcoli: <span
+                            id="precision-value">1000</span>
+                        punti</label>
+                    <input type="range" id="numerical-precision" class="form-control" min="100" max="5000" value="1000"
+                        step="100">
+                    <small class="label-text">Precisione per calcolo di volume e area</small>
+                </div>
+
+                <!-- Sphere Inputs -->
+                <div id="sphere-inputs" class="form-group hidden">
+                    <label for="sphere-radius">Raggio r</label>
+                    <input type="number" id="sphere-radius" class="form-control" value="2" min="0.1" step="0.1">
+                </div>
+
+                <!-- Cylinder Inputs -->
+                <div id="cylinder-inputs" class="form-group hidden">
+                    <label for="cylinder-radius">Raggio r</label>
+                    <input type="number" id="cylinder-radius" class="form-control" value="1.5" min="0.1" step="0.1">
+                    <label for="cylinder-height" class="label-spacing">Altezza h</label>
+                    <input type="number" id="cylinder-height" class="form-control" value="4" min="0.1" step="0.1">
+                </div>
+
+                <!-- Cone Inputs -->
+                <div id="cone-inputs" class="form-group hidden">
+                    <label for="cone-radius">Raggio base r</label>
+                    <input type="number" id="cone-radius" class="form-control" value="2" min="0.1" step="0.1">
+                    <label for="cone-height" class="label-spacing">Altezza h</label>
+                    <input type="number" id="cone-height" class="form-control" value="4" min="0.1" step="0.1">
+                </div>
+
+                <!-- Truncated Cone Inputs -->
+                <div id="truncated-cone-inputs" class="form-group hidden">
+                    <label for="truncated-cone-r1">Raggio base maggiore R</label>
+                    <input type="number" id="truncated-cone-r1" class="form-control" value="2.5" min="0.1" step="0.1">
+                    <label for="truncated-cone-r2" class="label-spacing">Raggio base minore r</label>
+                    <input type="number" id="truncated-cone-r2" class="form-control" value="2" min="0.1" step="0.1">
+                    <label for="truncated-cone-height" class="label-spacing">Altezza h</label>
+                    <input type="number" id="truncated-cone-height" class="form-control" value="5" min="0.1" step="0.1">
+                </div>
+
+                <!-- Ellipsoid Inputs -->
+                <div id="ellipsoid-inputs" class="form-group hidden">
+                    <label for="ellipsoid-a">Semiasse a</label>
+                    <input type="number" id="ellipsoid-a" class="form-control" value="3" min="0.1" step="0.1">
+                    <label for="ellipsoid-b" class="label-spacing">Semiasse b</label>
+                    <input type="number" id="ellipsoid-b" class="form-control" value="2" min="0.1" step="0.1">
+                </div>
+
+                <!-- Gabriel's Horn has no inputs -->
+                <div id="gabriel-inputs" class="form-group hidden">
+                    <p class="italic-text">
+                        La Tromba di Torricelli è generata dalla funzione y = 1/x ruotata attorno all'asse X per x ≥ 1.
+                    </p>
+                </div>
+
+                <button id="draw-calculate" class="btn btn-primary btn-full">
+                    🎨 Disegna e Calcola
+                </button>
+
+                <button id="reset-view" class="btn btn-secondary btn-full">
+                    🔄 Reset Vista
+                </button>
+
+                <button id="theory-modal" class="btn btn-outline btn-full">
+                    📚 Teoria
+                </button>
+                <button id="syntax-modal" class="btn btn-outline btn-full">
+                    💡 Sintassi
+                </button>
+                <button id="formulas-modal" class="btn btn-outline btn-full">
+                    📊 Formule
+                </button>
+            </div>
+
+            <div class="visualization-area">
+                <button id="fullscreen-btn" class="fullscreen-btn">
+                    <span id="fullscreen-icon">⛶</span>
+                    <span id="fullscreen-text">Schermo Intero</span>
+                </button>
+
+                <div id="visualization-controls" class="visualization-controls show">
+                    <div class="viz-checkbox" id="curve-checkbox">
+                        <input type="checkbox" id="show-curve" checked>
+                        <label for="show-curve">📈 Mostra curva y = f(x)</label>
+                    </div>
+                    <div class="viz-checkbox" id="solid-checkbox">
+                        <input type="checkbox" id="show-solid" checked>
+                        <label for="show-solid">🔄 Mostra solido di rotazione</label>
+                    </div>
+                    <div class="viz-checkbox">
+                        <input type="checkbox" id="show-grid" checked>
+                        <label for="show-grid">📐 Mostra griglia</label>
+                    </div>
+                </div>
+
+                <div id="three-canvas"></div>
+
+                <div id="results" class="results-section hidden">
+                    <div class="results-title">
+                        📊 Risultati Calcolati
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Volume:</span>
+                        <span id="volume-result" class="result-value">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Area Superficiale:</span>
+                        <span id="area-result" class="result-value">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theory Modal -->
+    <div id="theory-modal-content" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">📚 Teoria dei Solidi di Rotazione</h2>
+                <button class="close">&times;</button>
+            </div>
+
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="definition">Definizione</button>
+                <button class="modal-tab" data-tab="volume">Calcolo Volume</button>
+                <button class="modal-tab" data-tab="surface">Area Superficiale</button>
+                <button class="modal-tab" data-tab="numerical">Metodi Numerici</button>
+                <button class="modal-tab" data-tab="visualization">Visualizzazione 3D</button>
+                <button class="modal-tab" data-tab="paradox">Il Paradosso</button>
+            </div>
+
+            <div id="definition" class="tab-content active">
+                <h3>Che cos'è un Solido di Rotazione?</h3>
+                <p>Un <strong>solido di rotazione</strong> è un solido ottenuto facendo ruotare una figura piana attorno
+                    ad un asse. Nel caso più comune, si fa ruotare il grafico di una funzione y = f(x) attorno all'asse
+                    delle x o delle y.</p>
+
+                <h3>Esempi Classici</h3>
+                <ul>
+                    <li><strong>Sfera</strong>: rotazione di y = √(r² - x²) attorno all'asse x</li>
+                    <li><strong>Cilindro</strong>: rotazione di y = r (costante) attorno all'asse x</li>
+                    <li><strong>Cono</strong>: rotazione di y = (r/h)·x attorno all'asse x</li>
+                    <li><strong>Tromba di Torricelli</strong>: rotazione di y = 1/x attorno all'asse x</li>
+                </ul>
+
+                <h3>Metodo di Generazione</h3>
+                <p>Per ogni punto (x, f(x)) sulla curva, la rotazione genera un cerchio di raggio |f(x)| centrato
+                    sull'asse di rotazione. L'insieme di tutti questi cerchi forma il solido.</p>
+            </div>
+
+            <div id="volume" class="tab-content">
+                <h3>Calcolo del Volume (Metodo dei Dischi)</h3>
+                <p>Per una funzione y = f(x) ruotata attorno all'asse X nell'intervallo [a, b]:</p>
+
+                <div class="formula">
+                    V = π ∫<sub>a</sub><sup>b</sup> [f(x)]² dx
+                </div>
+
+                <p><strong>Interpretazione geometrica</strong>: Ogni "fetta" infinitesimale di spessore dx ha volume
+                    π[f(x)]²dx (area del disco × spessore).</p>
+
+                <h3>Rotazione attorno all'asse Y</h3>
+                <p>Per x = g(y) ruotata attorno all'asse Y nell'intervallo [c, d]:</p>
+
+                <div class="formula">
+                    V = π ∫<sub>c</sub><sup>d</sup> [g(y)]² dy
+                </div>
+
+                <h3>Metodo delle Rondelle</h3>
+                <p>Quando il solido ha un "buco" al centro, si usa la formula:</p>
+
+                <div class="formula">
+                    V = π ∫<sub>a</sub><sup>b</sup> ([f(x)]² - [g(x)]²) dx
+                </div>
+
+                <p>dove f(x) è la funzione esterna e g(x) quella interna.</p>
+            </div>
+
+            <div id="surface" class="tab-content">
+                <h3>Area della Superficie</h3>
+                <p>Per una curva y = f(x) ruotata attorno all'asse X:</p>
+
+                <div class="formula">
+                    A = 2π ∫<sub>a</sub><sup>b</sup> f(x) √(1 + [f'(x)]²) dx
+                </div>
+
+                <h3>Derivazione della Formula</h3>
+                <p>La formula deriva dal fatto che un elemento infinitesimale della curva ha lunghezza:</p>
+
+                <div class="formula">
+                    ds = √(1 + [f'(x)]²) dx
+                </div>
+
+                <p>Ruotando attorno all'asse X, genera una superficie di area:</p>
+
+                <div class="formula">
+                    dA = 2π · f(x) · ds = 2π f(x) √(1 + [f'(x)]²) dx
+                </div>
+
+                <h3>Interpretazione Fisica</h3>
+                <p>L'area superficiale rappresenta la quantità di materiale necessaria per "rivestire" il solido. Nel
+                    caso della Tromba di Torricelli, questa quantità è infinita!</p>
+            </div>
+
+            <div id="paradox" class="tab-content">
+                <h3>Il Paradosso della Tromba di Torricelli</h3>
+                <p>La <strong>Tromba di Torricelli</strong> (o Corno di Gabriele) è il solido ottenuto ruotando y = 1/x
+                    attorno all'asse X per x ≥ 1.</p>
+
+                <h3>Il Paradosso</h3>
+                <div class="paradox-box">
+                    <p><strong>Volume FINITO:</strong></p>
+                    <div class="formula">V = π ∫<sub>1</sub><sup>∞</sup> (1/x)² dx = π [-1/x]<sub>1</sub><sup>∞</sup> =
+                        π</div>
+
+                    <p><strong>Area Superficiale INFINITA:</strong></p>
+                    <div class="formula">A = 2π ∫<sub>1</sub><sup>∞</sup> (1/x) √(1 + 1/x⁴) dx = ∞</div>
+                </div>
+
+                <h3>Interpretazione del Paradosso</h3>
+                <p>Questo significa che la tromba può essere <strong>riempita</strong> con una quantità finita di
+                    vernice (volume π), ma <strong>non può essere dipinta</strong> perché servirebbe una quantità
+                    infinita di vernice per coprire la superficie!</p>
+
+                <h3>Significato Matematico</h3>
+                <p>Il paradosso illustra la differenza fondamentale tra convergenza dell'integrale del volume e
+                    divergenza dell'integrale dell'area superficiale, mostrando le sottigliezze dell'analisi
+                    infinitesimale.</p>
+            </div>
+
+            <div id="numerical" class="tab-content">
+                <h3>Metodi Numerici per il Calcolo di Volume e Area</h3>
+                <p>Quando non è possibile calcolare gli integrali in forma chiusa, si utilizzano <strong>metodi di
+                        integrazione numerica</strong> per approssimare i valori di volume e area superficiale.</p>
+
+                <h3>Metodo dei Rettangoli (Rectangle Rule)</h3>
+                <p>Questo applicativo utilizza il metodo dei rettangoli per approssimare gli integrali:</p>
+
+                <h4>Per il Volume:</h4>
+                <div class="formula">
+                    V ≈ π Σ<sub>i=0</sub><sup>n-1</sup> [f(x<sub>i</sub>)]² · Δx
+                </div>
+                <p>dove Δx = (b-a)/n e x<sub>i</sub> = a + i·Δx</p>
+
+                <h4>Per l'Area Superficiale:</h4>
+                <div class="formula">
+                    A ≈ 2π Σ<sub>i=0</sub><sup>n-1</sup> f(x<sub>i</sub>) · √(1 + [f'(x<sub>i</sub>)]²) · Δx
+                </div>
+                <p>La derivata f'(x) viene approssimata numericamente con il rapporto incrementale:</p>
+                <div class="formula">
+                    f'(x<sub>i</sub>) ≈ [f(x<sub>i+1</sub>) - f(x<sub>i</sub>)] / Δx
+                </div>
+
+                <h3>Stima dell'Errore</h3>
+                <p>L'errore di approssimazione dipende dal numero di punti n (precisione numerica):</p>
+
+                <div class="formula">
+                    Errore ∝ O(1/n)
+                </div>
+
+                <p><strong>Interpretazione pratica</strong>:</p>
+                <ul>
+                    <li><strong>n = 100</strong>: errore ~1%, adatto per funzioni regolari</li>
+                    <li><strong>n = 1000</strong> (default): errore ~0.1%, buona precisione generale</li>
+                    <li><strong>n = 5000</strong>: errore ~0.02%, alta precisione per funzioni complesse</li>
+                </ul>
+
+                <h3>Quando Aumentare la Precisione</h3>
+                <p>Aumentare il valore della precisione numerica quando:</p>
+                <ul>
+                    <li>La funzione ha <strong>variazioni rapide</strong> (es: sin(10πx))</li>
+                    <li>La funzione presenta <strong>picchi o discontinuità</strong></li>
+                    <li>Si lavora con <strong>intervalli molto ampi</strong></li>
+                    <li>Serve un <strong>risultato molto accurato</strong> per confronti o verifiche</li>
+                </ul>
+
+                <div class="hint-box">
+                    <p><strong>💡 Consiglio</strong>: Per funzioni con frequenze elevate (es: 1/abs(2+sin(10πx))), usare
+                        n ≥ 2000 per garantire che ogni oscillazione sia catturata da almeno 5-10 punti.</p>
+                </div>
+            </div>
+
+            <div id="visualization" class="tab-content">
+                <h3>Visualizzazione 3D dei Solidi di Rotazione</h3>
+                <p>La rappresentazione grafica 3D utilizza la tecnica <strong>LatheGeometry</strong> di Three.js, che
+                    genera una superficie di rotazione a partire da un profilo 2D.</p>
+
+                <h3>Processo di Generazione</h3>
+                <ol>
+                    <li><strong>Campionamento del profilo</strong>: La funzione f(x) viene valutata in n punti
+                        equidistanti nell'intervallo [a, b]</li>
+                    <li><strong>Creazione dei punti di controllo</strong>: Ogni coppia (x, f(x)) diventa un punto del
+                        profilo</li>
+                    <li><strong>Rotazione</strong>: Il profilo viene ruotato di 360° attorno all'asse per generare la
+                        superficie</li>
+                    <li><strong>Triangolazione</strong>: La superficie viene suddivisa in triangoli per il rendering 3D
+                    </li>
+                </ol>
+
+                <h3>Risoluzione 3D e Qualità Visiva</h3>
+                <p>Il parametro "Risoluzione 3D" determina quanti punti vengono usati per definire il profilo della
+                    curva:</p>
+
+                <div class="formula">
+                    Numero di segmenti = Risoluzione 3D
+                </div>
+
+                <p><strong>Impatto della risoluzione</strong>:</p>
+                <ul>
+                    <li><strong>50 segmenti</strong>: rendering veloce, ma curva "spigolosa" per funzioni complesse</li>
+                    <li><strong>100 segmenti</strong> (default): buon compromesso tra velocità e qualità</li>
+                    <li><strong>300-500 segmenti</strong>: necessario per funzioni con oscillazioni rapide</li>
+                </ul>
+
+                <h3>Teorema di Campionamento (Nyquist-Shannon)</h3>
+                <p>Per rappresentare correttamente una funzione oscillante con frequenza f, serve un numero minimo di
+                    punti:</p>
+
+                <div class="formula">
+                    n<sub>min</sub> ≥ 2 · f · (b - a)
+                </div>
+
+                <p><strong>Esempio pratico</strong>: Per la funzione sin(10πx) nell'intervallo [0, 1]:</p>
+                <ul>
+                    <li>Frequenza: 10 cicli completi</li>
+                    <li>Lunghezza intervallo: 1</li>
+                    <li>Punti minimi: 2 × 10 × 1 = 20 punti</li>
+                    <li>Consigliato: 5-10 volte il minimo → <strong>100-200 punti</strong></li>
+                </ul>
+
+                <h3>Problemi di Sottocampionamento</h3>
+                <p>Quando la risoluzione è troppo bassa rispetto alla variabilità della funzione si verificano:</p>
+                <ul>
+                    <li><strong>Aliasing</strong>: Le oscillazioni rapide vengono "perse" e appaiono come un cilindro
+                        liscio</li>
+                    <li><strong>Spigolature</strong>: Curve morbide appaiono come poligoni</li>
+                    <li><strong>Dettagli mancanti</strong>: Picchi, valli o variazioni locali non vengono rappresentati
+                    </li>
+                </ul>
+
+                <div class="paradox-box">
+                    <p><strong>⚠️ Attenzione</strong>: Una funzione come 1/abs(2+sin(10πx)) ha circa 10 oscillazioni.
+                        Con 100 punti si hanno solo ~10 punti per oscillazione, insufficienti per una rappresentazione
+                        accurata. Usare almeno 300-500 punti.</p>
+                </div>
+
+                <h3>Differenza tra Risoluzione 3D e Precisione Numerica</h3>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Aspetto</th>
+                        <th>Risoluzione 3D</th>
+                        <th>Precisione Numerica</th>
+                    </tr>
+                    <tr>
+                        <td>Scopo</td>
+                        <td>Qualità visiva</td>
+                        <td>Accuratezza calcoli</td>
+                    </tr>
+                    <tr>
+                        <td>Range tipico</td>
+                        <td>50-500</td>
+                        <td>100-5000</td>
+                    </tr>
+                    <tr>
+                        <td>Impatto performance</td>
+                        <td>Alto (rendering)</td>
+                        <td>Medio (calcolo)</td>
+                    </tr>
+                    <tr>
+                        <td>Quando aumentare</td>
+                        <td>Funzioni oscillanti o dettagliate</td>
+                        <td>Serve alta precisione numerica</td>
+                    </tr>
+                </table>
+
+                <div class="hint-box">
+                    <p><strong>💡 Strategia ottimale</strong>: Iniziare con risoluzione 3D bassa (100) per esplorare
+                        rapidamente, poi aumentarla solo se necessario. La precisione numerica può rimanere sempre alta
+                        (1000) senza impatto significativo sulle prestazioni.</p>
+                </div>
+            </div>
+
+            <div id="paradox" class="tab-content">
+                <h3>🎺 La Tromba di Torricelli</h3>
+                <p>Un esempio affascinante di paradosso matematico legato ai solidi di rotazione.</p>
+
+                <h4>Il Paradosso</h4>
+                <p>La Tromba di Torricelli (o Corno di Gabriele) è generata dalla funzione <code>f(x) = 1/x</code> per
+                    <code>x ∈ [1, +∞)</code> ruotata attorno all'asse X.
+                </p>
+
+                <div class="paradox-box">
+                    <p><strong>Volume FINITO</strong>: V = π</p>
+                    <p><strong>Area Superficiale INFINITA</strong>: A = ∞</p>
+                </div>
+
+                <h4>Significato</h4>
+                <p>Questo significa che la tromba può essere <strong>riempita</strong> con una quantità finita di
+                    liquido (π unità³), ma <strong>non può essere dipinta</strong> completamente perché servirebbe una
+                    quantità infinita di vernice!</p>
+
+                <p>Per esplorare questo paradosso, seleziona "Tromba di Torricelli" dal menu a tendina sopra.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Syntax Modal -->
+    <div id="syntax-modal-content" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">💡 Guida alla Sintassi delle Funzioni</h2>
+                <button class="close">&times;</button>
+            </div>
+
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="basic-syntax">Funzioni Base</button>
+                <button class="modal-tab" data-tab="trig-syntax">Trigonometriche</button>
+                <button class="modal-tab" data-tab="exp-syntax">Esponenziali</button>
+                <button class="modal-tab" data-tab="other-syntax">Altre Funzioni</button>
+                <button class="modal-tab" data-tab="examples-syntax">Esempi</button>
+            </div>
+
+            <div id="basic-syntax" class="tab-content active">
+                <h3>Funzioni di Base</h3>
+                <ul>
+                    <li><code>x</code> - variabile indipendente</li>
+                    <li><code>2*x</code> - moltiplicazione (asterisco obbligatorio)</li>
+                    <li><code>x + 3</code>, <code>x - 1</code> - addizione e sottrazione</li>
+                    <li><code>x^2</code>, <code>x^3</code> - elevamento a potenza</li>
+                    <li><code>1/x</code> - divisione</li>
+                    <li><code>sqrt(x)</code> - radice quadrata</li>
+                </ul>
+
+                <h3>Costanti</h3>
+                <ul>
+                    <li><code>pi</code> o <code>π</code> - pi greco (3.14159...)</li>
+                    <li><code>e</code> - numero di Eulero (2.71828...)</li>
+                </ul>
+
+                <div class="hint-box">
+                    <p><strong>💡 Nota</strong>: L'asterisco (*) è sempre obbligatorio per la
+                        moltiplicazione!</p>
+                </div>
+            </div>
+
+            <div id="trig-syntax" class="tab-content">
+                <h3>Funzioni Trigonometriche</h3>
+                <ul>
+                    <li><code>sin(x)</code> - seno di x</li>
+                    <li><code>cos(x)</code> - coseno di x</li>
+                    <li><code>tan(x)</code> - tangente di x</li>
+                    <li><code>asin(x)</code> - arcoseno (sin⁻¹)</li>
+                    <li><code>acos(x)</code> - arcocoseno (cos⁻¹)</li>
+                    <li><code>atan(x)</code> - arcotangente (tan⁻¹)</li>
+                </ul>
+
+                <h3>Argomenti Composti</h3>
+                <ul>
+                    <li><code>sin(2*x)</code> - seno di 2x</li>
+                    <li><code>cos(x/2)</code> - coseno di x/2</li>
+                    <li><code>sin(x^2)</code> - seno di x²</li>
+                    <li><code>cos(pi*x)</code> - coseno di πx</li>
+                </ul>
+
+                <div class="hint-box">
+                    <p><strong>💡 Nota</strong>: Gli argomenti sono in radianti, non in gradi!</p>
+                </div>
+            </div>
+
+            <div id="exp-syntax" class="tab-content">
+                <h3>Funzioni Esponenziali</h3>
+                <ul>
+                    <li><code>exp(x)</code> - funzione esponenziale e^x</li>
+                    <li><code>2^x</code> - esponenziale con base 2</li>
+                    <li><code>e^(2*x)</code> - e elevato a 2x</li>
+                </ul>
+
+                <h3>Funzioni Logaritmiche</h3>
+                <ul>
+                    <li><code>log(x)</code> - logaritmo naturale (base e)</li>
+                    <li><code>log10(x)</code> - logaritmo in base 10</li>
+                    <li><code>log(x, 2)</code> - logaritmo in base 2</li>
+                </ul>
+
+                <div class="hint-box">
+                    <p><strong>💡 Nota</strong>: <code>log(x)</code> è il logaritmo naturale (ln), non
+                        log₁₀!</p>
+                </div>
+            </div>
+
+            <div id="other-syntax" class="tab-content">
+                <h3>Altre Funzioni Utili</h3>
+                <ul>
+                    <li><code>abs(x)</code> - valore assoluto |x|</li>
+                    <li><code>ceil(x)</code> - arrotondamento per eccesso</li>
+                    <li><code>floor(x)</code> - arrotondamento per difetto</li>
+                    <li><code>round(x)</code> - arrotondamento al più vicino</li>
+                    <li><code>sign(x)</code> - segno di x (-1, 0, o 1)</li>
+                    <li><code>max(a, b)</code> - massimo tra a e b</li>
+                    <li><code>min(a, b)</code> - minimo tra a e b</li>
+                </ul>
+
+                <div class="hint-box">
+                    <p><strong>💡 Suggerimento</strong>: Combina queste funzioni per creare forme complesse!
+                    </p>
+                </div>
+            </div>
+
+            <div id="examples-syntax" class="tab-content">
+                <h3>Esempi Pratici</h3>
+
+                <h4>Funzioni Polinomiali</h4>
+                <ul>
+                    <li><code>x^2</code> - parabola</li>
+                    <li><code>x^3</code> - cubica</li>
+                    <li><code>x^2 + 2*x + 1</code> - parabola traslata</li>
+                </ul>
+
+                <h4>Funzioni Irrazionali</h4>
+                <ul>
+                    <li><code>sqrt(x)</code> - radice quadrata</li>
+                    <li><code>sqrt(4 - x^2)</code> - semicirconferenza di raggio 2</li>
+                    <li><code>sqrt(1 + x^2)</code> - funzione sempre definita</li>
+                </ul>
+
+                <h4>Funzioni Speciali</h4>
+                <ul>
+                    <li><code>1/x</code> - iperbole (Tromba di Torricelli)</li>
+                    <li><code>exp(-x^2)</code> - campana gaussiana</li>
+                    <li><code>abs(sin(x))</code> - seno rettificato</li>
+                    <li><code>sin(x^2)</code> - funzione oscillante</li>
+                </ul>
+
+                <div class="hint-box">
+                    <p><strong>💡 Suggerimento</strong>: Testa sempre la tua funzione con valori diversi di
+                        x
+                        per assicurarti che produca risultati positivi nell'intervallo scelto!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulas Modal -->
+    <div id="formulas-modal-content" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">📊 Formule per Figure Speciali</h2>
+                <button class="close">&times;</button>
+            </div>
+
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="general-formulas">Generali</button>
+                <button class="modal-tab" data-tab="sphere-formulas">Sfera</button>
+                <button class="modal-tab" data-tab="cylinder-formulas">Cilindro</button>
+                <button class="modal-tab" data-tab="cone-formulas">Cono</button>
+                <button class="modal-tab" data-tab="truncated-formulas">Tronco</button>
+                <button class="modal-tab" data-tab="gabriel-formulas">Tromba</button>
+            </div>
+
+            <div id="general-formulas" class="tab-content active">
+                <h3>Formule Generali</h3>
+
+                <h4>Rotazione attorno all'asse X</h4>
+                <div class="formula">
+                    <strong>Volume:</strong> V = π ∫<sub>a</sub><sup>b</sup> [f(x)]² dx
+                </div>
+                <div class="formula">
+                    <strong>Area:</strong> A = 2π ∫<sub>a</sub><sup>b</sup> f(x) √(1 + [f'(x)]²) dx
+                </div>
+
+                <h4>Rotazione attorno all'asse Y</h4>
+                <div class="formula">
+                    <strong>Volume:</strong> V = π ∫<sub>c</sub><sup>d</sup> [g(y)]² dy
+                </div>
+                <div class="formula">
+                    <strong>Area:</strong> A = 2π ∫<sub>c</sub><sup>d</sup> y √(1 + [g'(y)]²) dy
+                </div>
+
+                <div class="hint-box">
+                    <p><strong>💡 Nota</strong>: Per il calcolo numerico dell'area, se la derivata è
+                        complessa, si
+                        può usare l'approssimazione numerica della derivata.</p>
+                </div>
+            </div>
+
+            <div id="sphere-formulas" class="tab-content">
+                <h3>🔮 Sfera</h3>
+                <p><strong>Funzione generatrice</strong>: y = √(r² - x²) per x ∈ [-r, r]</p>
+                <p><strong>Rotazione</strong>: attorno all'asse X</p>
+
+                <div class="formula">
+                    <strong>Volume:</strong> V = (4/3)πr³
+                </div>
+                <div class="formula">
+                    <strong>Area Superficiale:</strong> A = 4πr²
+                </div>
+
+                <h4>Derivazione del Volume</h4>
+                <div class="formula">
+                    V = π ∫<sub>-r</sub><sup>r</sup> (r² - x²) dx = π [r²x - x³/3]<sub>-r</sub><sup>r</sup>
+                    = (4/3)πr³
+                </div>
+
+                <div class="hint-box">
+                    <p><strong>💡 Nota didattica</strong>: Nell'applicazione viene visualizzata solo la
+                        parte
+                        superiore (y ≥ 0) per chiarezza, ma il calcolo considera la sfera completa.</p>
+                </div>
+            </div>
+
+            <div id="cylinder-formulas" class="tab-content">
+                <h3>🥤 Cilindro</h3>
+                <p><strong>Funzione generatrice</strong>: y = r (costante) per x ∈ [0, h]</p>
+                <p><strong>Rotazione</strong>: attorno all'asse X</p>
+
+                <div class="formula">
+                    <strong>Volume:</strong> V = πr²h
+                </div>
+                <div class="formula">
+                    <strong>Area Superficiale:</strong> A = 2πrh + 2πr² = 2πr(h + r)
+                </div>
+
+                <h4>Interpretazione</h4>
+                <ul>
+                    <li><strong>Volume</strong>: Area della base (πr²) × altezza (h)</li>
+                    <li><strong>Area laterale</strong>: 2πrh (circonferenza × altezza)</li>
+                    <li><strong>Area totale</strong>: Area laterale + 2 basi (2πr²)</li>
+                </ul>
+
+                <h4>Derivazione del Volume</h4>
+                <div class="formula">
+                    V = π ∫<sub>0</sub><sup>h</sup> r² dx = πr² ∫<sub>0</sub><sup>h</sup> dx = πr²h
+                </div>
+            </div>
+
+            <div id="cone-formulas" class="tab-content">
+                <h3>🔺 Cono</h3>
+                <p><strong>Funzione generatrice</strong>: y = (r/h)x per x ∈ [0, h]</p>
+                <p><strong>Rotazione</strong>: attorno all'asse X</p>
+
+                <div class="formula">
+                    <strong>Volume:</strong> V = (1/3)πr²h
+                </div>
+                <div class="formula">
+                    <strong>Area Superficiale:</strong> A = πr² + πr√(r² + h²) = πr(r + l)
+                </div>
+
+                <p>dove <strong>l = √(r² + h²)</strong> è l'apotema (generatrice) del cono.</p>
+
+                <h4>Componenti dell'Area</h4>
+                <ul>
+                    <li><strong>Area della base</strong>: πr²</li>
+                    <li><strong>Area laterale</strong>: πrl = πr√(r² + h²)</li>
+                </ul>
+
+                <h4>Derivazione del Volume</h4>
+                <div class="formula">
+                    V = π ∫<sub>0</sub><sup>h</sup> (r²x²/h²) dx = (πr²/h²) ∫<sub>0</sub><sup>h</sup> x² dx
+                    =
+                    (πr²/h²)[x³/3]<sub>0</sub><sup>h</sup> = (1/3)πr²h
+                </div>
+            </div>
+
+            <div id="truncated-formulas" class="tab-content">
+                <h3>⏺️ Tronco di Cono</h3>
+                <p><strong>Funzione generatrice</strong>: y = R - ((R-r)/h)x per x ∈ [0, h]</p>
+                <p><strong>Rotazione</strong>: attorno all'asse X</p>
+                <p><strong>Parametri</strong>: R = raggio maggiore, r = raggio minore, h = altezza</p>
+
+                <div class="formula">
+                    <strong>Volume:</strong> V = (1/3)πh(R² + Rr + r²)
+                </div>
+                <div class="formula">
+                    <strong>Apotema:</strong> l = √(h² + (R-r)²)
+                </div>
+                <div class="formula">
+                    <strong>Area Superficiale:</strong> A = πR² + πr² + π(R+r)l
+                </div>
+
+                <h4>Componenti dell'Area</h4>
+                <ul>
+                    <li><strong>Base maggiore</strong>: πR²</li>
+                    <li><strong>Base minore</strong>: πr²</li>
+                    <li><strong>Area laterale</strong>: π(R+r)l</li>
+                </ul>
+
+                <h4>Derivazione del Volume</h4>
+                <p>Il tronco è la differenza tra un cono grande (altezza H, raggio R) e uno piccolo (altezza
+                    H-h, raggio r):</p>
+                <div class="formula">
+                    V = (1/3)πR²H - (1/3)πr²(H-h)
+                </div>
+                <p>Dove H/R = (H-h)/r, da cui si ricava la formula finale.</p>
+            </div>
+
+            <div id="gabriel-formulas" class="tab-content">
+                <h3>🎺 Tromba di Torricelli</h3>
+                <p><strong>Funzione generatrice</strong>: y = 1/x per x ∈ [1, +∞)</p>
+                <p><strong>Rotazione</strong>: attorno all'asse X</p>
+                <p><strong>Anche nota come</strong>: Corno di Gabriele</p>
+
+                <div class="formula">
+                    <strong>Volume:</strong> V = π ∫<sub>1</sub><sup>∞</sup> (1/x)² dx = π
+                </div>
+                <div class="formula">
+                    <strong>Area Superficiale:</strong> A = 2π ∫<sub>1</sub><sup>∞</sup> (1/x)√(1 + 1/x⁴) dx
+                    = ∞
+                </div>
+
+                <h4>Il Paradosso Spiegato</h4>
+                <div class="paradox-box">
+                    <p><strong>Volume FINITO</strong>:</p>
+                    <div class="formula">
+                        ∫<sub>1</sub><sup>∞</sup> (1/x²) dx = [-1/x]<sub>1</sub><sup>∞</sup> = 0 - (-1) = 1
+                    </div>
+                    <p>Quindi V = π · 1 = π</p>
+
+                    <p><strong>Area INFINITA</strong>:</p>
+                    <p>Per x grandi, √(1 + 1/x⁴) ≈ 1, quindi:</p>
+                    <div class="formula">
+                        A ≈ 2π ∫<sub>1</sub><sup>∞</sup> (1/x) dx = 2π [ln(x)]<sub>1</sub><sup>∞</sup> = ∞
+                    </div>
+                </div>
+
+                <h4>Significato Fisico</h4>
+                <p>La tromba può essere <strong>riempita</strong> con π unità³ di liquido, ma <strong>non
+                        può essere dipinta</strong> perché servirebbe una quantità infinita di vernice!</p>
+
+                <h4>Convergenza degli Integrali</h4>
+                <ul>
+                    <li>∫ 1/x² dx converge (esponente > 1)</li>
+                    <li>∫ 1/x dx diverge (esponente = 1)</li>
+                    <li>Questo spiega la differenza tra volume finito e area infinita</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+
+    <script>
+        // Global variables
+        let scene, camera, renderer, controls, solidMesh, wireframeMesh, curveMesh, gridHelper;
+        let currentResults = { volume: 0, area: 0 };                    // Initialize Three.js scene
+        function initThreeJS() {
+            const container = document.getElementById('three-canvas');
+
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xf8fafc);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(10, 8, 10);
+            camera.lookAt(0, 0, 0);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+            // Make renderer canvas fill container properly
+            renderer.domElement.style.width = '100%';
+            renderer.domElement.style.height = '100%';
+            renderer.domElement.style.display = 'block';
+
+            container.appendChild(renderer.domElement);
+
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.1;
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+            scene.add(ambientLight);
+
+            const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight1.position.set(10, 10, 5);
+            directionalLight1.castShadow = true;
+            scene.add(directionalLight1);
+
+            const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.3);
+            directionalLight2.position.set(-5, 5, -5);
+            scene.add(directionalLight2);
+
+            // Add coordinate system
+            addCoordinateSystem();
+
+            // Grid
+            gridHelper = new THREE.GridHelper(20, 20, 0xcccccc, 0xeeeeee);
+            gridHelper.rotation.x = Math.PI / 2;
+            scene.add(gridHelper);
+
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+
+            // Animation loop
+            animate();
+        }
+
+        function addCoordinateSystem() {
+            const axisLength = 8;
+
+            // X-axis (red)
+            const xGeometry = new THREE.CylinderGeometry(0.05, 0.05, axisLength);
+            const xMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const xAxis = new THREE.Mesh(xGeometry, xMaterial);
+            xAxis.rotation.z = -Math.PI / 2;
+            xAxis.position.x = axisLength / 2;
+            scene.add(xAxis);
+
+            // X-axis arrow
+            const xArrowGeometry = new THREE.ConeGeometry(0.15, 0.5, 8);
+            const xArrow = new THREE.Mesh(xArrowGeometry, xMaterial);
+            xArrow.rotation.z = -Math.PI / 2;
+            xArrow.position.x = axisLength;
+            scene.add(xArrow);
+
+            // Y-axis (green)
+            const yGeometry = new THREE.CylinderGeometry(0.05, 0.05, axisLength);
+            const yMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            const yAxis = new THREE.Mesh(yGeometry, yMaterial);
+            yAxis.position.y = axisLength / 2;
+            scene.add(yAxis);
+
+            // Y-axis arrow
+            const yArrowGeometry = new THREE.ConeGeometry(0.15, 0.5, 8);
+            const yArrow = new THREE.Mesh(yArrowGeometry, yMaterial);
+            yArrow.position.y = axisLength;
+            scene.add(yArrow);
+
+            // Z-axis (blue)
+            const zGeometry = new THREE.CylinderGeometry(0.05, 0.05, axisLength);
+            const zMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+            const zAxis = new THREE.Mesh(zGeometry, zMaterial);
+            zAxis.rotation.x = Math.PI / 2;
+            zAxis.position.z = axisLength / 2;
+            scene.add(zAxis);
+
+            // Z-axis arrow
+            const zArrowGeometry = new THREE.ConeGeometry(0.15, 0.5, 8);
+            const zArrow = new THREE.Mesh(zArrowGeometry, zMaterial);
+            zArrow.rotation.x = Math.PI / 2;
+            zArrow.position.z = axisLength;
+            scene.add(zArrow);
+
+            // Add text labels using sprites
+            addAxisLabel('X', axisLength + 0.5, 0, 0, 0xff0000);
+            addAxisLabel('Y', 0, axisLength + 0.5, 0, 0x00ff00);
+            addAxisLabel('Z', 0, 0, axisLength + 0.5, 0x0000ff);
+        }
+
+        function addAxisLabel(text, x, y, z, color) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 64;
+            canvas.height = 64;
+
+            context.fillStyle = `#${color.toString(16).padStart(6, '0')}`;
+            context.font = 'Bold 48px Arial';
+            context.textAlign = 'center';
+            context.fillText(text, 32, 40);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            const material = new THREE.SpriteMaterial({ map: texture });
+            const sprite = new THREE.Sprite(material);
+            sprite.position.set(x, y, z);
+            sprite.scale.set(1, 1, 1);
+            scene.add(sprite);
+        }
+
+        function onWindowResize() {
+            const container = document.getElementById('three-canvas');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height, false);
+
+            // Ensure canvas has proper CSS styles
+            renderer.domElement.style.width = '100%';
+            renderer.domElement.style.height = '100%';
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // Create solid from function
+        function createSolidFromFunction(f, a, b, axis = 'x', resolution = null) {
+            const points = [];
+            const steps = resolution || 100;
+
+            for (let i = 0; i <= steps; i++) {
+                const x = a + (b - a) * (i / steps);
+                let y;
+
+                try {
+                    y = f(x);
+                } catch (error) {
+                    console.warn(`Error evaluating function at x=${x}:`, error);
+                    continue;
+                }
+
+                if (isNaN(y) || !isFinite(y)) continue;
+
+                // Force positive radius to avoid double surfaces
+                const radius = Math.abs(y);
+
+                // For LatheGeometry: Vector2(radius, height)
+                // This creates rotation around Y-axis
+                if (axis === 'x') {
+                    points.push(new THREE.Vector2(radius, x));
+                } else {
+                    points.push(new THREE.Vector2(x, radius));
+                }
+            }
+
+            if (points.length < 2) {
+                throw new Error('Non sono stati generati punti sufficienti dalla funzione');
+            }
+
+            // Create lathe geometry (rotates around Y-axis by default)
+            const geometry = new THREE.LatheGeometry(points, 64);
+
+            // Materials
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x2563eb,
+                shininess: 80,
+                transparent: true,
+                opacity: 0.8,
+                side: THREE.DoubleSide
+            });
+
+            const wireframeMaterial = new THREE.MeshBasicMaterial({
+                color: 0x1e40af,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.3
+            });
+
+            const mesh = new THREE.Mesh(geometry, material);
+            const wireframe = new THREE.Mesh(geometry, wireframeMaterial);
+
+            // Rotate to align with mathematical convention (rotation around X-axis)
+            if (axis === 'x') {
+                mesh.rotation.z = -Math.PI / 2;
+                wireframe.rotation.z = -Math.PI / 2;
+            }
+
+            return { mesh, wireframe };
+        }
+
+        // Create 2D curve visualization
+        function create2DCurve(f, a, b, axis = 'x', resolution = 100) {
+            const points = [];
+            const steps = Math.max(resolution * 2, 200); // Use higher resolution for smooth curve
+
+            for (let i = 0; i <= steps; i++) {
+                const t = a + (b - a) * (i / steps);
+                let r;
+
+                try {
+                    r = f(t);
+                } catch (error) {
+                    continue;
+                }
+
+                if (isNaN(r) || !isFinite(r)) continue;
+
+                // Match LatheGeometry point creation
+                // LatheGeometry creates rotation around Y-axis
+                if (axis === 'x') {
+                    // For X-axis: preserve sign of f(x) instead of using abs
+                    points.push(new THREE.Vector3(r, t, 0));
+                } else {
+                    // For Y-axis: points are (t, f(t))
+                    points.push(new THREE.Vector3(t, r, 0));
+                }
+            }
+
+            if (points.length < 2) {
+                return null;
+            }
+
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const material = new THREE.LineBasicMaterial({
+                color: 0xff6b00,
+                linewidth: 2,
+                depthTest: true,
+                depthWrite: true
+            });
+
+            const curve = new THREE.Line(geometry, material);
+
+            // Apply same rotation as the solid mesh
+            if (axis === 'x') {
+                curve.rotation.z = -Math.PI / 2;
+                curve.rotation.x = Math.PI; // 180° rotation around X-axis
+            }
+
+            return curve;
+        }
+
+        // Calculation functions
+        function calculateVolumeNumerical(f, a, b, axis = 'x', resolution = 1000) {
+            const steps = resolution;
+            const dx = (b - a) / steps;
+            let volume = 0;
+
+            for (let i = 0; i < steps; i++) {
+                const x = a + i * dx;
+                const y = Math.abs(f(x));
+                if (isFinite(y)) {
+                    volume += Math.PI * y * y * dx;
+                }
+            }
+
+            return volume;
+        }
+
+        function calculateSurfaceAreaNumerical(f, a, b, axis = 'x', resolution = 1000) {
+            const steps = resolution;
+            const dx = (b - a) / steps;
+            let area = 0;
+
+            for (let i = 0; i < steps; i++) {
+                const x = a + i * dx;
+                const x_next = a + (i + 1) * dx;
+
+                try {
+                    const y = Math.abs(f(x));
+                    const y_next = Math.abs(f(x_next));
+
+                    if (!isFinite(y) || !isFinite(y_next)) continue;
+
+                    // Numerical derivative
+                    const dy_dx = (y_next - y) / dx;
+
+                    // Surface area element: 2π * r * √(1 + (dr/dx)²) * dx
+                    const ds = Math.sqrt(1 + dy_dx * dy_dx);
+                    area += 2 * Math.PI * y * ds * dx;
+                } catch (error) {
+                    continue;
+                }
+            }
+
+            return area;
+        }
+
+        // Handle solid type changes
+        function updateInputVisibility() {
+            const solidType = document.getElementById('solid-type').value;
+            const inputGroups = [
+                'generic-inputs', 'sphere-inputs', 'cylinder-inputs',
+                'cone-inputs', 'truncated-cone-inputs', 'ellipsoid-inputs', 'gabriel-inputs'
+            ];
+
+            inputGroups.forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+
+            document.getElementById(solidType + '-inputs').classList.remove('hidden');
+
+            // Show/hide curve and solid checkboxes based on solid type
+            const curveCheckbox = document.getElementById('curve-checkbox');
+            const solidCheckbox = document.getElementById('solid-checkbox');
+
+            if (solidType === 'generic') {
+                curveCheckbox.style.display = 'flex';
+                solidCheckbox.style.display = 'flex';
+            } else {
+                curveCheckbox.style.display = 'none';
+                solidCheckbox.style.display = 'none';
+            }
+        }
+
+        // Generate and display solid
+        function generateSolid() {
+            const solidType = document.getElementById('solid-type').value;
+
+            // Clear previous solid and curve
+            if (solidMesh) {
+                scene.remove(solidMesh);
+                scene.remove(wireframeMesh);
+            }
+            if (curveMesh) {
+                scene.remove(curveMesh);
+            }
+
+            try {
+                let result;
+
+                switch (solidType) {
+                    case 'generic':
+                        result = handleGenericFunction();
+                        break;
+                    case 'sphere':
+                        result = handleSphere();
+                        break;
+                    case 'cylinder':
+                        result = handleCylinder();
+                        break;
+                    case 'cone':
+                        result = handleCone();
+                        break;
+                    case 'truncated-cone':
+                        result = handleTruncatedCone();
+                        break;
+                    case 'ellipsoid':
+                        result = handleEllipsoid();
+                        break;
+                    case 'gabriel':
+                        result = handleGabrielHorn();
+                        break;
+                    default:
+                        throw new Error('Tipo di solido non riconosciuto');
+                }
+
+                if (result && result.mesh) {
+                    solidMesh = result.mesh;
+                    wireframeMesh = result.wireframe;
+
+                    const showSolid = document.getElementById('show-solid').checked;
+                    if (showSolid) {
+                        scene.add(solidMesh);
+                        scene.add(wireframeMesh);
+                    }
+                }
+
+                // Add 2D curve for generic function
+                if (solidType === 'generic' && result && result.curve) {
+                    curveMesh = result.curve;
+                    const showCurve = document.getElementById('show-curve').checked;
+                    if (showCurve) {
+                        scene.add(curveMesh);
+                    }
+                } if (result && (result.volume !== undefined || result.area !== undefined)) {
+                    displayResults(result.volume, result.area, result.isParadox);
+                }
+
+                // Clear any previous error messages
+                clearErrorMessage();
+
+            } catch (error) {
+                console.error('Error generating solid:', error);
+                showErrorMessage(error.message);
+            }
+        }
+
+        function handleGenericFunction() {
+            const functionInput = document.getElementById('function-input').value;
+            const a = parseFloat(document.getElementById('interval-a').value);
+            const b = parseFloat(document.getElementById('interval-b').value);
+            const axis = document.getElementById('rotation-axis').value;
+            const resolution = parseInt(document.getElementById('resolution').value);
+            const numericalPrecision = parseInt(document.getElementById('numerical-precision').value);
+
+            if (!functionInput || isNaN(a) || isNaN(b) || a >= b) {
+                throw new Error('Inserisci una funzione valida e un intervallo [a,b] con a < b');
+            }
+
+            // Parse function with Math.js
+            let expr;
+            try {
+                expr = math.parse(functionInput);
+            } catch (error) {
+                throw new Error('Funzione non valida. Controlla la sintassi.');
+            }
+
+            const f = (x) => {
+                try {
+                    return expr.evaluate({ x: x });
+                } catch (error) {
+                    return NaN;
+                }
+            };
+
+            const solids = createSolidFromFunction(f, a, b, axis, resolution);
+            const curve = create2DCurve(f, a, b, axis, resolution);
+            const volume = calculateVolumeNumerical(f, a, b, axis, numericalPrecision);
+            const area = calculateSurfaceAreaNumerical(f, a, b, axis, numericalPrecision);
+
+            return { ...solids, curve, volume, area };
+        } function handleSphere() {
+            const r = parseFloat(document.getElementById('sphere-radius').value);
+            if (isNaN(r) || r <= 0) {
+                throw new Error('Il raggio deve essere un numero positivo');
+            }
+
+            const f = (x) => Math.sqrt(Math.max(0, r * r - x * x));
+            const solids = createSolidFromFunction(f, 0, r, 'x');
+
+            const volume = (4 / 3) * Math.PI * r * r * r;
+            const area = 4 * Math.PI * r * r;
+
+            return { ...solids, volume, area };
+        }
+
+        function handleCylinder() {
+            const r = parseFloat(document.getElementById('cylinder-radius').value);
+            const h = parseFloat(document.getElementById('cylinder-height').value);
+
+            if (isNaN(r) || r <= 0 || isNaN(h) || h <= 0) {
+                throw new Error('Raggio e altezza devono essere numeri positivi');
+            }
+
+            const f = (x) => r; // Constant function
+            const solids = createSolidFromFunction(f, 0, h, 'x');
+
+            const volume = Math.PI * r * r * h;
+            const area = 2 * Math.PI * r * h + 2 * Math.PI * r * r;
+
+            return { ...solids, volume, area };
+        }
+
+        function handleCone() {
+            const r = parseFloat(document.getElementById('cone-radius').value);
+            const h = parseFloat(document.getElementById('cone-height').value);
+
+            if (isNaN(r) || r <= 0 || isNaN(h) || h <= 0) {
+                throw new Error('Raggio e altezza devono essere numeri positivi');
+            }
+
+            const f = (x) => (r / h) * x;
+            const solids = createSolidFromFunction(f, 0, h, 'x');
+
+            const volume = (1 / 3) * Math.PI * r * r * h;
+            const apothem = Math.sqrt(r * r + h * h);
+            const area = Math.PI * r * r + Math.PI * r * apothem;
+
+            return { ...solids, volume, area };
+        }
+
+        function handleTruncatedCone() {
+            const R = parseFloat(document.getElementById('truncated-cone-r1').value);
+            const r = parseFloat(document.getElementById('truncated-cone-r2').value);
+            const h = parseFloat(document.getElementById('truncated-cone-height').value);
+
+            if (isNaN(R) || R <= 0 || isNaN(r) || r <= 0 || isNaN(h) || h <= 0) {
+                throw new Error('Tutti i parametri devono essere numeri positivi');
+            }
+
+            if (R <= r) {
+                throw new Error('Il raggio maggiore R deve essere maggiore del raggio minore r');
+            }
+
+            const f = (x) => R - ((R - r) / h) * x;
+            const solids = createSolidFromFunction(f, 0, h, 'x');
+
+            const volume = (1 / 3) * Math.PI * h * (R * R + R * r + r * r);
+            const apothem = Math.sqrt(h * h + (R - r) * (R - r));
+            const area = Math.PI * R * R + Math.PI * r * r + Math.PI * (R + r) * apothem;
+
+            return { ...solids, volume, area };
+        }
+
+        function handleEllipsoid() {
+            const a = parseFloat(document.getElementById('ellipsoid-a').value);
+            const b = parseFloat(document.getElementById('ellipsoid-b').value);
+
+            if (isNaN(a) || a <= 0 || isNaN(b) || b <= 0) {
+                throw new Error('I semiassi devono essere numeri positivi');
+            }
+
+            const f = (x) => b * Math.sqrt(Math.max(0, 1 - (x * x) / (a * a)));
+            const solids = createSolidFromFunction(f, 0, a, 'x');
+
+            const volume = (4 / 3) * Math.PI * a * b * b;
+            // Approximation for ellipsoid surface area (exact formula is complex)
+            const area = 4 * Math.PI * Math.pow((Math.pow(a * b, 1.6) + Math.pow(a * b, 1.6) + Math.pow(b * b, 1.6)) / 3, 1 / 1.6);
+
+            return { ...solids, volume, area };
+        }
+
+        function handleGabrielHorn() {
+            const f = (x) => 1 / x;
+            const solids = createSolidFromFunction(f, 1, 15, 'x'); // Limit to x=15 for visualization
+
+            const volume = Math.PI; // Exact: π
+            const area = Infinity; // Diverges to infinity
+
+            return { ...solids, volume, area, isParadox: true };
+        }
+
+        // Display results
+        function displayResults(volume, area, isParadox = false) {
+            const resultsSection = document.getElementById('results');
+            const volumeResult = document.getElementById('volume-result');
+            const areaResult = document.getElementById('area-result');
+
+            if (isParadox) {
+                volumeResult.textContent = `${volume.toFixed(4)} unità³ (FINITO!)`;
+                areaResult.textContent = `∞ (INFINITO!)`;
+                areaResult.style.color = '#dc2626';
+                volumeResult.style.color = '#059669';
+            } else {
+                volumeResult.textContent = `${volume.toFixed(4)} unità³`;
+                areaResult.textContent = `${area.toFixed(4)} unità²`;
+                volumeResult.style.color = 'var(--color-primary)';
+                areaResult.style.color = 'var(--color-primary)';
+            }
+
+            resultsSection.classList.remove('hidden');
+        }
+
+        // Error handling
+        function showErrorMessage(message) {
+            clearErrorMessage();
+
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+
+            const controlPanel = document.querySelector('.control-panel');
+            controlPanel.appendChild(errorDiv);
+        }
+
+        function clearErrorMessage() {
+            const existingError = document.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+        }
+
+        // Reset camera view
+        function resetView() {
+            camera.position.set(10, 8, 10);
+            camera.lookAt(0, 0, 0);
+            controls.reset();
+        }
+
+        // Modal handling
+        function setupModals() {
+            const modals = ['theory', 'syntax', 'formulas'];
+
+            modals.forEach(modalType => {
+                const button = document.getElementById(`${modalType}-modal`);
+                const modal = document.getElementById(`${modalType}-modal-content`);
+
+                if (!button || !modal) {
+                    console.error(`Modal elements not found for ${modalType}`);
+                    return;
+                }
+
+                const closeBtn = modal.querySelector('.close');
+
+                if (!closeBtn) {
+                    console.error(`Close button not found for ${modalType}`);
+                }
+
+                button.addEventListener('click', () => {
+                    console.log(`Opening ${modalType} modal`);
+                    modal.classList.add('show');
+                });
+
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', () => {
+                        modal.classList.remove('show');
+                    });
+                }
+
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('show');
+                    }
+                });
+            });
+
+            // Modal tabs
+            document.querySelectorAll('.modal-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const tabName = e.target.getAttribute('data-tab');
+                    const modal = e.target.closest('.modal');
+
+                    // Update active tab
+                    modal.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    // Update active content
+                    modal.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                    modal.querySelector(`#${tabName}`).classList.add('active');
+                });
+            });
+        }                    // Initialize application
+        document.addEventListener('DOMContentLoaded', () => {
+            initThreeJS();
+            setupModals();
+
+            // Event listeners
+            document.getElementById('solid-type').addEventListener('change', updateInputVisibility);
+            document.getElementById('draw-calculate').addEventListener('click', generateSolid);
+            document.getElementById('reset-view').addEventListener('click', resetView);
+
+            // Syntax help link
+            document.getElementById('syntax-help-link').addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('syntax-modal-content').classList.add('show');
+            });
+
+            // Fullscreen toggle
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+            const visualizationArea = document.querySelector('.visualization-area');
+            const fullscreenIcon = document.getElementById('fullscreen-icon');
+            const fullscreenText = document.getElementById('fullscreen-text');
+
+            function toggleFullscreen() {
+                const isFullscreen = visualizationArea.classList.contains('fullscreen');
+
+                if (isFullscreen) {
+                    // Exit fullscreen
+                    visualizationArea.classList.remove('fullscreen');
+                    fullscreenIcon.textContent = '⛶';
+                    fullscreenText.textContent = 'Schermo Intero';
+                } else {
+                    // Enter fullscreen
+                    visualizationArea.classList.add('fullscreen');
+                    fullscreenIcon.textContent = '✕';
+                    fullscreenText.textContent = 'Esci';
+                }
+
+                // Wait for CSS transition and force proper resize
+                setTimeout(() => {
+                    onWindowResize();
+                }, 400);
+            }
+
+            fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+            // Exit fullscreen with ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && visualizationArea.classList.contains('fullscreen')) {
+                    toggleFullscreen();
+                }
+            });
+
+            // Add window resize listener
+            window.addEventListener('resize', onWindowResize);
+
+            // Checkbox event listeners for curve and solid visibility
+            document.getElementById('show-curve').addEventListener('change', (e) => {
+                if (curveMesh) {
+                    curveMesh.visible = e.target.checked;
+                }
+            });
+
+            document.getElementById('show-solid').addEventListener('change', (e) => {
+                if (solidMesh) {
+                    solidMesh.visible = e.target.checked;
+                }
+                if (wireframeMesh) {
+                    wireframeMesh.visible = e.target.checked;
+                }
+            });
+
+            document.getElementById('show-grid').addEventListener('change', (e) => {
+                if (gridHelper) {
+                    gridHelper.visible = e.target.checked;
+                }
+            });
+
+            // Update resolution display
+            document.getElementById('resolution').addEventListener('input', (e) => {
+                document.getElementById('resolution-value').textContent = e.target.value;
+            });
+
+            // Update numerical precision display
+            document.getElementById('numerical-precision').addEventListener('input', (e) => {
+                document.getElementById('precision-value').textContent = e.target.value;
+            });
+
+            // Initialize with generic function visible
+            updateInputVisibility();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulatore Oscillatore Armonico Smorzato con Attrito</title>
+    <!-- Chart.js v4 da CDN per grafici interattivi -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: #333;
+        }
+
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        /* Layout a 3 colonne */
+        .three-column-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr 450px;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1200px) {
+            .three-column-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .column {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .column h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        /* Controlli */
+        .control-group {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+            font-size: 0.95em;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .control-group input[type="range"] {
+            flex: 1;
+            height: 8px;
+            border-radius: 5px;
+            background: #dee2e6;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .control-group input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: #764ba2;
+        }
+
+        .control-group input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .control-group input[type="number"] {
+            width: 100px;
+            padding: 6px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .control-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 0.95em;
+            background: white;
+            cursor: pointer;
+        }
+
+        /* Pulsanti */
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 0.95em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        /* Canvas animazione */
+        canvas#animation-canvas {
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            display: block;
+            width: 100%;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Valori istantanei */
+        .data-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .data-card {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-card h3 {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .data-card .value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .data-card .unit {
+            font-size: 0.85em;
+            color: #999;
+        }
+
+        /* Grafici */
+        .chart-wrapper {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .chart-wrapper h3 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .chart-wrapper canvas {
+            width: 100% !important;
+            height: 200px !important;
+        }
+
+        /* Tabella energia */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 0.9em;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .energy-total-row {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+
+        /* Sezioni didattiche */
+        .section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .instructions {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .instructions h3 {
+            color: #2196F3;
+            margin-bottom: 10px;
+        }
+
+        .instructions ul,
+        .questions ul,
+        .verification ul {
+            margin-left: 20px;
+        }
+
+        .instructions li,
+        .questions li,
+        .verification li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .case-study {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .case-study h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .verification {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .verification h3 {
+            color: #155724;
+            margin-bottom: 10px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 3% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .equation {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #667eea;
+            line-height: 1.8;
+        }
+
+        .equation-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-running {
+            background: #28a745;
+        }
+
+        .status-paused {
+            background: #ffc107;
+        }
+
+        .status-stopped {
+            background: #dc3545;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Classi per sezioni e modale */
+        .section-spacing {
+            margin-top: 25px;
+        }
+
+        .section-spacing-20 {
+            margin-top: 20px;
+        }
+
+        .modal-title {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .modal-section-title {
+            color: #667eea;
+            margin-top: 20px;
+        }
+
+        .modal-section-title-25 {
+            color: #667eea;
+            margin-top: 25px;
+        }
+
+        .modal-section-title-30 {
+            color: #667eea;
+            margin-top: 30px;
+        }
+
+        .modal-text {
+            line-height: 1.8;
+            color: #666;
+        }
+
+        .code-block {
+            display: block;
+            background: #f5f5f5;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <h1>🔬 Simulatore Oscillatore Armonico Smorzato con Attrito</h1>
+        <p class="subtitle">Simulazione interattiva con forza elastica, smorzamento viscoso e attrito radente</p>
+
+        <!-- LAYOUT A 3 COLONNE -->
+        <div class="three-column-layout">
+
+            <!-- COLONNA SINISTRA: CONTROLLI -->
+            <div class="column">
+                <h2>⚙️ Controlli</h2>
+
+                <div class="button-group">
+                    <button class="btn-success" id="start-stop-btn">▶️ Avvia</button>
+                    <button class="btn-danger" id="reset-btn">🔄 Reset</button>
+                    <button class="btn-primary" id="step-btn">⏭️ Step</button>
+                    <button class="btn-info" id="equations-btn">📐 Mostra Equazioni</button>
+                    <button class="btn-info" id="export-btn">💾 Esporta CSV</button>
+                </div>
+
+                <h2 class="section-spacing">Parametri del Sistema</h2>
+
+                <div class="control-group">
+                    <label for="k-slider">Costante elastica k (N/m)</label>
+                    <div class="input-row">
+                        <input type="range" id="k-slider" min="0.1" max="50" step="0.1" value="10">
+                        <input type="number" id="k-number" min="0.1" max="50" step="0.1" value="10"
+                            aria-label="Costante elastica k">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="m-slider">Massa m (kg)</label>
+                    <div class="input-row">
+                        <input type="range" id="m-slider" min="0.1" max="5" step="0.1" value="1">
+                        <input type="number" id="m-number" min="0.1" max="5" step="0.1" value="1" aria-label="Massa m">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="c-slider">Smorzamento viscoso c (Ns/m)</label>
+                    <div class="input-row">
+                        <input type="range" id="c-slider" min="0" max="5" step="0.1" value="0.5">
+                        <input type="number" id="c-number" min="0" max="5" step="0.1" value="0.5"
+                            aria-label="Smorzamento viscoso c">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="mu-s-slider">Attrito statico μₛ</label>
+                    <div class="input-row">
+                        <input type="range" id="mu-s-slider" min="0" max="1" step="0.01" value="0.3">
+                        <input type="number" id="mu-s-number" min="0" max="1" step="0.01" value="0.3"
+                            aria-label="Attrito statico μₛ">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="mu-k-slider">Attrito dinamico μₖ</label>
+                    <div class="input-row">
+                        <input type="range" id="mu-k-slider" min="0" max="1" step="0.01" value="0.2">
+                        <input type="number" id="mu-k-number" min="0" max="1" step="0.01" value="0.2"
+                            aria-label="Attrito dinamico μₖ">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="x0-slider">Posizione iniziale x₀ (m)</label>
+                    <div class="input-row">
+                        <input type="range" id="x0-slider" min="-5" max="5" step="0.1" value="3">
+                        <input type="number" id="x0-number" min="-5" max="5" step="0.1" value="3"
+                            aria-label="Posizione iniziale x₀">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="v0-slider">Velocità iniziale v₀ (m/s)</label>
+                    <div class="input-row">
+                        <input type="range" id="v0-slider" min="-10" max="10" step="0.1" value="0">
+                        <input type="number" id="v0-number" min="-10" max="10" step="0.1" value="0"
+                            aria-label="Velocità iniziale v₀">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="dt-select">Passo temporale Δt (s)</label>
+                    <select id="dt-select">
+                        <option value="0.001">0.001 s (massima precisione)</option>
+                        <option value="0.005">0.005 s</option>
+                        <option value="0.01" selected>0.01 s (raccomandato)</option>
+                        <option value="0.02">0.02 s</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- COLONNA CENTRALE: SIMULAZIONE -->
+            <div class="column">
+                <h2>🎬 Animazione <span class="status-indicator status-stopped" id="status-indicator"></span></h2>
+                <canvas id="animation-canvas" width="600" height="200"></canvas>
+
+                <h2 class="section-spacing-20">📊 Valori Istantanei</h2>
+                <div class="data-display">
+                    <div class="data-card">
+                        <h3>Tempo</h3>
+                        <div class="value" id="time-display">0.00</div>
+                        <div class="unit">s</div>
+                    </div>
+                    <div class="data-card">
+                        <h3>Posizione</h3>
+                        <div class="value" id="position-display">0.00</div>
+                        <div class="unit">m</div>
+                    </div>
+                    <div class="data-card">
+                        <h3>Velocità</h3>
+                        <div class="value" id="velocity-display">0.00</div>
+                        <div class="unit">m/s</div>
+                    </div>
+                    <div class="data-card">
+                        <h3>Accelerazione</h3>
+                        <div class="value" id="acceleration-display">0.00</div>
+                        <div class="unit">m/s²</div>
+                    </div>
+                </div>
+
+                <h2 class="section-spacing-20">⚡ Energia del Sistema</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tipo di Energia</th>
+                            <th>Valore (J)</th>
+                            <th>%</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Energia Cinetica</td>
+                            <td id="kinetic-energy">0.00</td>
+                            <td id="kinetic-percent">0%</td>
+                        </tr>
+                        <tr>
+                            <td>Energia Potenziale</td>
+                            <td id="potential-energy">0.00</td>
+                            <td id="potential-percent">0%</td>
+                        </tr>
+                        <tr class="energy-total-row">
+                            <td>Energia Totale</td>
+                            <td id="total-energy">0.00</td>
+                            <td>100%</td>
+                        </tr>
+                        <tr>
+                            <td>Energia Dissipata</td>
+                            <td id="dissipated-energy">0.00</td>
+                            <td id="dissipated-percent">0%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- COLONNA DESTRA: GRAFICI -->
+            <div class="column">
+                <h2>📈 Grafici</h2>
+
+                <div class="chart-wrapper">
+                    <h3>Posizione x(t)</h3>
+                    <canvas id="position-chart"></canvas>
+                </div>
+
+                <div class="chart-wrapper">
+                    <h3>Velocità v(t)</h3>
+                    <canvas id="velocity-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEZIONE DIDATTICA: ISTRUZIONI -->
+        <div class="instructions">
+            <h3>📖 Istruzioni per l'Uso</h3>
+            <p>Questa applicazione simula il moto di una massa su una guida orizzontale, soggetta a:</p>
+            <ul>
+                <li><strong>Forza elastica</strong> (molla): F = -kx</li>
+                <li><strong>Smorzamento viscoso</strong>: F = -cv</li>
+                <li><strong>Attrito radente</strong> (statico μₛ e dinamico μₖ)</li>
+            </ul>
+            <p><strong>Come usare:</strong></p>
+            <ul>
+                <li>Regola i parametri usando gli <strong>slider</strong> o digitando nei <strong>campi
+                        numerici</strong></li>
+                <li>Clicca <strong>"Avvia"</strong> per iniziare la simulazione (il pulsante diventerà "Pausa")</li>
+                <li>Usa <strong>"Step"</strong> (quando in pausa) per avanzare di un singolo passo temporale</li>
+                <li>Osserva i <strong>grafici</strong> che si aggiornano in tempo reale</li>
+                <li>Clicca <strong>"Mostra Equazioni"</strong> per vedere la fisica del sistema</li>
+                <li><strong>"Esporta CSV"</strong> per salvare i dati e analizzarli esternamente</li>
+            </ul>
+            <p><strong>Nota:</strong> μₖ (attrito dinamico) deve essere ≤ μₛ (attrito statico). L'applicazione corregge
+                automaticamente valori non fisici.</p>
+        </div>
+
+        <!-- SEZIONE DIDATTICA: GUIDA ALL'ESPLORAZIONE -->
+        <div class="section">
+            <h2>🔍 Guida all'Esplorazione</h2>
+
+            <div class="case-study">
+                <h4>Caso 1: Oscillatore Ideale</h4>
+                <p><strong>Configurazione:</strong> Imposta c = 0, μₛ = 0, μₖ = 0</p>
+                <p><strong>Domande:</strong></p>
+                <ul>
+                    <li>Cosa osservi riguardo all'Energia Meccanica Totale?</li>
+                    <li>Come varia il periodo di oscillazione se raddoppi la massa m?</li>
+                    <li>E se raddoppi la costante elastica k?</li>
+                    <li>L'energia si conserva perfettamente? (Nota: piccole deviazioni sono dovute a errori numerici)
+                    </li>
+                </ul>
+            </div>
+
+            <div class="case-study">
+                <h4>Caso 2: Smorzamento Viscoso</h4>
+                <p><strong>Configurazione:</strong> Imposta μₛ = 0, μₖ = 0, poi aumenta gradualmente c (es. 0.5, 1.0,
+                    2.0)</p>
+                <p><strong>Domande:</strong></p>
+                <ul>
+                    <li>Come cambia l'ampiezza delle oscillazioni nel tempo?</li>
+                    <li>Cosa succede all'energia totale? Dove va l'energia "persa"?</li>
+                    <li>Esiste un valore di c per cui il sistema torna a zero senza oscillare? (smorzamento critico)
+                    </li>
+                    <li>Il sistema si ferma esattamente a x = 0?</li>
+                </ul>
+            </div>
+
+            <div class="case-study">
+                <h4>Caso 3: Attrito Radente</h4>
+                <p><strong>Configurazione:</strong> Imposta c = 0, poi usa μₛ = 0.3 e μₖ = 0.2</p>
+                <p><strong>Domande:</strong></p>
+                <ul>
+                    <li>Il blocco si ferma? Se sì, dopo quanto tempo?</li>
+                    <li>Dove si ferma il blocco? È sempre a x = 0?</li>
+                    <li>Qual è la differenza tra attrito statico e dinamico?</li>
+                    <li>Cosa succede se aumenti molto μₛ (es. 0.8)? Il blocco oscilla ancora?</li>
+                    <li>Confronta il grafico dell'energia con il Caso 2: la dissipazione è uguale?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SEZIONE DIDATTICA: VERIFICA -->
+        <div class="verification">
+            <h3>✅ Verifica (Casi Limite)</h3>
+            <p><strong>Testa questi scenari per verificare la correttezza fisica della simulazione:</strong></p>
+            <ul>
+                <li><strong>Conservazione energia:</strong> c = 0, μₛ = 0, μₖ = 0 → L'energia totale deve rimanere
+                    costante (tolleranza ~0.1%)</li>
+                <li><strong>Solo attrito dinamico:</strong> c = 0, μₖ > 0 → Il blocco si ferma dopo poche oscillazioni
+                </li>
+                <li><strong>Solo smorzamento:</strong> c > 0, μₛ = 0, μₖ = 0 → Oscillazioni che decadono
+                    esponenzialmente</li>
+                <li><strong>Attrito statico forte:</strong> μₛ = 0.8 → Il blocco potrebbe non muoversi affatto se x₀ è
+                    piccolo</li>
+                <li><strong>Convergenza Δt:</strong> Cosa succede alla simulazione se usi Δt molto grande (es. 0.1 s)
+                    con k molto alta (es. 50 N/m)? Prova Δt = 0.001 s per confronto</li>
+                <li><strong>Molla rigida:</strong> k = 50 N/m → Oscillazioni molto rapide, serve Δt piccolo</li>
+                <li><strong>Posizione di arresto:</strong> Con attrito, il blocco può fermarsi a x ≠ 0 se la forza
+                    elastica residua è minore di μₛ·mg</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- MODAL PER EQUAZIONI -->
+    <div id="equations-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="modal-title">📐 Trattazione dell'Oscillatore Smorzato</h2>
+
+            <h3 class="modal-section-title">1. Equazione Differenziale del Moto</h3>
+            <div class="equation">
+                <div class="equation-title">Equazione del Moto Completa</div>
+                <strong>Seconda legge di Newton:</strong><br>
+                m·a = Σ F = F_elastica + F_smorzamento + F_attrito<br><br>
+
+                <strong>In forma esplicita:</strong><br>
+                m · d²x/dt² = -k·x - c·(dx/dt) + F_attrito<br><br>
+
+                <strong>Forze in gioco:</strong><br>
+                • <strong>Forza elastica</strong> (Legge di Hooke): F_elastica = -k·x<br>
+                &nbsp;&nbsp;→ Proporzionale allo spostamento, sempre diretta verso l'equilibrio (x=0)<br>
+                • <strong>Forza di smorzamento viscoso</strong>: F_smorzamento = -c·v = -c·(dx/dt)<br>
+                &nbsp;&nbsp;→ Proporzionale alla velocità, sempre opposta al moto (dissipativa)<br>
+                • <strong>Forza di attrito radente</strong>: F_attrito (vedi sezione 2)<br>
+                &nbsp;&nbsp;→ Dipende dalla condizione di moto (statico/dinamico)
+            </div>
+
+            <h3 class="modal-section-title-25">2. Modelli di Attrito</h3>
+            <div class="equation">
+                <div class="equation-title">2.1 Attrito Statico (μₛ)</div>
+                <strong>Definizione:</strong> L'attrito statico agisce quando la massa è ferma (v = 0) e previene il
+                moto fino a che le forze motrici non superano una soglia massima.<br><br>
+
+                <strong>Forza massima di attrito statico:</strong><br>
+                F_s_max = μₛ · N = μₛ · m · g<br><br>
+
+                <strong>Comportamento:</strong><br>
+                • Se |F_motrice| ≤ F_s_max → F_attrito = -F_motrice (bilancia perfettamente)<br>
+                &nbsp;&nbsp;→ La massa rimane ferma: a = 0, v = 0<br>
+                • Se |F_motrice| > F_s_max → L'attrito statico viene "vinto"<br>
+                &nbsp;&nbsp;→ La massa inizia a muoversi, si passa all'attrito dinamico<br><br>
+
+                <strong>Valore tipico:</strong> μₛ = 0.3 (es. legno su legno)
+            </div>
+
+            <div class="equation">
+                <div class="equation-title">2.2 Attrito Dinamico (μₖ)</div>
+                <strong>Definizione:</strong> L'attrito dinamico (o cinetico) agisce quando la massa è in movimento (v ≠
+                0).<br><br>
+
+                <strong>Forza di attrito dinamico:</strong><br>
+                F_k = μₖ · N = μₖ · m · g<br>
+                F_attrito = -F_k · sign(v) = -μₖ · m · g · sign(v)<br><br>
+
+                <strong>Caratteristiche:</strong><br>
+                • Modulo costante: |F_attrito| = μₖ · m · g<br>
+                • Direzione: sempre opposta alla velocità<br>
+                • Dissipa energia meccanica (la converte in calore)<br><br>
+
+                <strong>Valore tipico:</strong> μₖ = 0.2 (generalmente μₖ < μₛ)<br><br>
+
+                    <strong>Relazione tra μₛ e μₖ:</strong><br>
+                    In natura, sempre μₖ ≤ μₛ (vincolo fisico)<br>
+                    • μₛ > μₖ: La forza per mantenere il moto è minore di quella per iniziarlo<br>
+                    • μₖ/μₛ ≈ 0.6-0.8 per molti materiali comuni<br>
+                    • In questa simulazione: il vincolo μₖ ≤ μₛ è automaticamente enforced
+            </div>
+
+            <div class="equation">
+                <div class="equation-title">2.3 Smorzamento Viscoso (c)</div>
+                <strong>Definizione:</strong> Modella forze dissipative proporzionali alla velocità, come la resistenza
+                dell'aria o fluidi viscosi.<br><br>
+
+                <strong>Legge:</strong><br>
+                F_smorzamento = -c · v<br><br>
+
+                <strong>Differenze con l'attrito radente:</strong><br>
+                • Attrito radente: modulo costante, dipende da μ e peso<br>
+                • Smorzamento viscoso: modulo variabile, proporzionale a v<br>
+                • Attrito: discontinuo (statico/dinamico)<br>
+                • Smorzamento: continuo e derivabile<br><br>
+
+                <strong>Fattore di smorzamento:</strong> ζ = c / (2√(km))<br>
+                • ζ < 1: sottosmorzato (oscillazioni smorzate)<br>
+                    • ζ = 1: critico (ritorno senza oscillazioni, tempo minimo)<br>
+                    • ζ > 1: sovrasmorzato (ritorno lento senza oscillazioni)
+            </div>
+
+            <h3 class="modal-section-title-25">3. Sistema di Equazioni Implementato</h3>
+            <div class="equation">
+                <div class="equation-title">Algoritmo di Calcolo dell'Accelerazione</div>
+                <strong>Input:</strong> x(t), v(t) al tempo t<br>
+                <strong>Output:</strong> a(t) = d²x/dt²<br><br>
+
+                <strong>Pseudocodice:</strong><br>
+                <code class="code-block">
+                FUNZIONE acceleration(x, v):<br>
+                &nbsp;&nbsp;// Forze sempre presenti<br>
+                &nbsp;&nbsp;F_molla = -k · x<br>
+                &nbsp;&nbsp;F_smorzamento = -c · v<br>
+                &nbsp;&nbsp;F_motrice = F_molla + F_smorzamento<br>
+                &nbsp;&nbsp;<br>
+                &nbsp;&nbsp;// Determina attrito in base allo stato<br>
+                &nbsp;&nbsp;SE |v| > soglia_velocità (es. 1e-6 m/s):<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;// Massa in movimento → attrito dinamico<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;F_attrito = -μₖ · m · g · sign(v)<br>
+                &nbsp;&nbsp;ALTRIMENTI:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;// Massa ferma → verifica attrito statico<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;F_s_max = μₛ · m · g<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;SE |F_motrice| ≤ F_s_max:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Attrito statico bilancia le forze<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F_attrito = -F_motrice<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RITORNA 0  // a = 0, massa rimane ferma<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;ALTRIMENTI:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Attrito statico superato → passa a dinamico<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F_attrito = -μₖ · m · g · sign(F_motrice)<br>
+                &nbsp;&nbsp;<br>
+                &nbsp;&nbsp;// Calcola accelerazione totale<br>
+                &nbsp;&nbsp;F_totale = F_molla + F_smorzamento + F_attrito<br>
+                &nbsp;&nbsp;RITORNA F_totale / m
+                </code>
+            </div>
+
+            <h3 class="modal-section-title-25">4. Metodo Numerico: Eulero-Cromer</h3>
+            <div class="equation">
+                <div class="equation-title">Algoritmo di Integrazione Semi-Implicito</div>
+                <strong>Perché Eulero-Cromer invece di Eulero standard o RK4?</strong><br>
+                • <strong>Eulero standard:</strong> instabile per oscillatori, accumula errore in energia<br>
+                • <strong>Runge-Kutta 4 (RK4):</strong> accurato ma costoso, non simplettico<br>
+                • <strong>Eulero-Cromer:</strong> simplettico → conserva l'energia a lungo termine per
+                oscillatori<br><br>
+
+                <strong>Schema di integrazione (ad ogni passo Δt):</strong><br>
+                <code class="code-block">
+                // 1. Calcola accelerazione allo stato corrente<br>
+                a(t) = acceleration(x(t), v(t))<br>
+                <br>
+                // 2. Aggiorna velocità (schema esplicito)<br>
+                v(t+Δt) = v(t) + a(t) · Δt<br>
+                <br>
+                // 3. Aggiorna posizione usando la NUOVA velocità (schema implicito)<br>
+                x(t+Δt) = x(t) + v(t+Δt) · Δt  ← Questo rende il metodo simplettico<br>
+                <br>
+                // 4. Incrementa tempo<br>
+                t = t + Δt
+                </code>
+                <br>
+
+                <strong>Proprietà del metodo:</strong><br>
+                • <strong>Simplettico:</strong> conserva l'energia media nei sistemi Hamiltoniani<br>
+                • <strong>Stabile:</strong> l'errore in energia non diverge nel tempo<br>
+                • <strong>Efficiente:</strong> richiede solo 1 valutazione di a(t) per step<br>
+                • <strong>Ordine 1:</strong> errore locale O(Δt²), globale O(Δt)<br><br>
+
+                <strong>Confronto energetico (oscillatore ideale):</strong><br>
+                • Eulero standard: E(t) cresce linearmente → instabile<br>
+                • Eulero-Cromer: E(t) oscilla attorno a E₀ con ampiezza O(Δt) → stabile<br>
+                • RK4: E(t) decresce lentamente O(Δt⁴) ma non è simplettico
+            </div>
+
+            <h3 class="modal-section-title-25">5. Condizioni di Arresto Automatico</h3>
+            <div class="equation">
+                <div class="equation-title">Prevenzione del Rumore Numerico</div>
+                <strong>Problema:</strong> Quando il sistema è quasi fermo, gli errori numerici possono generare
+                oscillazioni spurie nei grafici di v(t).<br><br>
+
+                <strong>Soluzione:</strong> Soglie di arresto automatico<br>
+                <code class="code-block">
+                SOGLIE:<br>
+                &nbsp;&nbsp;vel_threshold = 0.0001 m/s  (0.1 mm/s)<br>
+                &nbsp;&nbsp;acc_threshold = 0.0001 m/s²<br>
+                <br>
+                CONDIZIONE DI ARRESTO:<br>
+                &nbsp;&nbsp;SE |v| < vel_threshold E<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;(|a| < acc_threshold O |F_motrice| ≤ F_s_max):<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;// Sistema effettivamente fermo<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;v = 0  (imposta velocità esattamente a zero)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;FERMA simulazione<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;CAMBIA stato a "Fermato"
+                </code>
+                <br>
+
+                <strong>Logica:</strong><br>
+                • <strong>|v| < 0.0001 m/s:</strong> velocità trascurabile<br>
+                        • <strong>|a| < 0.0001 m/s²:</strong> sistema in equilibrio (tutte le forze bilanciate)<br>
+                                • <strong>|F_motrice| ≤ F_s_max:</strong> attrito statico può tenere ferma la
+                                massa<br><br>
+
+                                <strong>Esempio fisico:</strong><br>
+                                Massa ferma a x = 0.085 m con μₛ = 0.3, m = 1 kg, k = 10 N/m:<br>
+                                • F_molla = -10 · 0.085 = -0.85 N<br>
+                                • F_s_max = 0.3 · 1 · 9.81 = 2.94 N<br>
+                                • |F_molla| < F_s_max → attrito statico blocca la massa<br>
+                                    • Simulazione si ferma automaticamente, evitando rumore<br><br>
+
+                                    <strong>Vantaggi:</strong><br>
+                                    • Grafici puliti e realistici<br>
+                                    • Comportamento fisicamente corretto<br>
+                                    • Evita simulazioni inutilmente lunghe quando E_tot ≈ 0
+            </div>
+
+            <h3 class="modal-section-title-25">6. Energie del Sistema</h3>
+            <div class="equation">
+                <div class="equation-title">Bilancio Energetico</div>
+                <strong>Energia Cinetica:</strong> E_k = ½·m·v²<br>
+                <strong>Energia Potenziale Elastica:</strong> E_p = ½·k·x²<br>
+                <strong>Energia Meccanica Totale:</strong> E_tot = E_k + E_p<br>
+                <strong>Energia Dissipata:</strong> E_diss = E_iniziale - E_tot<br><br>
+
+                <strong>Conservazione:</strong><br>
+                • Caso ideale (c=0, μₛ=0, μₖ=0): E_tot ≈ costante (piccole deviazioni da errori O(Δt))<br>
+                • Con smorzamento viscoso: dE_tot/dt = -c·v² (dissipazione continua)<br>
+                • Con attrito radente: ΔE = -μₖ·m·g·Δs ogni volta che la massa si muove<br>
+                • L'energia dissipata diventa calore (non modellato esplicitamente)
+            </div>
+
+            <h3 class="modal-section-title-25">7. Parametri Caratteristici</h3>
+            <div class="equation">
+                <div class="equation-title">Grandezze Fondamentali</div>
+                <strong>Pulsazione naturale:</strong> ω₀ = √(k/m) rad/s<br>
+                <strong>Periodo (non smorzato):</strong> T₀ = 2π/ω₀ = 2π√(m/k) s<br>
+                <strong>Frequenza:</strong> f₀ = 1/T₀ = (1/2π)√(k/m) Hz<br><br>
+
+                <strong>Fattore di smorzamento:</strong> ζ = c / (2√(km)) = c / (2mω₀)<br>
+                &nbsp;&nbsp;• ζ < 1: sottosmorzato (ω_d=ω₀√(1-ζ²), oscillazioni smorzate)<br>
+                    &nbsp;&nbsp;• ζ = 1: critico (c_critico = 2√(km))<br>
+                    &nbsp;&nbsp;• ζ > 1: sovrasmorzato (ritorno esponenziale, nessuna oscillazione)<br><br>
+
+                    <strong>Costanti fisiche:</strong><br>
+                    Accelerazione di gravità: g = 9.81 m/s²
+            </div>
+
+            <h3 class="modal-section-title-30">📝 Note Finali</h3>
+            <p class="modal-text">
+                <strong>Stabilità numerica:</strong> La scelta di Δt è cruciale. Per molle rigide (k alto) o smorzamenti
+                elevati, usare Δt ≤ 0.01 s. Il metodo Eulero-Cromer garantisce che l'errore in energia non cresca
+                indefinitamente, ma passi temporali troppo grandi possono comunque causare instabilità.<br><br>
+
+                <strong>Realismo fisico:</strong> Il modello di attrito implementato cattura la distinzione
+                statico/dinamico e la possibilità che la massa si fermi a x ≠ 0. Questo è fondamentale per rappresentare
+                correttamente sistemi reali con attriti asciutti.<br><br>
+
+                <strong>Limitazioni:</strong> Il modello assume:<br>
+                • Molla ideale (lineare, senza massa)<br>
+                • Attrito di Coulomb (indipendente dalla velocità, quando v ≠ 0)<br>
+                • Smorzamento viscoso lineare<br>
+                • Moto unidimensionale su superficie orizzontale<br>
+                • Nessuna deformazione permanente<br><br>
+
+                <strong>Applicazioni didattiche:</strong> Questa simulazione è ideale per esplorare:<br>
+                • Differenze tra attrito statico/dinamico e smorzamento viscoso<br>
+                • Comportamento energetico di sistemi dissipativi<br>
+                • Effetti del passo temporale sulla precisione numerica<br>
+                • Regimi di smorzamento (sotto/critico/sovra-smorzato)<br>
+                • Posizioni di arresto non banali (x ≠ 0) con attrito
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // VARIABILI GLOBALI E INIZIALIZZAZIONE
+        // ============================================
+
+        // Parametri del sistema fisico
+        let k = 10;      // Costante elastica (N/m)
+        let m = 1;       // Massa (kg)
+        let c = 0.5;     // Coefficiente di smorzamento viscoso (Ns/m)
+        let mu_s = 0.3;  // Coefficiente di attrito statico
+        let mu_k = 0.2;  // Coefficiente di attrito dinamico
+        let x0 = 3;      // Posizione iniziale (m)
+        let v0 = 0;      // Velocità iniziale (m/s)
+        let dt = 0.01;   // Passo temporale (s)
+
+        const g = 9.81; // Accelerazione di gravità (m/s²)
+
+        // Variabili di stato della simulazione
+        let x = x0;    // Posizione attuale (m)
+        let v = v0;    // Velocità attuale (m/s)
+        let t = 0;     // Tempo attuale (s)
+        let isRunning = false;  // Stato della simulazione
+        let animationId = null; // ID per cancellare l'animazione
+        let energyInitial = 0;  // Energia iniziale del sistema
+
+        // Riferimenti DOM
+        const canvas = document.getElementById('animation-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Oggetti Chart.js
+        let positionChart = null;
+        let velocityChart = null;
+
+        // ============================================
+        // INIZIALIZZAZIONE CHART.JS
+        // ============================================
+
+        function initCharts() {
+            // Configurazione comune
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Tempo (s)',
+                            font: { size: 11 }
+                        },
+                        ticks: { font: { size: 10 } }
+                    },
+                    y: {
+                        ticks: { font: { size: 10 } }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            };
+
+            // Grafico Posizione
+            const posCtx = document.getElementById('position-chart').getContext('2d');
+            positionChart = new Chart(posCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Posizione (m)',
+                        data: [],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        ...commonOptions.scales,
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Posizione (m)',
+                                font: { size: 11 }
+                            },
+                            ticks: { font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+
+            // Grafico Velocità
+            const velCtx = document.getElementById('velocity-chart').getContext('2d');
+            velocityChart = new Chart(velCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Velocità (m/s)',
+                        data: [],
+                        borderColor: '#28a745',
+                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        ...commonOptions.scales,
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Velocità (m/s)',
+                                font: { size: 11 }
+                            },
+                            ticks: { font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ============================================
+        // GESTIONE SINCRONIZZAZIONE CONTROLLI
+        // ============================================
+
+        // Funzione generica per sincronizzare slider e number input
+        function syncInputs(sliderId, numberId, updateFn) {
+            const slider = document.getElementById(sliderId);
+            const numberInput = document.getElementById(numberId);
+
+            slider.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                numberInput.value = value;
+                updateFn(value);
+            });
+
+            numberInput.addEventListener('input', (e) => {
+                let value = parseFloat(e.target.value);
+                // Limita ai bounds dello slider
+                const min = parseFloat(slider.min);
+                const max = parseFloat(slider.max);
+                value = Math.max(min, Math.min(max, value));
+                slider.value = value;
+                numberInput.value = value;
+                updateFn(value);
+            });
+        }
+
+        // Inizializza sincronizzazioni
+        syncInputs('k-slider', 'k-number', (val) => k = val);
+        syncInputs('m-slider', 'm-number', (val) => m = val);
+        syncInputs('c-slider', 'c-number', (val) => c = val);
+        syncInputs('mu-s-slider', 'mu-s-number', (val) => {
+            mu_s = val;
+            // Valida: μ_k deve essere ≤ μ_s
+            if (mu_k > mu_s) {
+                mu_k = mu_s;
+                document.getElementById('mu-k-slider').value = mu_k;
+                document.getElementById('mu-k-number').value = mu_k;
+            }
+        });
+        syncInputs('mu-k-slider', 'mu-k-number', (val) => {
+            // Valida: μ_k deve essere ≤ μ_s
+            if (val > mu_s) {
+                val = mu_s;
+                document.getElementById('mu-k-slider').value = val;
+                document.getElementById('mu-k-number').value = val;
+            }
+            mu_k = val;
+        });
+        syncInputs('x0-slider', 'x0-number', (val) => x0 = val);
+        syncInputs('v0-slider', 'v0-number', (val) => v0 = val);
+
+        // Passo temporale (select)
+        document.getElementById('dt-select').addEventListener('change', (e) => {
+            dt = parseFloat(e.target.value);
+        });
+
+        // ============================================
+        // GESTIONE PULSANTI
+        // ============================================
+
+        const startStopBtn = document.getElementById('start-stop-btn');
+
+        startStopBtn.addEventListener('click', () => {
+            if (!isRunning) {
+                isRunning = true;
+                startStopBtn.textContent = '⏸️ Pausa';
+                startStopBtn.className = 'btn-primary';
+                updateStatusIndicator('running');
+                animate();
+            } else {
+                isRunning = false;
+                startStopBtn.textContent = '▶️ Avvia';
+                startStopBtn.className = 'btn-success';
+                updateStatusIndicator('paused');
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+            }
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            resetSimulation();
+        });
+
+        document.getElementById('step-btn').addEventListener('click', () => {
+            if (!isRunning) {
+                step();
+                updateDisplay();
+                drawAnimation();
+                positionChart.update('none');
+                velocityChart.update('none');
+            }
+        });
+
+        document.getElementById('equations-btn').addEventListener('click', () => {
+            document.getElementById('equations-modal').style.display = 'block';
+        });
+
+        document.getElementById('export-btn').addEventListener('click', () => {
+            exportToCSV();
+        });
+
+        // Chiudi modal
+        document.querySelector('.close').addEventListener('click', () => {
+            document.getElementById('equations-modal').style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('equations-modal');
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // ============================================
+        // FUNZIONI FISICHE CORE
+        // ============================================
+
+        /**
+         * Calcola l'accelerazione secondo: a = (F_totale) / m
+         * Gestisce attrito statico e dinamico
+         */
+        function acceleration(x_curr, v_curr) {
+            const velThreshold = 1e-4;  // Soglia per considerare v = 0
+
+            // Forze motrici (senza attrito)
+            const F_spring = -k * x_curr;
+            const F_damping = -c * v_curr;
+            const F_motrice = F_spring + F_damping;
+
+            // Forze di attrito
+            const F_s_max = mu_s * m * g;  // Attrito statico massimo
+            const F_k = mu_k * m * g;      // Attrito dinamico
+
+            let F_attrito = 0;
+
+            if (Math.abs(v_curr) > velThreshold) {
+                // Massa in movimento: attrito dinamico
+                F_attrito = -F_k * Math.sign(v_curr);
+            } else {
+                // Massa ferma: attrito statico
+                if (Math.abs(F_motrice) < F_s_max) {
+                    // Attrito statico bilancia le forze
+                    F_attrito = -F_motrice;
+                    return 0;  // Massa rimane ferma
+                } else {
+                    // Attrito statico insufficiente: massa inizia a muoversi
+                    F_attrito = -F_k * Math.sign(F_motrice);
+                }
+            }
+
+            // Accelerazione totale
+            const F_totale = F_spring + F_damping + F_attrito;
+            return F_totale / m;
+        }
+
+        /**
+         * Esegue un passo di integrazione con metodo Eulero-Cromer
+         * 1. Calcola a(t)
+         * 2. Aggiorna v: v_new = v + a·dt
+         * 3. Aggiorna x con v_new: x_new = x + v_new·dt
+         */
+        function step() {
+            // Calcola accelerazione al tempo t
+            const a = acceleration(x, v);
+
+            // Aggiorna velocità (metodo semi-implicito)
+            v = v + a * dt;
+
+            // Aggiorna posizione usando la NUOVA velocità
+            x = x + v * dt;
+
+            // Incrementa tempo
+            t += dt;
+
+            // Aggiorna grafici (limitando il numero di punti)
+            const maxPoints = 500;
+            if (positionChart.data.labels.length >= maxPoints) {
+                positionChart.data.labels.shift();
+                positionChart.data.datasets[0].data.shift();
+                velocityChart.data.labels.shift();
+                velocityChart.data.datasets[0].data.shift();
+            }
+
+            positionChart.data.labels.push(t.toFixed(2));
+            positionChart.data.datasets[0].data.push(x);
+            velocityChart.data.labels.push(t.toFixed(2));
+            velocityChart.data.datasets[0].data.push(v);
+
+            // Condizione di arresto automatico per evitare rumore numerico
+            // quando il sistema è praticamente fermo
+            const velThreshold = 0.0001;  // Soglia velocità (m/s) - ridotta per maggiore precisione
+            const accThreshold = 0.0001;  // Soglia accelerazione (m/s²) - ridotta per maggiore precisione
+
+            // Calcola la forza motrice (senza attrito)
+            const F_spring = -k * x;
+            const F_damping = -c * v;
+            const F_motrice = F_spring + F_damping;
+            const F_s_max = mu_s * m * g;
+
+            // Il sistema è fermo se:
+            // 1. Velocità praticamente nulla
+            // 2. E (Accelerazione quasi zero O attrito statico bilancia le forze)
+            const isStopped = Math.abs(v) < velThreshold &&
+                (Math.abs(a) < accThreshold || Math.abs(F_motrice) <= F_s_max);
+
+            if (isStopped) {
+                // Sistema praticamente fermo: ferma la simulazione
+                if (isRunning) {
+                    isRunning = false;
+                    startStopBtn.textContent = '▶️ Avvia';
+                    startStopBtn.className = 'btn-success';
+                    updateStatusIndicator('stopped');
+                    if (animationId) {
+                        cancelAnimationFrame(animationId);
+                    }
+                }
+                // Imposta velocità esattamente a zero per evitare drift
+                v = 0;
+            }
+        }
+
+        /**
+         * Calcola energia cinetica
+         */
+        function kineticEnergy() {
+            return 0.5 * m * v * v;
+        }
+
+        /**
+         * Calcola energia potenziale elastica
+         */
+        function potentialEnergy() {
+            return 0.5 * k * x * x;
+        }
+
+        /**
+         * Calcola energia totale
+         */
+        function totalEnergy() {
+            return kineticEnergy() + potentialEnergy();
+        }
+
+        // ============================================
+        // FUNZIONI DI VISUALIZZAZIONE
+        // ============================================
+
+        /**
+         * Disegna l'animazione della massa sul canvas
+         */
+        function drawAnimation() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const centerY = canvas.height / 2;
+            const scale = 50;  // pixel per metro
+            const cubeSize = 40;
+            const wallX = 50;
+            const equilibriumX = canvas.width / 2;
+
+            const cubeX = equilibriumX + x * scale;
+
+            // Guida orizzontale
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(wallX, centerY + cubeSize / 2);
+            ctx.lineTo(canvas.width - 50, centerY + cubeSize / 2);
+            ctx.stroke();
+
+            // Pattern guida
+            ctx.strokeStyle = '#999';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 15; i++) {
+                const xPos = wallX + i * 40;
+                ctx.beginPath();
+                ctx.moveTo(xPos, centerY + cubeSize / 2);
+                ctx.lineTo(xPos + 20, centerY + cubeSize / 2 + 8);
+                ctx.stroke();
+            }
+
+            // Parete fissa
+            ctx.fillStyle = '#666';
+            ctx.fillRect(wallX - 10, centerY - 60, 10, 120);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 6; i++) {
+                ctx.beginPath();
+                ctx.moveTo(wallX - 10, centerY - 60 + i * 24);
+                ctx.lineTo(wallX - 20, centerY - 48 + i * 24);
+                ctx.stroke();
+            }
+
+            // Molla
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(wallX, centerY);
+
+            const numCoils = 12;
+            const springLength = cubeX - cubeSize / 2 - wallX;
+            const coilWidth = 12;
+
+            for (let i = 1; i <= numCoils; i++) {
+                const xPos = wallX + (springLength / numCoils) * i;
+                const yPos = centerY + (i % 2 === 0 ? coilWidth : -coilWidth);
+                ctx.lineTo(xPos, yPos);
+            }
+            ctx.lineTo(cubeX - cubeSize / 2, centerY);
+            ctx.stroke();
+
+            // Cubo (massa)
+            const cubeTop = centerY - cubeSize / 2;
+            const cubeLeft = cubeX - cubeSize / 2;
+
+            ctx.fillStyle = '#764ba2';
+            ctx.fillRect(cubeLeft, cubeTop, cubeSize, cubeSize);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(cubeLeft, cubeTop, cubeSize, cubeSize);
+
+            // Posizione equilibrio
+            ctx.strokeStyle = '#28a745';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(equilibriumX, centerY - 60);
+            ctx.lineTo(equilibriumX, centerY + 50);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = '#28a745';
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('x = 0', equilibriumX, centerY - 65);
+
+            // Posizione attuale
+            ctx.fillStyle = '#333';
+            ctx.font = '13px Arial';
+            ctx.fillText(`x = ${x.toFixed(2)} m`, cubeX, centerY + 70);
+        }
+
+        /**
+         * Aggiorna tutti i display numerici
+         */
+        function updateDisplay() {
+            document.getElementById('time-display').textContent = t.toFixed(2);
+            document.getElementById('position-display').textContent = x.toFixed(3);
+            document.getElementById('velocity-display').textContent = v.toFixed(3);
+            document.getElementById('acceleration-display').textContent = acceleration(x, v).toFixed(3);
+
+            const Ek = kineticEnergy();
+            const Ep = potentialEnergy();
+            const Etot = totalEnergy();
+            const Ediss = energyInitial - Etot;
+
+            document.getElementById('kinetic-energy').textContent = Ek.toFixed(4);
+            document.getElementById('potential-energy').textContent = Ep.toFixed(4);
+            document.getElementById('total-energy').textContent = Etot.toFixed(4);
+            document.getElementById('dissipated-energy').textContent = Ediss.toFixed(4);
+
+            if (Etot > 0.0001) {
+                document.getElementById('kinetic-percent').textContent = ((Ek / Etot) * 100).toFixed(1) + '%';
+                document.getElementById('potential-percent').textContent = ((Ep / Etot) * 100).toFixed(1) + '%';
+            }
+
+            if (energyInitial > 0.0001) {
+                document.getElementById('dissipated-percent').textContent = ((Ediss / energyInitial) * 100).toFixed(1) + '%';
+            }
+        }
+
+        /**
+         * Aggiorna indicatore di stato
+         */
+        function updateStatusIndicator(status) {
+            const indicator = document.getElementById('status-indicator');
+            indicator.className = 'status-indicator';
+
+            if (status === 'running') {
+                indicator.classList.add('status-running');
+            } else if (status === 'paused') {
+                indicator.classList.add('status-paused');
+            } else {
+                indicator.classList.add('status-stopped');
+            }
+        }
+
+        /**
+         * Resetta la simulazione
+         */
+        function resetSimulation() {
+            isRunning = false;
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+
+            startStopBtn.textContent = '▶️ Avvia';
+            startStopBtn.className = 'btn-success';
+            updateStatusIndicator('stopped');
+
+            x = x0;
+            v = v0;
+            t = 0;
+
+            energyInitial = totalEnergy();
+
+            // Reset grafici
+            positionChart.data.labels = [];
+            positionChart.data.datasets[0].data = [];
+            velocityChart.data.labels = [];
+            velocityChart.data.datasets[0].data = [];
+            positionChart.update();
+            velocityChart.update();
+
+            updateDisplay();
+            drawAnimation();
+        }
+
+        /**
+         * Loop di animazione
+         */
+        function animate() {
+            if (!isRunning) return;
+
+            step();
+            updateDisplay();
+            drawAnimation();
+
+            // Aggiorna grafici ogni 5 frame per performance
+            if (Math.round(t / dt) % 5 === 0) {
+                positionChart.update('none');
+                velocityChart.update('none');
+            }
+
+            animationId = requestAnimationFrame(animate);
+        }
+
+        /**
+         * Esporta dati in CSV
+         */
+        function exportToCSV() {
+            if (positionChart.data.labels.length === 0) {
+                alert('Nessun dato da esportare. Avvia la simulazione prima.');
+                return;
+            }
+
+            let csvContent = 'Tempo,Posizione,Velocita,Energia_Cinetica,Energia_Potenziale,Energia_Totale\n';
+
+            const labels = positionChart.data.labels;
+            const posData = positionChart.data.datasets[0].data;
+            const velData = velocityChart.data.datasets[0].data;
+
+            for (let i = 0; i < labels.length; i++) {
+                const t_val = parseFloat(labels[i]);
+                const x_val = posData[i];
+                const v_val = velData[i];
+                const Ek = 0.5 * m * v_val * v_val;
+                const Ep = 0.5 * k * x_val * x_val;
+                const Etot = Ek + Ep;
+
+                csvContent += `${t_val},${x_val},${v_val},${Ek},${Ep},${Etot}\n`;
+            }
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `simulazione_oscillatore_${timestamp}.csv`);
+            link.style.visibility = 'hidden';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // ============================================
+        // INIZIALIZZAZIONE AL CARICAMENTO
+        // ============================================
+
+        window.addEventListener('load', () => {
+            initCharts();
+            resetSimulation();
+        });
+    </script>
+</body>
+
+</html>

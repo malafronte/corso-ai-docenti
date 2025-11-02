@@ -1,0 +1,2957 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trigonometria Interattiva</title>
+
+    <!-- Librerie da CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+
+    <style>
+        /* --- Reset e Font --- */
+        :root {
+            --colore-primario: #007bff;
+            --colore-secondario: #6c757d;
+            --colore-sfondo: #f8f9fa;
+            --colore-sfondo-pannello: #ffffff;
+            --colore-bordo: #dee2e6;
+            --colore-testo: #212529;
+            --colore-testo-chiaro: #6c757d;
+            --colore-sin: #e63946;
+            /* Rosso */
+            --colore-cos: #1d3557;
+            /* Blu scuro */
+            --colore-tan: #52b788;
+            /* Verde */
+            --colore-cot: #f77f00;
+            /* Arancione */
+            --colore-sec: #8338ec;
+            /* Viola */
+            --colore-csc: #00b4d8;
+            /* Ciano */
+            --colore-raggio: #343a40;
+            /* Nero */
+
+            --font-principale: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-monospace: 'SFMono-Regular', Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+
+        body,
+        html {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-principale);
+            background-color: var(--colore-sfondo);
+            color: var(--colore-testo);
+            overflow: hidden;
+            /* Evita lo scroll della pagina */
+        }
+
+        /* --- Struttura Principale --- */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100%;
+            min-width: 1024px;
+            /* Requisito */
+        }
+
+        .app-header {
+            flex-shrink: 0;
+            background-color: var(--colore-sfondo-pannello);
+            border-bottom: 1px solid var(--colore-bordo);
+            padding: 12px 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+        }
+
+        .app-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--colore-primario);
+        }
+
+        .app-main {
+            flex-grow: 1;
+            display: flex;
+            overflow: hidden;
+            /* Contiene lo scroll */
+        }
+
+        .app-footer {
+            flex-shrink: 0;
+            background-color: var(--colore-sfondo-pannello);
+            border-top: 1px solid var(--colore-bordo);
+            padding: 12px 24px;
+            font-size: 0.9rem;
+            color: var(--colore-testo-chiaro);
+        }
+
+        /* --- Navigazione --- */
+        .tab-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 12px;
+        }
+
+        .tab-button {
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid var(--colore-bordo);
+            background-color: #fff;
+            color: var(--colore-primario);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-button:hover {
+            background-color: #f1f3f5;
+        }
+
+        .tab-button.active {
+            background-color: var(--colore-primario);
+            color: #fff;
+            border-color: var(--colore-primario);
+        }
+
+        /* --- Pannello Controlli Sinistro --- */
+        .controls-panel {
+            /* Larghezza flessibile: 25% con min/max */
+            flex-basis: 25vw;
+            min-width: 320px;
+            max-width: 450px;
+
+            flex-shrink: 0;
+            background-color: var(--colore-sfondo-pannello);
+            border-right: 1px solid var(--colore-bordo);
+            padding: 20px;
+            overflow-y: auto;
+            /* Scroll solo se serve */
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        /* --- Area Visualizzazione Centrale --- */
+        .display-area {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            /* Scroll solo se serve */
+            height: 100%;
+            box-sizing: border-box;
+            background-color: #e9ecef;
+            /* Sfondo leggermente grigio per il canvas */
+        }
+
+        .display-content {
+            display: none;
+            /* Nascosto di default */
+            width: 100%;
+            height: 100%;
+            /* Correzione: occupa tutta l'altezza */
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .display-content.active {
+            display: flex;
+            /* Mostra come flex per layout interni */
+            flex-direction: column;
+        }
+
+        /* --- Canvas --- */
+        .trig-canvas {
+            width: 100%;
+            height: 100%;
+            max-height: 100%;
+            /* Assicura che non superi il contenitore */
+            box-sizing: border-box;
+        }
+
+        /* Contenitore per canvas per gestire il layout */
+        .canvas-container {
+            width: 100%;
+            flex-grow: 1;
+            /* Occupa lo spazio rimanente */
+            position: relative;
+            min-height: 400px;
+            /* Altezza minima */
+        }
+
+        /* --- Elementi UI --- */
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-bottom: 1px solid var(--colore-bordo);
+            padding-bottom: 8px;
+            margin-top: 16px;
+            margin-bottom: 12px;
+        }
+
+        .control-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid var(--colore-bordo);
+            border-radius: 4px;
+        }
+
+        button,
+        .button {
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid var(--colore-bordo);
+            background-color: #f8f9fa;
+            color: var(--colore-primario);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        button:hover,
+        .button:hover {
+            background-color: #e9ecef;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .radio-group label {
+            display: inline-block;
+            margin-right: 15px;
+            font-weight: 400;
+        }
+
+        .checkbox-group label {
+            display: block;
+            font-weight: 400;
+            margin-bottom: 4px;
+        }
+
+        .quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .quick-buttons button {
+            flex-grow: 1;
+            padding: 6px 4px;
+            font-size: 0.8rem;
+        }
+
+        /* --- Tabelle e Box Valori --- */
+        .values-display {
+            background-color: #f8f9fa;
+            border: 1px solid var(--colore-bordo);
+            border-radius: 6px;
+            padding: 12px;
+            font-family: var(--font-monospace);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .values-display strong {
+            color: var(--colore-primario);
+        }
+
+        .values-display .val-pos {
+            color: #2a9d8f;
+            font-weight: 600;
+        }
+
+        .values-display .val-neg {
+            color: #e63946;
+            font-weight: 600;
+        }
+
+        .symbolic-val {
+            color: var(--colore-testo-chiaro);
+            font-style: italic;
+        }
+
+        .simple-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+
+        .simple-table th,
+        .simple-table td {
+            border: 1px solid var(--colore-bordo);
+            padding: 6px 8px;
+            text-align: center;
+        }
+
+        .simple-table th {
+            background-color: #f1f3f5;
+        }
+
+        .formula-box {
+            background: #fdfdfd;
+            border: 1px solid #eee;
+            border-left: 4px solid var(--colore-primario);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .formula-box h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--colore-primario);
+        }
+
+        .formula-box pre {
+            font-family: var(--font-monospace);
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--colore-testo);
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            /* Manteniamo auto, ma con wrap */
+            white-space: pre-wrap;
+            /* Correzione: va a capo */
+            word-wrap: break-word;
+        }
+
+        /* --- Layout Split View --- */
+        .split-view {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .split-view-left {
+            flex: 1;
+            /* 50% */
+            padding: 10px;
+            border-right: 1px solid var(--colore-bordo);
+            box-sizing: border-box;
+            height: 100%;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .split-view-right {
+            flex: 1;
+            /* 50% */
+            padding: 20px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            height: 100%;
+        }
+
+        .split-view-vertical {
+            flex-direction: column;
+        }
+
+        .split-view-top {
+            flex: 1;
+            padding: 10px;
+            border-bottom: 1px solid var(--colore-bordo);
+            box-sizing: border-box;
+            height: 50%;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .split-view-bottom {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            height: 50%;
+        }
+
+        /* Canvas S2 deve adattarsi al suo contenitore */
+        #s2-canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        /* --- Layout Scheda 3 (Grafici) --- */
+        .chart-container {
+            flex-grow: 1;
+            position: relative;
+            padding: 20px;
+            height: 90%;
+            /* Occupa la maggior parte dello spazio */
+        }
+
+        /* --- Layout Scheda 4 (Triangoli) --- */
+        #s4-canvas-container {
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+        }
+
+        .s4-controls {
+            padding: 0 10px;
+        }
+
+        .s4-controls input[type="number"] {
+            width: 80px;
+            padding: 4px;
+        }
+
+        .s4-calc-box {
+            background-color: #f8f9fa;
+            border: 1px solid var(--colore-bordo);
+            border-radius: 6px;
+            padding: 12px;
+            font-family: var(--font-monospace);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* --- Layout Scheda 5 (Identità) --- */
+        #s5-chart-container {
+            width: 100%;
+            height: 100%;
+            min-height: 300px;
+        }
+
+        #s5-proof-box {
+            background-color: #f8f9fa;
+            border: 1px solid var(--colore-bordo);
+            padding: 15px;
+            border-radius: 6px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        #s5-proof-box strong {
+            font-family: var(--font-monospace);
+            color: var(--colore-primario);
+        }
+
+        /* --- Layout Scheda 6 (Equazioni) --- */
+        #s6-chart-container {
+            flex: 1;
+            min-height: 250px;
+        }
+
+        #s6-circle-container {
+            flex: 1;
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #s6-canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        #s6-solution-box {
+            font-family: var(--font-monospace);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .s6-split-bottom-flex {
+            display: flex;
+            flex-direction: row;
+        }
+
+        #s6-solution-container {
+            flex: 1.5;
+            padding-right: 10px;
+            border-right: 1px solid var(--colore-bordo);
+        }
+
+        #s6-circle-container {
+            flex: 1;
+        }
+
+        /* --- Layout Scheda 7 (Applicazioni) --- */
+        .app-content {
+            /* Contenitore per i diversi scenari */
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .app-content.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #s7-canvas-container {
+            width: 100%;
+            height: 250px;
+            /* Altezza fissa per l'animazione */
+            background: #f1f3f5;
+            border-radius: 8px;
+            border: 1px solid var(--colore-bordo);
+            margin-bottom: 10px;
+        }
+
+        #s7-chart-container {
+            width: 100%;
+            height: 250px;
+            /* Altezza fissa per il grafico */
+        }
+
+        #s7-elevation-canvas-container {
+            width: 100%;
+            flex-grow: 1;
+            min-height: 300px;
+        }
+
+        #s7-pendulum-canvas-container {
+            width: 100%;
+            height: 250px;
+            /* Altezza fissa per l'animazione */
+            background: #f1f3f5;
+            border-radius: 8px;
+            border: 1px solid var(--colore-bordo);
+            margin-bottom: 10px;
+        }
+
+        #s7-pendulum-chart-container {
+            width: 100%;
+            height: 250px;
+            /* Altezza fissa per il grafico */
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <!-- ======================= HEADER ======================= -->
+        <header class="app-header">
+            <h1>📐 Trigonometria Interattiva</h1>
+            <nav class="tab-nav">
+                <button class="tab-button active" data-tab="s1">1. Circonferenza Goniometrica</button>
+                <button class="tab-button" data-tab="s2">2. Funzioni</button>
+                <button class="tab-button" data-tab="s3">3. Grafici Funzioni</button>
+                <button class="tab-button" data-tab="s4">4. Triangoli Rettangoli</button>
+                <button class="tab-button" data-tab="s5">5. Identità</button>
+                <button class="tab-button" data-tab="s6">6. Equazioni</button>
+                <button class="tab-button" data-tab="s7">7. Applicazioni</button>
+            </nav>
+        </header>
+
+        <!-- ======================= MAIN ======================= -->
+        <main class="app-main">
+
+            <!-- ======================= PANNELLO CONTROLLI ======================= -->
+            <aside class="controls-panel" id="controls-panel">
+                <!-- I controlli verranno caricati qui da JS -->
+            </aside>
+
+            <!-- ======================= AREA VISUALIZZAZIONE ======================= -->
+            <section class="display-area">
+
+                <!-- Sezione 1: Circonferenza Goniometrica -->
+                <div class="display-content active" id="s1">
+                    <div class="canvas-container" id="s1-canvas-container">
+                        <canvas class="trig-canvas" id="s1-canvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Sezione 2: Funzioni -->
+                <div class="display-content" id="s2">
+                    <div class="split-view">
+                        <div class="split-view-left" id="s2-canvas-container">
+                            <canvas class="trig-canvas" id="s2-canvas"></canvas>
+                        </div>
+                        <div class="split-view-right">
+                            <div class="formula-box">
+                                <h4>Definizioni Fondamentali (su Triangolo)</h4>
+                                <pre>
+sin(θ) = opposto / ipotenusa   = y / r
+cos(θ) = adiacente / ipotenusa = x / r
+tan(θ) = opposto / adiacente  = y / x
+                                </pre>
+                            </div>
+                            <div class="formula-box">
+                                <h4>Relazione Fondamentale</h4>
+                                <pre>
+tan(θ) = sin(θ) / cos(θ)
+                                </pre>
+                            </div>
+                            <div class="formula-box">
+                                <h4>Funzioni Reciproche</h4>
+                                <pre>
+csc(θ) = 1 / sin(θ) = r / y
+sec(θ) = 1 / cos(θ) = r / x
+cot(θ) = 1 / tan(θ) = x / y
+                                </pre>
+                            </div>
+                            <div class="formula-box">
+                                <h4>Identità Pitagorica</h4>
+                                <pre>
+sin²(θ) + cos²(θ) = 1
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sezione 3: Grafici Funzioni -->
+                <div class="display-content" id="s3">
+                    <div class="chart-container" id="s3-chart-container">
+                        <canvas id="s3-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Sezione 4: Triangoli Rettangoli -->
+                <div class="display-content" id="s4">
+                    <div class="canvas-container" id="s4-canvas-container">
+                        <canvas class="trig-canvas" id="s4-canvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Sezione 5: Identità -->
+                <div class="display-content" id="s5">
+                    <div class="split-view split-view-vertical">
+                        <div class="split-view-bottom" id="s5-proof-container">
+                            <h4>Dimostrazione:</h4>
+                            <div id="s5-proof-box">Seleziona un'identità dal menu a sinistra...</div>
+                        </div>
+                        <div class="split-view-top" id="s5-chart-container">
+                            <canvas id="s5-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sezione 6: Equazioni -->
+                <div class="display-content" id="s6">
+                    <div class="split-view split-view-vertical">
+                        <div class="split-view-top" id="s6-chart-container">
+                            <canvas id="s6-chart"></canvas>
+                        </div>
+                        <div class="split-view-bottom s6-split-bottom-flex">
+                            <div id="s6-solution-container">
+                                <h4>Risoluzione:</h4>
+                                <div id="s6-solution-box">Configura un'equazione...</div>
+                            </div>
+                            <div id="s6-circle-container">
+                                <canvas id="s6-canvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sezione 7: Applicazioni -->
+                <div class="display-content" id="s7">
+                    <!-- Contenuto Moto Armonico (Molla) -->
+                    <div class="app-content active" data-app="s7-sho">
+                        <div class="split-view split-view-vertical">
+                            <div class="split-view-top" id="s7-canvas-container">
+                                <canvas id="s7-canvas"></canvas>
+                            </div>
+                            <div class="split-view-bottom" id="s7-chart-container">
+                                <canvas id="s7-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenuto Pendolo Semplice -->
+                    <div class="app-content" data-app="s7-pendulum">
+                        <div class="split-view split-view-vertical">
+                            <div class="split-view-top" id="s7-pendulum-canvas-container">
+                                <canvas id="s7-pendulum-canvas"></canvas>
+                            </div>
+                            <div class="split-view-bottom" id="s7-pendulum-chart-container">
+                                <canvas id="s7-pendulum-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenuto Angoli Elevazione -->
+                    <div class="app-content" data-app="s7-elevation">
+                        <div id="s7-elevation-canvas-container">
+                            <canvas id="s7-elevation-canvas"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+        </main>
+
+        <!-- ======================= FOOTER ======================= -->
+        <footer class="app-footer">
+            <span id="footer-text">💡 Seleziona un angolo sulla circonferenza goniometrica per vedere i valori delle
+                funzioni.</span>
+        </footer>
+
+    </div>
+
+    <!-- ======================= TEMPLATE CONTROLLI ======================= -->
+    <!-- Questi template HTML vengono clonati in JS e messi nel pannello laterale -->
+
+    <template id="template-s1-controls">
+        <h3>Esplora Angolo θ</h3>
+        <div class="control-group">
+            <label for="s1-angle-slider">Angolo: <span id="s1-angle-display">45°</span></label>
+            <input type="range" id="s1-angle-slider" min="-360" max="720" value="45" step="1">
+            <div class="radio-group" id="s1-unit-group">
+                <label><input type="radio" name="s1-unit" value="deg" checked> Gradi</label>
+                <label><input type="radio" name="s1-unit" value="rad"> Radianti</label>
+            </div>
+            <div class="quick-buttons" id="s1-quick-buttons">
+                <button data-angle="0">0°</button>
+                <button data-angle="30">30°</button>
+                <button data-angle="45">45°</button>
+                <button data-angle="60">60°</button>
+                <button data-angle="90">90°</button>
+                <button data-angle="180">180°</button>
+                <button data-angle="270">270°</button>
+                <button data-angle="360">360°</button>
+            </div>
+        </div>
+        <div class="control-group">
+            <label>Animazione</label>
+            <input type="checkbox" id="s1-animate-check"> Animazione continua
+        </div>
+
+        <h3>Valori per <span id="s1-values-angle">θ = 45°</span></h3>
+        <div class="values-display" id="s1-values-display">
+            <div>sin(θ) = <span class="val-pos">+0.7071</span> <span class="symbolic-val">≈ √2/2</span></div>
+            <div>cos(θ) = <span class="val-pos">+0.7071</span> <span class="symbolic-val">≈ √2/2</span></div>
+            <div>tan(θ) = <span class="val-pos">+1.0000</span></div>
+            <hr style="border:0; border-top:1px solid #dee2e6; margin: 8px 0;">
+            <div>cot(θ) = <span class="val-pos">+1.0000</span></div>
+            <div>sec(θ) = <span class="val-pos">+1.4142</span> <span class="symbolic-val">≈ √2</span></div>
+            <div>csc(θ) = <span class="val-pos">+1.4142</span> <span class="symbolic-val">≈ √2</span></div>
+        </div>
+
+        <h3>Opzioni Visualizzazione</h3>
+        <div class="checkbox-group" id="s1-toggles">
+            <label><input type="checkbox" data-key="showSin" checked> Mostra Seno (rosso)</label>
+            <label><input type="checkbox" data-key="showCos" checked> Mostra Coseno (blu)</label>
+            <label><input type="checkbox" data-key="showTan" checked> Mostra Tangente (verde)</label>
+            <label><input type="checkbox" data-key="showCot"> Mostra Cotangente (arancione)</label>
+            <label><input type="checkbox" data-key="showSec"> Mostra Secante (viola)</label>
+            <label><input type="checkbox" data-key="showCsc"> Mostra Cosecante (ciano)</label>
+            <label><input type="checkbox" data-key="showGrid" checked> Mostra Griglia</label>
+            <label><input type="checkbox" data-key="showAngles" checked> Mostra Angoli Notevoli</label>
+        </div>
+    </template>
+
+    <template id="template-s2-controls">
+        <h3>Esplora Angolo θ</h3>
+        <div class="control-group">
+            <label for="s2-angle-slider">Angolo: <span id="s2-angle-display">45°</span></label>
+            <input type="range" id="s2-angle-slider" min="-360" max="720" value="45" step="1">
+            <div class="radio-group" id="s2-unit-group">
+                <label><input type="radio" name="s2-unit" value="deg" checked> Gradi</label>
+                <label><input type="radio" name="s2-unit" value="rad"> Radianti</label>
+            </div>
+        </div>
+
+        <h3>Valuta Espressione</h3>
+        <div class="control-group">
+            <label for="s2-expr-input">Espressione (usa 'pi', 'sqrt'):</label>
+            <input type="text" id="s2-expr-input" placeholder="Es. sin(pi/6) + cos(0)">
+            <label for="s2-expr-answer" style="margin-top: 8px;">La tua risposta (3 decimali):</label>
+            <input type="text" id="s2-expr-answer" placeholder="Es. 1.5">
+            <button id="s2-expr-check" style="margin-top: 8px;">Verifica</button>
+            <p id="s2-expr-feedback" style="font-weight: 600;"></p>
+        </div>
+    </template>
+
+    <template id="template-s3-controls">
+        <h3>Funzioni da Visualizzare</h3>
+        <div class="checkbox-group" id="s3-toggles">
+            <label><input type="checkbox" value="sin" checked> y = sin(x)</label>
+            <label><input type="checkbox" value="cos" checked> y = cos(x)</label>
+            <label><input type="checkbox" value="tan"> y = tan(x)</label>
+        </div>
+
+        <h3>y = A·sin(B·x + C) + D</h3>
+        <div class="control-group">
+            <label for="s3-A">Ampiezza (A): <span id="s3-A-val">1</span></label>
+            <input type="range" id="s3-A" min="0.1" max="3" value="1" step="0.1">
+        </div>
+        <div class="control-group">
+            <label for="s3-B">Frequenza (B): <span id="s3-B-val">1</span></label>
+            <input type="range" id="s3-B" min="0.1" max="3" value="1" step="0.1">
+        </div>
+        <div class="control-group">
+            <label for="s3-C">Fase (C): <span id="s3-C-val">0</span></label>
+            <input type="range" id="s3-C" min="-3.14" max="3.14" value="0" step="0.01">
+        </div>
+        <div class="control-group">
+            <label for="s3-D">Offset (D): <span id="s3-D-val">0</span></label>
+            <input type="range" id="s3-D" min="-2" max="2" value="0" step="0.1">
+        </div>
+        <div class="values-display" style="font-size: 1rem; text-align: center;">
+            <strong id="s3-formula-display">y = 1.0·sin(1.0x + 0.0) + 0.0</strong>
+        </div>
+    </template>
+
+    <template id="template-s4-controls">
+        <h3>Modalità Interattiva</h3>
+        <div class="radio-group" id="s4-mode-group">
+            <label><input type="radio" name="s4-mode" value="angle" checked> Modifica Angolo θ</label>
+            <label><input type="radio" name="s4-mode" value="sides"> Modifica Lati</label>
+        </div>
+
+        <div id="s4-angle-controls" class="s4-controls">
+            <div class="control-group">
+                <label for="s4-angle-slider">Angolo θ: <span id="s4-angle-display">30°</span></label>
+                <input type="range" id="s4-angle-slider" min="1" max="89" value="30" step="1">
+            </div>
+            <div class="control-group">
+                <label for="s4-hyp-input">Ipotenusa (c):</label>
+                <input type="number" id="s4-hyp-input" value="10" step="0.1">
+            </div>
+        </div>
+
+        <div id="s4-sides-controls" class="s4-controls" style="display: none;">
+            <div class="control-group">
+                <label for="s4-opp-input">Opposto (a):</label>
+                <input type="number" id="s4-opp-input" value="5" step="0.1">
+            </div>
+            <div class="control-group">
+                <label for="s4-adj-input">Adiacente (b):</label>
+                <input type="number" id="s4-adj-input" value="8.66" step="0.1">
+            </div>
+        </div>
+
+        <h3>Valori Calcolati</h3>
+        <div class="s4-calc-box" id="s4-calc-box">
+            <div>Angolo θ = <strong id="s4-val-angle">30.0°</strong></div>
+            <div>Angolo φ = <strong id="s4-val-angle2">60.0°</strong></div>
+            <hr style="border:0; border-top:1px solid #dee2e6; margin: 8px 0;">
+            <div>Opposto (a) = <strong id="s4-val-opp">5.00</strong></div>
+            <div>Adiacente (b) = <strong id="s4-val-adj">8.66</strong></div>
+            <div>Ipotenusa (c) = <strong id="s4-val-hyp">10.00</strong></div>
+            <hr style="border:0; border-top:1px solid #dee2e6; margin: 8px 0;">
+            <div>sin(θ) = a/c = <strong id="s4-val-sin">0.500</strong></div>
+            <div>cos(θ) = b/c = <strong id="s4-val-cos">0.866</strong></div>
+            <div>tan(θ) = a/b = <strong id="s4-val-tan">0.577</strong></div>
+            <hr style="border:0; border-top:1px solid #dee2e6; margin: 8px 0;">
+            <div>Pitagora: a²+b² = <span id="s4-val-pyth1">100.00</span></div>
+            <div>Pitagora: c² = <span id="s4-val-pyth2">100.00</span></div>
+        </div>
+    </template>
+
+    <template id="template-s5-controls">
+        <h3>Catalogo Identità</h3>
+        <div class="control-group">
+            <label for="s5-identity-select">Seleziona un'identità da verificare:</label>
+            <select id="s5-identity-select">
+                <option value="pitagorica">sin²(x) + cos²(x) = 1</option>
+                <option value="angolo_doppio_sin">sin(2x) = 2sin(x)cos(x)</option>
+                <option value="angolo_doppio_cos">cos(2x) = cos²(x) - sin²(x)</option>
+                <option value="somma_sin">sin(x+pi/4) = sin(x)cos(pi/4) + cos(x)sin(pi/4)</option>
+                <option value="prostaferesi">sin(x) + sin(y) = 2sin((x+y)/2)cos((x-y)/2)</option>
+            </select>
+        </div>
+
+        <div class="control-group" id="s5-y-slider" style="display:none;">
+            <!-- Correzione: Rimosso "rad" statico -->
+            <label for="s5-y">Valore di y: <span id="s5-y-val">1.0</span></label>
+            <input type="range" id="s5-y" min="0" max="6.28" value="1.0" step="0.01">
+        </div>
+    </template>
+
+    <template id="template-s6-controls">
+        <h3>Risolvi Equazione Elementare</h3>
+        <div class="control-group" style="display:flex; gap: 5px;">
+            <select id="s6-func" style="flex:1;">
+                <option value="sin">sin(x)</option>
+                <option value="cos">cos(x)</option>
+                <option value="tan">tan(x)</option>
+            </select>
+            <span style="padding-top: 8px;">=</span>
+            <input type="number" id="s6-k" value="0.5" step="0.1" style="flex:1;">
+        </div>
+        <div class="control-group">
+            <label for="s6-range-min">Range Soluzioni (Gradi):</label>
+            <div style="display:flex; gap: 5px; align-items: center;">
+                <input type="number" id="s6-range-min" value="0" step="90">
+                <span>a</span>
+                <input type="number" id="s6-range-max" value="360" step="90">
+            </div>
+        </div>
+        <button id="s6-solve-btn" style="width: 100%;">Risolvi</button>
+    </template>
+
+    <template id="template-s7-controls">
+        <h3>Seleziona Applicazione</h3>
+        <div class="control-group">
+            <select id="s7-app-select">
+                <option value="s7-sho">Moto Armonico (Molla)</option>
+                <option value="s7-pendulum">Pendolo Semplice (Smorzato)</option>
+                <option value="s7-elevation">Angoli di Elevazione</option>
+            </select>
+        </div>
+
+        <!-- Controlli per Moto Armonico (Molla) -->
+        <div class="app-controls" id="s7-sho-controls">
+            <div class="formula-box" style="padding: 10px;">
+                <pre style="font-size: 0.85rem; line-height: 1.5;">x(t) = A·e^(-βt)·cos(ωt + φ)</pre>
+            </div>
+            <div class="control-group">
+                <label for="s7-A">Ampiezza (A): <span id="s7-A-val">100</span></label>
+                <input type="range" id="s7-A" min="10" max="200" value="100" step="1">
+            </div>
+            <div class="control-group">
+                <label for="s7-W">Pulsazione (ω): <span id="s7-W-val">2.0</span></label>
+                <input type="range" id="s7-W" min="0.1" max="10" value="2.0" step="0.1">
+            </div>
+            <div class="control-group">
+                <label for="s7-P">Fase (φ): <span id="s7-P-val">0</span></label>
+                <input type="range" id="s7-P" min="-3.14" max="3.14" value="0" step="0.01">
+            </div>
+            <div class="control-group">
+                <label for="s7-B">Attrito (β): <span id="s7-B-val">0.1</span></label>
+                <input type="range" id="s7-B" min="0" max="1" value="0.1" step="0.05">
+            </div>
+            <button id="s7-start-btn" style="width: 100%;">▶️ Avvia / Pausa</button>
+            <button id="s7-reset-btn" style="width: 100%; margin-top: 5px;">↺ Reset</button>
+        </div>
+
+        <!-- Controlli per Pendolo Semplice -->
+        <div class="app-controls" id="s7-pendulum-controls" style="display: none;">
+            <div class="formula-box" style="padding: 10px;">
+                <pre style="font-size: 0.85rem; line-height: 1.5;">θ(t) = θ₀·e^(-βt)·cos(ωt + φ)</pre>
+                <pre style="font-size: 0.85rem; line-height: 1.5;">ω ≈ √(g/L)</pre>
+            </div>
+            <div class="control-group">
+                <label for="s7-L">Lunghezza (L): <span id="s7-L-val">2.0</span> m</label>
+                <input type="range" id="s7-L" min="0.5" max="5" value="2.0" step="0.1">
+            </div>
+            <div class="control-group">
+                <label for="s7-Th">Angolo Iniziale (θ₀): <span id="s7-Th-val">30</span>°</label>
+                <input type="range" id="s7-Th" min="5" max="45" value="30" step="1">
+            </div>
+            <div class="control-group">
+                <label for="s7-PB">Attrito (β): <span id="s7-PB-val">0.1</span></label>
+                <input type="range" id="s7-PB" min="0" max="1" value="0.1" step="0.05">
+            </div>
+            <button id="s7-p-start-btn" style="width: 100%;">▶️ Avvia / Pausa</button>
+            <button id="s7-p-reset-btn" style="width: 100%; margin-top: 5px;">↺ Reset</button>
+        </div>
+
+        <!-- Controlli per Angoli Elevazione -->
+        <div class="app-controls" id="s7-elevation-controls" style="display: none;">
+            <div class="formula-box" style="padding: 10px;">
+                <pre style="font-size: 0.9rem;">tan(θ) = altezza / distanza</pre>
+            </div>
+            <div class="control-group">
+                <label for="s7-dist">Distanza (m): <span id="s7-dist-val">50</span></label>
+                <input type="range" id="s7-dist" min="10" max="200" value="50" step="1">
+            </div>
+            <div class="control-group">
+                <label for="s7-angle">Angolo Elevazione (θ): <span id="s7-angle-val">30°</span></label>
+                <input type="range" id="s7-angle" min="1" max="89" value="30" step="1">
+            </div>
+            <h3>Risultato</h3>
+            <div class="s4-calc-box">
+                Altezza calcolata: <strong id="s7-height-val" style="font-size: 1.2rem;">28.87 m</strong>
+            </div>
+        </div>
+    </template>
+
+
+    <!-- ======================= JAVASCRIPT ======================= -->
+    <script>
+        (function () {
+            'use strict';
+
+            // --- Stato Globale dell'App ---
+            var globalState = {
+                s1: {
+                    angleDeg: 45,
+                    unit: 'deg', // 'deg' o 'rad'
+                    animate: false,
+                    toggles: {
+                        showSin: true,
+                        showCos: true,
+                        showTan: true,
+                        showCot: false,
+                        showSec: false,
+                        showCsc: false,
+                        showGrid: true,
+                        showAngles: true,
+                    }
+                },
+                s2: {
+                    angleDeg: 45,
+                    unit: 'deg'
+                },
+                s3: {
+                    functions: {
+                        sin: true,
+                        cos: true,
+                        tan: false,
+                    },
+                    params: { A: 1, B: 1, C: 0, D: 0 }
+                },
+                s4: {
+                    mode: 'angle', // 'angle' o 'sides'
+                    angle: 30,
+                    opp: 5,
+                    adj: 8.66,
+                    hyp: 10
+                },
+                s5: {
+                    identity: 'pitagorica',
+                    y: 1.0, // Per identità a 2 variabili
+                },
+                s6: {
+                    func: 'sin',
+                    k: 0.5,
+                    rangeMin: 0,
+                    rangeMax: 360,
+                    solutions: [] // {deg: 30, rad: 0.52...}
+                },
+                s7: {
+                    activeApp: 's7-sho', // 's7-sho', 's7-pendulum', 's7-elevation'
+                    sho: {
+                        A: 100,
+                        W: 2, // omega
+                        P: 0, // phi
+                        B: 0.1, // beta (smorzamento)
+                        time: 0,
+                        animating: false,
+                        lastTimestamp: null
+                    },
+                    pendulum: {
+                        L: 2.0, // Lunghezza
+                        Th: 30, // Angolo iniziale (gradi)
+                        B: 0.1, // Beta (smorzamento)
+                        g: 9.81,
+                        time: 0,
+                        animating: false,
+                        lastTimestamp: null
+                    },
+                    elevation: {
+                        dist: 50,
+                        angle: 30,
+                        height: 28.87
+                    }
+                },
+                activeTab: 's1'
+            };
+
+            // --- Colori per JS (Canvas e Chart.js) ---
+            var jsColors = {
+                primario: '#007bff',
+                sin: '#e63946',
+                cos: '#1d3557',
+                tan: '#52b788',
+                cot: '#f77f00',
+                sec: '#8338ec',
+                csc: '#00b4d8',
+                raggio: '#343a40',
+                griglia: '#e9ecef',
+                testo: '#212529',
+                testoChiaro: '#6c757d',
+                asse: '#adb5bd',
+                quad1: 'rgba(199, 233, 220, 0.2)', // Verde
+                quad2: 'rgba(255, 243, 205, 0.2)', // Giallo
+                quad3: 'rgba(254, 220, 195, 0.2)', // Arancione
+                quad4: 'rgba(207, 230, 248, 0.2)', // Azzurro
+                lato1: '#f94144', // Rosso
+                lato2: '#43aa8b', // Verde
+                soluzione: '#f9c74f', // Giallo
+                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+            };
+
+            // --- Variabili Cache DOM ---
+            var dom = {};
+            var s3Chart = null, s5Chart = null, s6Chart = null, s7Chart = null, s7PendulumChart = null;
+            var animationFrameId = null;
+            var mathParser = null;
+
+            // --- Funzioni Matematiche Helper ---
+            function degToRad(degrees) {
+                return degrees * (Math.PI / 180);
+            }
+
+            function radToDeg(radians) {
+                return radians * (180 / Math.PI);
+            }
+
+            // Trova la frazione di Pi Greco più vicina (per i display)
+            function getFractionalPi(radians, includePi = true) {
+                var pi = Math.PI;
+                var num = radians / pi;
+                var tolerance = 1e-5;
+
+                // Prova a trovare una frazione
+                for (var d = 1; d <= 12; d++) { // Denominatori comuni
+                    if (n === 0 && Math.abs(num) < tolerance) return "0";
+                    var n = Math.round(num * d);
+                    if (Math.abs(num - n / d) < tolerance) {
+                        var strN = (Math.abs(n) === 1) ? "" : Math.abs(n);
+                        if (n < 0) strN = "-" + strN;
+                        var strD = (d === 1) ? "" : "/" + d;
+                        return strN + (includePi ? "π" : "") + strD;
+                    }
+                }
+
+                // Se non è una frazione nota, ritorna il valore numerico
+                return (radians).toFixed(3) + (includePi ? " rad" : "");
+            }
+
+            // Trova valori simbolici (es. √2/2)
+            function getSymbolicValue(value) {
+                var tolerance = 0.0001;
+                var values = [
+                    { val: 0, str: "0" },
+                    { val: 0.5, str: "1/2" },
+                    { val: -0.5, str: "-1/2" },
+                    { val: 1, str: "1" },
+                    { val: -1, str: "-1" },
+                    { val: Math.sqrt(2) / 2, str: "√2/2" },
+                    { val: -Math.sqrt(2) / 2, str: "-√2/2" },
+                    { val: Math.sqrt(3) / 2, str: "√3/2" },
+                    { val: -Math.sqrt(3) / 2, str: "-√3/2" },
+                    { val: Math.sqrt(3), str: "√3" },
+                    { val: -Math.sqrt(3), str: "-√3" },
+                    { val: Math.sqrt(3) / 3, str: "√3/3" },
+                    { val: -Math.sqrt(3) / 3, str: "-√3/3" },
+                    { val: Math.sqrt(2), str: "√2" },
+                    { val: -Math.sqrt(2), str: "-√2" }
+                ];
+
+                for (var i = 0; i < values.length; i++) {
+                    if (Math.abs(value - values[i].val) < tolerance) {
+                        return "≈ " + values[i].str;
+                    }
+                }
+
+                if (Math.abs(value) > 500) return "∞";
+                return ""; // Nessun valore simbolico
+            }
+
+            // --- Funzione per disegnare frecce sugli assi ---
+            function drawAxisArrow(ctx, x1, y1, x2, y2) {
+                var headlen = 10; // length of head in pixels
+                var dx = x2 - x1;
+                var dy = y2 - y1;
+                var angle = Math.atan2(dy, dx);
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.lineTo(x2 - headlen * Math.cos(angle - Math.PI / 6), y2 - headlen * Math.sin(angle - Math.PI / 6));
+                ctx.moveTo(x2, y2);
+                ctx.lineTo(x2 - headlen * Math.cos(angle + Math.PI / 6), y2 - headlen * Math.sin(angle + Math.PI / 6));
+            }
+
+            // --- Funzioni di Disegno Principali ---
+
+            /**
+             * Funzione generica per disegnare la circonferenza goniometrica
+             * Usata da S1, S2, S6
+             */
+            function drawUnitCircle(canvasId, options) {
+                try {
+                    var canvas = document.getElementById(canvasId);
+                    if (!canvas) return;
+                    var ctx = canvas.getContext('2d');
+
+                    var defaults = {
+                        angleDeg: 45,
+                        showSin: false, showCos: false, showTan: false,
+                        showCot: false, showSec: false, showCsc: false,
+                        showGrid: true, showAngles: false,
+                        solutionPoints: [] // Array di angoli in gradi
+                    };
+                    var config = Object.assign({}, defaults, options);
+
+                    var angleRad = degToRad(config.angleDeg);
+
+                    // CORREZIONE: Usa le dimensioni CSS per il calcolo del centro
+                    var w = parseFloat(canvas.style.width) || canvas.width;
+                    var h = parseFloat(canvas.style.height) || canvas.height;
+                    var cx = w / 2;
+                    var cy = h / 2;
+
+                    // Riduci il raggio per dare spazio alle etichette e alle frecce
+                    var padding = 0.15 * Math.min(w, h);
+                    padding = Math.max(padding, 30); // Padding minimo per frecce/etichette
+                    var radius = Math.min(w, h) / 2 - padding;
+                    if (radius <= 0) radius = Math.min(w, h) / 2 - 10; // Fallback
+
+                    var cos = Math.cos(angleRad);
+                    var sin = Math.sin(angleRad);
+                    var tan = Math.tan(angleRad);
+                    var cot = 1 / tan;
+
+                    var px = cx + cos * radius;
+                    var py = cy - sin * radius;
+
+                    // Pulisci canvas (usa dimensioni canvas reali)
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    // Disegna Sfondi Quadranti
+                    if (config.showGrid) {
+                        ctx.fillStyle = jsColors.quad1; ctx.fillRect(cx, 0, w / 2, h / 2);
+                        ctx.fillStyle = jsColors.quad2; ctx.fillRect(0, 0, w / 2, h / 2);
+                        ctx.fillStyle = jsColors.quad3; ctx.fillRect(0, h / 2, w / 2, h / 2);
+                        ctx.fillStyle = jsColors.quad4; ctx.fillRect(cx, h / 2, w / 2, h / 2);
+                    }
+
+                    // Disegna Griglia
+                    if (config.showGrid) {
+                        ctx.strokeStyle = jsColors.griglia;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        var step = radius / 2; // Tacche a 0.5
+                        for (var i = -2; i <= 2; i++) {
+                            if (i === 0) continue;
+                            ctx.moveTo(cx + i * step, 0); ctx.lineTo(cx + i * step, h);
+                            ctx.moveTo(0, cy + i * step); ctx.lineTo(w, cy + i * step);
+                        }
+                        ctx.stroke();
+                    }
+
+                    // Disegna Assi
+                    ctx.strokeStyle = jsColors.asse;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    // Asse X con freccia
+                    drawAxisArrow(ctx, 0, cy, w, cy);
+                    // Asse Y con freccia
+                    drawAxisArrow(ctx, cx, h, cx, 0);
+                    ctx.stroke();
+
+                    // Etichette Assi
+                    ctx.fillStyle = jsColors.testo;
+                    ctx.font = 'bold 14px ' + jsColors.fontFamily;
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText("x", w - 20, cy + 15);
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+                    ctx.fillText("y", cx + 15, 20);
+
+                    // Tacche Assi
+                    ctx.fillStyle = jsColors.testoChiaro;
+                    ctx.font = '12px ' + jsColors.fontFamily;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText("1", cx + radius, cy + 15);
+                    ctx.fillText("-1", cx - radius, cy + 15);
+                    ctx.fillText("1", cx - 15, cy - radius);
+                    ctx.fillText("-1", cx - 15, cy + radius);
+                    if (canvasId !== 's6-canvas') ctx.fillText("0", cx - 15, cy + 15);
+
+                    // --- Disegna Funzioni ---
+                    var tx = cx + radius; var ty = cy - tan * radius;
+                    var cotx = cx + cot * radius; var coty = cy - radius;
+
+                    if (config.showCsc) { /* ... */ }
+                    if (config.showSec) { /* ... */ }
+                    if (config.showCot) {
+                        ctx.strokeStyle = jsColors.cot; ctx.lineWidth = 4;
+                        ctx.beginPath(); ctx.moveTo(cx, coty); ctx.lineTo(cotx, coty); ctx.stroke();
+                        ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+                        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cotx, coty); ctx.stroke();
+                        ctx.setLineDash([]);
+                    }
+                    if (config.showTan) {
+                        ctx.strokeStyle = jsColors.tan; ctx.lineWidth = 4;
+                        ctx.beginPath(); ctx.moveTo(tx, cy); ctx.lineTo(tx, ty); ctx.stroke();
+                        ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+                        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(tx, ty); ctx.stroke();
+                        ctx.setLineDash([]);
+                    }
+                    if (config.showCos) {
+                        ctx.strokeStyle = jsColors.cos; ctx.lineWidth = 4;
+                        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, cy); ctx.stroke();
+                    }
+                    if (config.showSin) {
+                        ctx.strokeStyle = jsColors.sin; ctx.lineWidth = 4;
+                        ctx.beginPath(); ctx.moveTo(px, cy); ctx.lineTo(px, py); ctx.stroke();
+                    }
+
+                    // Arco Angolo (solo se non è s6)
+                    if (canvasId !== 's6-canvas') {
+                        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                        ctx.beginPath();
+                        ctx.moveTo(cx, cy);
+                        ctx.arc(cx, cy, radius * 0.4, 0, -angleRad, true); // true = antiorario
+                        ctx.closePath();
+                        ctx.fill();
+                    }
+
+                    // Circonferenza
+                    ctx.strokeStyle = jsColors.primario;
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+                    ctx.stroke();
+
+                    // Raggio OP
+                    ctx.strokeStyle = jsColors.raggio;
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.lineTo(px, py);
+                    ctx.stroke();
+
+                    // Punto P
+                    ctx.fillStyle = jsColors.raggio;
+                    ctx.beginPath();
+                    ctx.arc(px, py, 6, 0, 2 * Math.PI);
+                    ctx.fill();
+
+                    // Etichette (non su s6)
+                    if (canvasId !== 's6-canvas') {
+                        var angleLabelRad = -angleRad / 2;
+                        var angleLabelX = cx + Math.cos(angleLabelRad) * radius * 0.5;
+                        var angleLabelY = cy + Math.sin(angleLabelRad) * radius * 0.5;
+                        ctx.fillStyle = jsColors.testo;
+                        ctx.font = 'bold 14px ' + jsColors.fontFamily;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText("θ", angleLabelX, angleLabelY);
+
+                        ctx.font = '14px ' + jsColors.fontFamily;
+                        // Logica etichetta dinamica
+                        ctx.textAlign = (cos >= 0) ? 'left' : 'right';
+                        ctx.textBaseline = (sin >= 0) ? 'bottom' : 'top';
+                        var labelOffsetX = (cos >= 0) ? 10 : -10;
+                        var labelOffsetY = (sin >= 0) ? -10 : 20;
+                        // CORREZIONE Etichetta dinamica
+                        var labelX = px + labelOffsetX;
+                        var labelY = py + labelOffsetY;
+                        if (cos < 0) labelX = px - 10;
+                        if (sin < 0) labelY = py + 20;
+
+                        ctx.fillText("P(cosθ, sinθ)", labelX, labelY);
+                    }
+
+                    // Angoli Notevoli
+                    if (config.showAngles) {
+                        var angoliNotevoli = [30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330];
+                        ctx.fillStyle = jsColors.testoChiaro;
+                        angoliNotevoli.forEach(function (deg) {
+                            var rad = degToRad(deg);
+                            var ax = cx + Math.cos(rad) * radius;
+                            var ay = cy - Math.sin(rad) * radius;
+                            ctx.beginPath(); ctx.arc(ax, ay, 3, 0, 2 * Math.PI); ctx.fill();
+                        });
+                    }
+
+                    // Punti Soluzione (per S6)
+                    if (config.solutionPoints.length > 0) {
+                        ctx.fillStyle = jsColors.soluzione;
+                        ctx.strokeStyle = jsColors.raggio;
+                        ctx.lineWidth = 2;
+                        config.solutionPoints.forEach(function (angle) {
+                            var rad = degToRad(angle);
+                            var sx = cx + Math.cos(rad) * radius;
+                            var sy = cy - Math.sin(rad) * radius;
+                            ctx.beginPath();
+                            ctx.arc(sx, sy, 8, 0, 2 * Math.PI);
+                            ctx.fill();
+                            ctx.stroke();
+                        });
+                    }
+
+                } catch (e) {
+                    console.error("Errore in drawUnitCircle (" + canvasId + "):", e);
+                }
+            }
+
+            /**
+             * Disegna il Triangolo Rettangolo (Sezione 4)
+             */
+            function drawS4() {
+                try {
+                    if (!dom.s4 || !dom.s4.canvas) return; // Sicurezza
+                    var canvas = dom.s4.canvas;
+                    var ctx = canvas.getContext('2d');
+                    var state = globalState.s4;
+
+                    var w = parseFloat(canvas.style.width) || canvas.width;
+                    var h = parseFloat(canvas.style.height) || canvas.height;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    var angle = state.angle;
+                    var angleRad = degToRad(angle);
+                    var a = state.opp;
+                    var b = state.adj;
+                    var c = state.hyp;
+
+                    var maxDim = Math.max(b, a); // Scala basata sui cateti
+                    if (maxDim === 0) maxDim = 10;
+                    var padding = 60;
+                    var scaleX = (w - 2 * padding) / b;
+                    var scaleY = (h - 2 * padding) / a;
+                    var scale = Math.min(scaleX, scaleY);
+
+                    if (!isFinite(scale) || scale <= 0) scale = 1;
+
+                    var drawingWidth = b * scale;
+                    var drawingHeight = a * scale;
+
+                    var offsetX = (w - drawingWidth) / 2;
+                    var offsetY = (h - drawingHeight) / 2;
+
+                    var Ax = offsetX;
+                    var Ay = offsetY + drawingHeight;
+                    var Bx = offsetX + drawingWidth;
+                    var By = offsetY + drawingHeight;
+                    var Cx = offsetX;
+                    var Cy = offsetY;
+
+                    ctx.fillStyle = jsColors.testo;
+                    ctx.font = '16px ' + jsColors.fontFamily;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+
+                    // Adiacente (b)
+                    ctx.strokeStyle = jsColors.cos; ctx.lineWidth = 4;
+                    ctx.beginPath(); ctx.moveTo(Ax, Ay); ctx.lineTo(Bx, By); ctx.stroke();
+                    ctx.fillText("b = " + b.toFixed(2), (Ax + Bx) / 2, Ay + 20);
+
+                    // Opposto (a)
+                    ctx.strokeStyle = jsColors.sin; ctx.lineWidth = 4;
+                    ctx.beginPath(); ctx.moveTo(Cx, Cy); ctx.lineTo(Ax, Ay); ctx.stroke();
+                    ctx.fillText("a = " + a.toFixed(2), Ax - 30, (Ay + Cy) / 2);
+
+                    // Ipotenusa (c)
+                    ctx.strokeStyle = jsColors.raggio; ctx.lineWidth = 4;
+                    ctx.beginPath(); ctx.moveTo(Bx, By); ctx.lineTo(Cx, Cy); ctx.stroke();
+                    ctx.save();
+                    ctx.translate((Bx + Cx) / 2, (By + Cy) / 2);
+                    ctx.rotate(-Math.atan(drawingHeight / drawingWidth));
+                    ctx.fillText("c = " + c.toFixed(2), 0, -20);
+                    ctx.restore();
+
+                    // Angolo retto (A)
+                    ctx.strokeStyle = jsColors.testoChiaro; ctx.lineWidth = 2;
+                    var rectSize = Math.min(20, drawingWidth * 0.1, drawingHeight * 0.1);
+                    ctx.strokeRect(Ax, Ay - rectSize, rectSize, rectSize);
+
+                    // Angolo θ (B)
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                    var arcSizeB = Math.min(40, drawingWidth * 0.2);
+                    ctx.beginPath();
+                    ctx.moveTo(Bx, By);
+                    ctx.arc(Bx, By, arcSizeB, Math.PI, Math.PI - angleRad, true);
+                    ctx.closePath(); ctx.fill();
+                    ctx.fillStyle = jsColors.testo;
+                    ctx.fillText("θ", Bx - arcSizeB / 2 - 10, By - arcSizeB / 2 - 5);
+
+                    // Angolo φ (C)
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                    var arcSizeC = Math.min(40, drawingHeight * 0.2);
+                    ctx.beginPath();
+                    ctx.moveTo(Cx, Cy);
+                    ctx.arc(Cx, Cy, arcSizeC, Math.PI / 2, Math.PI / 2 + angleRad);
+                    ctx.closePath(); ctx.fill();
+                    ctx.fillStyle = jsColors.testo;
+                    ctx.fillText("φ", Cx + arcSizeC / 2 + 10, Cy + arcSizeC / 2 + 5);
+
+                } catch (e) {
+                    console.error("Errore in drawS4:", e);
+                }
+            }
+
+            /**
+             * Funzione generica per creare/aggiornare un grafico Chart.js
+             */
+            function updateChart(chartInstance, containerId, options, datasets) {
+                var chart = chartInstance;
+                try {
+                    var ctx = document.getElementById(containerId).getContext('2d');
+                    if (!chart) {
+                        chart = new Chart(ctx, {
+                            type: 'line',
+                            data: { datasets: datasets },
+                            options: options
+                        });
+                    } else {
+                        chart.data.datasets = datasets;
+                        chart.options = options;
+                        chart.update();
+                    }
+                } catch (e) {
+                    console.error("Errore creazione grafico " + containerId, e);
+                }
+                return chart;
+            }
+
+            /**
+             * Disegna i Grafici (Sezione 3)
+             */
+            function drawS3() {
+                var state = globalState.s3;
+                var x = [];
+                for (var i = -2 * Math.PI; i <= 4 * Math.PI; i += 0.05) { x.push(i); }
+                var datasets = [];
+
+                if (state.functions.sin) {
+                    datasets.push({
+                        label: 'y = sin(x)',
+                        data: x.map(function (val) { return { x: val, y: Math.sin(val) }; }),
+                        borderColor: jsColors.sin, borderWidth: 2, tension: 0.1, pointRadius: 0
+                    });
+                }
+                if (state.functions.cos) {
+                    datasets.push({
+                        label: 'y = cos(x)',
+                        data: x.map(function (val) { return { x: val, y: Math.cos(val) }; }),
+                        borderColor: jsColors.cos, borderWidth: 2, tension: 0.1, pointRadius: 0
+                    });
+                }
+                if (state.functions.tan) {
+                    var tanData = x.map(function (val) {
+                        var y = Math.tan(val);
+                        return (Math.abs(y) > 10) ? null : { x: val, y: y };
+                    });
+                    datasets.push({
+                        label: 'y = tan(x)', data: tanData,
+                        borderColor: jsColors.tan, borderWidth: 2, spanGaps: false, pointRadius: 0
+                    });
+                }
+
+                var p = state.params;
+                datasets.push({
+                    label: 'y = A·sin(B·x + C) + D',
+                    data: x.map(function (val) { return { x: val, y: p.A * Math.sin(p.B * val + p.C) + p.D }; }),
+                    borderColor: jsColors.primario, borderWidth: 3, borderDash: [5, 5], tension: 0.1, pointRadius: 0
+                });
+
+                var options = {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear', position: 'bottom', min: -2 * Math.PI, max: 4 * Math.PI,
+                            ticks: { stepSize: Math.PI / 2, callback: function (value) { return getFractionalPi(value); } }
+                        },
+                        y: { min: -3, max: 3 }
+                    },
+                    plugins: { tooltip: { callbacks: { title: function (context) { return "x = " + getFractionalPi(context[0].parsed.x); } } } }
+                };
+
+                s3Chart = updateChart(s3Chart, 's3-chart', options, datasets);
+            }
+
+            /**
+             * Disegna Verifica Identità (Sezione 5)
+             */
+            function drawS5() {
+                var state = globalState.s5;
+                var x = [];
+                for (var i = -2 * Math.PI; i <= 2 * Math.PI; i += 0.05) { x.push(i); }
+                var datasets = [];
+                var proofText = "";
+                var ySlider = dom.s5.ySlider;
+                if (ySlider) ySlider.style.display = 'none';
+
+                var y = state.y;
+
+                // Stili grafici corretti
+                var styleLHS = { // Lato Sinistro: Solido, Rosso
+                    label: 'LHS',
+                    borderColor: jsColors.lato1,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.1
+                };
+                var styleRHS = { // Lato Destro: Tratteggiato, Verde, con pallini
+                    label: 'RHS',
+                    borderColor: jsColors.lato2,
+                    borderWidth: 3,
+                    pointRadius: 3, // Pallini visibili
+                    borderDash: [5, 5], // Tratteggio
+                    tension: 0.1
+                };
+
+                switch (state.identity) {
+                    case 'pitagorica':
+                        styleLHS.label = 'sin²(x) + cos²(x)';
+                        styleRHS.label = '1';
+                        datasets.push(Object.assign({}, styleLHS, {
+                            data: x.map(function (val) { return { x: val, y: Math.pow(Math.sin(val), 2) + Math.pow(Math.cos(val), 2) }; }),
+                        }));
+                        datasets.push(Object.assign({}, styleRHS, {
+                            data: x.map(function (val) { return { x: val, y: 1 }; }),
+                        }));
+                        proofText = "<strong>sin²(x) + cos²(x) = 1</strong><br>" +
+                            "Questa è l'identità fondamentale.<br>" +
+                            "Deriva dal Teorema di Pitagora applicato al triangolo rettangolo nella circonferenza goniometrica, dove i cateti sono <strong>sin(x)</strong> e <strong>cos(x)</strong> e l'ipotenusa è <strong>1</strong>.<br>" +
+                            "(sin x)² + (cos x)² = 1²";
+                        break;
+                    case 'angolo_doppio_sin':
+                        styleLHS.label = 'sin(2x)';
+                        styleRHS.label = '2sin(x)cos(x)';
+                        datasets.push(Object.assign({}, styleLHS, {
+                            data: x.map(function (val) { return { x: val, y: Math.sin(2 * val) }; }),
+                        }));
+                        datasets.push(Object.assign({}, styleRHS, {
+                            data: x.map(function (val) { return { x: val, y: 2 * Math.sin(val) * Math.cos(val) }; }),
+                        }));
+                        proofText = "<strong>sin(2x) = 2sin(x)cos(x)</strong><br>" +
+                            "Si ottiene dalla formula di addizione <strong>sin(α + β) = sin(α)cos(β) + cos(α)sin(β)</strong>, ponendo α = x e β = x.<br>" +
+                            "sin(x + x) = sin(x)cos(x) + cos(x)sin(x) = 2sin(x)cos(x)";
+                        break;
+                    case 'angolo_doppio_cos':
+                        styleLHS.label = 'cos(2x)';
+                        styleRHS.label = 'cos²(x) - sin²(x)';
+                        datasets.push(Object.assign({}, styleLHS, {
+                            data: x.map(function (val) { return { x: val, y: Math.cos(2 * val) }; }),
+                        }));
+                        datasets.push(Object.assign({}, styleRHS, {
+                            data: x.map(function (val) { return { x: val, y: Math.pow(Math.cos(val), 2) - Math.pow(Math.sin(val), 2) }; }),
+                        }));
+                        proofText = "<strong>cos(2x) = cos²(x) - sin²(x)</strong><br>" +
+                            "Si ottiene dalla formula di addizione <strong>cos(α + β) = cos(α)cos(β) - sin(α)sin(β)</strong>, ponendo α = x e β = x.<br>" +
+                            "cos(x + x) = cos(x)cos(x) - sin(x)sin(x) = cos²(x) - sin²(x)";
+                        break;
+                    case 'somma_sin':
+                        var y_val = Math.PI / 4;
+                        styleLHS.label = 'sin(x + π/4)';
+                        styleRHS.label = 'sin(x)cos(π/4) + cos(x)sin(π/4)';
+                        datasets.push(Object.assign({}, styleLHS, {
+                            data: x.map(function (val) { return { x: val, y: Math.sin(val + y_val) }; }),
+                        }));
+                        datasets.push(Object.assign({}, styleRHS, {
+                            data: x.map(function (val) { return { x: val, y: Math.sin(val) * Math.cos(y_val) + Math.cos(val) * Math.sin(y_val) }; }),
+                        }));
+                        proofText = "<strong>sin(α + β) = sin(α)cos(β) + cos(α)sin(β)</strong><br>" +
+                            "Qui, α = x e β = π/4 (45°).<br>" +
+                            "Il grafico mostra che le due funzioni sono identiche.";
+                        break;
+                    case 'prostaferesi':
+                        if (ySlider) ySlider.style.display = 'block';
+                        styleLHS.label = 'sin(x) + sin(y)';
+                        styleRHS.label = '2sin((x+y)/2)cos((x-y)/2)';
+                        datasets.push(Object.assign({}, styleLHS, {
+                            data: x.map(function (val) { return { x: val, y: Math.sin(val) + Math.sin(y) }; }),
+                        }));
+                        datasets.push(Object.assign({}, styleRHS, {
+                            data: x.map(function (val) { return { x: val, y: 2 * Math.sin((val + y) / 2) * Math.cos((val - y) / 2) }; }),
+                        }));
+                        // Correzione: Spiegazione migliorata
+                        proofText = "<strong>sin(x) + sin(y) = 2sin((x+y)/2)cos((x-y)/2)</strong><br>" +
+                            "Questa è una formula di Prostaferesi. In questo grafico, <strong>x</strong> è la variabile sull'asse orizzontale.<br>" +
+                            "<strong>y</strong> è una costante che puoi cambiare con lo slider. Prova a muoverlo: vedrai che l'identità (la sovrapposizione dei grafici) rimane vera per qualsiasi <strong>y</strong>!";
+                        break;
+                }
+
+                if (dom.s5.proofBox) dom.s5.proofBox.innerHTML = proofText;
+
+                var options = {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear', position: 'bottom', min: -2 * Math.PI, max: 2 * Math.PI,
+                            ticks: { stepSize: Math.PI / 2, callback: function (value) { return getFractionalPi(value); } }
+                        },
+                        y: { min: -2.5, max: 2.5 }
+                    },
+                    plugins: {
+                        tooltip: { callbacks: { title: function (context) { return "x = " + getFractionalPi(context[0].parsed.x); } } },
+                        legend: { labels: { usePointStyle: true } } // Mostra stili nella legenda
+                    }
+                };
+
+                s5Chart = updateChart(s5Chart, 's5-chart', options, datasets);
+            }
+
+            /**
+             * Disegna Grafico e Circonferenza Equazioni (Sezione 6)
+             */
+            function drawS6() {
+                var state = globalState.s6;
+
+                // 1. Disegna Grafico
+                var x = [];
+                var minRad = degToRad(state.rangeMin);
+                var maxRad = degToRad(state.rangeMax);
+                if (minRad > maxRad) { minRad = 0; maxRad = 2 * Math.PI; }
+                for (var i = minRad; i <= maxRad; i += 0.02) { x.push(i); }
+
+                var datasets = [];
+                var funcName = state.func;
+                var k = state.k;
+                var func = Math[funcName];
+
+                // Dati funzione
+                var funcData = x.map(function (val) {
+                    var y = func(val);
+                    return (Math.abs(y) > 20) ? null : { x: val, y: y };
+                });
+                datasets.push({
+                    label: 'y = ' + funcName + '(x)',
+                    data: funcData,
+                    borderColor: jsColors.primario, borderWidth: 2, pointRadius: 0, spanGaps: false
+                });
+
+                // Linea k
+                datasets.push({
+                    label: 'y = ' + k,
+                    data: x.map(function (val) { return { x: val, y: k }; }),
+                    borderColor: jsColors.sin, borderWidth: 2, borderDash: [5, 5], pointRadius: 0
+                });
+
+                // Punti soluzione
+                if (state.solutions.length > 0) {
+                    var solData = state.solutions.map(function (sol) {
+                        // Assicurati che il punto sia nel range del grafico
+                        if (sol.rad >= minRad && sol.rad <= maxRad) {
+                            return { x: sol.rad, y: func(sol.rad) };
+                        }
+                        return null;
+                    }).filter(Boolean); // Rimuovi null
+
+                    datasets.push({
+                        label: 'Soluzioni',
+                        data: solData,
+                        borderColor: jsColors.soluzione,
+                        backgroundColor: jsColors.soluzione,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        type: 'scatter'
+                    });
+                }
+
+                var yMin = (funcName === 'tan') ? Math.max(-10, k - 5) : Math.max(-2, k - 1);
+                var yMax = (funcName === 'tan') ? Math.min(10, k + 5) : Math.min(2, k + 1);
+
+                var options = {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear', position: 'bottom', min: minRad, max: maxRad,
+                            ticks: { stepSize: Math.PI / 2, callback: function (value) { return getFractionalPi(value); } }
+                        },
+                        y: { min: yMin, max: yMax }
+                    },
+                    plugins: { tooltip: { callbacks: { title: function (context) { return "x = " + getFractionalPi(context[0].parsed.x); } } } }
+                };
+                s6Chart = updateChart(s6Chart, 's6-chart', options, datasets);
+
+                // 2. Disegna Circonferenza
+                resizeCanvas(document.getElementById('s6-canvas'));
+                drawUnitCircle('s6-canvas', {
+                    angleDeg: 0,
+                    showGrid: true,
+                    solutionPoints: state.solutions.map(function (s) { return s.deg; })
+                });
+            }
+
+            /**
+             * Disegna Moto Armonico (Sezione 7 - SHO)
+             */
+            function drawS7_SHO() {
+                var state = globalState.s7.sho;
+                var t = state.time;
+
+                // 1. Disegna Canvas Animazione
+                var canvas = dom.s7.canvas;
+                if (!canvas) return;
+                var ctx = canvas.getContext('2d');
+
+                var w = parseFloat(canvas.style.width) || canvas.width;
+                var h = parseFloat(canvas.style.height) || canvas.height;
+                var cy = h / 2;
+                var cx = w / 2;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Calcola posizione (con smorzamento)
+                var A = state.A; // Ampiezza
+                var B = state.B; // Smorzamento
+                var x = A * Math.exp(-B * t) * Math.cos(state.W * t + state.P);
+
+                // Disegna molla
+                ctx.strokeStyle = jsColors.testoChiaro;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                var springStart = cx - A - 50;
+                var springEnd = cx + x;
+                var numCoils = 20;
+                ctx.moveTo(springStart, cy);
+                for (var i = 0; i < numCoils; i++) {
+                    var coilX = springStart + (springEnd - springStart) * (i / numCoils);
+                    var coilY = cy + ((i % 2 === 0) ? 10 : -10);
+                    ctx.lineTo(coilX, coilY);
+                }
+                ctx.lineTo(springEnd, cy);
+                ctx.stroke();
+
+                // Disegna massa
+                ctx.fillStyle = jsColors.primario;
+                ctx.fillRect(cx + x - 15, cy - 15, 30, 30);
+
+                // Disegna linea centrale
+                ctx.strokeStyle = jsColors.griglia;
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(cx, 0);
+                ctx.lineTo(cx, h);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // 2. Aggiorna Grafico
+                if (!s7Chart) {
+                    var chartCtx = dom.s7.chart.getContext('2d');
+                    s7Chart = new Chart(chartCtx, {
+                        type: 'line',
+                        data: {
+                            datasets: [{
+                                label: 'x(t)',
+                                data: [], // Inizializzato vuoto
+                                borderColor: jsColors.primario,
+                                borderWidth: 2,
+                                pointRadius: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            animation: false, // No animazione per fluidità
+                            scales: {
+                                x: { type: 'linear', min: 0, max: 20, title: { text: 'Tempo (t)', display: true } },
+                                y: {
+                                    min: -200, max: 200, title: { text: 'Posizione (x)', display: true },
+                                    // CORREZIONE: Callback per formattare la scala Y
+                                    ticks: {
+                                        callback: function (value, index, ticks) {
+                                            return value.toFixed(1); // 1 cifra decimale
+                                        }
+                                    }
+                                }
+                            },
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            return 'x(t): ' + context.parsed.y.toFixed(1);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Aggiorna limiti grafico
+                var maxAmp = state.A * 1.1;
+                s7Chart.options.scales.y.min = -maxAmp;
+                s7Chart.options.scales.y.max = maxAmp;
+
+                // Aggiungi dati
+                var data = s7Chart.data.datasets[0].data;
+                data.push({ x: t, y: x });
+
+                // Rimuovi dati vecchi
+                if (data.length > 300) { // Più punti per animazione più lunga
+                    data.shift();
+                }
+                if (data.length > 1) {
+                    s7Chart.options.scales.x.min = data[0].x;
+                    s7Chart.options.scales.x.max = Math.max(20, data[data.length - 1].x); // Inizia con un range di 20s
+                }
+
+                s7Chart.update('none'); // Aggiorna senza animazione per fluidità
+            }
+
+            /**
+             * Disegna Pendolo Semplice (Sezione 7 - Pendulum)
+             */
+            function drawS7_Pendulum() {
+                var state = globalState.s7.pendulum;
+                var t = state.time;
+
+                // 1. Calcola equazione
+                var g = state.g;
+                var L = state.L;
+                var B = state.B; // Beta (attrito)
+                var Th0 = degToRad(state.Th); // Angolo iniziale (rad)
+
+                var w0_sq = g / L; // Pulsazione propria (omega^2)
+                var w_sq = w0_sq - B * B / 4.0; // Pulsazione smorzata (omega'^2)
+
+                var theta = 0; // Angolo
+
+                if (w_sq > 0) { // Sottosmorzato
+                    var w = Math.sqrt(w_sq);
+                    theta = Th0 * Math.exp(-B * t / 2.0) * Math.cos(w * t);
+                } else { // Critico o Sovrasmorzato (semplificato)
+                    theta = Th0 * Math.exp(-B * t / 2.0); // Decade esponenzialmente
+                }
+
+                // 2. Disegna Canvas Animazione
+                var canvas = dom.s7.pendulum.canvas;
+                if (!canvas) return;
+                var ctx = canvas.getContext('2d');
+
+                var w = parseFloat(canvas.style.width) || canvas.width;
+                var h = parseFloat(canvas.style.height) || canvas.height;
+                var cx = w / 2; // Punto di sospensione
+                var cy = 30;    // Punto di sospensione
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Scala: lunghezza L in metri -> pixel
+                var pixelPerMeter = (h - cy - 30) / L; // Usa 80% dell'altezza per L
+                var lenPx = L * pixelPerMeter;
+
+                var px = cx + lenPx * Math.sin(theta);
+                var py = cy + lenPx * Math.cos(theta);
+
+                // Disegna supporto
+                ctx.fillStyle = jsColors.testoChiaro;
+                ctx.fillRect(cx - 50, cy - 10, 100, 10);
+
+                // Disegna filo
+                ctx.strokeStyle = jsColors.raggio;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(px, py);
+                ctx.stroke();
+
+                // Disegna massa
+                ctx.fillStyle = jsColors.primario;
+                ctx.beginPath();
+                ctx.arc(px, py, 15, 0, 2 * Math.PI);
+                ctx.fill();
+
+                // Disegna linea centrale
+                ctx.strokeStyle = jsColors.griglia;
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(cx, h);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // 3. Aggiorna Grafico
+                if (!s7PendulumChart) {
+                    var chartCtx = dom.s7.pendulum.chart.getContext('2d');
+                    s7PendulumChart = new Chart(chartCtx, {
+                        type: 'line',
+                        data: {
+                            datasets: [{
+                                label: 'θ(t)',
+                                data: [],
+                                borderColor: jsColors.primario,
+                                borderWidth: 2,
+                                pointRadius: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            animation: false,
+                            scales: {
+                                x: { type: 'linear', min: 0, max: 20, title: { text: 'Tempo (t)', display: true } },
+                                y: {
+                                    min: -Th0, max: Th0, title: { text: 'Angolo (rad)', display: true },
+                                    ticks: {
+                                        callback: function (value, index, ticks) {
+                                            return value.toFixed(2); // 2 cifre decimali per radianti
+                                        }
+                                    }
+                                }
+                            },
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            return 'θ(t): ' + context.parsed.y.toFixed(3) + ' rad';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                var maxAngle = degToRad(state.Th) * 1.1;
+                s7PendulumChart.options.scales.y.min = -maxAngle;
+                s7PendulumChart.options.scales.y.max = maxAngle;
+
+                var data = s7PendulumChart.data.datasets[0].data;
+                data.push({ x: t, y: theta });
+
+                if (data.length > 300) data.shift();
+                if (data.length > 1) {
+                    s7PendulumChart.options.scales.x.min = data[0].x;
+                    s7PendulumChart.options.scales.x.max = Math.max(20, data[data.length - 1].x);
+                }
+
+                s7PendulumChart.update('none');
+            }
+
+
+            /**
+             * Disegna Angoli di Elevazione (Sezione 7 - Elevation)
+             */
+            function drawS7_Elevation() {
+                var state = globalState.s7.elevation;
+                var canvas = dom.s7.elevationCanvas;
+                if (!canvas) return;
+
+                // CORREZIONE: Ridimensiona il canvas prima di disegnare
+                resizeCanvas(canvas);
+
+                var ctx = canvas.getContext('2d');
+
+                var w = parseFloat(canvas.style.width) || canvas.width;
+                var h = parseFloat(canvas.style.height) || canvas.height;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                var dist = state.dist;
+                var angle = state.angle;
+                var height = state.height;
+
+                var padding = 60; // Aumentato padding
+
+                var canvasWidth = w - padding * 2;
+                var canvasHeight = h - padding * 2;
+
+                if (canvasWidth <= 0 || canvasHeight <= 0) return; // Evita errori se il canvas è troppo piccolo
+
+                // CORREZIONE: Scaling robusto per riempire lo spazio
+                var scale;
+                var canvasAspect = canvasWidth / canvasHeight; // Aspect ratio del canvas
+                var dataAspect = dist / height; // Aspect ratio dei dati
+
+                if (isNaN(dataAspect) || !isFinite(dataAspect) || dataAspect === 0) {
+                    scale = canvasHeight / height; // Fallback se la distanza è 0
+                } else if (canvasAspect > dataAspect) {
+                    // Il canvas è più largo dei dati, l'altezza è il fattore limitante
+                    scale = canvasHeight / height;
+                } else {
+                    // Il canvas è più alto (o uguale) dei dati, la larghezza è il fattore limitante
+                    scale = canvasWidth / dist;
+                }
+
+                var drawDist = dist * scale;
+                var drawHeight = height * scale;
+
+                // Centra il disegno
+                var offsetX = (w - drawDist) / 2;
+                var offsetY = (h - drawHeight) / 2;
+
+                // Punti (origine in basso a sinistra del disegno)
+                var B = { x: offsetX, y: offsetY + drawHeight }; // Osservatore
+                var A = { x: offsetX + drawDist, y: offsetY + drawHeight }; // Base edificio
+                var C = { x: offsetX + drawDist, y: offsetY }; // Cima edificio
+
+                ctx.font = '14px ' + jsColors.fontFamily;
+                ctx.fillStyle = jsColors.testo;
+
+                // Disegna triangolo
+                // Distanza (Adiacente)
+                ctx.strokeStyle = jsColors.cos; ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.moveTo(B.x, B.y); ctx.lineTo(A.x, A.y); ctx.stroke();
+                ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+                ctx.fillText("Distanza = " + dist.toFixed(1) + " m", (A.x + B.x) / 2, A.y + 10);
+
+                // Altezza (Opposto)
+                ctx.strokeStyle = jsColors.sin; ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(C.x, C.y); ctx.stroke();
+                ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+                ctx.fillText("Altezza = " + height.toFixed(2) + " m", A.x + 10, (A.y + C.y) / 2);
+
+                // Linea di vista (Ipotenusa)
+                ctx.strokeStyle = jsColors.raggio; ctx.lineWidth = 2; ctx.setLineDash([5, 5]);
+                ctx.beginPath(); ctx.moveTo(B.x, B.y); ctx.lineTo(C.x, C.y); ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Angolo retto
+                var rectSize = Math.min(15, drawDist * 0.1, drawHeight * 0.1);
+                ctx.strokeStyle = jsColors.testoChiaro; ctx.lineWidth = 2;
+                ctx.strokeRect(A.x - rectSize, A.y - rectSize, rectSize, rectSize);
+
+                // Arco angolo
+                var arcSize = Math.min(40, drawDist * 0.3, drawHeight * 0.3);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                ctx.beginPath();
+                ctx.moveTo(B.x, B.y);
+                ctx.arc(B.x, B.y, arcSize, 0, -degToRad(angle), true);
+                ctx.closePath(); ctx.fill();
+
+                ctx.fillStyle = jsColors.testo;
+                ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+                ctx.fillText("θ = " + angle + "°", B.x + 10, B.y - 10);
+            }
+
+
+            // --- Loop di Animazione S7 ---
+            function animationLoopS7(timestamp) {
+                var state = globalState.s7;
+                if (globalState.activeTab !== 's7' || !animationFrameId) {
+                    animationFrameId = null;
+                    return;
+                }
+
+                // Seleziona quale animazione eseguire
+                if (state.activeApp === 's7-sho' && state.sho.animating) {
+                    var sho = state.sho;
+                    if (!sho.lastTimestamp) sho.lastTimestamp = timestamp;
+                    var delta = (timestamp - sho.lastTimestamp) / 1000.0;
+                    sho.lastTimestamp = timestamp;
+                    sho.time += delta;
+                    drawS7_SHO();
+
+                } else if (state.activeApp === 's7-pendulum' && state.pendulum.animating) {
+                    var pen = state.pendulum;
+                    if (!pen.lastTimestamp) pen.lastTimestamp = timestamp;
+                    var delta = (timestamp - pen.lastTimestamp) / 1000.0;
+                    pen.lastTimestamp = timestamp;
+                    pen.time += delta;
+                    drawS7_Pendulum();
+
+                } else {
+                    // Nessuna animazione attiva
+                    animationFrameId = null;
+                    return;
+                }
+
+                animationFrameId = requestAnimationFrame(animationLoopS7);
+            }
+
+            // --- Logica di Risoluzione (S6) ---
+            function solveS6() {
+                var state = globalState.s6;
+                state.solutions = []; // Resetta
+
+                var func = state.func;
+                var k = state.k;
+                var minDeg = state.rangeMin;
+                var maxDeg = state.rangeMax;
+
+                if (isNaN(k) || isNaN(minDeg) || isNaN(maxDeg)) {
+                    dom.s6.solutionBox.innerHTML = "<span style='color:red;'>Errore: Inserisci valori numerici validi.</span>";
+                    return;
+                }
+
+                var solRadBase = [];
+                var periodoRad = 2 * Math.PI;
+
+                try {
+                    if (func === 'sin') {
+                        if (k < -1 || k > 1) throw new Error("sin(x) = k richiede -1 ≤ k ≤ 1");
+                        var angle = Math.asin(k);
+                        solRadBase.push(angle);
+                        solRadBase.push(Math.PI - angle);
+                    } else if (func === 'cos') {
+                        if (k < -1 || k > 1) throw new Error("cos(x) = k richiede -1 ≤ k ≤ 1");
+                        var angle = Math.acos(k);
+                        solRadBase.push(angle);
+                        solRadBase.push(2 * Math.PI - angle);
+                    } else if (func === 'tan') {
+                        solRadBase.push(Math.atan(k));
+                        periodoRad = Math.PI; // Periodo tangente
+                    }
+                } catch (e) {
+                    dom.s6.solutionBox.innerHTML = "<span style='color:red;'>Errore: " + e.message + "</span>";
+                    return;
+                }
+
+                var minRad = degToRad(minDeg);
+                var maxRad = degToRad(maxDeg);
+
+                var solutionsSet = new Set(); // Evita duplicati
+                var kMin = Math.floor(minRad / periodoRad) - 2;
+                var kMax = Math.ceil(maxRad / periodoRad) + 2;
+
+                for (var k_loop = kMin; k_loop <= kMax; k_loop++) {
+                    solRadBase.forEach(function (base) {
+                        var solRad = base + k_loop * periodoRad;
+                        // Approssimazione per check range
+                        var solRadApprox = parseFloat(solRad.toFixed(10));
+                        if (solRadApprox >= minRad && solRadApprox <= maxRad) {
+                            solutionsSet.add(solRadApprox);
+                        }
+                    });
+                }
+
+                // Converti in oggetti e ordina
+                state.solutions = Array.from(solutionsSet).map(function (rad) {
+                    return { rad: rad, deg: radToDeg(rad) };
+                }).sort(function (a, b) { return a.rad - b.rad; });
+
+                // Aggiorna UI
+                var html = "<strong>Equazione: " + func + "(x) = " + k + "</strong><br>";
+                html += "Intervallo: [" + minDeg + "°, " + maxDeg + "°]<br><hr>";
+                if (state.solutions.length === 0) {
+                    html += "Nessuna soluzione trovata nell'intervallo.";
+                } else {
+                    html += "Soluzioni trovate:<br>";
+                    state.solutions.forEach(function (sol) {
+                        html += "<strong>x = " + sol.deg.toFixed(2) + "°</strong> (" + getFractionalPi(sol.rad) + ")<br>";
+                    });
+                }
+                dom.s6.solutionBox.innerHTML = html;
+
+                // Ridisegna grafici
+                drawS6();
+            }
+
+            // --- Funzioni di Aggiornamento Stato e UI ---
+
+            // Aggiorna tutti i display e i canvas
+            function updateAll(tabId) {
+                var tab = tabId || globalState.activeTab;
+
+                if (tab === 's1') {
+                    updateS1Controls();
+                    updateS1Values();
+                    drawUnitCircle('s1-canvas', Object.assign({}, globalState.s1.toggles, { angleDeg: globalState.s1.angleDeg }));
+                } else if (tab === 's2') {
+                    updateS2Controls();
+                    drawUnitCircle('s2-canvas', { angleDeg: globalState.s2.angleDeg, showSin: true, showCos: true });
+                } else if (tab === 's3') {
+                    updateS3Controls();
+                    drawS3();
+                } else if (tab === 's4') {
+                    updateS4Controls();
+                    drawS4();
+                } else if (tab === 's5') {
+                    updateS5Controls();
+                    drawS5();
+                } else if (tab === 's6') {
+                    updateS6Controls();
+                    solveS6(); // Risolve e disegna
+                } else if (tab === 's7') {
+                    // Gestione app S7
+                    updateS7Controls();
+                    if (globalState.s7.activeApp === 's7-sho') {
+                        if (!globalState.s7.sho.animating) {
+                            drawS7_SHO(); // Disegna stato corrente solo se in pausa
+                        }
+                    } else if (globalState.s7.activeApp === 's7-pendulum') {
+                        if (!globalState.s7.pendulum.animating) {
+                            drawS7_Pendulum();
+                        }
+                    } else if (globalState.s7.activeApp === 's7-elevation') {
+                        updateS7Elevation();
+                        drawS7_Elevation();
+                    }
+                }
+
+                // Gestione animazioni
+                if (globalState.s1.animate && globalState.activeTab === 's1' && !animationFrameId) {
+                    animationFrameId = requestAnimationFrame(animationLoopS1);
+                }
+
+                var shoAnimating = globalState.s7.sho.animating && globalState.s7.activeApp === 's7-sho' && globalState.activeTab === 's7';
+                var penAnimating = globalState.s7.pendulum.animating && globalState.s7.activeApp === 's7-pendulum' && globalState.activeTab === 's7';
+
+                if ((shoAnimating || penAnimating) && !animationFrameId) {
+                    if (shoAnimating) {
+                        globalState.s7.sho.lastTimestamp = null;
+                    }
+                    if (penAnimating) {
+                        globalState.s7.pendulum.lastTimestamp = null;
+                    }
+                    animationFrameId = requestAnimationFrame(animationLoopS7);
+                }
+
+                // Ferma animazioni se non necessarie
+                var s1_stop = (!globalState.s1.animate || globalState.activeTab !== 's1');
+                var s7_stop = (!shoAnimating && !penAnimating);
+
+                if (animationFrameId && s1_stop && s7_stop) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+            }
+
+            // Loop di animazione per S1
+            function animationLoopS1() {
+                if (!globalState.s1.animate || globalState.activeTab !== 's1') {
+                    animationFrameId = null;
+                    return;
+                }
+                var newAngle = (globalState.s1.angleDeg + 0.5) % 720;
+                if (newAngle < -360) newAngle = 720;
+                globalState.s1.angleDeg = newAngle;
+
+                updateS1Controls();
+                updateS1Values();
+                drawUnitCircle('s1-canvas', Object.assign({}, globalState.s1.toggles, { angleDeg: globalState.s1.angleDeg }));
+
+                animationFrameId = requestAnimationFrame(animationLoopS1);
+            }
+
+            // Aggiorna i controlli della Sezione 1
+            function updateS1Controls() {
+                if (!dom.s1 || !dom.s1.slider) return;
+                var state = globalState.s1;
+                var angleRad = degToRad(state.angleDeg);
+
+                dom.s1.slider.value = state.angleDeg;
+                if (state.unit === 'deg') {
+                    dom.s1.angleDisplay.textContent = state.angleDeg.toFixed(0) + "°";
+                } else {
+                    dom.s1.angleDisplay.textContent = getFractionalPi(angleRad);
+                }
+                document.querySelector('input[name="s1-unit"][value="' + state.unit + '"]').checked = true;
+
+                var buttons = dom.s1.quickButtons.querySelectorAll('button');
+                buttons.forEach(function (btn) {
+                    var angle = parseFloat(btn.dataset.angle);
+                    btn.textContent = (state.unit === 'rad') ? getFractionalPi(degToRad(angle)) : angle + "°";
+                });
+
+                for (var key in state.toggles) {
+                    var check = document.querySelector('#s1-toggles input[data-key="' + key + '"]');
+                    if (check) check.checked = state.toggles[key];
+                }
+                if (dom.s1.animateCheck) dom.s1.animateCheck.checked = state.animate;
+            }
+
+            // Aggiorna il box dei valori (S1)
+            function updateS1Values() {
+                if (!dom.s1 || !dom.s1.valuesDisplay) return;
+                var state = globalState.s1;
+                var angleRad = degToRad(state.angleDeg);
+
+                var sin = Math.sin(angleRad), cos = Math.cos(angleRad), tan = Math.tan(angleRad);
+                var cot = 1 / tan, sec = 1 / cos, csc = 1 / sin;
+
+                dom.s1.valuesAngle.textContent = (state.unit === 'deg') ? state.angleDeg.toFixed(0) + "°" : getFractionalPi(angleRad);
+                dom.s1.valuesDisplay.innerHTML =
+                    formatValue("sin(θ)", sin) + formatValue("cos(θ)", cos) + formatValue("tan(θ)", tan) +
+                    '<hr style="border:0; border-top:1px solid #dee2e6; margin: 8px 0;">' +
+                    formatValue("cot(θ)", cot) + formatValue("sec(θ)", sec) + formatValue("csc(θ)", csc);
+            }
+
+            function formatValue(name, value) {
+                var sign = value >= 0 ? '+' : '-';
+                var signClass = value >= 0 ? 'val-pos' : 'val-neg';
+                var numStr = (Math.abs(value)).toFixed(4);
+                var symStr = getSymbolicValue(value);
+                if (Math.abs(value) > 500) { numStr = "∞"; sign = ""; signClass = "val-pos"; symStr = ""; }
+                return '<div>' + name + ' = <span class="' + signClass + '">' + sign + numStr + '</span> <span class="symbolic-val">' + symStr + '</span></div>';
+            }
+
+            // Aggiorna controlli Sezione 2
+            function updateS2Controls() {
+                if (!dom.s2 || !dom.s2.slider) return;
+                var state = globalState.s2;
+                var angleRad = degToRad(state.angleDeg);
+                dom.s2.slider.value = state.angleDeg;
+                if (state.unit === 'deg') {
+                    dom.s2.angleDisplay.textContent = state.angleDeg.toFixed(0) + "°";
+                } else {
+                    dom.s2.angleDisplay.textContent = getFractionalPi(angleRad);
+                }
+                document.querySelector('input[name="s2-unit"][value="' + state.unit + '"]').checked = true;
+            }
+
+            // Aggiorna controlli Sezione 3
+            function updateS3Controls() {
+                if (!dom.s3 || !dom.s3.toggles) return;
+                var state = globalState.s3;
+                for (var key in state.functions) {
+                    var check = document.querySelector('#s3-toggles input[value="' + key + '"]');
+                    if (check) check.checked = state.functions[key];
+                }
+                dom.s3.A.value = state.params.A; dom.s3.AVal.textContent = state.params.A.toFixed(1);
+                dom.s3.B.value = state.params.B; dom.s3.BVal.textContent = state.params.B.toFixed(1);
+                dom.s3.C.value = state.params.C; dom.s3.CVal.textContent = state.params.C.toFixed(2);
+                dom.s3.D.value = state.params.D; dom.s3.DVal.textContent = state.params.D.toFixed(1);
+                dom.s3.formulaDisplay.textContent = "y = " +
+                    state.params.A.toFixed(1) + "·sin(" + state.params.B.toFixed(1) + "x + " +
+                    state.params.C.toFixed(2) + ") + " + state.params.D.toFixed(1);
+            }
+
+            // Aggiorna controlli Sezione 4
+            function updateS4Controls() {
+                if (!dom.s4 || !dom.s4.modeGroup) return;
+                var state = globalState.s4;
+
+                if (state.mode === 'angle') {
+                    if (dom.s4.hypInput) state.hyp = parseFloat(dom.s4.hypInput.value);
+                    if (dom.s4.angleSlider) state.angle = parseFloat(dom.s4.angleSlider.value);
+                    if (isNaN(state.hyp) || state.hyp <= 0) state.hyp = 10;
+                    var rad = degToRad(state.angle);
+                    state.opp = state.hyp * Math.sin(rad);
+                    state.adj = state.hyp * Math.cos(rad);
+                    if (dom.s4.angleControls) dom.s4.angleControls.style.display = 'block';
+                    if (dom.s4.sidesControls) dom.s4.sidesControls.style.display = 'none';
+                } else { // mode === 'sides'
+                    if (dom.s4.oppInput) state.opp = parseFloat(dom.s4.oppInput.value);
+                    if (dom.s4.adjInput) state.adj = parseFloat(dom.s4.adjInput.value);
+                    if (isNaN(state.opp) || state.opp <= 0) state.opp = 5;
+                    if (isNaN(state.adj) || state.adj <= 0) state.adj = 8.66;
+                    state.hyp = Math.sqrt(state.opp * state.opp + state.adj * state.adj);
+                    state.angle = radToDeg(Math.atan(state.opp / state.adj));
+                    if (dom.s4.angleControls) dom.s4.angleControls.style.display = 'none';
+                    if (dom.s4.sidesControls) dom.s4.sidesControls.style.display = 'block';
+                }
+
+                var angle2 = 90 - state.angle;
+
+                var modeCheck = document.querySelector('input[name="s4-mode"][value="' + state.mode + '"]');
+                if (modeCheck) modeCheck.checked = true;
+                if (dom.s4.angleSlider) dom.s4.angleSlider.value = state.angle;
+                if (dom.s4.angleDisplay) dom.s4.angleDisplay.textContent = state.angle.toFixed(1) + "°";
+                if (dom.s4.hypInput) dom.s4.hypInput.value = state.hyp.toFixed(2);
+                if (dom.s4.oppInput) dom.s4.oppInput.value = state.opp.toFixed(2);
+                if (dom.s4.adjInput) dom.s4.adjInput.value = state.adj.toFixed(2);
+
+                if (dom.s4.valAngle) dom.s4.valAngle.textContent = state.angle.toFixed(1) + "°";
+                if (dom.s4.valAngle2) dom.s4.valAngle2.textContent = angle2.toFixed(1) + "°";
+                if (dom.s4.valOpp) dom.s4.valOpp.textContent = state.opp.toFixed(2);
+                if (dom.s4.valAdj) dom.s4.valAdj.textContent = state.adj.toFixed(2);
+                if (dom.s4.valHyp) dom.s4.valHyp.textContent = state.hyp.toFixed(2);
+                if (dom.s4.valSin) dom.s4.valSin.textContent = (state.opp / state.hyp).toFixed(3);
+                if (dom.s4.valCos) dom.s4.valCos.textContent = (state.adj / state.hyp).toFixed(3);
+                if (dom.s4.valTan) dom.s4.valTan.textContent = (state.opp / state.adj).toFixed(3);
+                if (dom.s4.valPyth1) dom.s4.valPyth1.textContent = (state.opp * state.opp + state.adj * state.adj).toFixed(2);
+                if (dom.s4.valPyth2) dom.s4.valPyth2.textContent = (state.hyp * state.hyp).toFixed(2);
+            }
+
+            // Aggiorna controlli Sezione 5
+            function updateS5Controls() {
+                if (!dom.s5 || !dom.s5.select) return;
+                dom.s5.select.value = globalState.s5.identity;
+                if (dom.s5.y) {
+                    dom.s5.y.value = globalState.s5.y;
+                    // Correzione: Aggiungi ' rad' qui
+                    dom.s5.yVal.textContent = getFractionalPi(globalState.s5.y, false) + ' rad';
+                }
+            }
+
+            // Aggiorna controlli Sezione 6
+            function updateS6Controls() {
+                if (!dom.s6 || !dom.s6.func) return;
+                dom.s6.func.value = globalState.s6.func;
+                dom.s6.k.value = globalState.s6.k;
+                dom.s6.rangeMin.value = globalState.s6.rangeMin;
+                dom.s6.rangeMax.value = globalState.s6.rangeMax;
+            }
+
+            // Aggiorna controlli Sezione 7
+            function updateS7Controls() {
+                if (!dom.s7 || !dom.s7.select) return;
+                var state = globalState.s7;
+                dom.s7.select.value = state.activeApp;
+
+                // Mostra/Nascondi controlli e canvas
+                document.querySelectorAll('.app-controls').forEach(function (el) {
+                    el.style.display = (el.id === state.activeApp + '-controls') ? 'block' : 'none';
+                });
+                document.querySelectorAll('#s7 .app-content').forEach(function (el) {
+                    el.classList.toggle('active', el.dataset.app === state.activeApp);
+                });
+
+                // Aggiorna controlli specifici
+                if (state.activeApp === 's7-sho') {
+                    var sho = state.sho;
+                    dom.s7.sho.A.value = sho.A; dom.s7.sho.AVal.textContent = sho.A.toFixed(0);
+                    dom.s7.sho.W.value = sho.W; dom.s7.sho.WVal.textContent = sho.W.toFixed(1);
+                    dom.s7.sho.P.value = sho.P; dom.s7.sho.PVal.textContent = sho.P.toFixed(2);
+                    dom.s7.sho.B.value = sho.B; dom.s7.sho.BVal.textContent = sho.B.toFixed(2);
+                    dom.s7.sho.startBtn.textContent = sho.animating ? '⏸️ Pausa' : '▶️ Avvia';
+                } else if (state.activeApp === 's7-pendulum') {
+                    var pen = state.pendulum;
+                    dom.s7.pendulum.L.value = pen.L; dom.s7.pendulum.LVal.textContent = pen.L.toFixed(1);
+                    dom.s7.pendulum.Th.value = pen.Th; dom.s7.pendulum.ThVal.textContent = pen.Th.toFixed(0);
+                    dom.s7.pendulum.B.value = pen.B; dom.s7.pendulum.BVal.textContent = pen.B.toFixed(2);
+                    dom.s7.pendulum.startBtn.textContent = pen.animating ? '⏸️ Pausa' : '▶️ Avvia';
+                } else if (state.activeApp === 's7-elevation') {
+                    var elev = state.elevation;
+                    dom.s7.elevation.dist.value = elev.dist;
+                    dom.s7.elevation.distVal.textContent = elev.dist.toFixed(0);
+                    dom.s7.elevation.angle.value = elev.angle;
+                    dom.s7.elevation.angleVal.textContent = elev.angle.toFixed(0) + "°";
+                    dom.s7.elevation.heightVal.textContent = elev.height.toFixed(2) + " m";
+                }
+            }
+
+            // Aggiorna stato S7-Elevation (calcolo)
+            function updateS7Elevation() {
+                var state = globalState.s7.elevation;
+                state.height = state.dist * Math.tan(degToRad(state.angle));
+            }
+
+
+            // --- Gestione Tab e Controlli ---
+
+            function showTab(tabId) {
+                // Ferma tutte le animazioni
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+                globalState.s1.animate = false;
+                globalState.s7.sho.animating = false;
+                globalState.s7.sho.lastTimestamp = null;
+                globalState.s7.pendulum.animating = false;
+                globalState.s7.pendulum.lastTimestamp = null;
+
+                globalState.activeTab = tabId;
+
+                document.querySelectorAll('.tab-button').forEach(function (btn) {
+                    btn.classList.toggle('active', btn.dataset.tab === tabId);
+                });
+                document.querySelectorAll('.display-content').forEach(function (content) {
+                    content.classList.toggle('active', content.id === tabId);
+                });
+
+                loadControls(tabId);
+
+                var footerText = {
+                    's1': "💡 Trascina lo slider o clicca sui bottoni per cambiare l'angolo.",
+                    's2': "💡 Collega le definizioni (opposto/ipotenusa) al triangolo rettangolo inscritto nella circonferenza.",
+                    's3': "💡 Modifica Ampiezza (A), Frequenza (B), Fase (C) e Offset (D) per vedere come cambia l'onda.",
+                    's4': "💡 Trascina lo slider o inserisci le lunghezze dei lati per risolvere il triangolo.",
+                    's5': "💡 Seleziona un'identità per vederne la dimostrazione e la verifica grafica.",
+                    's6': "💡 Risolvi le equazioni e vedi le soluzioni sulla circonferenza e sul grafico.",
+                    's7': "💡 Seleziona un'applicazione per esplorare scenari reali."
+                };
+                document.getElementById('footer-text').textContent = footerText[tabId] || "";
+
+                setTimeout(function () {
+                    var canvasIds = ['s1-canvas', 's2-canvas', 's4-canvas', 's6-canvas', 's7-canvas', 's7-elevation-canvas', 's7-pendulum-canvas'];
+                    canvasIds.forEach(function (id) {
+                        var canvas = document.getElementById(id);
+                        if (canvas && canvas.closest('.display-content.active')) {
+                            resizeCanvas(canvas);
+                        }
+                    });
+
+                    // Hack per Chart.js
+                    [s3Chart, s5Chart, s6Chart, s7Chart, s7PendulumChart].forEach(function (chart) {
+                        if (chart && chart.canvas.closest('.display-content.active')) {
+                            chart.resize();
+                        }
+                    });
+
+                    // Chiamata di update iniziale
+                    updateAll(tabId);
+                }, 0);
+            }
+
+            function loadControls(tabId) {
+                var controlsPanel = document.getElementById('controls-panel');
+                var templateId = 'template-' + tabId + '-controls';
+                var template = document.getElementById(templateId);
+
+                if (!template) {
+                    console.error("Template non trovato: " + templateId);
+                    controlsPanel.innerHTML = "";
+                    return;
+                }
+
+                controlsPanel.innerHTML = "";
+                var clone = template.content.cloneNode(true);
+                controlsPanel.appendChild(clone);
+
+                cacheDom(tabId);
+                addEventListeners(tabId);
+            }
+
+            // --- Caching Selettori DOM ---
+            function cacheDom(tabId) {
+                if (tabId === 's1') {
+                    dom.s1 = {
+                        canvas: document.getElementById('s1-canvas'),
+                        slider: document.getElementById('s1-angle-slider'),
+                        angleDisplay: document.getElementById('s1-angle-display'),
+                        unitGroup: document.getElementById('s1-unit-group'),
+                        quickButtons: document.getElementById('s1-quick-buttons'),
+                        animateCheck: document.getElementById('s1-animate-check'),
+                        valuesAngle: document.getElementById('s1-values-angle'),
+                        valuesDisplay: document.getElementById('s1-values-display'),
+                        toggles: document.getElementById('s1-toggles')
+                    };
+                } else if (tabId === 's2') {
+                    dom.s2 = {
+                        canvas: document.getElementById('s2-canvas'),
+                        slider: document.getElementById('s2-angle-slider'),
+                        angleDisplay: document.getElementById('s2-angle-display'),
+                        unitGroup: document.getElementById('s2-unit-group'),
+                        exprInput: document.getElementById('s2-expr-input'),
+                        exprAnswer: document.getElementById('s2-expr-answer'),
+                        exprCheck: document.getElementById('s2-expr-check'),
+                        exprFeedback: document.getElementById('s2-expr-feedback')
+                    };
+                } else if (tabId === 's3') {
+                    dom.s3 = {
+                        chart: document.getElementById('s3-chart'),
+                        toggles: document.getElementById('s3-toggles'),
+                        A: document.getElementById('s3-A'), AVal: document.getElementById('s3-A-val'),
+                        B: document.getElementById('s3-B'), BVal: document.getElementById('s3-B-val'),
+                        C: document.getElementById('s3-C'), CVal: document.getElementById('s3-C-val'),
+                        D: document.getElementById('s3-D'), DVal: document.getElementById('s3-D-val'),
+                        formulaDisplay: document.getElementById('s3-formula-display')
+                    };
+                } else if (tabId === 's4') {
+                    dom.s4 = {
+                        canvas: document.getElementById('s4-canvas'),
+                        modeGroup: document.getElementById('s4-mode-group'),
+                        angleControls: document.getElementById('s4-angle-controls'),
+                        sidesControls: document.getElementById('s4-sides-controls'),
+                        angleSlider: document.getElementById('s4-angle-slider'),
+                        angleDisplay: document.getElementById('s4-angle-display'),
+                        hypInput: document.getElementById('s4-hyp-input'),
+                        oppInput: document.getElementById('s4-opp-input'),
+                        adjInput: document.getElementById('s4-adj-input'),
+                        calcBox: document.getElementById('s4-calc-box'),
+                        valAngle: document.getElementById('s4-val-angle'),
+                        valAngle2: document.getElementById('s4-val-angle2'),
+                        valOpp: document.getElementById('s4-val-opp'),
+                        valAdj: document.getElementById('s4-val-adj'),
+                        valHyp: document.getElementById('s4-val-hyp'),
+                        valSin: document.getElementById('s4-val-sin'),
+                        valCos: document.getElementById('s4-val-cos'),
+                        valTan: document.getElementById('s4-val-tan'),
+                        valPyth1: document.getElementById('s4-val-pyth1'),
+                        valPyth2: document.getElementById('s4-val-pyth2')
+                    };
+                } else if (tabId === 's5') {
+                    dom.s5 = {
+                        chart: document.getElementById('s5-chart'),
+                        proofBox: document.getElementById('s5-proof-box'),
+                        select: document.getElementById('s5-identity-select'),
+                        ySlider: document.getElementById('s5-y-slider'),
+                        y: document.getElementById('s5-y'),
+                        yVal: document.getElementById('s5-y-val')
+                    };
+                } else if (tabId === 's6') {
+                    dom.s6 = {
+                        chart: document.getElementById('s6-chart'),
+                        canvas: document.getElementById('s6-canvas'),
+                        solutionBox: document.getElementById('s6-solution-box'),
+                        func: document.getElementById('s6-func'),
+                        k: document.getElementById('s6-k'),
+                        rangeMin: document.getElementById('s6-range-min'),
+                        rangeMax: document.getElementById('s6-range-max'),
+                        solveBtn: document.getElementById('s6-solve-btn')
+                    };
+                } else if (tabId === 's7') {
+                    dom.s7 = {
+                        select: document.getElementById('s7-app-select'),
+                        // Contenitori
+                        shoControls: document.getElementById('s7-sho-controls'),
+                        pendulumControls: document.getElementById('s7-pendulum-controls'),
+                        elevationControls: document.getElementById('s7-elevation-controls'),
+                        shoApp: document.querySelector('[data-app="s7-sho"]'),
+                        pendulumApp: document.querySelector('[data-app="s7-pendulum"]'),
+                        elevationApp: document.querySelector('[data-app="s7-elevation"]'),
+                        // Canvas
+                        canvas: document.getElementById('s7-canvas'),
+                        chart: document.getElementById('s7-chart'),
+                        pendulum: {
+                            canvas: document.getElementById('s7-pendulum-canvas'),
+                            chart: document.getElementById('s7-pendulum-chart'),
+                            L: document.getElementById('s7-L'), LVal: document.getElementById('s7-L-val'),
+                            Th: document.getElementById('s7-Th'), ThVal: document.getElementById('s7-Th-val'),
+                            B: document.getElementById('s7-PB'), BVal: document.getElementById('s7-PB-val'),
+                            startBtn: document.getElementById('s7-p-start-btn'),
+                            resetBtn: document.getElementById('s7-p-reset-btn')
+                        },
+                        elevationCanvas: document.getElementById('s7-elevation-canvas'),
+                        // Controlli SHO
+                        sho: {
+                            A: document.getElementById('s7-A'), AVal: document.getElementById('s7-A-val'),
+                            W: document.getElementById('s7-W'), WVal: document.getElementById('s7-W-val'),
+                            P: document.getElementById('s7-P'), PVal: document.getElementById('s7-P-val'),
+                            B: document.getElementById('s7-B'), BVal: document.getElementById('s7-B-val'),
+                            startBtn: document.getElementById('s7-start-btn'),
+                            resetBtn: document.getElementById('s7-reset-btn')
+                        },
+                        // Controlli Elevation
+                        elevation: {
+                            dist: document.getElementById('s7-dist'), distVal: document.getElementById('s7-dist-val'),
+                            angle: document.getElementById('s7-angle'), angleVal: document.getElementById('s7-angle-val'),
+                            heightVal: document.getElementById('s7-height-val')
+                        }
+                    };
+                }
+            }
+
+            // --- Gestione Event Listener ---
+            function addEventListeners(tabId) {
+                if (tabId === 's1' && dom.s1.slider) {
+                    dom.s1.slider.addEventListener('input', function (e) { globalState.s1.angleDeg = parseFloat(e.target.value); updateAll('s1'); });
+                    dom.s1.unitGroup.addEventListener('change', function (e) { globalState.s1.unit = e.target.value; updateAll('s1'); });
+                    dom.s1.animateCheck.addEventListener('change', function (e) { globalState.s1.animate = e.target.checked; updateAll('s1'); });
+                    dom.s1.toggles.addEventListener('change', function (e) { if (e.target.type === 'checkbox') { globalState.s1.toggles[e.target.dataset.key] = e.target.checked; updateAll('s1'); } });
+                    dom.s1.quickButtons.addEventListener('click', function (e) { if (e.target.tagName === 'BUTTON') { globalState.s1.angleDeg = parseFloat(e.target.dataset.angle); updateAll('s1'); } });
+                }
+
+                if (tabId === 's2' && dom.s2.slider) {
+                    dom.s2.slider.addEventListener('input', function (e) { globalState.s2.angleDeg = parseFloat(e.target.value); updateAll('s2'); });
+                    dom.s2.unitGroup.addEventListener('change', function (e) { globalState.s2.unit = e.target.value; updateAll('s2'); });
+                    dom.s2.exprCheck.addEventListener('click', function () {
+                        var expr = dom.s2.exprInput.value;
+                        var userAnswer = parseFloat(dom.s2.exprAnswer.value);
+                        if (isNaN(userAnswer)) {
+                            dom.s2.exprFeedback.textContent = "✗ La tua risposta non è un numero valido.";
+                            dom.s2.exprFeedback.style.color = "red";
+                            return;
+                        }
+                        try {
+                            var correctAnswer = mathParser.evaluate(expr);
+                            if (Math.abs(userAnswer - correctAnswer) < 0.001) {
+                                dom.s2.exprFeedback.textContent = "✓ Corretto! Risultato: " + correctAnswer.toFixed(4);
+                                dom.s2.exprFeedback.style.color = "green";
+                            } else {
+                                dom.s2.exprFeedback.textContent = "✗ Riprova. Il risultato corretto è " + correctAnswer.toFixed(4);
+                                dom.s2.exprFeedback.style.color = "red";
+                            }
+                        } catch (e) {
+                            dom.s2.exprFeedback.textContent = "✗ Errore nell'espressione: " + e.message;
+                            dom.s2.exprFeedback.style.color = "red";
+                        }
+                    });
+                }
+
+                if (tabId === 's3' && dom.s3.toggles) {
+                    dom.s3.toggles.addEventListener('change', function (e) { if (e.target.type === 'checkbox') { globalState.s3.functions[e.target.value] = e.target.checked; drawS3(); } });
+                    ['A', 'B', 'C', 'D'].forEach(function (param) { dom.s3[param].addEventListener('input', function (e) { globalState.s3.params[param] = parseFloat(e.target.value); updateS3Controls(); drawS3(); }); });
+                }
+
+                if (tabId === 's4' && dom.s4.modeGroup) {
+                    dom.s4.modeGroup.addEventListener('change', function (e) { globalState.s4.mode = e.target.value; updateAll('s4'); });
+                    [dom.s4.angleSlider, dom.s4.hypInput, dom.s4.oppInput, dom.s4.adjInput].forEach(function (el) { if (el) el.addEventListener('input', function () { updateAll('s4'); }); });
+                }
+
+                if (tabId === 's5' && dom.s5.select) {
+                    dom.s5.select.addEventListener('change', function (e) { globalState.s5.identity = e.target.value; updateAll('s5'); });
+                    if (dom.s5.y) {
+                        dom.s5.y.addEventListener('input', function (e) { globalState.s5.y = parseFloat(e.target.value); updateAll('s5'); });
+                    }
+                }
+
+                if (tabId === 's6' && dom.s6.solveBtn) {
+                    dom.s6.solveBtn.addEventListener('click', function () {
+                        globalState.s6.func = dom.s6.func.value;
+                        globalState.s6.k = parseFloat(dom.s6.k.value);
+                        globalState.s6.rangeMin = parseFloat(dom.s6.rangeMin.value);
+                        globalState.s6.rangeMax = parseFloat(dom.s6.rangeMax.value);
+                        updateAll('s6');
+                    });
+                }
+
+                if (tabId === 's7' && dom.s7.select) {
+                    dom.s7.select.addEventListener('change', function (e) {
+                        globalState.s7.activeApp = e.target.value;
+                        // Resetta tutte le animazioni quando si cambia app
+                        globalState.s7.sho.animating = false;
+                        globalState.s7.sho.lastTimestamp = null;
+                        globalState.s7.pendulum.animating = false;
+                        globalState.s7.pendulum.lastTimestamp = null;
+                        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+                        animationFrameId = null;
+
+                        // Ridisegna subito
+                        showTab('s7');
+                    });
+
+                    // --- Listeners SHO (Molla) ---
+                    dom.s7.sho.startBtn.addEventListener('click', function () {
+                        var sho = globalState.s7.sho;
+                        sho.animating = !sho.animating;
+                        this.textContent = sho.animating ? '⏸️ Pausa' : '▶️ Avvia';
+                        if (!sho.animating) { // Se metto in pausa
+                            sho.lastTimestamp = null;
+                        } else { // Se avvio
+                            sho.lastTimestamp = null; // Resetta per calcolo delta
+                            if (!animationFrameId) {
+                                animationFrameId = requestAnimationFrame(animationLoopS7);
+                            }
+                        }
+                        updateS7Controls();
+                    });
+                    dom.s7.sho.resetBtn.addEventListener('click', function () {
+                        var sho = globalState.s7.sho;
+                        sho.animating = false;
+                        sho.time = 0;
+                        sho.lastTimestamp = null;
+                        dom.s7.sho.startBtn.textContent = '▶️ Avvia';
+                        if (s7Chart) s7Chart.data.datasets[0].data = [];
+                        updateAll('s7');
+                    });
+                    ['A', 'W', 'P', 'B'].forEach(function (param) {
+                        dom.s7.sho[param].addEventListener('input', function (e) {
+                            globalState.s7.sho[param] = parseFloat(e.target.value);
+                            updateS7Controls();
+                            if (!globalState.s7.sho.animating) { // Aggiorna a fermo
+                                globalState.s7.sho.time = 0;
+                                if (s7Chart) s7Chart.data.datasets[0].data = [];
+                                updateAll('s7');
+                            }
+                        });
+                    });
+
+                    // --- Listeners Pendolo ---
+                    dom.s7.pendulum.startBtn.addEventListener('click', function () {
+                        var pen = globalState.s7.pendulum;
+                        pen.animating = !pen.animating;
+                        this.textContent = pen.animating ? '⏸️ Pausa' : '▶️ Avvia';
+                        if (!pen.animating) {
+                            pen.lastTimestamp = null;
+                        } else {
+                            pen.lastTimestamp = null;
+                            if (!animationFrameId) {
+                                animationFrameId = requestAnimationFrame(animationLoopS7);
+                            }
+                        }
+                        updateS7Controls();
+                    });
+                    dom.s7.pendulum.resetBtn.addEventListener('click', function () {
+                        var pen = globalState.s7.pendulum;
+                        pen.animating = false;
+                        pen.time = 0;
+                        pen.lastTimestamp = null;
+                        dom.s7.pendulum.startBtn.textContent = '▶️ Avvia';
+                        if (s7PendulumChart) s7PendulumChart.data.datasets[0].data = [];
+                        updateAll('s7');
+                    });
+                    ['L', 'Th', 'B'].forEach(function (param) {
+                        dom.s7.pendulum[param].addEventListener('input', function (e) {
+                            globalState.s7.pendulum[param] = parseFloat(e.target.value);
+                            updateS7Controls();
+                            if (!globalState.s7.pendulum.animating) {
+                                globalState.s7.pendulum.time = 0;
+                                if (s7PendulumChart) s7PendulumChart.data.datasets[0].data = [];
+                                updateAll('s7');
+                            }
+                        });
+                    });
+
+                    // --- Listeners Elevation ---
+                    dom.s7.elevation.dist.addEventListener('input', function (e) {
+                        globalState.s7.elevation.dist = parseFloat(e.target.value);
+                        updateAll('s7');
+                    });
+                    dom.s7.elevation.angle.addEventListener('input', function (e) {
+                        globalState.s7.elevation.angle = parseFloat(e.target.value);
+                        updateAll('s7');
+                    });
+                }
+            }
+
+            // --- Ridimensionamento Canvas ---
+            function resizeCanvas(canvas) {
+                if (!canvas) return;
+                var container = canvas.parentElement;
+                if (!container) return;
+
+                var dpr = window.devicePixelRatio || 1;
+                var rect = container.getBoundingClientRect();
+
+                if (rect.width < 10 || rect.height < 10) return; // Non visibile
+
+                // Per S2 e S6, rendi il canvas quadrato
+                if (canvas.id === 's2-canvas' || canvas.id === 's6-canvas') {
+                    var size = Math.min(rect.width, rect.height) - 10;
+                    if (size < 100) size = 100;
+                    canvas.width = size * dpr;
+                    canvas.height = size * dpr;
+                    canvas.style.width = size + 'px';
+                    canvas.style.height = size + 'px';
+                } else {
+                    canvas.width = rect.width * dpr;
+                    canvas.height = rect.height * dpr;
+                    canvas.style.width = rect.width + 'px';
+                    canvas.style.height = rect.height + 'px';
+                }
+
+                var ctx = canvas.getContext('2d');
+                ctx.scale(dpr, dpr);
+            }
+
+            function onResize() {
+                var canvasIds = ['s1-canvas', 's2-canvas', 's4-canvas', 's6-canvas', 's7-canvas', 's7-elevation-canvas', 's7-pendulum-canvas'];
+                canvasIds.forEach(function (id) {
+                    var canvas = document.getElementById(id);
+                    if (canvas && canvas.closest('.display-content.active')) {
+                        resizeCanvas(canvas);
+                    }
+                });
+                [s3Chart, s5Chart, s6Chart, s7Chart, s7PendulumChart].forEach(function (chart) {
+                    if (chart && chart.canvas.closest('.display-content.active')) {
+                        chart.resize();
+                    }
+                });
+                updateAll();
+            }
+
+            // --- Inizializzazione ---
+            function initApp() {
+                console.log("Inizializzazione App Trigonometria...");
+                // Inizializza Math.js parser
+                try {
+                    mathParser = math.parser();
+                } catch (e) {
+                    console.error("Errore caricamento Math.js", e);
+                    // Disabilita S2 evaluator se math.js non si carica
+                    var s2Controls = document.getElementById('template-s2-controls');
+                    if (s2Controls) {
+                        var evaluator = s2Controls.content.querySelector('#s2-expr-check');
+                        if (evaluator) evaluator.parentElement.innerHTML = "<p style='color:red;'>Errore: lib math.js non caricata.</p>";
+                    }
+                }
+
+                document.querySelector('.tab-nav').addEventListener('click', function (e) {
+                    if (e.target.tagName === 'BUTTON') {
+                        showTab(e.target.dataset.tab);
+                    }
+                });
+                showTab(globalState.activeTab);
+                window.addEventListener('resize', onResize);
+                console.log("App pronta.");
+            }
+
+            document.addEventListener('DOMContentLoaded', initApp);
+
+        })();
+    </script>
+
+</body>
+
+</html>

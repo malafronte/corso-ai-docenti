@@ -8,4 +8,4 @@ const cleanHref = href.startsWith("/") ? href.slice(1) : href;
 const fullUrl = `${baseUrl}${cleanHref}`;
 ---
 
-<a href={fullUrl}><slot /></a>
+<a href={fullUrl} target="_blank" rel="noopener noreferrer"><slot /></a>

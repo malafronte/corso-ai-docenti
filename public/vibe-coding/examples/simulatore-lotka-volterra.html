@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Ecosistema Lotka-Volterra</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 0;
+        }
+
+        .control-panel {
+            background: #f8f9fa;
+            padding: 30px;
+            border-right: 2px solid #dee2e6;
+            max-height: 900px;
+            overflow-y: auto;
+        }
+
+        .control-section {
+            margin-bottom: 30px;
+        }
+
+        .control-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        .parameter {
+            margin-bottom: 20px;
+        }
+
+        .parameter label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .parameter input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #dee2e6;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .parameter input[type="range"]:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .parameter input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .parameter input[type="range"]:disabled::-webkit-slider-thumb {
+            background: #adb5bd;
+            cursor: not-allowed;
+        }
+
+        .parameter input[type="range"]::-webkit-slider-thumb:hover {
+            background: #764ba2;
+            transform: scale(1.2);
+        }
+
+        .parameter input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .parameter input[type="range"]:disabled::-moz-range-thumb {
+            background: #adb5bd;
+            cursor: not-allowed;
+        }
+
+        .value-display {
+            display: block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: bold;
+            float: right;
+        }
+
+        .value-display.disabled {
+            background: #adb5bd;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            flex: 1;
+            min-width: 100px;
+            padding: 15px;
+            font-size: 1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #playPauseBtn {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        #playPauseBtn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
+        }
+
+        #stepBtn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        #stepBtn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.4);
+        }
+
+        #resetBtn {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+            color: white;
+        }
+
+        #resetBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(238, 9, 121, 0.4);
+        }
+
+        #exportBtn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            flex: 100%;
+            margin-top: 10px;
+        }
+
+        #exportBtn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .visualization {
+            padding: 30px;
+        }
+
+        .chart-container {
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-container h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .info-section {
+            background: #f8f9fa;
+            padding: 30px;
+            margin-top: 20px;
+            border-radius: 15px;
+        }
+
+        .info-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .info-section h3 {
+            color: #34495e;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .info-section p {
+            line-height: 1.8;
+            color: #495057;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .equation {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .parameter-list {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .parameter-list ul {
+            list-style-position: inside;
+            padding-left: 10px;
+        }
+
+        .parameter-list li {
+            margin: 10px 0;
+            line-height: 1.6;
+            color: #495057;
+        }
+
+        .parameter-list strong {
+            color: #667eea;
+        }
+
+        .resources {
+            margin-top: 25px;
+        }
+
+        .resources h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .resources ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .resources li {
+            margin: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .resources li:before {
+            content: "🔗";
+            position: absolute;
+            left: 0;
+        }
+
+        .resources a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .resources a:hover {
+            text-decoration: underline;
+            color: #764ba2;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-box h4 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .stat-box .value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .didactic-box {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 3px solid #f093fb;
+        }
+
+        .didactic-box h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+
+        .didactic-box ul {
+            list-style-position: inside;
+            padding-left: 10px;
+        }
+
+        .didactic-box li {
+            margin: 12px 0;
+            line-height: 1.7;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .didactic-intro {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .didactic-subtitle {
+            color: #2c3e50;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .control-panel {
+                border-right: none;
+                border-bottom: 2px solid #dee2e6;
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🦊 Simulazione Ecosistema Lotka-Volterra 🐰</h1>
+            <p>Esplora la dinamica preda-predatore in un ecosistema interattivo</p>
+        </header>
+
+        <div class="main-content">
+            <aside class="control-panel">
+                <div class="control-section">
+                    <h3>⚙️ Parametri del Modello</h3>
+
+                    <div class="parameter">
+                        <label>
+                            Tasso di crescita prede (α)
+                            <span class="value-display" id="alphaValue">1.1</span>
+                        </label>
+                        <input type="range" id="alpha" min="0.1" max="3" step="0.1" value="1.1"
+                            aria-label="Tasso di crescita prede (α)">
+                    </div>
+
+                    <div class="parameter">
+                        <label>
+                            Tasso di predazione (β)
+                            <span class="value-display" id="betaValue">0.4</span>
+                        </label>
+                        <input type="range" id="beta" min="0.01" max="1" step="0.01" value="0.4"
+                            aria-label="Tasso di predazione (β)">
+                    </div>
+
+                    <div class="parameter">
+                        <label>
+                            Tasso di mortalità predatori (γ)
+                            <span class="value-display" id="gammaValue">0.4</span>
+                        </label>
+                        <input type="range" id="gamma" min="0.1" max="2" step="0.1" value="0.4"
+                            aria-label="Tasso di mortalità predatori (γ)">
+                    </div>
+
+                    <div class="parameter">
+                        <label>
+                            Efficienza di conversione (δ)
+                            <span class="value-display" id="deltaValue">0.1</span>
+                        </label>
+                        <input type="range" id="delta" min="0.01" max="0.5" step="0.01" value="0.1"
+                            aria-label="Efficienza di conversione (δ)">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>🔢 Popolazioni Iniziali</h3>
+
+                    <div class="parameter">
+                        <label>
+                            Prede iniziali (x₀)
+                            <span class="value-display" id="x0Value">10</span>
+                        </label>
+                        <input type="range" id="x0" min="1" max="50" step="1" value="10"
+                            aria-label="Prede iniziali (x₀)">
+                    </div>
+
+                    <div class="parameter">
+                        <label>
+                            Predatori iniziali (y₀)
+                            <span class="value-display" id="y0Value">10</span>
+                        </label>
+                        <input type="range" id="y0" min="1" max="50" step="1" value="10"
+                            aria-label="Predatori iniziali (y₀)">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>⏱️ Velocità Simulazione</h3>
+
+                    <div class="parameter">
+                        <label>
+                            Velocità
+                            <span class="value-display" id="speedValue">1.0x</span>
+                        </label>
+                        <input type="range" id="speed" min="0.1" max="10" step="0.1" value="1.0"
+                            aria-label="Velocità simulazione">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="playPauseBtn">▶ Avvia</button>
+                    <button id="stepBtn">⏭ Passo</button>
+                    <button id="resetBtn">↻ Reset</button>
+                    <button id="exportBtn" disabled>💾 Esporta CSV</button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-box">
+                        <h4>Prede Attuali</h4>
+                        <div class="value" id="currentPrey">10</div>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Predatori Attuali</h4>
+                        <div class="value" id="currentPredator">10</div>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="visualization">
+                <div class="chart-container">
+                    <h3>📊 Popolazioni nel Tempo</h3>
+                    <canvas id="timeChart"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <h3>🔄 Spazio delle Fasi</h3>
+                    <canvas id="phaseChart"></canvas>
+                </div>
+            </main>
+        </div>
+
+        <section class="info-section">
+            <h2>📚 Le Equazioni di Lotka-Volterra</h2>
+
+            <p>
+                Le equazioni di Lotka-Volterra, sviluppate indipendentemente da Alfred J. Lotka nel 1925 e
+                Vito Volterra nel 1926, rappresentano uno dei modelli matematici fondamentali per descrivere
+                le interazioni tra specie in un ecosistema. Questo sistema di equazioni differenziali non lineari
+                modella la dinamica di due popolazioni: una preda e un predatore che dipende dalla preda per la sua
+                sopravvivenza.
+            </p>
+
+            <div class="didactic-box">
+                <h3>🎓 Inquadramento Didattico per le Scuole Superiori</h3>
+                <p class="didactic-intro">
+                    Le equazioni di Lotka-Volterra costituiscono un <strong>sistema di equazioni differenziali
+                        ordinarie (EDO) del primo ordine non lineari</strong>. Questo modello si inserisce nel programma
+                    di matematica del quinto anno del Liceo Scientifico e degli Istituti Tecnici.
+                </p>
+
+                <h4 class="didactic-subtitle">Classificazione matematica:</h4>
+                <ul>
+                    <li><strong>Sistema di equazioni differenziali ordinarie (EDO):</strong> contiene derivate rispetto
+                        a una sola variabile indipendente (il tempo t)</li>
+                    <li><strong>Primo ordine:</strong> compaiono solo derivate prime (dx/dt e dy/dt), non derivate
+                        seconde o superiori</li>
+                    <li><strong>Non lineari:</strong> la non linearità deriva dai termini di interazione xy (prodotto
+                        tra le due popolazioni),
+                        che rendono il sistema molto più complesso rispetto alle equazioni lineari studiate inizialmente
+                    </li>
+                    <li><strong>Sistema autonomo:</strong> le equazioni non dipendono esplicitamente dal tempo, ma solo
+                        dalle
+                        variabili di stato x e y</li>
+                    <li><strong>Sistema accoppiato:</strong> le due equazioni sono interdipendenti (la variazione di x
+                        dipende da y e viceversa)</li>
+                </ul>
+
+                <h4 class="didactic-subtitle">Perché si studia al quinto anno?</h4>
+                <p class="didactic-intro">
+                    Al quinto anno del liceo scientifico si affrontano le equazioni differenziali come applicazione
+                    del calcolo differenziale e integrale. Il modello di Lotka-Volterra rappresenta un esempio
+                    <strong>interdisciplinare</strong> che collega matematica, fisica e scienze naturali, mostrando
+                    come la matematica possa modellare fenomeni biologici complessi. Sebbene la risoluzione analitica
+                    sia impossibile, lo studio qualitativo del sistema (punti di equilibrio, stabilità, traiettorie
+                    nello spazio delle fasi) introduce concetti avanzati di analisi matematica.
+                </p>
+            </div>
+
+            <h3>📐 Le Equazioni</h3>
+            <div class="equation">
+                <strong>Equazione delle prede:</strong><br>
+                dx/dt = αx - βxy<br><br>
+                <strong>Equazione dei predatori:</strong><br>
+                dy/dt = δβxy - γy
+            </div>
+
+            <p>
+                Dove <strong>x(t)</strong> rappresenta il numero di prede al tempo t e <strong>y(t)</strong>
+                il numero di predatori al tempo t.
+            </p>
+
+            <h3>🔬 Significato dei Parametri</h3>
+            <div class="parameter-list">
+                <ul>
+                    <li><strong>α (alfa)</strong> - Tasso di crescita naturale delle prede: rappresenta quanto
+                        velocemente
+                        la popolazione di prede cresce in assenza di predatori. Valori più alti indicano una
+                        riproduzione più rapida.</li>
+
+                    <li><strong>β (beta)</strong> - Tasso di predazione: misura l'efficacia con cui i predatori
+                        catturano le prede.
+                        Dipende dalla probabilità di incontro e dal successo della caccia.</li>
+
+                    <li><strong>γ (gamma)</strong> - Tasso di mortalità dei predatori: rappresenta il tasso con cui i
+                        predatori
+                        muoiono in assenza di cibo. Include morte naturale e altre cause di mortalità.</li>
+
+                    <li><strong>δ (delta)</strong> - Efficienza di conversione: indica quanto efficacemente i predatori
+                        convertono
+                        le prede catturate in nuova prole. Un valore di 0.1 significa che il 10% dell'energia delle
+                        prede diventa nuovi predatori.</li>
+                </ul>
+            </div>
+
+            <h3>🌊 Comportamento del Sistema</h3>
+            <p>
+                Il modello di Lotka-Volterra produce oscillazioni cicliche caratteristiche: quando le prede sono
+                abbondanti,
+                i predatori prosperano e aumentano di numero. L'aumento dei predatori porta a una maggiore predazione,
+                che riduce la popolazione di prede. Con meno cibo disponibile, i predatori iniziano a diminuire,
+                permettendo alle prede di riprendersi. Questo ciclo si ripete indefinitamente in condizioni ideali.
+            </p>
+
+            <p>
+                Il punto di equilibrio del sistema si trova a x = γ/(δβ) e y = α/β. In questo punto, se raggiunto,
+                le popolazioni rimarrebbero costanti. Tuttavia, nella maggior parte dei casi, il sistema oscilla
+                attorno a questo punto di equilibrio in traiettorie chiuse visibili nel grafico dello spazio delle fasi.
+            </p>
+
+            <h3>💡 Come Usare la Simulazione</h3>
+            <p>
+                Sperimenta con i diversi parametri e controlli per osservare come cambiano le dinamiche dell'ecosistema:
+            </p>
+            <div class="parameter-list">
+                <ul>
+                    <li>Usa il pulsante <strong>"Avvia"</strong> per far partire la simulazione continua</li>
+                    <li>Usa il pulsante <strong>"Passo"</strong> per avanzare di un singolo passo temporale e osservare
+                        l'evoluzione graduale</li>
+                    <li>Regola la <strong>velocità</strong> della simulazione da 0.1x (lenta) a 10x (veloce)</li>
+                    <li>Quando in pausa, usa <strong>"Esporta CSV"</strong> per salvare tutti i dati raccolti</li>
+                    <li>Le popolazioni iniziali (x₀ e y₀) possono essere modificate solo dopo un reset completo</li>
+                    <li>Aumenta α per vedere prede che si riproducono più velocemente</li>
+                    <li>Aumenta β per predatori più efficienti nella caccia</li>
+                    <li>Modifica γ per vedere l'effetto della mortalità dei predatori</li>
+                    <li>Cambia δ per variare l'efficienza con cui il cibo diventa nuovi predatori</li>
+                    <li>Prova diverse popolazioni iniziali per esplorare traiettorie diverse nello spazio delle fasi
+                    </li>
+                </ul>
+            </div>
+
+            <div class="resources">
+                <h3>📖 Risorse per Approfondire</h3>
+
+                <h4>Per Studenti di Scuola Superiore:</h4>
+                <ul>
+                    <li><a href="https://it.wikipedia.org/wiki/Equazioni_di_Lotka-Volterra" target="_blank"
+                            rel="noopener noreferrer">
+                            Wikipedia - Equazioni di Lotka-Volterra (introduzione accessibile in italiano)</a></li>
+                    <li><a href="https://vlab.amrita.edu/index.php?sub=3&brch=67&sim=185&cnt=1" target="_blank"
+                            rel="noopener noreferrer">
+                            Amrita Virtual Lab - Simulazione interattiva preda-predatore</a></li>
+                    <li><a href="https://maddmaths.simai.eu/divulgazione/il-modello-lotka-volterra-competitivo/"
+                            target="_blank" rel="noopener noreferrer">
+                            MaddMaths! - Articolo divulgativo sul modello Lotka-Volterra</a></li>
+                </ul>
+
+                <h4>Per Studenti Universitari e Approfondimenti:</h4>
+                <ul>
+                    <li><a href="http://www.mat.uniroma3.it/users/gentile/2018-2019/FM410/testo/volume1-242-246.pdf"
+                            target="_blank" rel="noopener noreferrer">
+                            Università Roma Tre - Analisi matematica delle equazioni di Lotka-Volterra</a></li>
+                    <li><a href="https://matematica.unibocconi.eu/sites/default/files/media/attach/pesca_e_volterra_online.pdf"
+                            target="_blank" rel="noopener noreferrer">
+                            Università Bocconi - Laboratorio: il modello predatore-preda di Volterra</a></li>
+                    <li><a href="https://teaching.smp.uq.edu.au/scims/Appl_analysis/Lotka_Volterra.html" target="_blank"
+                            rel="noopener noreferrer">
+                            University of Queensland - Analisi applicata del modello Lotka-Volterra</a></li>
+                    <li><a href="https://amslaurea.unibo.it/id/eprint/21934/1/Tesi_Artioli_Simone.pdf" target="_blank"
+                            rel="noopener noreferrer">
+                            Tesi UniBo - Modelli deterministici di Lotka-Volterra</a></li>
+                    <li><a href="https://www.mat.uniroma2.it/~locatell/LC1/esami/aa0910/Tema_lotka-volterra.pdf"
+                            target="_blank" rel="noopener noreferrer">
+                            Università Roma Tor Vergata - Studio analitico del sistema di Lotka-Volterra</a></li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Variabili globali
+        let isRunning = false;
+        let isPaused = false;
+        let timeData = [];
+        let preyData = [];
+        let predatorData = [];
+        let phasePreyData = [];
+        let phasePredatorData = [];
+        let currentTime = 0;
+        let x, y; // Popolazioni correnti
+        let animationId;
+        let simulationSpeed = 1.0;
+
+        // Parametri del modello
+        let params = {
+            alpha: 1.1,
+            beta: 0.4,
+            gamma: 0.4,
+            delta: 0.1,
+            x0: 10,
+            y0: 10
+        };
+
+        // Inizializzazione grafici
+        const timeCtx = document.getElementById('timeChart').getContext('2d');
+        const phaseCtx = document.getElementById('phaseChart').getContext('2d');
+
+        const timeChart = new Chart(timeCtx, {
+            type: 'line',
+            data: {
+                labels: timeData,
+                datasets: [
+                    {
+                        label: '🐰 Prede',
+                        data: preyData,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        pointRadius: 0
+                    },
+                    {
+                        label: '🦊 Predatori',
+                        data: predatorData,
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                animation: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Tempo',
+                            font: { size: 14, weight: 'bold' }
+                        },
+                        ticks: {
+                            maxTicksLimit: 10
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Numero di Individui',
+                            font: { size: 14, weight: 'bold' }
+                        },
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            font: { size: 14 },
+                            usePointStyle: true
+                        }
+                    }
+                }
+            }
+        });
+
+        const phaseChart = new Chart(phaseCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Traiettoria',
+                    data: [],
+                    borderColor: '#9b59b6',
+                    backgroundColor: 'rgba(155, 89, 182, 0.5)',
+                    showLine: true,
+                    borderWidth: 3,
+                    pointRadius: 2,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                animation: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Popolazione Prede',
+                            font: { size: 14, weight: 'bold' }
+                        },
+                        beginAtZero: true
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Popolazione Predatori',
+                            font: { size: 14, weight: 'bold' }
+                        },
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Event listeners per gli slider
+        function setupSlider(id, valueId, param) {
+            const slider = document.getElementById(id);
+            const display = document.getElementById(valueId);
+
+            slider.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                params[param] = value;
+                display.textContent = value.toFixed(2);
+            });
+        }
+
+        setupSlider('alpha', 'alphaValue', 'alpha');
+        setupSlider('beta', 'betaValue', 'beta');
+        setupSlider('gamma', 'gammaValue', 'gamma');
+        setupSlider('delta', 'deltaValue', 'delta');
+        setupSlider('x0', 'x0Value', 'x0');
+        setupSlider('y0', 'y0Value', 'y0');
+
+        // Slider velocità
+        const speedSlider = document.getElementById('speed');
+        const speedDisplay = document.getElementById('speedValue');
+        speedSlider.addEventListener('input', (e) => {
+            simulationSpeed = parseFloat(e.target.value);
+            speedDisplay.textContent = simulationSpeed.toFixed(1) + 'x';
+        });
+
+        // Funzione per gestire lo stato degli slider x0 e y0
+        function updateInitialPopulationSliders() {
+            const x0Slider = document.getElementById('x0');
+            const y0Slider = document.getElementById('y0');
+            const x0Display = document.getElementById('x0Value');
+            const y0Display = document.getElementById('y0Value');
+
+            const shouldDisable = isRunning || isPaused;
+
+            x0Slider.disabled = shouldDisable;
+            y0Slider.disabled = shouldDisable;
+
+            if (shouldDisable) {
+                x0Display.classList.add('disabled');
+                y0Display.classList.add('disabled');
+            } else {
+                x0Display.classList.remove('disabled');
+                y0Display.classList.remove('disabled');
+            }
+        }
+
+        // Metodo di Runge-Kutta 4 per risolvere le equazioni differenziali
+        function rungeKutta4(x, y, dt) {
+            // dx/dt = alpha*x - beta*x*y
+            // dy/dt = delta*beta*x*y - gamma*y
+
+            const { alpha, beta, gamma, delta } = params;
+
+            // k1
+            const k1x = alpha * x - beta * x * y;
+            const k1y = delta * beta * x * y - gamma * y;
+
+            // k2
+            const k2x = alpha * (x + 0.5 * dt * k1x) - beta * (x + 0.5 * dt * k1x) * (y + 0.5 * dt * k1y);
+            const k2y = delta * beta * (x + 0.5 * dt * k1x) * (y + 0.5 * dt * k1y) - gamma * (y + 0.5 * dt * k1y);
+
+            // k3
+            const k3x = alpha * (x + 0.5 * dt * k2x) - beta * (x + 0.5 * dt * k2x) * (y + 0.5 * dt * k2y);
+            const k3y = delta * beta * (x + 0.5 * dt * k2x) * (y + 0.5 * dt * k2y) - gamma * (y + 0.5 * dt * k2y);
+
+            // k4
+            const k4x = alpha * (x + dt * k3x) - beta * (x + dt * k3x) * (y + dt * k3y);
+            const k4y = delta * beta * (x + dt * k3x) * (y + dt * k3y) - gamma * (y + dt * k3y);
+
+            // Calcolo nuovi valori
+            const newX = x + (dt / 6) * (k1x + 2 * k2x + 2 * k3x + k4x);
+            const newY = y + (dt / 6) * (k1y + 2 * k2y + 2 * k3y + k4y);
+
+            return { x: Math.max(0, newX), y: Math.max(0, newY) };
+        }
+
+        // Funzione per avanzare di un passo
+        function step() {
+            const dt = 0.05 * simulationSpeed;
+
+            // Integrazione numerica
+            const result = rungeKutta4(x, y, dt);
+            x = result.x;
+            y = result.y;
+
+            currentTime += dt;
+
+            // Aggiornamento dati
+            timeData.push(currentTime.toFixed(2));
+            preyData.push(x);
+            predatorData.push(y);
+
+            // Limita la lunghezza dei dati visualizzati
+            const maxPoints = 500;
+            if (timeData.length > maxPoints) {
+                timeData.shift();
+                preyData.shift();
+                predatorData.shift();
+            }
+
+            // Aggiornamento spazio delle fasi
+            phasePreyData.push(x);
+            phasePredatorData.push(y);
+
+            if (phasePreyData.length > maxPoints) {
+                phasePreyData.shift();
+                phasePredatorData.shift();
+            }
+
+            // Aggiornamento grafici
+            timeChart.data.labels = timeData;
+            timeChart.data.datasets[0].data = preyData;
+            timeChart.data.datasets[1].data = predatorData;
+            timeChart.update('none');
+
+            const phaseData = phasePreyData.map((px, i) => ({
+                x: px,
+                y: phasePredatorData[i]
+            }));
+            phaseChart.data.datasets[0].data = phaseData;
+            phaseChart.update('none');
+
+            // Aggiornamento statistiche
+            document.getElementById('currentPrey').textContent = x.toFixed(1);
+            document.getElementById('currentPredator').textContent = y.toFixed(1);
+
+            // Controllo estinzione
+            if (x < 0.01 || y < 0.01) {
+                pause();
+                alert('⚠️ Una delle popolazioni si è estinta! La simulazione è stata fermata.');
+                return false;
+            }
+
+            return true;
+        }
+
+        // Funzione di simulazione
+        function simulate() {
+            if (!isRunning) return;
+
+            if (!step()) return;
+
+            animationId = requestAnimationFrame(simulate);
+        }
+
+        // Funzioni controllo
+        function play() {
+            isRunning = true;
+            isPaused = false;
+            document.getElementById('playPauseBtn').innerHTML = '⏸ Pausa';
+            document.getElementById('stepBtn').disabled = true;
+            document.getElementById('exportBtn').disabled = true;
+            updateInitialPopulationSliders();
+            simulate();
+        }
+
+        function pause() {
+            isRunning = false;
+            isPaused = true;
+            document.getElementById('playPauseBtn').innerHTML = '▶ Avvia';
+            document.getElementById('stepBtn').disabled = false;
+            document.getElementById('exportBtn').disabled = false;
+            updateInitialPopulationSliders();
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+        }
+
+        function singleStep() {
+            if (!isPaused) {
+                isPaused = true;
+                updateInitialPopulationSliders();
+            }
+            step();
+            document.getElementById('exportBtn').disabled = false;
+        }
+
+        function reset() {
+            pause();
+
+            // Reset variabili
+            timeData = [];
+            preyData = [];
+            predatorData = [];
+            phasePreyData = [];
+            phasePredatorData = [];
+            currentTime = 0;
+            x = params.x0;
+            y = params.y0;
+            isPaused = false;
+
+            // Reset grafici
+            timeChart.data.labels = [];
+            timeChart.data.datasets[0].data = [];
+            timeChart.data.datasets[1].data = [];
+            timeChart.update();
+
+            phaseChart.data.datasets[0].data = [];
+            phaseChart.update();
+
+            // Reset statistiche
+            document.getElementById('currentPrey').textContent = params.x0;
+            document.getElementById('currentPredator').textContent = params.y0;
+
+            // Abilita modifiche a x0 e y0
+            document.getElementById('stepBtn').disabled = false;
+            document.getElementById('exportBtn').disabled = true;
+            updateInitialPopulationSliders();
+        }
+
+        // Funzione per esportare dati in CSV
+        function exportToCSV() {
+            if (timeData.length === 0) {
+                alert('Nessun dato da esportare!');
+                return;
+            }
+
+            // Prepara l'intestazione
+            let csv = 'Tempo,Prede,Predatori\n';
+
+            // Aggiungi i dati
+            for (let i = 0; i < timeData.length; i++) {
+                csv += `${timeData[i]},${preyData[i].toFixed(6)},${predatorData[i].toFixed(6)}\n`;
+            }
+
+            // Crea un blob e scarica il file
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', `lotka_volterra_${new Date().toISOString().slice(0, 10)}.csv`);
+            link.style.visibility = 'hidden';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Event listeners pulsanti
+        document.getElementById('playPauseBtn').addEventListener('click', () => {
+            if (isRunning) {
+                pause();
+            } else {
+                play();
+            }
+        });
+
+        document.getElementById('stepBtn').addEventListener('click', singleStep);
+        document.getElementById('resetBtn').addEventListener('click', reset);
+        document.getElementById('exportBtn').addEventListener('click', exportToCSV);
+
+        // Inizializzazione
+        reset();
+    </script>
+</body>
+
+</html>

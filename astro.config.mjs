@@ -2,6 +2,8 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import remarkEmoji from "remark-emoji";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 import mermaid from "astro-mermaid";
 import plantuml from "astro-plantuml";
 
@@ -24,7 +26,11 @@ export default defineConfig({
         root: { label: "Italiano", lang: "it" },
         en: { label: "English", lang: "en" },
       },
-      customCss: ["./src/styles/custom.css"],
+      customCss: [
+        "./src/styles/custom.css",
+        // Aggiungi KaTeX CSS per il rendering matematico
+        "katex/dist/katex.min.css",
+      ],
       social: [
         {
           icon: "github",
@@ -101,9 +107,15 @@ export default defineConfig({
               },
               slug: "corso/ai-philosophical-and-ethical-implications",
             },
+            {
+              label: "Vibe coding per la didattica",
+              translations: {
+                en: "Vibe Coding for Education",
+              },
+              slug: "corso/vibe-coding",
+            },
           ],
         },
-
         {
           label: " 🧭 Bussola dell'AI",
           translations: { en: " 🧭 AI compass" },
@@ -121,7 +133,6 @@ export default defineConfig({
           translations: { en: "📖 Guides" },
           collapsed: true,
           items: [
-            // Each item here is one entry in the navigation menu.
             {
               label: "Guide per AI",
               translations: { en: "AI Guides" },
@@ -140,11 +151,41 @@ export default defineConfig({
       components: {
         Footer: "./src/components/Footer.astro",
       },
+      expressiveCode: {
+        frames: {
+          showCopyToClipboardButton: true,
+        },
+      },
     }),
   ],
   // Enable remark plugin to convert emoji shortcodes like :tent: into unicode
   markdown: {
-    remarkPlugins: [remarkEmoji],
+    remarkPlugins: [
+      remarkEmoji,
+      // Configura remark-math per gestire meglio le espressioni matematiche
+      [
+        remarkMath,
+        {
+          singleDollarTextMath: true,
+        },
+      ],
+    ],
+    rehypePlugins: [
+      [
+        rehypeKatex,
+        {
+          // Configurazioni per gestire meglio MDX e LaTeX
+          strict: false,
+          trust: true,
+          throwOnError: false,
+          // Opzioni aggiuntive per compatibilità MDX
+          output: "html",
+          macros: {
+            "\\text": "\\mathrm",
+          },
+        },
+      ],
+    ],
   },
   site: "https://malafronte.github.io",
   base: "/corso-ai-docenti/",
