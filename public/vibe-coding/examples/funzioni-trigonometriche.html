@@ -58,8 +58,6 @@
             flex-direction: column;
             height: 100vh;
             width: 100%;
-            min-width: 1024px;
-            /* Requisito */
         }
 
         .app-header {
@@ -127,7 +125,7 @@
         .controls-panel {
             /* Larghezza flessibile: 25% con min/max */
             flex-basis: 25vw;
-            min-width: 320px;
+            min-width: 280px;
             max-width: 450px;
 
             flex-shrink: 0;
@@ -270,6 +268,7 @@
             flex-grow: 1;
             padding: 6px 4px;
             font-size: 0.8rem;
+            min-width: 0;
         }
 
         /* --- Tabelle e Box Valori --- */
@@ -554,6 +553,253 @@
             width: 100%;
             height: 250px;
             /* Altezza fissa per il grafico */
+        }
+
+        /* --- Media Queries per Mobile --- */
+        @media (max-width: 768px) {
+
+            body,
+            html {
+                overflow: auto;
+                /* Permette scroll su mobile */
+            }
+
+            .app-container {
+                height: auto;
+                min-height: 100vh;
+            }
+
+            .app-header {
+                padding: 10px 15px;
+            }
+
+            .app-header h1 {
+                font-size: 1.2rem;
+            }
+
+            .tab-nav {
+                gap: 3px;
+                margin-top: 8px;
+            }
+
+            .tab-button {
+                padding: 6px 8px;
+                font-size: 0.75rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .app-main {
+                flex-direction: column;
+                overflow: visible;
+            }
+
+            .controls-panel {
+                flex-basis: auto;
+                min-width: 100%;
+                max-width: 100%;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--colore-bordo);
+                padding: 15px;
+                max-height: 400px;
+                overflow-y: auto;
+            }
+
+            .display-area {
+                padding: 15px;
+                overflow-y: visible;
+                height: auto;
+                min-height: 400px;
+            }
+
+            .canvas-container {
+                min-height: 300px;
+                max-height: 50vh;
+            }
+
+            #s1-canvas-container {
+                max-height: 400px;
+            }
+
+            .app-footer {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+                text-align: center;
+            }
+
+            h3 {
+                font-size: 1rem;
+                margin-top: 12px;
+                margin-bottom: 10px;
+            }
+
+            .control-group {
+                margin-bottom: 12px;
+            }
+
+            label {
+                font-size: 0.85rem;
+            }
+
+            input[type="text"],
+            input[type="number"],
+            select {
+                font-size: 16px;
+                /* Previene zoom automatico su iOS */
+            }
+
+            .quick-buttons button {
+                padding: 8px 6px;
+                font-size: 0.75rem;
+                min-width: 40px;
+            }
+
+            .radio-group label,
+            .checkbox-group label {
+                font-size: 0.85rem;
+            }
+
+            .values-display {
+                font-size: 0.8rem;
+                padding: 10px;
+            }
+
+            .formula-box {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+
+            .formula-box h4 {
+                font-size: 0.95rem;
+                margin-bottom: 8px;
+            }
+
+            .formula-box pre {
+                font-size: 0.85rem;
+                padding: 8px;
+            }
+
+            /* Split View: da orizzontale a verticale su mobile */
+            .split-view {
+                flex-direction: column;
+            }
+
+            .split-view-left,
+            .split-view-right {
+                flex: 1 1 auto;
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--colore-bordo);
+                padding: 15px;
+                min-height: 250px;
+            }
+
+            .split-view-right {
+                border-bottom: none;
+            }
+
+            .split-view-top,
+            .split-view-bottom {
+                width: 100%;
+                min-height: 200px;
+            }
+
+            .s6-split-bottom-flex {
+                flex-direction: column;
+            }
+
+            #s6-solution-container {
+                border-right: none;
+                border-bottom: 1px solid var(--colore-bordo);
+                padding-right: 0;
+                padding-bottom: 15px;
+                margin-bottom: 15px;
+            }
+
+            #s6-circle-container {
+                min-height: 300px;
+            }
+
+            .chart-container {
+                padding: 10px;
+                min-height: 300px;
+            }
+
+            #s7-canvas-container,
+            #s7-pendulum-canvas-container {
+                height: 200px;
+            }
+
+            #s7-chart-container,
+            #s7-pendulum-chart-container {
+                height: 200px;
+            }
+
+            #s7-elevation-canvas-container {
+                min-height: 250px;
+            }
+
+            .s4-calc-box {
+                font-size: 0.8rem;
+                padding: 10px;
+            }
+
+            #s5-proof-box {
+                font-size: 0.85rem;
+                padding: 12px;
+            }
+
+            #s6-solution-box {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Media query per schermi molto piccoli */
+        @media (max-width: 480px) {
+            .app-header h1 {
+                font-size: 1rem;
+            }
+
+            .tab-button {
+                padding: 5px 6px;
+                font-size: 0.7rem;
+            }
+
+            .controls-panel {
+                padding: 10px;
+                max-height: 350px;
+            }
+
+            .display-area {
+                padding: 10px;
+                min-height: 300px;
+            }
+
+            .quick-buttons {
+                gap: 4px;
+            }
+
+            .quick-buttons button {
+                padding: 6px 4px;
+                font-size: 0.7rem;
+                min-width: 35px;
+            }
+
+            .canvas-container {
+                min-height: 250px;
+                max-height: 45vh;
+            }
+
+            #s1-canvas-container {
+                max-height: 300px;
+            }
+
+            .formula-box pre {
+                font-size: 0.75rem;
+            }
         }
     </style>
 </head>

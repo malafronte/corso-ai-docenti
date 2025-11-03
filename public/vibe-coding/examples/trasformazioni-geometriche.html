@@ -58,6 +58,13 @@
             overflow-y: auto;
         }
 
+        .canvas-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         h1 {
             font-size: 24px;
             color: var(--color-primary);
@@ -233,12 +240,18 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            width: 100%;
+            overflow: hidden;
         }
 
         canvas {
             border: 1px solid var(--color-border);
             border-radius: 8px;
             background-color: #fefefe;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            touch-action: none;
         }
 
         .matrix-display {
@@ -350,14 +363,191 @@
             display: none;
         }
 
+        /* Responsive Design */
         @media (max-width: 1024px) {
             .container {
                 grid-template-columns: 1fr;
+                height: auto;
+                min-height: 100vh;
             }
 
             .control-panel {
                 border-right: none;
                 border-bottom: 2px solid var(--color-border);
+                max-height: none;
+            }
+
+            .visualization-panel {
+                padding: 16px;
+            }
+
+            .canvas-container {
+                padding: 12px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            h2 {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                font-size: 14px;
+            }
+
+            .control-panel {
+                padding: 16px;
+            }
+
+            .visualization-panel {
+                padding: 12px;
+                gap: 16px;
+            }
+
+            h1 {
+                font-size: 18px;
+                margin-bottom: 6px;
+            }
+
+            h2 {
+                font-size: 15px;
+                margin-top: 16px;
+                margin-bottom: 10px;
+            }
+
+            h3 {
+                font-size: 14px;
+            }
+
+            .subtitle {
+                font-size: 13px;
+                margin-bottom: 16px;
+            }
+
+            .form-group {
+                margin-bottom: 16px;
+            }
+
+            label {
+                font-size: 13px;
+            }
+
+            select,
+            input[type="range"] {
+                font-size: 13px;
+            }
+
+            .button-group {
+                gap: 10px;
+                margin-top: 20px;
+            }
+
+            button {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+
+            .canvas-container {
+                padding: 8px;
+                border-radius: 8px;
+            }
+
+            .matrix-display {
+                padding: 16px;
+            }
+
+            .matrix {
+                padding: 12px 16px;
+                font-size: 14px;
+                overflow-x: auto;
+            }
+
+            .matrix-cell {
+                min-width: 60px;
+                font-size: 13px;
+            }
+
+            .determinant {
+                padding: 10px;
+                font-size: 13px;
+            }
+
+            .determinant-value {
+                font-size: 16px;
+            }
+
+            .info-box,
+            .guide-questions,
+            .instructions {
+                font-size: 12px;
+                padding: 12px;
+            }
+
+            .instructions ol,
+            .guide-questions ul {
+                margin-left: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .control-panel {
+                padding: 12px;
+            }
+
+            .visualization-panel {
+                padding: 8px;
+            }
+
+            h1 {
+                font-size: 16px;
+            }
+
+            h2 {
+                font-size: 14px;
+                margin-top: 12px;
+                margin-bottom: 8px;
+            }
+
+            .button-group {
+                gap: 8px;
+            }
+
+            button {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .matrix {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .matrix-row {
+                gap: 8px;
+            }
+
+            .matrix-cell {
+                min-width: 50px;
+                font-size: 12px;
+            }
+
+            .slider-value {
+                font-size: 12px;
+                padding: 2px 6px;
+            }
+
+            input[type="range"]::-webkit-slider-thumb {
+                width: 22px;
+                height: 22px;
+            }
+
+            input[type="range"]::-moz-range-thumb {
+                width: 22px;
+                height: 22px;
             }
         }
     </style>
@@ -533,10 +723,10 @@
         // ==========================================
         const canvas = document.getElementById('mainCanvas');
         const ctx = canvas.getContext('2d');
-        const CANVAS_SIZE = 700;
-        const SCALE = 50; // 1 unità = 50 pixel
-        const ORIGIN_X = CANVAS_SIZE / 2;
-        const ORIGIN_Y = CANVAS_SIZE / 2;
+        let CANVAS_SIZE = 700;
+        let SCALE = 50; // 1 unità = 50 pixel
+        let ORIGIN_X = CANVAS_SIZE / 2;
+        let ORIGIN_Y = CANVAS_SIZE / 2;
         const GRID_STEP = 1; // Linee della griglia ogni 1 unità
 
         // ==========================================
@@ -1181,7 +1371,52 @@
         // ==========================================
         // INIZIALIZZAZIONE
         // ==========================================
+
+        /**
+         * Ridimensiona il canvas in base alla larghezza della finestra
+         */
+        function resizeCanvas() {
+            const container = document.querySelector('.canvas-container');
+            const maxWidth = container.clientWidth - 40; // Sottrae il padding
+            const maxHeight = window.innerHeight - 300; // Spazio per i controlli e la matrice
+
+            // Dimensione ottimale in base allo schermo
+            let newSize = Math.min(700, maxWidth, maxHeight);
+
+            // Su mobile, usa dimensioni più piccole
+            if (window.innerWidth <= 768) {
+                newSize = Math.min(500, maxWidth);
+            }
+            if (window.innerWidth <= 480) {
+                newSize = Math.min(350, maxWidth);
+            }
+
+            // Assicura che sia almeno 300px
+            newSize = Math.max(300, newSize);
+
+            // Aggiorna le costanti globali
+            CANVAS_SIZE = newSize;
+            SCALE = newSize / 14; // Mantiene proporzioni simili
+            ORIGIN_X = CANVAS_SIZE / 2;
+            ORIGIN_Y = CANVAS_SIZE / 2;
+
+            // Aggiorna le dimensioni del canvas
+            canvas.width = CANVAS_SIZE;
+            canvas.height = CANVAS_SIZE;
+
+            // Ri-renderizza
+            render();
+        }
+
+        // Gestisce il ridimensionamento della finestra con debounce
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(resizeCanvas, 250);
+        });
+
         updateParamPanels();
+        resizeCanvas(); // Imposta dimensioni iniziali
         render();
     </script>
 </body>

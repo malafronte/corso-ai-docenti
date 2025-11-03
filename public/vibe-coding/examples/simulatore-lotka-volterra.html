@@ -404,6 +404,122 @@
                 border-right: none;
                 border-bottom: 2px solid #dee2e6;
                 max-height: none;
+                padding: 20px;
+            }
+
+            .visualization {
+                padding: 20px;
+            }
+
+            .chart-container {
+                padding: 16px;
+            }
+        }
+
+        /* Additional rules for small/mobile devices */
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            .container {
+                margin: 8px;
+                border-radius: 12px;
+                overflow: visible;
+            }
+
+            header {
+                padding: 18px;
+            }
+
+            header h1 {
+                font-size: 1.4em;
+                line-height: 1.2;
+            }
+
+            header p {
+                font-size: 0.95em;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            /* Make control panel appear above visualization on narrow screens */
+            .control-panel {
+                order: 1;
+                padding: 14px;
+                border-right: none;
+                border-bottom: 2px solid #dee2e6;
+            }
+
+            .visualization {
+                order: 2;
+                padding: 12px;
+            }
+
+            .control-section h3 {
+                font-size: 1.05em;
+            }
+
+            .parameter label {
+                font-size: 0.95em;
+            }
+
+            /* Remove floating value badges on small screens to avoid layout issues */
+            .value-display {
+                float: none;
+                display: inline-block;
+                margin-left: 8px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .button-group button {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-box {
+                padding: 14px;
+            }
+
+            .chart-container {
+                padding: 12px;
+            }
+
+            /* Explicit canvas heights to keep charts readable on phones */
+            #timeChart,
+            #phaseChart {
+                width: 100% !important;
+                height: 260px !important;
+            }
+
+            /* Make slider thumbs larger for finger/touch input */
+            .parameter input[type="range"]::-webkit-slider-thumb {
+                width: 28px;
+                height: 28px;
+            }
+
+            .parameter input[type="range"]::-moz-range-thumb {
+                width: 28px;
+                height: 28px;
+            }
+
+            .equation {
+                font-size: 0.95em;
+                padding: 14px;
+            }
+
+            .info-section {
+                padding: 16px;
             }
         }
     </style>
@@ -710,6 +826,65 @@
         const timeCtx = document.getElementById('timeChart').getContext('2d');
         const phaseCtx = document.getElementById('phaseChart').getContext('2d');
 
+        // Utility: decide dimensioni dei font in base alla larghezza della finestra
+        function getChartFontConfig() {
+            const w = window.innerWidth || document.documentElement.clientWidth;
+            // Defaults for desktop
+            let cfg = { title: 14, ticks: 12, legend: 14, pointRadiusLine: 0, phasePointRadius: 2 };
+            if (w <= 600) {
+                // Mobile: smaller text
+                cfg = { title: 12, ticks: 9, legend: 11, pointRadiusLine: 0, phasePointRadius: 1 };
+            } else if (w <= 900) {
+                // Tablet / small laptop
+                cfg = { title: 13, ticks: 11, legend: 12, pointRadiusLine: 0, phasePointRadius: 1 };
+            }
+            return cfg;
+        }
+
+        // Apply font sizes to an existing chart instance
+        function applyFontConfigToChart(chart, cfg, forPhase = false) {
+            try {
+                if (!chart || !chart.options) return;
+                // Axis titles
+                if (chart.options.scales && typeof chart.options.scales === 'object') {
+                    Object.keys(chart.options.scales).forEach((axis) => {
+                        const scale = chart.options.scales[axis] || {};
+                        if (!scale.title) scale.title = {};
+                        if (!scale.ticks) scale.ticks = {};
+                        scale.title.font = scale.title.font || {};
+                        scale.title.font.size = cfg.title;
+                        scale.ticks.font = scale.ticks.font || {};
+                        scale.ticks.font.size = cfg.ticks;
+                    });
+                }
+
+                // Legend
+                if (chart.options.plugins && chart.options.plugins.legend && chart.options.plugins.legend.labels) {
+                    chart.options.plugins.legend.labels.font = chart.options.plugins.legend.labels.font || {};
+                    chart.options.plugins.legend.labels.font.size = cfg.legend;
+                }
+
+                // Dataset visual adjustments
+                if (chart.data && chart.data.datasets) {
+                    chart.data.datasets.forEach((ds) => {
+                        // For line chart reduce point radius on small screens
+                        if (!forPhase) {
+                            ds.pointRadius = cfg.pointRadiusLine;
+                        } else {
+                            ds.pointRadius = cfg.phasePointRadius;
+                        }
+                    });
+                }
+            } catch (err) {
+                // Defensive: prevent Chart.js config errors from stopping the rest of the script
+                // Log to console for debugging but do not throw
+                console.warn('applyFontConfigToChart error:', err);
+            }
+        }
+
+        // Create charts with sizes depending on viewport
+        const initialCfg = getChartFontConfig();
+
         const timeChart = new Chart(timeCtx, {
             type: 'line',
             data: {
@@ -744,17 +919,21 @@
                         title: {
                             display: true,
                             text: 'Tempo',
-                            font: { size: 14, weight: 'bold' }
+                            font: { size: initialCfg.title, weight: 'bold' }
                         },
                         ticks: {
-                            maxTicksLimit: 10
+                            maxTicksLimit: 10,
+                            font: { size: initialCfg.ticks }
                         }
                     },
                     y: {
                         title: {
                             display: true,
                             text: 'Numero di Individui',
-                            font: { size: 14, weight: 'bold' }
+                            font: { size: initialCfg.title, weight: 'bold' }
+                        },
+                        ticks: {
+                            font: { size: initialCfg.ticks }
                         },
                         beginAtZero: true
                     }
@@ -764,7 +943,7 @@
                         display: true,
                         position: 'top',
                         labels: {
-                            font: { size: 14 },
+                            font: { size: initialCfg.legend },
                             usePointStyle: true
                         }
                     }
@@ -782,7 +961,7 @@
                     backgroundColor: 'rgba(155, 89, 182, 0.5)',
                     showLine: true,
                     borderWidth: 3,
-                    pointRadius: 2,
+                    pointRadius: initialCfg.phasePointRadius,
                     tension: 0.4
                 }]
             },
@@ -795,17 +974,19 @@
                         title: {
                             display: true,
                             text: 'Popolazione Prede',
-                            font: { size: 14, weight: 'bold' }
+                            font: { size: initialCfg.title, weight: 'bold' }
                         },
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: { font: { size: initialCfg.ticks } }
                     },
                     y: {
                         title: {
                             display: true,
                             text: 'Popolazione Predatori',
-                            font: { size: 14, weight: 'bold' }
+                            font: { size: initialCfg.title, weight: 'bold' }
                         },
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: { font: { size: initialCfg.ticks } }
                     }
                 },
                 plugins: {
@@ -815,6 +996,30 @@
                 }
             }
         });
+
+        // Ensure font sizes update when the window is resized
+        function updateChartsFontSizes() {
+            const cfg = getChartFontConfig();
+            applyFontConfigToChart(timeChart, cfg, false);
+            applyFontConfigToChart(phaseChart, cfg, true);
+            timeChart.update('none');
+            phaseChart.update('none');
+        }
+
+        window.addEventListener('resize', () => {
+            // debounce resize updates for better performance
+            if (typeof window._lvResizeTimeout !== 'undefined') clearTimeout(window._lvResizeTimeout);
+            window._lvResizeTimeout = setTimeout(() => {
+                updateChartsFontSizes();
+            }, 150);
+        });
+
+        // Initial apply (in case initialCfg changed after creation)
+        try {
+            updateChartsFontSizes();
+        } catch (err) {
+            console.warn('updateChartsFontSizes initial call failed:', err);
+        }
 
         // Event listeners per gli slider
         function setupSlider(id, valueId, param) {

@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2196F3">
     <title>Esploratore di Serie Matematiche</title>
 
     <!-- CDN Libraries -->
@@ -135,6 +136,111 @@
                     "controls"
                     "charts"
                     "analysis";
+                gap: var(--space-12);
+            }
+
+            body {
+                padding: var(--space-12);
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            h3 {
+                font-size: 15px;
+            }
+
+            header {
+                padding: var(--space-16);
+            }
+
+            .section {
+                padding: var(--space-16);
+            }
+
+            .instruction-box {
+                padding: var(--space-12);
+                font-size: 13px;
+            }
+
+            .theory-buttons {
+                flex-direction: column;
+            }
+
+            .btn-info {
+                width: 100%;
+                justify-content: center;
+            }
+
+            input[type="text"],
+            input[type="number"],
+            select {
+                font-size: 16px;
+                /* Previene lo zoom automatico su iOS */
+            }
+
+            .chart-wrapper {
+                height: 250px;
+                margin-bottom: var(--space-16);
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: var(--space-12);
+                max-height: 95vh;
+            }
+
+            .modal-header {
+                padding: var(--space-16);
+            }
+
+            .modal-header h2 {
+                font-size: 18px;
+            }
+
+            .modal-body {
+                padding: var(--space-16);
+            }
+
+            .close-btn {
+                font-size: 28px;
+                width: 28px;
+                height: 28px;
+            }
+
+            .katex {
+                font-size: 0.95em;
+            }
+
+            .badge {
+                font-size: 11px;
+                padding: 3px 8px;
+            }
+
+            .section-divider {
+                padding: var(--space-12);
+            }
+
+            .alert {
+                padding: var(--space-12);
+                font-size: 13px;
+            }
+
+            .result-item {
+                padding: var(--space-8);
+            }
+
+            .result-label {
+                font-size: 11px;
+            }
+
+            .result-value {
+                font-size: 14px;
             }
         }
 
@@ -207,6 +313,19 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-8);
+        }
+
+        .slider-header label {
+            margin-bottom: 0;
+        }
+
+        .slider-header span {
+            font-weight: 600;
+            color: var(--color-primary);
+            min-width: 40px;
+            text-align: right;
         }
 
         input[type="range"] {
@@ -222,20 +341,22 @@
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: var(--color-primary);
             cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         input[type="range"]::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: var(--color-primary);
             cursor: pointer;
             border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .btn {
@@ -249,6 +370,10 @@
             font-weight: 500;
             transition: background 0.2s;
             width: 100%;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn:hover {

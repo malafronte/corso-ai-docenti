@@ -131,7 +131,7 @@
             color: var(--color-text);
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .container {
                 grid-template-columns: 1fr;
                 grid-template-rows: auto 1fr;
@@ -145,11 +145,19 @@
             border-right: 1px solid var(--color-border);
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .panel {
                 border-right: none;
                 border-bottom: 1px solid var(--color-border);
-                max-height: 50vh;
+                /* allow full-height when opened as overlay; mobile-open will set height:100vh */
+            }
+        }
+
+        /* Tablet: use a narrower overlay (60vw) for better balance between controls and canvas */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .panel.mobile-open {
+                width: 60vw;
+                max-width: 640px;
             }
         }
 
@@ -421,6 +429,86 @@
             font-weight: 600;
             color: var(--color-primary);
         }
+
+        /* Mobile controls: floating button, backdrop and panel overlay */
+        .mobile-controls-btn {
+            display: none;
+            /* shown only on small screens */
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 3000;
+            width: 56px;
+            height: 56px;
+            border-radius: 999px;
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+            font-size: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .mobile-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 240ms ease-in-out;
+        }
+
+        .mobile-backdrop.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* When mobile, hide the side panel and allow it to become a full-height overlay when opened */
+        @media (max-width: 1024px) {
+            .mobile-controls-btn {
+                display: flex;
+            }
+
+            .panel {
+                display: none;
+                border-right: none;
+            }
+
+            .panel.mobile-open {
+                display: block;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 92vw;
+                max-width: 420px;
+                height: 100vh;
+                z-index: 2100;
+                overflow-y: auto;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+                border-right: none;
+                transform: translateX(-8px);
+                background-color: var(--color-surface);
+                padding: var(--space-20);
+                /* optimized for touch scrolling */
+            }
+
+            /* let canvas take full height when panel hidden */
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+
+            .canvas-container {
+                height: 100vh;
+            }
+        }
     </style>
 </head>
 
@@ -573,6 +661,10 @@
             <div id="labelContainer"></div>
         </div>
     </div>
+
+    <!-- Mobile controls button & backdrop (shown on small screens) -->
+    <button id="mobileControlsBtn" class="mobile-controls-btn" aria-label="Apri controlli">☰</button>
+    <div id="mobileBackdrop" class="mobile-backdrop" tabindex="-1" aria-hidden="true"></div>
 
     <!-- Modal Info VSEPR -->
     <div id="vsepModal" class="modal">
@@ -1047,6 +1139,8 @@
             scene.add(directionalLight2);
 
             window.addEventListener('resize', onWindowResize);
+            // Ensure renderer/camera are sized to current layout (important on mobile when panel hidden)
+            onWindowResize();
         }
 
         function onWindowResize() {
@@ -1055,6 +1149,28 @@
             camera.updateProjectionMatrix();
             renderer.setSize(container.clientWidth, container.clientHeight);
             labelRenderer.setSize(container.clientWidth, container.clientHeight);
+            // Update mobile button visibility when layout changes
+            try { updateMobileButtonVisibility(); } catch (e) { }
+        }
+
+        // Show the floating mobile-controls button only on small viewports
+        function updateMobileButtonVisibility() {
+            const mobileBtn = document.getElementById('mobileControlsBtn');
+            const mobileBackdrop = document.getElementById('mobileBackdrop');
+            const sidePanel = document.querySelector('.panel');
+            if (!mobileBtn) return;
+
+            if (window.matchMedia('(max-width: 1024px)').matches) {
+                // show the button (CSS also handles it, but ensure JS state too)
+                mobileBtn.style.display = 'flex';
+            } else {
+                // hide on larger screens and ensure overlay state cleared
+                mobileBtn.style.display = 'none';
+                if (sidePanel && sidePanel.classList.contains('mobile-open')) sidePanel.classList.remove('mobile-open');
+                if (mobileBackdrop && mobileBackdrop.classList.contains('active')) mobileBackdrop.classList.remove('active');
+                document.documentElement.style.overflow = '';
+                document.body.style.overflow = '';
+            }
         }
 
         function createAtom(elemento, posizione) {
@@ -1140,6 +1256,15 @@
             });
 
             scene.add(currentMoleculeGroup);
+
+            // center the orbit controls on the central atom (index 0) if available
+            try {
+                const centralPos = (molecule.atomi && molecule.atomi[0] && molecule.atomi[0].posizione) ? molecule.atomi[0].posizione : [0, 0, 0];
+                controls.target.set(centralPos[0], centralPos[1], centralPos[2]);
+                controls.update();
+            } catch (err) {
+                // ignore if controls not ready yet
+            }
 
             // Aggiorna informazioni
             updateInfo(molecule);
@@ -1388,7 +1513,57 @@
             }
 
             scene.add(currentMoleculeGroup);
+            // center builder view on origin and update sizes
+            try { controls.target.set(0, 0, 0); controls.update(); } catch (e) { }
+            try { onWindowResize(); } catch (e) { }
         }
+
+        // --- Mobile controls toggle (open/close the left panel as overlay on small screens) ---
+        (function () {
+            const mobileBtn = document.getElementById('mobileControlsBtn');
+            const mobileBackdrop = document.getElementById('mobileBackdrop');
+            const sidePanel = document.querySelector('.panel');
+
+            if (!mobileBtn || !mobileBackdrop || !sidePanel) return;
+
+            function openMobilePanel() {
+                sidePanel.classList.add('mobile-open');
+                mobileBackdrop.classList.add('active');
+                mobileBackdrop.setAttribute('aria-hidden', 'false');
+                // trap body scroll when overlay open
+                document.documentElement.style.overflow = 'hidden';
+                document.body.style.overflow = 'hidden';
+                try { onWindowResize(); } catch (e) { }
+                // focus first focusable element inside panel
+                const focusable = sidePanel.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                if (focusable) focusable.focus();
+            }
+
+            function closeMobilePanel() {
+                sidePanel.classList.remove('mobile-open');
+                mobileBackdrop.classList.remove('active');
+                mobileBackdrop.setAttribute('aria-hidden', 'true');
+                document.documentElement.style.overflow = '';
+                document.body.style.overflow = '';
+                try { onWindowResize(); } catch (e) { }
+                mobileBtn.focus();
+            }
+
+            mobileBtn.addEventListener('click', () => {
+                if (sidePanel.classList.contains('mobile-open')) closeMobilePanel(); else openMobilePanel();
+            });
+
+            mobileBackdrop.addEventListener('click', closeMobilePanel);
+
+            // Close with ESC
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && sidePanel.classList.contains('mobile-open')) {
+                    closeMobilePanel();
+                }
+            });
+
+            // When user navigates to a tab inside panel, keep it open; when route changes (none here) could close.
+        })();
 
         // Inizializzazione
         initThreeJS();

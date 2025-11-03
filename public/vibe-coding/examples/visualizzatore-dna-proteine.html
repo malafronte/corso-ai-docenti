@@ -346,8 +346,8 @@
             z-index: 999;
         }
 
-        /* Media Queries per Mobile */
-        @media (max-width: 768px) {
+        /* Media Queries per Mobile e Tablet */
+        @media (max-width: 1024px) {
             #container {
                 flex-direction: column;
             }
@@ -494,7 +494,7 @@
     <div id="panel-overlay"></div>
 
     <!-- Pulsante toggle mobile -->
-    <button id="mobile-toggle" aria-label="Apri controlli">⚙️</button>
+    <button id="mobile-toggle" aria-label="Apri controlli" aria-expanded="false">⚙️</button>
 
     <div id="container">
         <!-- Canvas 3D -->
@@ -510,7 +510,7 @@
         </div>
 
         <!-- Pannello di controllo -->
-        <div id="control-panel">
+        <div id="control-panel" role="dialog" aria-hidden="true" aria-modal="false" tabindex="-1">
             <h1>Controlli Molecolari</h1>
 
             <!-- Selezione struttura -->
@@ -1004,6 +1004,10 @@
         let highlightActiveSite = false;
         let showGrooves = true;
         let proteinColorScheme = 'secondary'; // 'secondary' o 'residue'
+        // Stores the last world-space shift applied to the molecule to account
+        // for the overlay panel. When the panel closes we subtract this to
+        // restore the molecule to the previous visual position.
+        let lastCenteringShift = null;
 
         // ============================================
         // FUNZIONI DI GENERAZIONE GEOMETRICA
@@ -1993,7 +1997,26 @@
             let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
             cameraZ *= 1.5;
             camera.position.set(cameraZ * 0.7, cameraZ * 0.5, cameraZ);
+            // Aim camera to center of scene then adjust molecule so it appears centered
             camera.lookAt(0, 0, 0);
+            camera.updateMatrixWorld();
+
+            // If on mobile/tablet, and the control panel overlays the canvas,
+            // shift the molecule in world space so it visually centers in the
+            // remaining visible area. This converts a pixel offset (half the
+            // panel width) into world units at the current camera distance.
+            // Reposition molecule to account for overlaying control panel on small screens
+            // and store the applied shift so it can be undone when the panel closes.
+            try {
+                const applied = adjustMoleculeCentering(newMolecule);
+                if (applied && (Math.abs(applied.x) + Math.abs(applied.y) + Math.abs(applied.z) > 0)) {
+                    lastCenteringShift = applied;
+                } else {
+                    lastCenteringShift = null;
+                }
+            } catch (e) {
+                lastCenteringShift = null;
+            }
             controls.update();
 
             updateInfoPanel(moleculeData);
@@ -2066,12 +2089,52 @@
             controlPanel.classList.add('open');
             panelOverlay.classList.add('visible');
             mobileToggle.innerHTML = '✕';
+            // Accessibility + prevent background scroll
+            mobileToggle.setAttribute('aria-expanded', 'true');
+            controlPanel.setAttribute('aria-hidden', 'false');
+            controlPanel.setAttribute('aria-modal', 'true');
+            // prevent background scrolling on mobile/tablet
+            document.body.style.overflow = 'hidden';
+            // focus first focusable element in panel for keyboard users
+            const firstFocusable = controlPanel.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            if (firstFocusable) firstFocusable.focus();
+            // if a molecule is present, re-center it for the newly visible overlay
+            // but only if we haven't already applied a centering shift
+            if (currentMolecule && !lastCenteringShift) {
+                const applied = adjustMoleculeCentering(currentMolecule);
+                if (applied && (Math.abs(applied.x) + Math.abs(applied.y) + Math.abs(applied.z) > 0)) {
+                    lastCenteringShift = applied;
+                }
+            }
         }
 
         function closePanel() {
             controlPanel.classList.remove('open');
             panelOverlay.classList.remove('visible');
             mobileToggle.innerHTML = '⚙️';
+            // Accessibility restore
+            mobileToggle.setAttribute('aria-expanded', 'false');
+            controlPanel.setAttribute('aria-hidden', 'true');
+            controlPanel.setAttribute('aria-modal', 'false');
+            document.body.style.overflow = '';
+            // return focus to toggle
+            mobileToggle.focus();
+            // If we previously shifted the molecule to account for the panel,
+            // undo that exact shift so the molecule remains where the user left it.
+            if (currentMolecule && lastCenteringShift) {
+                // small timeout to allow layout to settle
+                const shift = lastCenteringShift.clone();
+                setTimeout(() => {
+                    try {
+                        currentMolecule.position.sub(shift);
+                        // clear stored shift
+                        lastCenteringShift = null;
+                        controls.update();
+                    } catch (err) {
+                        console.warn('Failed to undo centering shift', err);
+                    }
+                }, 150);
+            }
         }
 
         mobileToggle.addEventListener('click', () => {
@@ -2084,9 +2147,122 @@
 
         panelOverlay.addEventListener('click', closePanel);
 
+        // Close with Escape when panel is open
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' || e.key === 'Esc') {
+                if (controlPanel.classList.contains('open')) closePanel();
+            }
+        });
+
+        // Helper to adjust molecule so it appears centered when an overlay (panel)
+        // covers part of the canvas (used on mobile/tablet).
+        function adjustMoleculeCentering(molecule) {
+            // Robust screen-space centering: compute where the molecule's center
+            // projects on screen, compute desired screen center accounting for
+            // the overlay panel, convert the delta in NDC to world-space and
+            // apply that shift. Returns the applied THREE.Vector3 shift.
+            try {
+                if (!molecule) return new THREE.Vector3(0, 0, 0);
+                if (window.innerWidth > 1024) return new THREE.Vector3(0, 0, 0); // only for mobile/tablet
+
+                const panelRect = controlPanel.getBoundingClientRect();
+                const canvasRect = canvasContainer.getBoundingClientRect();
+
+                // If there's no overlap, nothing to do
+                const overlap = Math.max(0, Math.min(canvasRect.right, panelRect.right) - Math.max(canvasRect.left, panelRect.left));
+                if (overlap <= 0 || canvasRect.width <= 0 || canvasRect.height <= 0) return new THREE.Vector3(0, 0, 0);
+
+                // Compute desired screen pixel coordinates for the molecule center
+                // Visible canvas area width (excluding overlap on the side where panel sits)
+                const visibleWidth = canvasRect.width - overlap;
+
+                // Determine panel side: if panel's left is >= canvas center -> panel on right
+                const panelOnRight = panelRect.left >= (canvasRect.left + canvasRect.width / 2);
+
+                // Desired pixel location: horizontally centered in visible area
+                let desiredPixelX;
+                if (panelOnRight) {
+                    // visible area is [canvas.left, canvas.right - overlap]
+                    desiredPixelX = canvasRect.left + visibleWidth / 2;
+                } else {
+                    // panel on left: visible area is [canvas.left + overlap, canvas.right]
+                    desiredPixelX = canvasRect.left + overlap + visibleWidth / 2;
+                }
+                const desiredPixelY = canvasRect.top + canvasRect.height / 2;
+
+                // Get molecule center in world coordinates
+                const localCenter = new THREE.Vector3(0, 0, 0);
+                const worldCenter = molecule.localToWorld(localCenter.clone());
+
+                // Project world center to NDC
+                const ndc = worldCenter.clone().project(camera);
+
+                // Convert desired pixel to NDC
+                const canvasPixelX = desiredPixelX - canvasRect.left; // relative to canvas
+                const canvasPixelY = desiredPixelY - canvasRect.top;
+                const desiredNdcX = (canvasPixelX / canvasRect.width) * 2 - 1;
+                const desiredNdcY = -((canvasPixelY / canvasRect.height) * 2 - 1);
+
+                const deltaNdcX = desiredNdcX - ndc.x;
+                const deltaNdcY = desiredNdcY - ndc.y;
+
+                if (Math.abs(deltaNdcX) < 1e-4 && Math.abs(deltaNdcY) < 1e-4) return new THREE.Vector3(0, 0, 0);
+
+                // Convert delta NDC to world units at the depth of worldCenter
+                const distance = camera.position.distanceTo(worldCenter);
+                const fovRad = camera.fov * Math.PI / 180;
+                const worldHeight = 2 * distance * Math.tan(fovRad / 2);
+                const worldWidth = worldHeight * camera.aspect;
+
+                const deltaWorldX = deltaNdcX * (worldWidth / 2);
+                const deltaWorldY = deltaNdcY * (worldHeight / 2);
+
+                // Extract camera basis to convert camera-space offsets to world-space
+                const right = new THREE.Vector3();
+                const up = new THREE.Vector3();
+                const forward = new THREE.Vector3();
+                camera.matrixWorld.extractBasis(right, up, forward);
+
+                const shiftVec = new THREE.Vector3();
+                shiftVec.addScaledVector(right, deltaWorldX);
+                shiftVec.addScaledVector(up, deltaWorldY);
+
+                molecule.position.add(shiftVec);
+                return shiftVec;
+            } catch (err) {
+                console.warn('adjustMoleculeCentering failed', err);
+            }
+            return new THREE.Vector3(0, 0, 0);
+        }
+
+        // Attach listeners to inputs/selects/buttons inside the panel so that
+        // on mobile/tablet interactions the panel closes (improves UX)
+        function setupPanelAutoCloseOnInteraction() {
+            const controls = controlPanel.querySelectorAll('input, select, textarea, button');
+            controls.forEach(el => {
+                // Skip the mobile toggle itself
+                if (el.id === 'mobile-toggle') return;
+
+                // Buttons: close after click (but allow natural handlers to run first)
+                if (el.tagName.toLowerCase() === 'button') {
+                    el.addEventListener('click', () => {
+                        // small delay to allow modal open handlers etc.
+                        setTimeout(() => closePanelOnMobile(), 150);
+                    });
+                } else {
+                    // Inputs/selects/textarea: close after change
+                    el.addEventListener('change', () => {
+                        setTimeout(() => closePanelOnMobile(), 150);
+                    });
+                }
+            });
+        }
+
+        setupPanelAutoCloseOnInteraction();
+
         // Chiudi pannello dopo aver generato su mobile
         function closePanelOnMobile() {
-            if (window.innerWidth <= 768) {
+            if (window.innerWidth <= 1024) {
                 setTimeout(closePanel, 300);
             }
         }

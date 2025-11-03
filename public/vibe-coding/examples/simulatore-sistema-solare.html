@@ -627,6 +627,97 @@
             margin-top: var(--space-8);
             line-height: 1.8;
         }
+
+        /* Responsive & Mobile controls */
+        @media (max-width: 900px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .controls-panel {
+                display: none;
+            }
+
+            header {
+                padding: 12px 16px;
+            }
+
+            h1 {
+                font-size: 1.2rem;
+            }
+
+            .stats-panel {
+                min-width: auto;
+                left: 8px;
+                top: 8px;
+                padding: 8px;
+            }
+        }
+
+        .controls-toggle {
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            z-index: 1200;
+            background: var(--color-primary);
+            color: #fff;
+            border-radius: 999px;
+            padding: 12px 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .mobile-controls {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: 92%;
+            max-width: 420px;
+            background: rgba(21, 27, 61, 0.98);
+            border-left: 2px solid var(--color-border);
+            z-index: 1250;
+            transform: translateX(110%);
+            transition: transform 0.28s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -8px 0 32px rgba(0, 0, 0, 0.6);
+        }
+
+        .mobile-controls.open {
+            transform: translateX(0);
+        }
+
+        .mobile-controls-header {
+            display: flex;
+            justify-content: flex-end;
+            padding: 12px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .mobile-controls-body {
+            padding: 12px 16px 24px 16px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .close-mobile {
+            background: transparent;
+            border: none;
+            color: var(--color-text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Ensure the original controls-panel is visible when moved into the mobile container */
+        .mobile-controls .controls-panel {
+            display: block !important;
+            width: auto !important;
+            background: transparent !important;
+            border-left: none !important;
+            padding: 0 !important;
+        }
     </style>
 </head>
 
@@ -845,6 +936,18 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Mobile controls toggle (visible on small screens) -->
+    <button id="controls-toggle" class="btn controls-toggle" aria-label="Apri controlli">☰ Controlli</button>
+
+    <div id="mobile-controls" class="mobile-controls" aria-hidden="true">
+        <div class="mobile-controls-header">
+            <button id="close-mobile" class="btn btn-small close-mobile">Chiudi ✕</button>
+        </div>
+        <div class="mobile-controls-body" role="dialog" aria-label="Pannello controlli mobile">
+            <!-- Il contenuto verrà clonato dinamicamente da .controls-panel -->
         </div>
     </div>
 
@@ -2603,8 +2706,244 @@
                 warning.classList.remove('visible');
 
                 alert('Sistema resettato ai valori originali!');
-            }            // Inizializza quando il documento è pronto
-            window.addEventListener('DOMContentLoaded', init);
+            }
+
+            // Funzioni per pannello mobile e gestori touch
+            function setupMobileControls() {
+                const toggle = document.getElementById('controls-toggle');
+                const mobile = document.getElementById('mobile-controls');
+                const closeBtn = document.getElementById('close-mobile');
+                const mobileBody = document.querySelector('#mobile-controls .mobile-controls-body');
+
+                if (!toggle || !mobile || !closeBtn || !mobileBody) return;
+
+
+                // Spostiamo l'elemento reale .controls-panel dentro il pannello mobile quando apriamo,
+                // e lo rimettiamo al suo posto quando chiudiamo. In questo modo manteniamo gli event
+                // listener già collegati (non cloniamo gli elementi).
+                const desktop = document.querySelector('.controls-panel');
+                let placeholder = null;
+                let moved = false;
+
+                toggle.addEventListener('click', () => {
+                    if (!desktop) return;
+                    if (!moved) {
+                        // Crea un placeholder invisibile per ripristinare la posizione originale
+                        placeholder = document.createElement('div');
+                        placeholder.style.display = 'none';
+                        desktop.parentNode.insertBefore(placeholder, desktop);
+
+                        // Sposta il pannello nel mobile body
+                        mobileBody.appendChild(desktop);
+                        moved = true;
+                    }
+
+                    // Salva posizione camera corrente per poterla ripristinare alla chiusura
+                    try {
+                        window._cameraPrevPos = camera ? camera.position.clone() : null;
+                        window._cameraPrevTarget = null; // in questo codice il target è (0,0,0)
+                    } catch (e) {
+                        window._cameraPrevPos = null;
+                    }
+
+                    // Posiziona la camera in modo da inquadrare il Sole correttamente su schermi piccoli
+                    // Usa una posizione frontale leggermente inclinata. Se esiste l'oggetto `sun`, centrati su di esso.
+                    try {
+                        const sunPos = (typeof sun !== 'undefined' && sun && sun.position) ? sun.position.clone() : new THREE.Vector3(0, 0, 0);
+                        const offset = new THREE.Vector3(0, 120, 220);
+                        const targetPos = sunPos.clone();
+                        const newCamPos = targetPos.clone().add(offset);
+                        // Applica con una transizione semplice:  frame immediato (veloce)
+                        camera.position.copy(newCamPos);
+                        camera.lookAt(targetPos);
+                    } catch (e) {
+                        // ignore if camera/sun not ready
+                    }
+
+                    mobile.classList.add('open');
+                    mobile.setAttribute('aria-hidden', 'false');
+                });
+
+                closeBtn.addEventListener('click', () => {
+                    if (moved && placeholder && desktop) {
+                        // Riporta il pannello nella sua posizione originale
+                        placeholder.parentNode.insertBefore(desktop, placeholder);
+                        placeholder.parentNode.removeChild(placeholder);
+                        placeholder = null;
+                        moved = false;
+                    }
+
+                    // Ripristina la posizione precedente della camera se salvata
+                    try {
+                        if (window._cameraPrevPos && camera) {
+                            camera.position.copy(window._cameraPrevPos);
+                            camera.lookAt(0, 0, 0);
+                            window._cameraPrevPos = null;
+                        }
+                    } catch (e) {
+                        console.warn('restore camera failed', e);
+                    }
+
+                    mobile.classList.remove('open');
+                    mobile.setAttribute('aria-hidden', 'true');
+                });
+
+                // Chiudi toccando lo sfondo dell'overlay
+                mobile.addEventListener('click', (e) => {
+                    if (e.target === mobile) {
+                        // Chiudi e ripristina camera come per il pulsante
+                        if (moved && placeholder && desktop) {
+                            placeholder.parentNode.insertBefore(desktop, placeholder);
+                            placeholder.parentNode.removeChild(placeholder);
+                            placeholder = null;
+                            moved = false;
+                        }
+
+                        try {
+                            if (window._cameraPrevPos && camera) {
+                                camera.position.copy(window._cameraPrevPos);
+                                camera.lookAt(0, 0, 0);
+                                window._cameraPrevPos = null;
+                            }
+                        } catch (e) { console.warn('restore camera failed', e); }
+
+                        mobile.classList.remove('open');
+                        mobile.setAttribute('aria-hidden', 'true');
+                    }
+                });
+            }
+
+            // Touch interactions: pan (single finger), pinch (two fingers), double-tap to zoom
+            const touchState = {
+                dragging: false,
+                pinching: false,
+                startDist: 0,
+                startCamPos: null,
+                lastX: 0,
+                lastY: 0,
+                startTime: 0,
+                startX: 0,
+                startY: 0,
+                lastTap: 0
+            };
+
+            function getTouchDistance(t1, t2) {
+                const dx = t1.clientX - t2.clientX;
+                const dy = t1.clientY - t2.clientY;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+
+            function onTouchStart(e) {
+                if (!renderer) return;
+                e.preventDefault();
+                touchState.startTime = Date.now();
+                if (e.touches.length === 1) {
+                    touchState.dragging = true;
+                    touchState.startX = touchState.lastX = e.touches[0].clientX;
+                    touchState.startY = touchState.lastY = e.touches[0].clientY;
+                } else if (e.touches.length === 2) {
+                    touchState.pinching = true;
+                    touchState.startDist = getTouchDistance(e.touches[0], e.touches[1]);
+                    touchState.startCamPos = camera.position.clone();
+                }
+            }
+
+            function onTouchMove(e) {
+                if (!renderer) return;
+                e.preventDefault();
+                if (touchState.pinching && e.touches.length === 2) {
+                    const newDist = getTouchDistance(e.touches[0], e.touches[1]);
+                    if (newDist > 0 && touchState.startDist > 0) {
+                        const scale = touchState.startDist / newDist;
+                        const newPos = touchState.startCamPos.clone().multiplyScalar(scale);
+                        // Clamp camera distance
+                        const len = newPos.length();
+                        const min = 30;
+                        const max = 5000;
+                        if (len < min) newPos.setLength(min);
+                        if (len > max) newPos.setLength(max);
+                        camera.position.copy(newPos);
+                        camera.lookAt(0, 0, 0);
+                    }
+                } else if (touchState.dragging && e.touches.length === 1) {
+                    const deltaX = e.touches[0].clientX - touchState.lastX;
+                    const deltaY = e.touches[0].clientY - touchState.lastY;
+                    const rotationSpeed = 0.006;
+
+                    // Orizzontale
+                    camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), -deltaX * rotationSpeed);
+
+                    // Verticale
+                    const axis = new THREE.Vector3();
+                    axis.crossVectors(camera.position, new THREE.Vector3(0, 1, 0)).normalize();
+                    const newPosition = camera.position.clone();
+                    newPosition.applyAxisAngle(axis, deltaY * rotationSpeed);
+                    const angle = newPosition.angleTo(new THREE.Vector3(0, 1, 0));
+                    if (angle > 0.1 && angle < Math.PI - 0.1) {
+                        camera.position.copy(newPosition);
+                    }
+
+                    camera.lookAt(0, 0, 0);
+                    touchState.lastX = e.touches[0].clientX;
+                    touchState.lastY = e.touches[0].clientY;
+                }
+            }
+
+            function onTouchEnd(e) {
+                if (!renderer) return;
+                e.preventDefault();
+                const now = Date.now();
+                // Detect tap (short time, little movement)
+                const dt = now - touchState.startTime;
+                const moveDist = Math.hypot((touchState.lastX - touchState.startX) || 0, (touchState.lastY - touchState.startY) || 0);
+
+                if (dt < 300 && moveDist < 10) {
+                    // Consider it a tap — selection or double-tap
+                    if (now - touchState.lastTap < 300) {
+                        // Double-tap: zoom in
+                        camera.position.multiplyScalar(0.7);
+                        camera.lookAt(0, 0, 0);
+                    } else {
+                        // Single tap: raycast selection
+                        const touch = (e.changedTouches && e.changedTouches[0]) || null;
+                        if (touch) {
+                            const raycaster = new THREE.Raycaster();
+                            const mouse = new THREE.Vector2();
+                            const rect = renderer.domElement.getBoundingClientRect();
+
+                            mouse.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+                            mouse.y = -((touch.clientY - rect.top) / rect.height) * 2 + 1;
+
+                            raycaster.setFromCamera(mouse, camera);
+                            const meshes = Object.values(planets).map(p => p.mesh);
+                            const intersects = raycaster.intersectObjects(meshes);
+                            if (intersects.length > 0) {
+                                selectedPlanet = intersects[0].object.userData.key;
+                            }
+                        }
+                    }
+                    touchState.lastTap = now;
+                }
+
+                touchState.dragging = false;
+                touchState.pinching = false;
+            }
+
+            function setupTouchControls() {
+                const canvas = renderer.domElement;
+                // Use passive:false so we can call preventDefault and avoid page scroll
+                canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+                canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+                canvas.addEventListener('touchend', onTouchEnd, { passive: false });
+                canvas.addEventListener('touchcancel', onTouchEnd, { passive: false });
+            }
+
+            // Inizializza quando il documento è pronto e poi configura mobile/touch
+            window.addEventListener('DOMContentLoaded', () => {
+                init();
+                try { setupMobileControls(); } catch (e) { console.warn('mobile controls init failed', e); }
+                try { setupTouchControls(); } catch (e) { console.warn('touch controls init failed', e); }
+            });
         </script>
 </body>
 
