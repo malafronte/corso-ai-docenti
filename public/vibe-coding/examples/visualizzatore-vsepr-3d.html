@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizzatore VSEPR 3D</title>
+    <style>
+        :root {
+            --color-background: #fcfcf9;
+            --color-surface: #fffffd;
+            --color-text: #13343b;
+            --color-text-secondary: #626c71;
+            --color-primary: #21808d;
+            --color-primary-hover: #1d7480;
+            --color-border: rgba(94, 82, 64, 0.2);
+            --color-card-border: rgba(94, 82, 64, 0.12);
+            --font-family-base: "FKGroteskNeue", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            height: 100vh;
+            gap: 0;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: var(--space-8);
+            margin-bottom: var(--space-20);
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: var(--space-12) var(--space-16);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            font-family: var(--font-family-base);
+        }
+
+        .tab-button:hover {
+            color: var(--color-text);
+        }
+
+        .tab-button.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .number-input-group {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            margin-bottom: var(--space-16);
+        }
+
+        .number-input-group button {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--color-border);
+            background-color: var(--color-surface);
+            color: var(--color-text);
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .number-input-group button:hover {
+            background-color: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        .number-input-group input {
+            width: 50px;
+            text-align: center;
+            padding: var(--space-8);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            background-color: var(--color-surface);
+            color: var(--color-text);
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .number-input-group label {
+            flex: 1;
+            margin: 0;
+            font-size: 14px;
+            color: var(--color-text);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+        }
+
+        .panel {
+            background-color: var(--color-surface);
+            padding: var(--space-24);
+            overflow-y: auto;
+            border-right: 1px solid var(--color-border);
+        }
+
+        @media (max-width: 768px) {
+            .panel {
+                border-right: none;
+                border-bottom: 1px solid var(--color-border);
+                max-height: 50vh;
+            }
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: var(--space-20);
+            color: var(--color-text);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .info-button {
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .info-button:hover {
+            background-color: var(--color-primary-hover);
+        }
+
+        .section {
+            margin-bottom: var(--space-24);
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: var(--space-12);
+            color: var(--color-text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: var(--space-8);
+            color: var(--color-text-secondary);
+        }
+
+        select {
+            width: 100%;
+            padding: var(--space-12);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            background-color: var(--color-surface);
+            color: var(--color-text);
+            font-size: 14px;
+            font-family: var(--font-family-base);
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        select:focus {
+            outline: 2px solid var(--color-primary);
+            border-color: var(--color-primary);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-12);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--color-text);
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--color-primary);
+        }
+
+        .info-card {
+            background-color: var(--color-background);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-16);
+        }
+
+        .info-item {
+            margin-bottom: var(--space-12);
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: var(--color-text);
+            font-weight: 500;
+        }
+
+        .instructions {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            line-height: 1.5;
+            padding: var(--space-12);
+            background-color: var(--color-background);
+            border-radius: var(--radius-base);
+            border-left: 3px solid var(--color-primary);
+        }
+
+        .canvas-container {
+            position: relative;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #moleculeCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        #labelContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .angle-label {
+            background-color: rgba(33, 128, 141, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-24);
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            margin: 20px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-20);
+            padding-bottom: var(--space-16);
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .modal-header h2 {
+            font-size: 22px;
+            color: var(--color-text);
+            margin: 0;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .close-button:hover {
+            color: var(--color-text);
+        }
+
+        .modal-body {
+            color: var(--color-text);
+        }
+
+        .modal-body h3 {
+            font-size: 16px;
+            margin-top: var(--space-20);
+            margin-bottom: var(--space-12);
+            color: var(--color-primary);
+        }
+
+        .modal-body h3:first-child {
+            margin-top: 0;
+        }
+
+        .modal-body p {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: var(--space-12);
+            color: var(--color-text);
+        }
+
+        .modal-body ul {
+            margin-left: var(--space-20);
+            margin-bottom: var(--space-12);
+        }
+
+        .modal-body li {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: var(--space-8);
+            color: var(--color-text);
+        }
+
+        .modal-body strong {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        .repulsion-order {
+            text-align: center;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="panel">
+            <h1>
+                Visualizzatore VSEPR 3D
+                <button class="info-button" id="infoBtn" title="Info VSEPR">ℹ️</button>
+            </h1>
+
+            <div class="tab-container">
+                <button class="tab-button active" data-tab="predefinite">Molecole Predefinite</button>
+                <button class="tab-button" data-tab="costruttore">Costruttore VSEPR</button>
+            </div>
+
+            <div id="predefinite-tab" class="tab-content active">
+                <div class="section">
+                    <label for="moleculeSelect">Seleziona Molecola</label>
+                    <select id="moleculeSelect">
+                        <option value="H2O">H₂O - Acqua</option>
+                        <option value="CO2">CO₂ - Anidride Carbonica</option>
+                        <option value="CH4">CH₄ - Metano</option>
+                        <option value="NH3">NH₃ - Ammoniaca</option>
+                        <option value="SF6">SF₆ - Esafluoruro di Zolfo</option>
+                        <option value="PCl5">PCl₅ - Pentacloruro di Fosforo</option>
+                        <option value="BeCl2">BeCl₂ - Cloruro di Berillio</option>
+                        <option value="BF3">BF₃ - Trifluoruro di Boro</option>
+                        <option value="XeF4">XeF₄ - Tetrafluoruro di Xenon</option>
+                        <option value="ClF3">ClF₃ - Trifluoruro di Cloro</option>
+                        <option value="BrF5">BrF₅ - Pentafluoruro di Bromo</option>
+                        <option value="ICl4">ICl₄⁻ - Ione Tetracloroiodato</option>
+                    </select>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Controlli di Visualizzazione</div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showLonePairs">
+                            <span>Mostra Coppie Solitarie</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showAngles">
+                            <span>Mostra Angoli di Legame</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Informazioni Molecola</div>
+                    <div class="info-card">
+                        <div class="info-item">
+                            <div class="info-label">Formula</div>
+                            <div class="info-value" id="infoFormula">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Formula VSEPR (AXE)</div>
+                            <div class="info-value" id="infoVSEPRFormula">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Ibridazione</div>
+                            <div class="info-value" id="infoHybridization">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Geometria Elettronica</div>
+                            <div class="info-value" id="infoElectronGeometry">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Geometria Molecolare</div>
+                            <div class="info-value" id="infoMolecularGeometry">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Angolo di Legame</div>
+                            <div class="info-value" id="infoBondAngle">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Polarità</div>
+                            <div class="info-value" id="infoPolarity">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Momento Dipolare</div>
+                            <div class="info-value" id="infoDipoleMoment">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <p class="instructions">
+                        Seleziona una molecola per visualizzarla. Trascina per ruotare e usa la rotellina del mouse per
+                        zoomare. Usa i controlli per esplorare le proprietà VSEPR.
+                    </p>
+                </div>
+            </div>
+
+            <div id="costruttore-tab" class="tab-content">
+                <div class="section">
+                    <div class="section-title">Costruisci Geometria VSEPR</div>
+                    <div class="number-input-group">
+                        <label>Atomi Legati (X):</label>
+                        <button id="decreaseX">−</button>
+                        <input type="number" id="atomsX" min="1" max="6" value="4" readonly>
+                        <button id="increaseX">+</button>
+                    </div>
+                    <div class="number-input-group">
+                        <label>Coppie Solitarie (E):</label>
+                        <button id="decreaseE">−</button>
+                        <input type="number" id="lonePairsE" min="0" max="6" value="0" readonly>
+                        <button id="increaseE">+</button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Informazioni Geometria</div>
+                    <div class="info-card">
+                        <div class="info-item">
+                            <div class="info-label">Formula VSEPR (AXE)</div>
+                            <div class="info-value" id="builderVSEPRFormula">AX₄</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Ibridazione</div>
+                            <div class="info-value" id="builderHybridization">sp³</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Geometria Elettronica</div>
+                            <div class="info-value" id="builderElectronGeometry">Tetraedrica</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Geometria Molecolare</div>
+                            <div class="info-value" id="builderMolecularGeometry">Tetraedrica</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Angolo di Legame</div>
+                            <div class="info-value" id="builderBondAngle">109.5°</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <p class="instructions">
+                        Usa i controlli per costruire una geometria VSEPR generica. L'atomo centrale (viola) è A, gli
+                        atomi legati (grigi) sono X, e le coppie solitarie (gialle) sono E.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="moleculeCanvas"></canvas>
+            <div id="labelContainer"></div>
+        </div>
+    </div>
+
+    <!-- Modal Info VSEPR -->
+    <div id="vsepModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Teoria VSEPR e Coppie Solitarie</h2>
+                <button class="close-button" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h3>Cos'è la Teoria VSEPR?</h3>
+                <p>
+                    La teoria <strong>VSEPR</strong> (Valence Shell Electron Pair Repulsion, Repulsione delle Coppie
+                    Elettroniche del Guscio di Valenza)
+                    è un modello utilizzato per prevedere la geometria delle molecole. Si basa sul principio che le
+                    coppie di elettroni attorno a un
+                    atomo centrale si respingono e si dispongono nello spazio in modo da minimizzare questa repulsione.
+                </p>
+
+                <h3>Coppie di Elettroni</h3>
+                <p>
+                    Esistono due tipi di coppie elettroniche:
+                </p>
+                <ul>
+                    <li><strong>Coppie di legame</strong>: elettroni condivisi tra due atomi per formare un legame
+                        chimico</li>
+                    <li><strong>Coppie solitarie</strong>: elettroni non condivisi che rimangono localizzati su un
+                        singolo atomo</li>
+                </ul>
+
+                <h3>Effetto delle Coppie Solitarie</h3>
+                <p>
+                    Le coppie solitarie occupano più spazio delle coppie di legame perché sono trattenute più vicino al
+                    nucleo dell'atomo centrale,
+                    creando una nuvola elettronica più grande. L'ordine di forza delle repulsioni è:
+                </p>
+                <p class="repulsion-order">
+                    coppia solitaria ↔ coppia solitaria &gt; coppia solitaria ↔ coppia di legame &gt; coppia di legame ↔
+                    coppia di legame
+                </p>
+
+                <h3>Geometria Molecolare</h3>
+                <p>
+                    La presenza di coppie solitarie modifica gli angoli di legame rispetto alla geometria ideale:
+                </p>
+                <ul>
+                    <li><strong>H₂O</strong> (2 coppie solitarie): angolo 104.5° invece di 109.5° tetraedrico →
+                        geometria angolare</li>
+                    <li><strong>NH₃</strong> (1 coppia solitaria): angolo 107.8° invece di 109.5° tetraedrico →
+                        geometria trigonale piramidale</li>
+                    <li><strong>CH₄</strong> (0 coppie solitarie): angolo perfetto 109.5° → geometria tetraedrica</li>
+                    <li><strong>XeF₄</strong> (2 coppie solitarie assiali): angolo 90° → geometria planare quadrata</li>
+                </ul>
+
+                <h3>Nell'Applicazione</h3>
+                <p>
+                    Quando attivi <strong>"Mostra Coppie Solitarie"</strong>, le coppie solitarie vengono visualizzate
+                    come sfere gialle semitrasparenti
+                    posizionate nelle direzioni VSEPR corrette. Osserva come occupano spazio e influenzano la
+                    disposizione dei legami!
+                </p>
+                <p>
+                    Attiva <strong>"Mostra Angoli di Legame"</strong> per vedere le misure precise degli angoli tra i
+                    legami, che riflettono l'effetto
+                    delle repulsioni elettroniche.
+                </p>
+
+                <h3>Come Usare il Costruttore VSEPR</h3>
+                <p>
+                    Il tab <strong>"Costruttore VSEPR"</strong> ti permette di esplorare tutte le possibili geometrie
+                    molecolari
+                    costruendo configurazioni generiche AXₙEₘ.
+                </p>
+                <p>
+                    <strong>Funzionamento:</strong>
+                </p>
+                <ul>
+                    <li><strong>Atomi Legati (X)</strong>: Usa i pulsanti + e - per aumentare o diminuire il numero di
+                        atomi
+                        legati all'atomo centrale (da 1 a 6). Questi appaiono come sfere grigie.</li>
+                    <li><strong>Coppie Solitarie (E)</strong>: Regola il numero di coppie di elettroni non condivisi
+                        (da 0 a 6). Appaiono come sfere gialle semitrasparenti.</li>
+                    <li><strong>Atomo Centrale (A)</strong>: Visualizzato come sfera viola, rappresenta l'atomo centrale
+                        attorno al quale si dispongono gli altri elementi.</li>
+                </ul>
+                <p>
+                    Il pannello informativo si aggiorna automaticamente mostrando:
+                </p>
+                <ul>
+                    <li>Formula VSEPR nella notazione AXₙEₘ</li>
+                    <li>Ibridazione dell'atomo centrale (sp, sp², sp³, sp³d, sp³d²)</li>
+                    <li>Geometria elettronica (disposizione di tutti gli elettroni)</li>
+                    <li>Geometria molecolare (forma effettiva della molecola)</li>
+                    <li>Angoli di legame approssimativi</li>
+                </ul>
+                <p>
+                    <strong>Esempi da provare:</strong>
+                </p>
+                <ul>
+                    <li><strong>X=2, E=0</strong> → Lineare (180°)</li>
+                    <li><strong>X=3, E=0</strong> → Trigonale planare (120°)</li>
+                    <li><strong>X=4, E=0</strong> → Tetraedrica (109.5°)</li>
+                    <li><strong>X=3, E=1</strong> → Trigonale piramidale (~107°)</li>
+                    <li><strong>X=2, E=2</strong> → Angolare (~104°)</li>
+                    <li><strong>X=5, E=0</strong> → Bipiramidale trigonale (90°, 120°)</li>
+                    <li><strong>X=4, E=2</strong> → Planare quadrata (90°)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS2DRenderer.js"></script>
+    <script>
+        // Database delle molecole
+        const moleculesDB = {
+            H2O: {
+                nome: "Acqua",
+                formula: "H₂O",
+                atomi: [
+                    { elemento: 'O', posizione: [0, 0, 0] },
+                    { elemento: 'H', posizione: [0.76, 0.59, 0] },
+                    { elemento: 'H', posizione: [-0.76, 0.59, 0] }
+                ],
+                legami: [[0, 1], [0, 2]],
+                coppieSolitarie: [
+                    [0, -0.5, 0.6],
+                    [0, -0.5, -0.6]
+                ],
+                info: {
+                    formulaVSEPR: "AX₂E₂",
+                    geometriaElettronica: "Tetraedrica",
+                    geometriaMolecolare: "Angolare",
+                    ibridazione: "sp³",
+                    angolo: "104.5°",
+                    polarita: "Polare",
+                    momentoDipolare: "μ = 1.85 D"
+                }
+            },
+            CO2: {
+                nome: "Anidride Carbonica",
+                formula: "CO₂",
+                atomi: [
+                    { elemento: 'C', posizione: [0, 0, 0] },
+                    { elemento: 'O', posizione: [1.16, 0, 0] },
+                    { elemento: 'O', posizione: [-1.16, 0, 0] }
+                ],
+                legami: [[0, 1], [0, 2]],
+                coppieSolitarie: [],
+                info: {
+                    geometriaElettronica: "Lineare",
+                    geometriaMolecolare: "Lineare",
+                    ibridazione: "sp",
+                    angolo: "180°",
+                    polarita: "Apolare (μ = 0)"
+                }
+            },
+            CH4: {
+                nome: "Metano",
+                formula: "CH₄",
+                atomi: [
+                    { elemento: 'C', posizione: [0, 0, 0] },
+                    { elemento: 'H', posizione: [0.63, 0.63, 0.63] },
+                    { elemento: 'H', posizione: [-0.63, -0.63, 0.63] },
+                    { elemento: 'H', posizione: [-0.63, 0.63, -0.63] },
+                    { elemento: 'H', posizione: [0.63, -0.63, -0.63] }
+                ],
+                legami: [[0, 1], [0, 2], [0, 3], [0, 4]],
+                coppieSolitarie: [],
+                info: {
+                    formulaVSEPR: "AX₄",
+                    geometriaElettronica: "Tetraedrica",
+                    geometriaMolecolare: "Tetraedrica",
+                    ibridazione: "sp³",
+                    angolo: "109.5°",
+                    polarita: "Apolare",
+                    momentoDipolare: "μ = 0 D"
+                }
+            },
+            NH3: {
+                nome: "Ammoniaca",
+                formula: "NH₃",
+                atomi: [
+                    { elemento: 'N', posizione: [0, 0, 0] },
+                    { elemento: 'H', posizione: [0.94, -0.38, 0] },
+                    { elemento: 'H', posizione: [-0.47, -0.38, 0.81] },
+                    { elemento: 'H', posizione: [-0.47, -0.38, -0.81] }
+                ],
+                legami: [[0, 1], [0, 2], [0, 3]],
+                coppieSolitarie: [
+                    [0, 0.7, 0]
+                ],
+                info: {
+                    formulaVSEPR: "AX₃E",
+                    geometriaElettronica: "Tetraedrica",
+                    geometriaMolecolare: "Trigonale Piramidale",
+                    ibridazione: "sp³",
+                    angolo: "107.8°",
+                    polarita: "Polare",
+                    momentoDipolare: "μ = 1.47 D"
+                }
+            },
+            SF6: {
+                nome: "Esafluoruro di Zolfo",
+                formula: "SF₆",
+                atomi: [
+                    { elemento: 'S', posizione: [0, 0, 0] },
+                    { elemento: 'F', posizione: [1.5, 0, 0] },
+                    { elemento: 'F', posizione: [-1.5, 0, 0] },
+                    { elemento: 'F', posizione: [0, 1.5, 0] },
+                    { elemento: 'F', posizione: [0, -1.5, 0] },
+                    { elemento: 'F', posizione: [0, 0, 1.5] },
+                    { elemento: 'F', posizione: [0, 0, -1.5] }
+                ],
+                legami: [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6]],
+                coppieSolitarie: [],
+                info: {
+                    formulaVSEPR: "AX₆",
+                    geometriaElettronica: "Ottaedrica",
+                    geometriaMolecolare: "Ottaedrica",
+                    ibridazione: "sp³d²",
+                    angolo: "90°",
+                    polarita: "Apolare",
+                    momentoDipolare: "μ = 0 D"
+                }
+            },
+            PCl5: {
+                nome: "Pentacloruro di Fosforo",
+                formula: "PCl₅",
+                atomi: [
+                    { elemento: 'P', posizione: [0, 0, 0] },
+                    { elemento: 'Cl', posizione: [0, 1.7, 0] },
+                    { elemento: 'Cl', posizione: [0, -1.7, 0] },
+                    { elemento: 'Cl', posizione: [1.6, 0, 0] },
+                    { elemento: 'Cl', posizione: [-0.8, 0, 1.39] },
+                    { elemento: 'Cl', posizione: [-0.8, 0, -1.39] }
+                ],
+                legami: [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5]],
+                coppieSolitarie: [],
+                info: {
+                    formulaVSEPR: "AX₅",
+                    geometriaElettronica: "Bipiramidale Trigonale",
+                    geometriaMolecolare: "Bipiramidale Trigonale",
+                    ibridazione: "sp³d",
+                    angolo: "90°, 120°",
+                    polarita: "Apolare",
+                    momentoDipolare: "μ = 0 D"
+                }
+            },
+            BeCl2: {
+                nome: "Cloruro di Berillio",
+                formula: "BeCl₂",
+                atomi: [
+                    { elemento: 'Be', posizione: [0, 0, 0] },
+                    { elemento: 'Cl', posizione: [1.5, 0, 0] },
+                    { elemento: 'Cl', posizione: [-1.5, 0, 0] }
+                ],
+                legami: [[0, 1], [0, 2]],
+                coppieSolitarie: [],
+                info: {
+                    geometriaElettronica: "Lineare",
+                    geometriaMolecolare: "Lineare",
+                    ibridazione: "sp",
+                    angolo: "180°",
+                    polarita: "Apolare (μ = 0)"
+                }
+            },
+            BF3: {
+                nome: "Trifluoruro di Boro",
+                formula: "BF₃",
+                atomi: [
+                    { elemento: 'B', posizione: [0, 0, 0] },
+                    { elemento: 'F', posizione: [1.3, 0, 0] },
+                    { elemento: 'F', posizione: [-0.65, 1.13, 0] },
+                    { elemento: 'F', posizione: [-0.65, -1.13, 0] }
+                ],
+                legami: [[0, 1], [0, 2], [0, 3]],
+                coppieSolitarie: [],
+                info: {
+                    formulaVSEPR: "AX₃",
+                    geometriaElettronica: "Trigonale Planare",
+                    geometriaMolecolare: "Trigonale Planare",
+                    ibridazione: "sp²",
+                    angolo: "120°",
+                    polarita: "Apolare",
+                    momentoDipolare: "μ = 0 D"
+                }
+            },
+            XeF4: {
+                nome: "Tetrafluoruro di Xenon",
+                formula: "XeF₄",
+                atomi: [
+                    { elemento: 'Xe', posizione: [0, 0, 0] },
+                    { elemento: 'F', posizione: [1.5, 0, 0] },
+                    { elemento: 'F', posizione: [-1.5, 0, 0] },
+                    { elemento: 'F', posizione: [0, 0, 1.5] },
+                    { elemento: 'F', posizione: [0, 0, -1.5] }
+                ],
+                legami: [[0, 1], [0, 2], [0, 3], [0, 4]],
+                coppieSolitarie: [
+                    [0, 1.2, 0],
+                    [0, -1.2, 0]
+                ],
+                info: {
+                    formulaVSEPR: "AX₄E₂",
+                    geometriaElettronica: "Ottaedrica",
+                    geometriaMolecolare: "Planare Quadrata",
+                    ibridazione: "sp³d²",
+                    angolo: "90°",
+                    polarita: "Apolare",
+                    momentoDipolare: "μ = 0 D"
+                }
+            },
+            ClF3: {
+                nome: "Trifluoruro di Cloro",
+                formula: "ClF₃",
+                atomi: [
+                    { elemento: 'Cl', posizione: [0, 0, 0] },
+                    { elemento: 'F', posizione: [0, 1.6, 0] },
+                    { elemento: 'F', posizione: [1.45, -0.52, 0] },
+                    { elemento: 'F', posizione: [-1.45, -0.52, 0] }
+                ],
+                legami: [[0, 1], [0, 2], [0, 3]],
+                coppieSolitarie: [
+                    [0, -0.3, 1.0],
+                    [0, -0.3, -1.0]
+                ],
+                info: {
+                    formulaVSEPR: "AX₃E₂",
+                    geometriaElettronica: "Bipiramidale Trigonale",
+                    geometriaMolecolare: "Forma a T",
+                    ibridazione: "sp³d",
+                    angolo: "87.5°",
+                    polarita: "Polare",
+                    momentoDipolare: "μ = 0.60 D"
+                }
+            },
+            BrF5: {
+                nome: "Pentafluoruro di Bromo",
+                formula: "BrF₅",
+                atomi: [
+                    { elemento: 'Br', posizione: [0, 0, 0] },
+                    { elemento: 'F', posizione: [0, 1.7, 0] },
+                    { elemento: 'F', posizione: [1.6, 0, 0] },
+                    { elemento: 'F', posizione: [-1.6, 0, 0] },
+                    { elemento: 'F', posizione: [0, 0, 1.6] },
+                    { elemento: 'F', posizione: [0, 0, -1.6] }
+                ],
+                legami: [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5]],
+                coppieSolitarie: [
+                    [0, -1.2, 0]
+                ],
+                info: {
+                    formulaVSEPR: "AX₅E",
+                    geometriaElettronica: "Ottaedrica",
+                    geometriaMolecolare: "Piramidale Quadrata",
+                    ibridazione: "sp³d²",
+                    angolo: "84.8°, 90°",
+                    polarita: "Polare",
+                    momentoDipolare: "μ = 1.51 D"
+                }
+            },
+            ICl4: {
+                nome: "Ione Tetracloroiodato",
+                formula: "ICl₄⁻",
+                atomi: [
+                    { elemento: 'I', posizione: [0, 0, 0] },
+                    { elemento: 'Cl', posizione: [1.5, 0, 0] },
+                    { elemento: 'Cl', posizione: [-1.5, 0, 0] },
+                    { elemento: 'Cl', posizione: [0, 0, 1.5] },
+                    { elemento: 'Cl', posizione: [0, 0, -1.5] }
+                ],
+                legami: [[0, 1], [0, 2], [0, 3], [0, 4]],
+                coppieSolitarie: [
+                    [0, 1.2, 0],
+                    [0, -1.2, 0]
+                ],
+                info: {
+                    formulaVSEPR: "AX₄E₂",
+                    geometriaElettronica: "Ottaedrica",
+                    geometriaMolecolare: "Planare Quadrata",
+                    ibridazione: "sp³d²",
+                    angolo: "90°",
+                    polarita: "Apolare",
+                    momentoDipolare: "μ = 0 D"
+                }
+            }
+        };
+
+        // Tabella di configurazioni VSEPR per il costruttore
+        const vsepConfigurations = {
+            '2_0': { formula: 'AX₂', hybridization: 'sp', electronGeometry: 'Lineare', molecularGeometry: 'Lineare', angle: '180°' },
+            '3_0': { formula: 'AX₃', hybridization: 'sp²', electronGeometry: 'Trigonale Planare', molecularGeometry: 'Trigonale Planare', angle: '120°' },
+            '2_1': { formula: 'AX₂E', hybridization: 'sp²', electronGeometry: 'Trigonale Planare', molecularGeometry: 'Angolare', angle: '~117°' },
+            '4_0': { formula: 'AX₄', hybridization: 'sp³', electronGeometry: 'Tetraedrica', molecularGeometry: 'Tetraedrica', angle: '109.5°' },
+            '3_1': { formula: 'AX₃E', hybridization: 'sp³', electronGeometry: 'Tetraedrica', molecularGeometry: 'Trigonale Piramidale', angle: '~107°' },
+            '2_2': { formula: 'AX₂E₂', hybridization: 'sp³', electronGeometry: 'Tetraedrica', molecularGeometry: 'Angolare', angle: '~104°' },
+            '5_0': { formula: 'AX₅', hybridization: 'sp³d', electronGeometry: 'Bipiramidale Trigonale', molecularGeometry: 'Bipiramidale Trigonale', angle: '90°, 120°' },
+            '4_1': { formula: 'AX₄E', hybridization: 'sp³d', electronGeometry: 'Bipiramidale Trigonale', molecularGeometry: 'Altalena (Seesaw)', angle: '~102°, ~173°' },
+            '3_2': { formula: 'AX₃E₂', hybridization: 'sp³d', electronGeometry: 'Bipiramidale Trigonale', molecularGeometry: 'Forma a T', angle: '~87°' },
+            '2_3': { formula: 'AX₂E₃', hybridization: 'sp³d', electronGeometry: 'Bipiramidale Trigonale', molecularGeometry: 'Lineare', angle: '180°' },
+            '6_0': { formula: 'AX₆', hybridization: 'sp³d²', electronGeometry: 'Ottaedrica', molecularGeometry: 'Ottaedrica', angle: '90°' },
+            '5_1': { formula: 'AX₅E', hybridization: 'sp³d²', electronGeometry: 'Ottaedrica', molecularGeometry: 'Piramidale Quadrata', angle: '~85°, 90°' },
+            '4_2': { formula: 'AX₄E₂', hybridization: 'sp³d²', electronGeometry: 'Ottaedrica', molecularGeometry: 'Planare Quadrata', angle: '90°' },
+            '1_0': { formula: 'AX', hybridization: '-', electronGeometry: 'Lineare', molecularGeometry: 'Lineare', angle: '-' }
+        };
+
+        // Colori CPK
+        const cpkColors = {
+            'C': 0x333333,
+            'H': 0xFFFFFF,
+            'O': 0xFF0000,
+            'N': 0x0000FF,
+            'S': 0xFFFF00,
+            'F': 0x00FF00,
+            'Cl': 0x00FF00,
+            'P': 0x800080,
+            'Be': 0x800080,
+            'B': 0xFFB5C5,
+            'Xe': 0x429EB0,
+            'Br': 0xA52A2A,
+            'I': 0x940094
+        };
+
+        // Setup Three.js
+        let scene, camera, renderer, labelRenderer, controls;
+        let currentMoleculeGroup;
+        let lonePairObjects = [];
+        let angleLabels = [];
+
+        function initThreeJS() {
+            const canvas = document.getElementById('moleculeCanvas');
+            const container = canvas.parentElement;
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1f2121);
+
+            camera = new THREE.PerspectiveCamera(
+                50,
+                container.clientWidth / container.clientHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(0, 0, 8);
+
+            renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            // CSS2DRenderer per etichette
+            labelRenderer = new THREE.CSS2DRenderer();
+            labelRenderer.setSize(container.clientWidth, container.clientHeight);
+            labelRenderer.domElement.style.position = 'absolute';
+            labelRenderer.domElement.style.top = '0';
+            labelRenderer.domElement.style.pointerEvents = 'none';
+            document.getElementById('labelContainer').appendChild(labelRenderer.domElement);
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+
+            // Luci
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.5);
+            directionalLight1.position.set(5, 5, 5);
+            scene.add(directionalLight1);
+
+            const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.3);
+            directionalLight2.position.set(-5, -5, -5);
+            scene.add(directionalLight2);
+
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        function onWindowResize() {
+            const container = document.getElementById('moleculeCanvas').parentElement;
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            labelRenderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        function createAtom(elemento, posizione) {
+            const radius = elemento === 'H' ? 0.3 : 0.5;
+            const geometry = new THREE.SphereGeometry(radius, 32, 32);
+            const material = new THREE.MeshPhongMaterial({
+                color: cpkColors[elemento] || 0x800080,
+                shininess: 30
+            });
+            const sphere = new THREE.Mesh(geometry, material);
+            sphere.position.set(...posizione);
+            return sphere;
+        }
+
+        function createBond(pos1, pos2) {
+            const direction = new THREE.Vector3().subVectors(
+                new THREE.Vector3(...pos2),
+                new THREE.Vector3(...pos1)
+            );
+            const length = direction.length();
+            const geometry = new THREE.CylinderGeometry(0.1, 0.1, length, 8);
+            const material = new THREE.MeshPhongMaterial({ color: 0xcccccc });
+            const cylinder = new THREE.Mesh(geometry, material);
+
+            cylinder.position.set(
+                (pos1[0] + pos2[0]) / 2,
+                (pos1[1] + pos2[1]) / 2,
+                (pos1[2] + pos2[2]) / 2
+            );
+
+            const axis = new THREE.Vector3(0, 1, 0);
+            cylinder.quaternion.setFromUnitVectors(axis, direction.normalize());
+
+            return cylinder;
+        }
+
+        function createLonePair(posizione) {
+            const geometry = new THREE.SphereGeometry(0.35, 16, 16);
+            const material = new THREE.MeshPhongMaterial({
+                color: 0xffff00,
+                transparent: true,
+                opacity: 0.4
+            });
+            const sphere = new THREE.Mesh(geometry, material);
+            sphere.position.set(...posizione);
+            return sphere;
+        }
+
+        function createAngleLabel(angle, position) {
+            const labelDiv = document.createElement('div');
+            labelDiv.className = 'angle-label';
+            labelDiv.textContent = angle;
+            const label = new THREE.CSS2DObject(labelDiv);
+            label.position.set(position[0], position[1], position[2]);
+            return label;
+        }
+
+        function renderMolecule(moleculeKey) {
+            // Pulisci scena precedente
+            if (currentMoleculeGroup) {
+                scene.remove(currentMoleculeGroup);
+            }
+            lonePairObjects = [];
+            angleLabels.forEach(label => scene.remove(label));
+            angleLabels = [];
+
+            currentMoleculeGroup = new THREE.Group();
+
+            const molecule = moleculesDB[moleculeKey];
+
+            // Aggiungi atomi
+            molecule.atomi.forEach(atom => {
+                const atomMesh = createAtom(atom.elemento, atom.posizione);
+                currentMoleculeGroup.add(atomMesh);
+            });
+
+            // Aggiungi legami
+            molecule.legami.forEach(([i, j]) => {
+                const pos1 = molecule.atomi[i].posizione;
+                const pos2 = molecule.atomi[j].posizione;
+                const bond = createBond(pos1, pos2);
+                currentMoleculeGroup.add(bond);
+            });
+
+            scene.add(currentMoleculeGroup);
+
+            // Aggiorna informazioni
+            updateInfo(molecule);
+
+            // Aggiorna visualizzazione coppie solitarie
+            updateLonePairsVisibility();
+
+            // Aggiorna visualizzazione angoli
+            updateAnglesVisibility();
+        }
+
+        function updateLonePairsVisibility() {
+            const showLonePairs = document.getElementById('showLonePairs').checked;
+            const moleculeKey = document.getElementById('moleculeSelect').value;
+            const molecule = moleculesDB[moleculeKey];
+
+            // Rimuovi coppie solitarie esistenti
+            lonePairObjects.forEach(lp => currentMoleculeGroup.remove(lp));
+            lonePairObjects = [];
+
+            if (showLonePairs && molecule.coppieSolitarie.length > 0) {
+                molecule.coppieSolitarie.forEach(pos => {
+                    const lp = createLonePair(pos);
+                    currentMoleculeGroup.add(lp);
+                    lonePairObjects.push(lp);
+                });
+            }
+        }
+
+        function updateAnglesVisibility() {
+            const showAngles = document.getElementById('showAngles').checked;
+            const moleculeKey = document.getElementById('moleculeSelect').value;
+            const molecule = moleculesDB[moleculeKey];
+
+            // Rimuovi etichette esistenti
+            angleLabels.forEach(label => scene.remove(label));
+            angleLabels = [];
+
+            if (showAngles && molecule.legami.length >= 2) {
+                // Posiziona l'etichetta angolo vicino all'atomo centrale
+                const centralAtom = molecule.atomi[0];
+                const labelPos = [
+                    centralAtom.posizione[0] + 0.8,
+                    centralAtom.posizione[1] + 0.8,
+                    centralAtom.posizione[2]
+                ];
+                const angleLabel = createAngleLabel(molecule.info.angolo, labelPos);
+                scene.add(angleLabel);
+                angleLabels.push(angleLabel);
+            }
+        }
+
+        function updateInfo(molecule) {
+            document.getElementById('infoFormula').textContent = molecule.formula;
+            document.getElementById('infoVSEPRFormula').textContent = molecule.info.formulaVSEPR;
+            document.getElementById('infoHybridization').textContent = molecule.info.ibridazione;
+            document.getElementById('infoElectronGeometry').textContent = molecule.info.geometriaElettronica;
+            document.getElementById('infoMolecularGeometry').textContent = molecule.info.geometriaMolecolare;
+            document.getElementById('infoBondAngle').textContent = molecule.info.angolo;
+            document.getElementById('infoPolarity').textContent = molecule.info.polarita;
+            document.getElementById('infoDipoleMoment').textContent = molecule.info.momentoDipolare;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+            labelRenderer.render(scene, camera);
+        }
+
+        // Event Listeners
+        document.getElementById('moleculeSelect').addEventListener('change', (e) => {
+            renderMolecule(e.target.value);
+        });
+
+        document.getElementById('showLonePairs').addEventListener('change', updateLonePairsVisibility);
+
+        document.getElementById('showAngles').addEventListener('change', updateAnglesVisibility);
+
+        // Modal Event Listeners
+        const modal = document.getElementById('vsepModal');
+        const infoBtn = document.getElementById('infoBtn');
+        const closeModal = document.getElementById('closeModal');
+
+        infoBtn.addEventListener('click', () => {
+            modal.classList.add('active');
+        });
+
+        closeModal.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+
+        // Gestione Tab
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const tabName = button.dataset.tab;
+
+                // Aggiorna pulsanti
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // Aggiorna contenuto
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(tabName + '-tab').classList.add('active');
+
+                // Renderizza la scena appropriata
+                if (tabName === 'predefinite') {
+                    renderMolecule(document.getElementById('moleculeSelect').value);
+                } else {
+                    renderBuilderMolecule();
+                }
+            });
+        });
+
+        // Gestione Costruttore VSEPR
+        let builderX = 4;
+        let builderE = 0;
+
+        function updateBuilder() {
+            document.getElementById('atomsX').value = builderX;
+            document.getElementById('lonePairsE').value = builderE;
+
+            const key = builderX + '_' + builderE;
+            const config = vsepConfigurations[key] || {
+                formula: 'AX' + builderX + (builderE > 0 ? 'E' + builderE : ''),
+                hybridization: '-',
+                electronGeometry: '-',
+                molecularGeometry: '-',
+                angle: '-'
+            };
+
+            document.getElementById('builderVSEPRFormula').textContent = config.formula;
+            document.getElementById('builderHybridization').textContent = config.hybridization;
+            document.getElementById('builderElectronGeometry').textContent = config.electronGeometry;
+            document.getElementById('builderMolecularGeometry').textContent = config.molecularGeometry;
+            document.getElementById('builderBondAngle').textContent = config.angle;
+
+            renderBuilderMolecule();
+        }
+
+        document.getElementById('increaseX').addEventListener('click', () => {
+            if (builderX < 6) {
+                builderX++;
+                updateBuilder();
+            }
+        });
+
+        document.getElementById('decreaseX').addEventListener('click', () => {
+            if (builderX > 1) {
+                builderX--;
+                updateBuilder();
+            }
+        });
+
+        document.getElementById('increaseE').addEventListener('click', () => {
+            if (builderE < 6) {
+                builderE++;
+                updateBuilder();
+            }
+        });
+
+        document.getElementById('decreaseE').addEventListener('click', () => {
+            if (builderE > 0) {
+                builderE--;
+                updateBuilder();
+            }
+        });
+
+        // Funzione per calcolare posizioni geometriche VSEPR
+        function calculateVSEPRPositions(totalPositions) {
+            const positions = [];
+
+            if (totalPositions === 2) {
+                // Lineare
+                positions.push([1.5, 0, 0], [-1.5, 0, 0]);
+            } else if (totalPositions === 3) {
+                // Trigonale planare
+                positions.push([1.3, 0, 0], [-0.65, 1.13, 0], [-0.65, -1.13, 0]);
+            } else if (totalPositions === 4) {
+                // Tetraedrica
+                positions.push([0.63, 0.63, 0.63], [-0.63, -0.63, 0.63], [-0.63, 0.63, -0.63], [0.63, -0.63, -0.63]);
+            } else if (totalPositions === 5) {
+                // Bipiramidale trigonale
+                positions.push([0, 1.7, 0], [0, -1.7, 0], [1.6, 0, 0], [-0.8, 0, 1.39], [-0.8, 0, -1.39]);
+            } else if (totalPositions === 6) {
+                // Ottaedrica
+                positions.push([1.5, 0, 0], [-1.5, 0, 0], [0, 1.5, 0], [0, -1.5, 0], [0, 0, 1.5], [0, 0, -1.5]);
+            } else if (totalPositions === 1) {
+                positions.push([1.5, 0, 0]);
+            }
+
+            return positions;
+        }
+
+        function renderBuilderMolecule() {
+            // Pulisci scena precedente
+            if (currentMoleculeGroup) {
+                scene.remove(currentMoleculeGroup);
+            }
+            lonePairObjects = [];
+            angleLabels.forEach(label => scene.remove(label));
+            angleLabels = [];
+
+            currentMoleculeGroup = new THREE.Group();
+
+            const totalPositions = builderX + builderE;
+            const positions = calculateVSEPRPositions(totalPositions);
+
+            // Atomo centrale (A) - viola
+            const centralGeometry = new THREE.SphereGeometry(0.6, 32, 32);
+            const centralMaterial = new THREE.MeshPhongMaterial({ color: 0x800080, shininess: 30 });
+            const centralAtom = new THREE.Mesh(centralGeometry, centralMaterial);
+            currentMoleculeGroup.add(centralAtom);
+
+            // Aggiungi atomi legati (X) - grigio
+            for (let i = 0; i < builderX; i++) {
+                const atomGeometry = new THREE.SphereGeometry(0.45, 32, 32);
+                const atomMaterial = new THREE.MeshPhongMaterial({ color: 0x888888, shininess: 30 });
+                const atom = new THREE.Mesh(atomGeometry, atomMaterial);
+                atom.position.set(...positions[i]);
+                currentMoleculeGroup.add(atom);
+
+                // Aggiungi legame
+                const bond = createBond([0, 0, 0], positions[i]);
+                currentMoleculeGroup.add(bond);
+            }
+
+            // Aggiungi coppie solitarie (E) - giallo traslucido
+            for (let i = 0; i < builderE; i++) {
+                const lpGeometry = new THREE.SphereGeometry(0.35, 16, 16);
+                const lpMaterial = new THREE.MeshPhongMaterial({
+                    color: 0xffff00,
+                    transparent: true,
+                    opacity: 0.4
+                });
+                const lp = new THREE.Mesh(lpGeometry, lpMaterial);
+                lp.position.set(...positions[builderX + i]);
+                currentMoleculeGroup.add(lp);
+                lonePairObjects.push(lp);
+            }
+
+            scene.add(currentMoleculeGroup);
+        }
+
+        // Inizializzazione
+        initThreeJS();
+        renderMolecule('H2O');
+        animate();
+    </script>
+</body>
+
+</html>

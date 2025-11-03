@@ -1,0 +1,2455 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Mitosi e Meiosi - EdTech Bio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .control-panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            height: fit-content;
+        }
+
+        .mode-selector {
+            margin-bottom: 25px;
+        }
+
+        .mode-selector h3 {
+            margin-bottom: 12px;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        .mode-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .mode-btn {
+            padding: 12px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .mode-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .controls {
+            margin-bottom: 20px;
+        }
+
+        .controls h3 {
+            margin-bottom: 12px;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        .control-btn {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 8px;
+            border: none;
+            background: #667eea;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .control-btn.secondary {
+            background: #28a745;
+        }
+
+        .control-btn.secondary:hover {
+            background: #218838;
+        }
+
+        .control-btn.danger {
+            background: #dc3545;
+        }
+
+        .control-btn.danger:hover {
+            background: #c82333;
+        }
+
+        .info-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-btn {
+            padding: 10px;
+            border: 2px solid #17a2b8;
+            background: white;
+            color: #17a2b8;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .info-btn:hover {
+            background: #17a2b8;
+            color: white;
+        }
+
+        #stage-container {
+            background: white;
+            border: 3px solid #e9ecef;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #canvas {
+            display: block;
+            width: 100%;
+            height: 600px;
+            background: #f8f9fa;
+        }
+
+        .info-panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            height: fit-content;
+        }
+
+        .status-display {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .status-display h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .status-item {
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .status-label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .description-panel {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .description-panel h3 {
+            color: #28a745;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .description-panel p {
+            line-height: 1.6;
+            color: #495057;
+            font-size: 0.95em;
+        }
+
+        /* Stili per la Modale */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 3% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+
+        .close {
+            color: white;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            transition: all 0.3s;
+        }
+
+        .close:hover {
+            transform: scale(1.2);
+        }
+
+        .modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            max-height: calc(85vh - 80px);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: none;
+            color: #6c757d;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-btn:hover {
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .phase-detail {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .phase-detail h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .phase-detail p {
+            line-height: 1.6;
+            color: #495057;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .comparison-table th {
+            background-color: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Stili Accordion per Domande Guida */
+        .accordion-item {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .accordion-item:hover {
+            border-color: #17a2b8;
+        }
+
+        .accordion-header {
+            background: linear-gradient(135deg, #e7f3ff 0%, #f0f8ff 100%);
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .accordion-header:hover {
+            background: linear-gradient(135deg, #d0ebff 0%, #e0f0ff 100%);
+        }
+
+        .accordion-header.active {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+        }
+
+        .accordion-question {
+            font-weight: 600;
+            font-size: 1.05em;
+            color: #2c3e50;
+            flex: 1;
+            padding-right: 10px;
+        }
+
+        .accordion-header.active .accordion-question {
+            color: white;
+        }
+
+        .accordion-icon {
+            font-size: 1.3em;
+            font-weight: bold;
+            transition: transform 0.3s;
+            color: #17a2b8;
+        }
+
+        .accordion-header.active .accordion-icon {
+            transform: rotate(180deg);
+            color: white;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            background: #f8f9fa;
+        }
+
+        .accordion-content.active {
+            max-height: 1000px;
+            transition: max-height 0.5s ease-in;
+        }
+
+        .accordion-body {
+            padding: 20px;
+            line-height: 1.8;
+            color: #495057;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .accordion-body p {
+            margin-bottom: 15px;
+        }
+
+        .accordion-body strong {
+            color: #17a2b8;
+        }
+
+        .accordion-body ul {
+            margin-left: 20px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        .accordion-body li {
+            margin-bottom: 8px;
+        }
+
+        /* Stili Quiz */
+        .quiz-container {
+            padding: 20px;
+        }
+
+        .quiz-question {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-question h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quiz-option:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .quiz-option.selected {
+            border-color: #667eea;
+            background: #e7f3ff;
+        }
+
+        .quiz-option.correct {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .quiz-feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .quiz-feedback.correct {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .quiz-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .quiz-results {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .quiz-results h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .quiz-score {
+            font-size: 3em;
+            color: #28a745;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .modal-body h3.section-title {
+            margin-top: 30px;
+        }
+
+        .modal-body .intro-text {
+            margin-bottom: 20px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .control-panel,
+            .info-panel {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🧬 Simulazione Mitosi e Meiosi</h1>
+            <p class="subtitle">Esplora i processi di divisione cellulare in modo interattivo</p>
+        </header>
+        <div class="main-content">
+            <!-- Pannello di Controllo Sinistro -->
+            <div class="control-panel">
+                <div class="mode-selector">
+                    <h3>📋 Modalità</h3>
+                    <div class="mode-buttons">
+                        <button class="mode-btn active" data-mode="mitosis">Mitosi</button>
+                        <button class="mode-btn" data-mode="meiosis">Meiosi</button>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <h3>🎮 Controlli</h3>
+                    <button class="control-btn secondary" id="playPauseBtn">▶ Play</button>
+                    <button class="control-btn" id="nextBtn">⏭ Fase Successiva</button>
+                    <button class="control-btn" id="prevBtn">⏮ Fase Precedente</button>
+                    <button class="control-btn danger" id="resetBtn">🔄 Reset</button>
+                </div>
+
+                <div class="info-buttons">
+                    <button class="info-btn" id="helpBtn">ℹ️ Approfondimenti</button>
+                    <button class="info-btn" id="quizBtn">📝 Quiz</button>
+                </div>
+            </div>
+
+            <!-- Area di Visualizzazione Centrale -->
+            <div id="stage-container">
+                <canvas id="canvas"></canvas>
+            </div>
+
+            <!-- Pannello Informativo Destro -->
+            <div class="info-panel">
+                <div class="status-display">
+                    <h3>📊 Stato Corrente</h3>
+                    <div class="status-item">
+                        <span class="status-label">Modalità:</span> <span id="modeDisplay">Mitosi</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Fase:</span> <span id="phaseDisplay">Interfase (G1)</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Cromosomi:</span> <span id="chromDisplay">4</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Cromatidi:</span> <span id="chromatidDisplay">4</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Ploidia:</span> <span id="ploidyDisplay">2n</span>
+                    </div>
+                </div>
+
+                <div class="description-panel">
+                    <h3>📖 Descrizione</h3>
+                    <p id="phaseDescription">La cellula si trova in interfase, fase G1. I cromosomi non sono ancora
+                        replicati e
+                        la cellula sta crescendo e preparandosi alla divisione.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Approfondimenti -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📚 Approfondimenti e Guida</h2>
+                <span class="close" id="closeHelp">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="details">Spiegazioni Dettagliate</button>
+                    <button class="tab-btn" data-tab="comparison">Differenze Chiave</button>
+                    <button class="tab-btn" data-tab="questions">Domande Guida</button>
+                </div>
+
+                <div id="details-tab" class="tab-content active">
+                    <h3>🔬 Mitosi - Fasi Dettagliate</h3>
+
+                    <div class="phase-detail">
+                        <h4>Interfase (G1, S, G2)</h4>
+                        <p>La cellula cresce e duplica il suo DNA durante la fase S. Ogni cromosoma ora è composto da
+                            due
+                            cromatidi fratelli identici uniti al centromero. La cellula sintetizza anche proteine
+                            necessarie
+                            per la divisione.</p>
+                    </div>
+
+                    <div class="phase-detail">
+                        <h4>Profase</h4>
+                        <p>I cromosomi si condensano e diventano visibili. La membrana nucleare inizia a disgregarsi. I
+                            centrioli migrano verso i poli opposti della cellula e inizia a formarsi il fuso mitotico.
+                        </p>
+                    </div>
+
+                    <div class="phase-detail">
+                        <h4>Metafase</h4>
+                        <p>I cromosomi si allineano lungo la piastra metafasica (piano equatoriale della cellula). I
+                            microtubuli del fuso si attaccano ai cinetocori dei cromosomi. Questo allineamento è
+                            fondamentale per garantire una corretta separazione.</p>
+                    </div>
+
+                    <div class="phase-detail">
+                        <h4>Anafase</h4>
+                        <p>I cromatidi fratelli si separano e vengono tirati verso i poli opposti della cellula dai
+                            microtubuli del fuso. Ogni polo riceve ora un set identico di cromosomi.</p>
+                    </div>
+
+                    <div class="phase-detail">
+                        <h4>Telofase e Citodieresi</h4>
+                        <p>Si riformano le membrane nucleari attorno ai due gruppi di cromosomi. I cromosomi si
+                            decondensano. La cellula si divide in due cellule figlie identiche, ciascuna con 2n
+                            cromosomi.
+                        </p>
+                    </div>
+
+                    <h3 class="section-title">🧬 Meiosi - Fasi Dettagliate</h3>
+
+                    <div class="phase-detail">
+                        <h4>Meiosi I - Profase I</h4>
+                        <p>Fase più lunga e complessa. I cromosomi omologhi si appaiano formando tetradi (sinapsi).
+                            Avviene
+                            il crossing-over: i cromatidi non fratelli scambiano segmenti di DNA, aumentando la
+                            variabilità
+                            genetica. I cromosomi si condensano e la membrana nucleare si disgrega.</p>
+                    </div>
+
+                    <div class="phase-detail">
+                        <h4>Meiosi I - Metafase I</h4>
+                        <p>Le coppie di cromosomi omologhi (tetradi) si allineano lungo la piastra metafasica.
+                            L'orientamento casuale delle coppie omologhe contribuisce alla variabilità genetica
+                            (assortimento indipendente).</p>
+                    </div>
+
+                    <div class="phase-detail">
+                        <h4>Meiosi I - Anafase I</h4>
+                        <p>I cromosomi omologhi si separano e migrano verso poli opposti. ATTENZIONE: i cromatidi
+                            fratelli
+                            rimangono uniti! Questo è diverso dalla mitosi.</p>
+                    </div>
+
+                    <div class="phase-detail">
+                        <h4>Meiosi I - Telofase I e Citodieresi</h4>
+                        <p>Si formano due cellule figlie aploidi (n), ma ogni cromosoma è ancora formato da due
+                            cromatidi
+                            fratelli. Ogni cellula ha metà del numero di cromosomi rispetto alla cellula madre.</p>
+                    </div>
+
+                    <div class="phase-detail">
+                        <h4>Meiosi II - Profase II</h4>
+                        <p>In ciascuna delle due cellule, i cromosomi si condensano nuovamente e si forma un nuovo fuso
+                            mitotico. Non c'è replicazione del DNA tra Meiosi I e Meiosi II.</p>
+                    </div>
+
+                    <div class="phase-detail">
+                        <h4>Meiosi II - Metafase II</h4>
+                        <p>I cromosomi (ancora formati da cromatidi fratelli) si allineano sulla piastra metafasica,
+                            simile
+                            alla metafase mitotica ma con numero aploide di cromosomi.</p>
+                    </div>
+
+                    <div class="phase-detail">
+                        <h4>Meiosi II - Anafase II</h4>
+                        <p>I cromatidi fratelli finalmente si separano e migrano verso i poli opposti, proprio come in
+                            anafase mitotica.</p>
+                    </div>
+
+                    <div class="phase-detail">
+                        <h4>Meiosi II - Telofase II e Citodieresi</h4>
+                        <p>Si formano quattro cellule aploidi (n), ciascuna con cromosomi singoli (non più doppi). Ogni
+                            cellula è geneticamente unica grazie al crossing-over e all'assortimento indipendente.</p>
+                    </div>
+                </div>
+
+                <div id="comparison-tab" class="tab-content">
+                    <h3>⚖️ Confronto tra Mitosi e Meiosi</h3>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Caratteristica</th>
+                                <th>Mitosi</th>
+                                <th>Meiosi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Scopo</strong></td>
+                                <td>Crescita, riparazione tissutale, riproduzione asessuale</td>
+                                <td>Produzione di gameti (cellule sessuali)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Numero di divisioni</strong></td>
+                                <td>Una divisione</td>
+                                <td>Due divisioni consecutive (Meiosi I e II)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cellule prodotte</strong></td>
+                                <td>2 cellule figlie</td>
+                                <td>4 cellule figlie</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ploidia cellule figlie</strong></td>
+                                <td>Diploidi (2n) - identiche alla madre</td>
+                                <td>Aploidi (n) - metà cromosomi</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Variabilità genetica</strong></td>
+                                <td>Cellule identiche (cloni)</td>
+                                <td>Cellule geneticamente diverse</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Crossing-over</strong></td>
+                                <td>NO</td>
+                                <td>SÌ (in Profase I)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Appaiamento omologhi</strong></td>
+                                <td>NO</td>
+                                <td>SÌ (sinapsi in Profase I)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Separazione in Anafase</strong></td>
+                                <td>Cromatidi fratelli</td>
+                                <td>Anafase I: cromosomi omologhi<br>Anafase II: cromatidi fratelli</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dove avviene</strong></td>
+                                <td>Cellule somatiche</td>
+                                <td>Cellule germinali (gonadi)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="questions-tab" class="tab-content">
+                    <h3>🤔 Domande Guida per l'Osservazione</h3>
+                    <p class="intro-text">Clicca su ogni domanda per
+                        visualizzare una spiegazione dettagliata</p>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <span class="accordion-question"><strong>1.</strong> In quale fase della mitosi si separano
+                                i
+                                cromatidi fratelli? E nella meiosi?</span>
+                            <span class="accordion-icon">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <p><strong>Risposta completa:</strong></p>
+                                <p>Nella <strong>mitosi</strong>, i cromatidi fratelli si separano durante
+                                    l'<strong>Anafase</strong>. Questo è un evento chiave che garantisce che ogni
+                                    cellula
+                                    figlia riceva una copia identica di ogni cromosoma.</p>
+
+                                <p>Nella <strong>meiosi</strong>, la situazione è più complessa perché ci sono due
+                                    divisioni
+                                    cellulari:</p>
+                                <ul>
+                                    <li><strong>Anafase I (prima divisione meiotica):</strong> I cromatidi fratelli NON
+                                        si
+                                        separano. Invece, si separano i cromosomi omologhi (uno di origine materna e uno
+                                        di
+                                        origine paterna). I cromatidi fratelli rimangono uniti al centromero.</li>
+                                    <li><strong>Anafase II (seconda divisione meiotica):</strong> Qui finalmente i
+                                        cromatidi
+                                        fratelli si separano, proprio come nella mitosi.</li>
+                                </ul>
+
+                                <p><strong>Perché questa differenza è importante?</strong> Questa distinzione è
+                                    fondamentale
+                                    per ridurre il numero di cromosomi da diploide (2n) ad aploide (n). La prima
+                                    divisione
+                                    separa gli omologhi (riduzione), mentre la seconda divisione separa i cromatidi
+                                    fratelli
+                                    (come una mitosi normale).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <span class="accordion-question"><strong>2.</strong> Qual è lo scopo principale del
+                                crossing-over e in quale fase avviene?</span>
+                            <span class="accordion-icon">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <p><strong>Quando avviene:</strong> Il crossing-over avviene esclusivamente durante la
+                                    <strong>Profase I della Meiosi</strong>, più precisamente nella sottofase chiamata
+                                    pachitene.
+                                </p>
+
+                                <p><strong>Cos'è il crossing-over:</strong> È un processo molecolare in cui i cromosomi
+                                    omologhi appaiati (tetrade) scambiano segmenti corrispondenti di DNA tra cromatidi
+                                    non
+                                    fratelli. In pratica, un cromatidio del cromosoma paterno scambia un pezzo con un
+                                    cromatidio del cromosoma materno.</p>
+
+                                <p><strong>Scopo principale:</strong></p>
+                                <ul>
+                                    <li><strong>Aumentare la variabilità genetica:</strong> Il crossing-over crea nuove
+                                        combinazioni di alleli che non esistevano nei genitori. Questo è fondamentale
+                                        per
+                                        l'evoluzione e l'adattamento delle specie.</li>
+                                    <li><strong>Ricombinazione genetica:</strong> Produce cromosomi "ricombinanti" che
+                                        contengono informazioni genetiche sia materne che paterne sulla stessa molecola
+                                        di
+                                        DNA.</li>
+                                    <li><strong>Diversità nella prole:</strong> Insieme all'assortimento indipendente,
+                                        il
+                                        crossing-over garantisce che ogni gamete sia geneticamente unico, e quindi ogni
+                                        individuo (eccetto i gemelli identici) sia unico.</li>
+                                </ul>
+
+                                <p><strong>Osservazione nella simulazione:</strong> Nella simulazione, il crossing-over
+                                    è
+                                    visualizzato in Profase I dai cromosomi che mostrano segmenti di colore misto (blu e
+                                    rosso), indicando lo scambio di materiale genetico tra omologhi paterni e materni.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <span class="accordion-question"><strong>3.</strong> Perché le cellule prodotte dalla meiosi
+                                sono geneticamente diverse tra loro, mentre quelle della mitosi sono identiche?</span>
+                            <span class="accordion-icon">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <p><strong>Mitosi - Cellule identiche (cloni):</strong></p>
+                                <p>Nella mitosi, ogni cromosoma viene replicato durante l'interfase, formando due
+                                    cromatidi
+                                    fratelli identici. Questi cromatidi fratelli si separano durante l'anafase, con un
+                                    cromatidio che va a ciascuna cellula figlia. Poiché non c'è né appaiamento di
+                                    omologhi
+                                    né ricombinazione genetica, le due cellule figlie sono geneticamente identiche alla
+                                    cellula madre e tra loro. Questo è essenziale per mantenere l'informazione genetica
+                                    costante durante la crescita e la riparazione dei tessuti.</p>
+
+                                <p><strong>Meiosi - Cellule diverse (variabilità genetica):</strong></p>
+                                <p>Nella meiosi, la diversità genetica viene generata attraverso due meccanismi
+                                    principali:
+                                </p>
+
+                                <ul>
+                                    <li><strong>1. Crossing-over (Profase I):</strong> Come già discusso, questo
+                                        processo
+                                        scambia segmenti di DNA tra cromosomi omologhi, creando cromosomi ricombinanti
+                                        con
+                                        nuove combinazioni di alleli. Ogni crossing-over è un evento casuale che avviene
+                                        in
+                                        posizioni diverse, quindi produce infinite possibili combinazioni.</li>
+
+                                    <li><strong>2. Assortimento indipendente (Metafase I):</strong> Durante la metafase
+                                        I,
+                                        le coppie di cromosomi omologhi si allineano casualmente sulla piastra
+                                        metafasica.
+                                        L'orientamento di ciascuna coppia è indipendente dalle altre. Per esempio, con
+                                        n=2
+                                        (come nella simulazione), ci sono 2² = 4 possibili combinazioni di cromosomi
+                                        nelle
+                                        cellule figlie. Nell'uomo (n=23), ci sono 2²³ = oltre 8 milioni di combinazioni
+                                        possibili!</li>
+                                </ul>
+
+                                <p><strong>Risultato finale:</strong> Combinando crossing-over e assortimento
+                                    indipendente,
+                                    ogni gamete prodotto dalla meiosi è geneticamente unico. Questo spiega perché
+                                    fratelli e
+                                    sorelle (non gemelli identici) siano simili ma non identici: hanno combinazioni
+                                    diverse
+                                    degli stessi geni ereditati dai genitori.</p>
+
+                                <p><strong>Importanza evolutiva:</strong> Questa variabilità genetica è il "carburante"
+                                    della selezione naturale. Permette alle popolazioni di adattarsi a cambiamenti
+                                    ambientali e aumenta le probabilità di sopravvivenza della specie.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <span class="accordion-question"><strong>4.</strong> Cosa si allinea sulla piastra
+                                metafasica
+                                durante la Metafase della mitosi? E durante la Metafase I della meiosi?</span>
+                            <span class="accordion-icon">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <p><strong>Metafase della Mitosi:</strong></p>
+                                <p>Sulla piastra metafasica si allineano i <strong>singoli cromosomi</strong>, ciascuno
+                                    formato da due cromatidi fratelli uniti al centromero. I cromosomi omologhi NON sono
+                                    appaiati e si comportano in modo indipendente. Nella nostra simulazione (2n=4), si
+                                    allineano tutti e 4 i cromosomi uno accanto all'altro: i due cromosomi lunghi (uno
+                                    rosso
+                                    materno e uno blu paterno) e i due cromosomi corti (uno rosso e uno blu).</p>
+
+                                <p><strong>Dettaglio tecnico:</strong> I microtubuli del fuso mitotico si attaccano ai
+                                    cinetocori di ciascun cromosoma da entrambi i lati del centromero, creando una
+                                    tensione
+                                    che mantiene i cromosomi allineati finché non si attiva il segnale per procedere
+                                    all'anafase.</p>
+
+                                <p><strong>Metafase I della Meiosi:</strong></p>
+                                <p>Qui la situazione è completamente diversa! Sulla piastra metafasica si allineano le
+                                    <strong>coppie di cromosomi omologhi appaiati</strong>, chiamate <strong>bivalenti o
+                                        tetradi</strong> (perché contengono 4 cromatidi: 2 per ogni cromosoma omologo).
+                                </p>
+
+                                <p>Nella nostra simulazione:</p>
+                                <ul>
+                                    <li>Si allinea la coppia di cromosomi lunghi (omologo rosso materno appaiato con
+                                        omologo
+                                        blu paterno)</li>
+                                    <li>Si allinea la coppia di cromosomi corti (omologo rosso materno appaiato con
+                                        omologo
+                                        blu paterno)</li>
+                                </ul>
+
+                                <p><strong>Differenza cruciale:</strong> In Metafase I, i microtubuli del fuso si
+                                    attaccano
+                                    a UN SOLO lato di ciascun cromosoma della coppia (attacco monopolare), non a
+                                    entrambi i
+                                    lati come nella mitosi. Questo assicura che durante l'Anafase I gli omologhi si
+                                    separino
+                                    (non i cromatidi fratelli).</p>
+
+                                <p><strong>Conseguenze:</strong> Questa differenza nell'allineamento e nell'attacco del
+                                    fuso
+                                    è ciò che determina quale struttura si separa nella successiva anafase: cromatidi
+                                    fratelli nella mitosi vs cromosomi omologhi nella meiosi I.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <span class="accordion-question"><strong>5.</strong> Osserva il numero di cromosomi e
+                                cromatidi
+                                nelle varie fasi. Quando diminuisce il numero di cromosomi nella meiosi?</span>
+                            <span class="accordion-icon">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <p><strong>Risposta diretta:</strong> Il numero di cromosomi diminuisce durante la
+                                    <strong>Anafase I e viene completata la riduzione alla fine della Telofase
+                                        I</strong>
+                                    della meiosi. Questo è il momento in cui la cellula passa da diploide (2n) ad
+                                    aploide
+                                    (n).
+                                </p>
+
+                                <p><strong>Analisi dettagliata delle fasi nella simulazione (partendo da 2n=4):</strong>
+                                </p>
+
+                                <ul>
+                                    <li><strong>Interfase - Profase I - Metafase I:</strong>
+                                        <br>Cromosomi: 4 | Cromatidi: 8 | Ploidia: 2n
+                                        <br>La cellula è ancora diploide con 4 cromosomi (2 coppie di omologhi)
+                                    </li>
+
+                                    <li><strong>Anafase I:</strong>
+                                        <br>Questo è il momento della RIDUZIONE!
+                                        <br>Gli omologhi si separano: verso un polo vanno 2 cromosomi (1 lungo + 1
+                                        corto),
+                                        verso l'altro polo vanno gli altri 2 cromosomi (1 lungo + 1 corto). Ogni gruppo
+                                        ha
+                                        solo UN cromosoma di ciascuna coppia omologa.
+                                    </li>
+
+                                    <li><strong>Telofase I (e cellule in Meiosi II):</strong>
+                                        <br>Cromosomi: 2 per cellula | Cromatidi: 4 per cellula | Ploidia: n
+                                        <br>Ora le cellule sono aploidi! MA attenzione: ogni cromosoma è ancora formato
+                                        da 2
+                                        cromatidi fratelli uniti.
+                                    </li>
+
+                                    <li><strong>Anafase II:</strong>
+                                        <br>Qui non cambia il numero di cromosomi, ma i cromatidi fratelli si separano.
+                                        Il
+                                        "conteggio" diventa: 4 cromatidi separati (che ora sono cromosomi singoli) in 4
+                                        cellule diverse.
+                                    </li>
+
+                                    <li><strong>Telofase II (risultato finale):</strong>
+                                        <br>4 cellule, ciascuna con: Cromosomi: 2 | Cromatidi: 2 | Ploidia: n
+                                        <br>Ogni cellula ha la metà dei cromosomi rispetto alla cellula originale, e
+                                        ogni
+                                        cromosoma è singolo (non replicato).
+                                    </li>
+                                </ul>
+
+                                <p><strong>Concetto chiave:</strong> La meiosi è chiamata "divisione riduzionale"
+                                    proprio
+                                    perché la Meiosi I riduce il numero di cromosomi da 2n a n. La Meiosi II è invece
+                                    "equazionale" come la mitosi: separa i cromatidi ma non cambia il numero di
+                                    cromosomi.
+                                </p>
+
+                                <p><strong>Perché questa riduzione è essenziale?</strong> Nella riproduzione sessuale,
+                                    due
+                                    gameti aploidi (spermatozoo n + ovulo n) si fondono per formare uno zigote diploide
+                                    (2n). Se i gameti fossero diploidi, lo zigote sarebbe tetraploide (4n), e il numero
+                                    di
+                                    cromosomi raddoppierebbe ad ogni generazione!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <span class="accordion-question"><strong>6.</strong> Perché la meiosi richiede due divisioni
+                                cellulari mentre la mitosi ne richiede solo una?</span>
+                            <span class="accordion-icon">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <p><strong>La risposta in sintesi:</strong> La meiosi ha due obiettivi distinti che
+                                    richiedono due divisioni separate: (1) ridurre il numero di cromosomi da diploide ad
+                                    aploide, e (2) separare i cromatidi fratelli. La mitosi ha solo il secondo
+                                    obiettivo,
+                                    quindi serve una sola divisione.</p>
+
+                                <p><strong>Spiegazione dettagliata:</strong></p>
+
+                                <p><strong>Meiosi I (Divisione Riduzionale):</strong></p>
+                                <p>L'obiettivo principale della prima divisione meiotica è RIDURRE il numero di
+                                    cromosomi.
+                                    Questo richiede la separazione dei cromosomi omologhi, mentre i cromatidi fratelli
+                                    rimangono uniti. È impossibile fare entrambe le separazioni (omologhi E cromatidi)
+                                    in
+                                    una sola divisione perché:</p>
+                                <ul>
+                                    <li>I cromosomi omologhi devono prima appaiarsi durante la Profase I per permettere
+                                        il
+                                        crossing-over</li>
+                                    <li>Devono poi separarsi come coppie intere durante l'Anafase I</li>
+                                    <li>I cromatidi fratelli devono rimanere uniti in questa fase per mantenere la
+                                        connessione</li>
+                                </ul>
+
+                                <p><strong>Meiosi II (Divisione Equazionale):</strong></p>
+                                <p>Dopo la Meiosi I, le cellule sono aploidi MA ogni cromosoma è ancora formato da due
+                                    cromatidi fratelli. La Meiosi II serve a separare questi cromatidi fratelli,
+                                    producendo
+                                    cromosomi singoli (non replicati) nelle cellule figlie finali. Questa divisione è
+                                    simile
+                                    alla mitosi, ma avviene in cellule aploidi.</p>
+
+                                <p><strong>Confronto con la Mitosi:</strong></p>
+                                <p>La mitosi ha un solo obiettivo: produrre due cellule geneticamente identiche alla
+                                    cellula
+                                    madre. Non c'è bisogno di ridurre il numero di cromosomi, quindi:</p>
+                                <ul>
+                                    <li>I cromosomi omologhi NON si appaiano</li>
+                                    <li>NON c'è crossing-over</li>
+                                    <li>I cromatidi fratelli si separano direttamente durante l'anafase</li>
+                                    <li>Una sola divisione produce due cellule 2n identiche</li>
+                                </ul>
+
+                                <p><strong>Analogia utile:</strong> Immagina di dover distribuire 4 mazzi di carte
+                                    (cromosomi replicati) a 4 persone, ma ogni mazzo è composto da 2 copie identiche
+                                    (cromatidi fratelli):</p>
+                                <ul>
+                                    <li><strong>Mitosi:</strong> Prendi ogni mazzo, separi le due copie identiche e dai
+                                        una
+                                        copia a ciascuna delle 2 persone. (1 divisione)</li>
+                                    <li><strong>Meiosi:</strong> Prima raggruppi i mazzi simili (omologhi) e dai un
+                                        mazzo di
+                                        ogni tipo a 2 persone (Meiosi I). Poi, ciascuna di queste 2 persone separa le
+                                        sue
+                                        copie identiche e le distribuisce ad altre 2 persone (Meiosi II). (2 divisioni)
+                                    </li>
+                                </ul>
+
+                                <p><strong>Importanza biologica:</strong> Questo sistema a due divisioni permette alla
+                                    meiosi di combinare due funzioni essenziali per la riproduzione sessuale: riduzione
+                                    del
+                                    numero cromosomico (per mantenere costante 2n attraverso le generazioni) e
+                                    generazione
+                                    di variabilità genetica (attraverso crossing-over e assortimento indipendente).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <span class="accordion-question"><strong>7.</strong> Confronta l'Anafase della mitosi con
+                                l'Anafase I e l'Anafase II della meiosi. Cosa si separa in ciascuna?</span>
+                            <span class="accordion-icon">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <p><strong>Tabella comparativa:</strong></p>
+
+                                <p><strong>1. Anafase della Mitosi:</strong></p>
+                                <ul>
+                                    <li><strong>Cosa si separa:</strong> I cromatidi fratelli</li>
+                                    <li><strong>Come:</strong> Il centromero si divide e i due cromatidi fratelli (ora
+                                        cromosomi indipendenti) vengono tirati verso poli opposti</li>
+                                    <li><strong>Risultato:</strong> Ogni polo riceve una copia identica di ogni
+                                        cromosoma
+                                        (mantiene 2n)</li>
+                                    <li><strong>Connessione:</strong> I cromatidi erano uniti al centromero</li>
+                                </ul>
+
+                                <p><strong>2. Anafase I della Meiosi:</strong></p>
+                                <ul>
+                                    <li><strong>Cosa si separa:</strong> I cromosomi omologhi (cromosoma paterno vs
+                                        cromosoma materno di ciascuna coppia)</li>
+                                    <li><strong>Come:</strong> Le tetradi (coppie di omologhi) si separano, ma il
+                                        centromero
+                                        NON si divide. Ogni cromosoma, ancora formato da due cromatidi fratelli uniti,
+                                        migra
+                                        verso un polo</li>
+                                    <li><strong>Risultato:</strong> Ogni polo riceve UN cromosoma di ciascuna coppia
+                                        omologa
+                                        (riduzione da 2n a n)</li>
+                                    <li><strong>Connessione:</strong> Gli omologhi erano tenuti insieme da proteine
+                                        (coesine) e dai punti di crossing-over (chiasmi)</li>
+                                </ul>
+
+                                <p><strong>3. Anafase II della Meiosi:</strong></p>
+                                <ul>
+                                    <li><strong>Cosa si separa:</strong> I cromatidi fratelli (come nella mitosi)</li>
+                                    <li><strong>Come:</strong> Il centromero si divide e i cromatidi fratelli si
+                                        separano
+                                    </li>
+                                    <li><strong>Risultato:</strong> Ogni polo di ciascuna cellula riceve un cromatidio
+                                        (cromosoma singolo). Mantiene la ploidia aploide (n)</li>
+                                    <li><strong>Somiglianza con mitosi:</strong> È identica alla anafase mitotica, ma
+                                        avviene in cellule aploidi</li>
+                                </ul>
+
+                                <p><strong>Visualizzazione nella simulazione:</strong></p>
+                                <p>Osservando attentamente la simulazione, puoi notare:</p>
+                                <ul>
+                                    <li><strong>Anafase Mitotica:</strong> Vedi cromosomi "sottili" (singoli cromatidi)
+                                        migrare ai poli - i cromatidi gemelli vanno in direzioni opposte</li>
+                                    <li><strong>Anafase I:</strong> Vedi cromosomi "doppi/spessi" (due cromatidi ancora
+                                        uniti) migrare - un intero cromosoma con i suoi cromatidi va da una parte,
+                                        l'omologo
+                                        dall'altra</li>
+                                    <li><strong>Anafase II:</strong> Come l'anafase mitotica, vedi cromatidi singoli
+                                        separarsi, ma nelle due cellule separate</li>
+                                </ul>
+
+                                <p><strong>La chiave per ricordare:</strong></p>
+                                <ul>
+                                    <li>Anafase Mitotica e Anafase II: separa SORELLE (cromatidi fratelli)</li>
+                                    <li>Anafase I: separa COPPIE (cromosomi omologhi)</li>
+                                </ul>
+
+                                <p><strong>Perché questa differenza è importante?</strong> Questa è la differenza
+                                    FONDAMENTALE tra divisione riduzionale (Meiosi I) ed equazionale (Mitosi e Meiosi
+                                    II).
+                                    L'Anafase I è l'unico momento in cui si separa materiale genetico NON identico
+                                    (omologhi
+                                    paterni e materni), mentre nelle altre anafasi si separa materiale identico
+                                    (cromatidi
+                                    fratelli). Questo è ciò che permette la riduzione del numero cromosomico e la
+                                    segregazione degli alleli secondo le leggi di Mendel.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Quiz -->
+    <div id="quizModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📝 Quiz di Verifica</h2>
+                <span class="close" id="closeQuiz">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="quizContent" class="quiz-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===================================
+        // CONFIGURAZIONE E COSTANTI
+        // ===================================
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Imposta dimensioni canvas
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 600;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Costanti per i cromosomi
+        const CHROMOSOME_COLORS = {
+            paternal: '#3498db', // Blu per cromosomi paterni
+            maternal: '#e74c3c'  // Rosso per cromosomi materni
+        };
+
+        // Stati dell'applicazione
+        let currentMode = 'mitosis'; // 'mitosis' o 'meiosis'
+        let currentPhaseIndex = 0;
+        let isPlaying = false;
+        let animationSpeed = 2000; // millisecondi per fase
+
+        // ===================================
+        // DEFINIZIONE DELLE FASI
+        // ===================================
+
+        // Fasi della Mitosi
+        const mitosisPhases = [
+            {
+                name: 'Interfase (G1)',
+                chromosomes: 4,
+                chromatids: 4,
+                ploidy: '2n',
+                description: 'La cellula si trova in interfase, fase G1. I cromosomi non sono ancora replicati e la cellula sta crescendo e preparandosi alla divisione.',
+                renderFunction: renderInterfaseG1
+            },
+            {
+                name: 'Interfase (S)',
+                chromosomes: 4,
+                chromatids: 8,
+                ploidy: '2n',
+                description: 'Fase S: replicazione del DNA. Ogni cromosoma viene duplicato formando due cromatidi fratelli identici uniti al centromero.',
+                renderFunction: renderInterfaseS
+            },
+            {
+                name: 'Profase',
+                chromosomes: 4,
+                chromatids: 8,
+                ploidy: '2n',
+                description: 'Profase: I cromosomi si condensano e diventano visibili. La membrana nucleare si disgrega e si forma il fuso mitotico.',
+                renderFunction: renderProphase
+            },
+            {
+                name: 'Metafase',
+                chromosomes: 4,
+                chromatids: 8,
+                ploidy: '2n',
+                description: 'Metafase: I cromosomi si allineano lungo la piastra metafasica (equatore della cellula). I microtubuli del fuso si attaccano ai cinetocori.',
+                renderFunction: renderMetaphase
+            },
+            {
+                name: 'Anafase',
+                chromosomes: 8,
+                chromatids: 8,
+                ploidy: '2n',
+                description: 'Anafase: I cromatidi fratelli si separano e migrano verso i poli opposti della cellula. Ogni polo riceve un set identico di cromosomi.',
+                renderFunction: renderAnaphase
+            },
+            {
+                name: 'Telofase',
+                chromosomes: 8,
+                chromatids: 8,
+                ploidy: '2n',
+                description: 'Telofase: Si riformano le membrane nucleari attorno ai due gruppi di cromosomi. I cromosomi iniziano a decondensarsi.',
+                renderFunction: renderTelophase
+            },
+            {
+                name: 'Citodieresi',
+                chromosomes: 4,
+                chromatids: 4,
+                ploidy: '2n',
+                description: 'Citodieresi: La cellula si divide completamente in due cellule figlie identiche, ciascuna con 2n=4 cromosomi.',
+                renderFunction: renderCytokinesis
+            }
+        ];
+
+        // Fasi della Meiosi
+        const meiosisPhases = [
+            {
+                name: 'Interfase (S)',
+                chromosomes: 4,
+                chromatids: 8,
+                ploidy: '2n',
+                description: 'Interfase: La cellula replica il suo DNA. Ogni cromosoma è ora composto da due cromatidi fratelli identici.',
+                renderFunction: renderMeiosisInterfase
+            },
+            {
+                name: 'Profase I',
+                chromosomes: 4,
+                chromatids: 8,
+                ploidy: '2n',
+                description: 'Profase I: I cromosomi omologhi si appaiano (sinapsi) formando tetradi. Avviene il CROSSING-OVER: scambio di segmenti tra cromatidi non fratelli, aumentando la variabilità genetica.',
+                renderFunction: renderProphaseI
+            },
+            {
+                name: 'Metafase I',
+                chromosomes: 4,
+                chromatids: 8,
+                ploidy: '2n',
+                description: 'Metafase I: Le coppie di omologhi (tetradi) si allineano sulla piastra metafasica. L\'orientamento casuale contribuisce alla variabilità.',
+                renderFunction: renderMetaphaseI
+            },
+            {
+                name: 'Anafase I',
+                chromosomes: 4,
+                chromatids: 8,
+                ploidy: '2n → n+n',
+                description: 'Anafase I: I cromosomi omologhi si separano e migrano ai poli opposti. I cromatidi fratelli RIMANGONO uniti!',
+                renderFunction: renderAnaphaseI
+            },
+            {
+                name: 'Telofase I',
+                chromosomes: 2,
+                chromatids: 4,
+                ploidy: 'n',
+                description: 'Telofase I e Citodieresi: Si formano due cellule aploidi (n=2), ma ogni cromosoma è ancora composto da due cromatidi fratelli.',
+                renderFunction: renderTelophaseI
+            },
+            {
+                name: 'Profase II',
+                chromosomes: 2,
+                chromatids: 4,
+                ploidy: 'n',
+                description: 'Profase II: In ciascuna cellula i cromosomi si condensano e si forma un nuovo fuso. Non c\'è replicazione del DNA.',
+                renderFunction: renderProphaseII
+            },
+            {
+                name: 'Metafase II',
+                chromosomes: 2,
+                chromatids: 4,
+                ploidy: 'n',
+                description: 'Metafase II: I cromosomi si allineano sulla piastra metafasica in ciascuna delle due cellule.',
+                renderFunction: renderMetaphaseII
+            },
+            {
+                name: 'Anafase II',
+                chromosomes: 4,
+                chromatids: 4,
+                ploidy: 'n',
+                description: 'Anafase II: Ora i cromatidi fratelli si separano e migrano verso i poli opposti in entrambe le cellule.',
+                renderFunction: renderAnaphaseII
+            },
+            {
+                name: 'Telofase II',
+                chromosomes: 4,
+                chromatids: 4,
+                ploidy: 'n',
+                description: 'Telofase II e Citodieresi: Si formano quattro cellule aploidi (n=2) geneticamente diverse. Ogni cellula ha cromosomi singoli.',
+                renderFunction: renderTelophaseII
+            }
+        ];
+
+        // ===================================
+        // FUNZIONI DI RENDERING
+        // ===================================
+
+        // Funzione helper per disegnare un cromosoma singolo (non replicato)
+        function drawSingleChromosome(x, y, color, size = 'normal') {
+            const width = size === 'small' ? 8 : 12;
+            const height = size === 'small' ? 40 : 60;
+
+            ctx.fillStyle = color;
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+
+            // Braccio superiore
+            ctx.beginPath();
+            ctx.ellipse(x, y - height / 4, width / 2, height / 2.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Centromero
+            ctx.beginPath();
+            ctx.ellipse(x, y, width / 1.5, 8, 0, 0, Math.PI * 2);
+            ctx.fillStyle = '#34495e';
+            ctx.fill();
+            ctx.stroke();
+
+            // Braccio inferiore
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.ellipse(x, y + height / 4, width / 2, height / 2.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        // Funzione helper per disegnare un cromosoma replicato (due cromatidi fratelli)
+        function drawReplicatedChromosome(x, y, color, size = 'normal', separated = false) {
+            const offset = separated ? 20 : 6;
+            const width = size === 'small' ? 7 : 10;
+            const height = size === 'small' ? 35 : 55;
+
+            // Cromatidio sinistro
+            ctx.fillStyle = color;
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            ctx.ellipse(x - offset / 2, y - height / 4, width / 2, height / 2.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.ellipse(x - offset / 2, y + height / 4, width / 2, height / 2.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Cromatidio destro
+            ctx.beginPath();
+            ctx.ellipse(x + offset / 2, y - height / 4, width / 2, height / 2.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.ellipse(x + offset / 2, y + height / 4, width / 2, height / 2.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Centromero condiviso
+            if (!separated) {
+                ctx.beginPath();
+                ctx.ellipse(x, y, width, 10, 0, 0, Math.PI * 2);
+                ctx.fillStyle = '#34495e';
+                ctx.fill();
+                ctx.stroke();
+            }
+        }
+
+        // Funzione helper per disegnare cromatidi con crossing-over
+        function drawCrossoverChromosome(x, y, color1, color2, size = 'normal') {
+            const width = size === 'small' ? 7 : 10;
+            const height = size === 'small' ? 35 : 55;
+            const offset = 6;
+
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+
+            // Cromatidio sinistro - metà superiore color1, metà inferiore color2
+            ctx.fillStyle = color1;
+            ctx.beginPath();
+            ctx.ellipse(x - offset / 2, y - height / 4, width / 2, height / 2.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = color2;
+            ctx.beginPath();
+            ctx.ellipse(x - offset / 2, y + height / 4, width / 2, height / 2.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Cromatidio destro - metà superiore color2, metà inferiore color1
+            ctx.fillStyle = color2;
+            ctx.beginPath();
+            ctx.ellipse(x + offset / 2, y - height / 4, width / 2, height / 2.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = color1;
+            ctx.beginPath();
+            ctx.ellipse(x + offset / 2, y + height / 4, width / 2, height / 2.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Centromero
+            ctx.beginPath();
+            ctx.ellipse(x, y, width, 10, 0, 0, Math.PI * 2);
+            ctx.fillStyle = '#34495e';
+            ctx.fill();
+            ctx.stroke();
+
+            // Segno X per indicare il crossing-over
+            ctx.strokeStyle = '#f39c12';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(x - 15, y);
+            ctx.lineTo(x + 15, y);
+            ctx.stroke();
+        }
+
+        // Funzione per disegnare la cellula
+        function drawCell(x, y, width, height) {
+            ctx.strokeStyle = '#2ecc71';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.ellipse(x, y, width, height, 0, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        // Funzione per disegnare il nucleo
+        function drawNucleus(x, y, width, height, dashed = false) {
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            if (dashed) {
+                ctx.setLineDash([5, 5]);
+            }
+            ctx.beginPath();
+            ctx.ellipse(x, y, width, height, 0, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        // Funzione per disegnare il fuso mitotico
+        function drawSpindle(x, y, width, height) {
+            ctx.strokeStyle = '#95a5a6';
+            ctx.lineWidth = 1;
+
+            // Linee del fuso
+            for (let i = 0; i < 8; i++) {
+                ctx.beginPath();
+                ctx.moveTo(x - width / 2, y - height / 2);
+                ctx.lineTo(x + (i - 4) * 15, y);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(x - width / 2, y + height / 2);
+                ctx.lineTo(x + (i - 4) * 15, y);
+                ctx.stroke();
+            }
+
+            // Centrioli
+            ctx.fillStyle = '#34495e';
+            ctx.beginPath();
+            ctx.arc(x - width / 2, y - height / 2, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(x - width / 2, y + height / 2, 5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // ===================================
+        // FUNZIONI DI RENDERING PER MITOSI
+        // ===================================
+
+        function renderInterfaseG1() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            drawCell(centerX, centerY, 200, 180);
+            drawNucleus(centerX, centerY, 150, 130);
+
+            // 4 cromosomi singoli (non replicati): 2 lunghi (1 rosso, 1 blu) e 2 corti (1 rosso, 1 blu)
+            drawSingleChromosome(centerX - 60, centerY - 30, CHROMOSOME_COLORS.maternal); // Lungo materno
+            drawSingleChromosome(centerX - 20, centerY - 30, CHROMOSOME_COLORS.paternal); // Lungo paterno
+            drawSingleChromosome(centerX + 20, centerY + 20, CHROMOSOME_COLORS.maternal, 'small'); // Corto materno
+            drawSingleChromosome(centerX + 60, centerY + 20, CHROMOSOME_COLORS.paternal, 'small'); // Corto paterno
+        }
+
+        function renderInterfaseS() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            drawCell(centerX, centerY, 200, 180);
+            drawNucleus(centerX, centerY, 150, 130);
+
+            // 4 cromosomi replicati (8 cromatidi): ogni cromosoma ora è formato da 2 cromatidi fratelli
+            drawReplicatedChromosome(centerX - 60, centerY - 30, CHROMOSOME_COLORS.maternal);
+            drawReplicatedChromosome(centerX - 20, centerY - 30, CHROMOSOME_COLORS.paternal);
+            drawReplicatedChromosome(centerX + 20, centerY + 20, CHROMOSOME_COLORS.maternal, 'small');
+            drawReplicatedChromosome(centerX + 60, centerY + 20, CHROMOSOME_COLORS.paternal, 'small');
+
+            // Etichetta per indicare replicazione
+            ctx.fillStyle = '#e74c3c';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('Replicazione DNA', centerX - 80, centerY + 100);
+        }
+
+        function renderProphase() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            drawCell(centerX, centerY, 200, 180);
+            drawNucleus(centerX, centerY, 150, 130, true); // Nucleo tratteggiato (si disgrega)
+
+            // Cromosomi condensati
+            drawReplicatedChromosome(centerX - 60, centerY - 20, CHROMOSOME_COLORS.maternal);
+            drawReplicatedChromosome(centerX - 20, centerY - 20, CHROMOSOME_COLORS.paternal);
+            drawReplicatedChromosome(centerX + 20, centerY + 10, CHROMOSOME_COLORS.maternal, 'small');
+            drawReplicatedChromosome(centerX + 60, centerY + 10, CHROMOSOME_COLORS.paternal, 'small');
+
+            // Inizio formazione fuso
+            drawSpindle(centerX, centerY, 100, 120);
+        }
+
+        function renderMetaphase() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            drawCell(centerX, centerY, 200, 180);
+            drawSpindle(centerX, centerY, 120, 140);
+
+            // Cromosomi allineati sulla piastra metafasica
+            drawReplicatedChromosome(centerX - 70, centerY, CHROMOSOME_COLORS.maternal);
+            drawReplicatedChromosome(centerX - 25, centerY, CHROMOSOME_COLORS.paternal);
+            drawReplicatedChromosome(centerX + 25, centerY, CHROMOSOME_COLORS.maternal, 'small');
+            drawReplicatedChromosome(centerX + 70, centerY, CHROMOSOME_COLORS.paternal, 'small');
+
+            // Linea piastra metafasica
+            ctx.strokeStyle = '#f39c12';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(centerX - 120, centerY);
+            ctx.lineTo(centerX + 120, centerY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function renderAnaphase() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            drawCell(centerX, centerY, 200, 180);
+            drawSpindle(centerX, centerY, 120, 140);
+
+            // Cromatidi separati che migrano ai poli
+            // Polo superiore
+            drawSingleChromosome(centerX - 70, centerY - 80, CHROMOSOME_COLORS.maternal);
+            drawSingleChromosome(centerX - 30, centerY - 80, CHROMOSOME_COLORS.paternal);
+            drawSingleChromosome(centerX + 10, centerY - 80, CHROMOSOME_COLORS.maternal, 'small');
+            drawSingleChromosome(centerX + 50, centerY - 80, CHROMOSOME_COLORS.paternal, 'small');
+
+            // Polo inferiore
+            drawSingleChromosome(centerX - 70, centerY + 80, CHROMOSOME_COLORS.maternal);
+            drawSingleChromosome(centerX - 30, centerY + 80, CHROMOSOME_COLORS.paternal);
+            drawSingleChromosome(centerX + 10, centerY + 80, CHROMOSOME_COLORS.maternal, 'small');
+            drawSingleChromosome(centerX + 50, centerY + 80, CHROMOSOME_COLORS.paternal, 'small');
+        }
+
+        function renderTelophase() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            drawCell(centerX, centerY, 200, 200);
+
+            // Due nuclei che si riformano
+            drawNucleus(centerX, centerY - 70, 100, 80);
+            drawNucleus(centerX, centerY + 70, 100, 80);
+
+            // Cromosomi nei due nuclei
+            drawSingleChromosome(centerX - 40, centerY - 70, CHROMOSOME_COLORS.maternal);
+            drawSingleChromosome(centerX - 10, centerY - 70, CHROMOSOME_COLORS.paternal);
+            drawSingleChromosome(centerX + 10, centerY - 70, CHROMOSOME_COLORS.maternal, 'small');
+            drawSingleChromosome(centerX + 40, centerY - 70, CHROMOSOME_COLORS.paternal, 'small');
+
+            drawSingleChromosome(centerX - 40, centerY + 70, CHROMOSOME_COLORS.maternal);
+            drawSingleChromosome(centerX - 10, centerY + 70, CHROMOSOME_COLORS.paternal);
+            drawSingleChromosome(centerX + 10, centerY + 70, CHROMOSOME_COLORS.maternal, 'small');
+            drawSingleChromosome(centerX + 40, centerY + 70, CHROMOSOME_COLORS.paternal, 'small');
+
+            // Linea di divisione
+            ctx.strokeStyle = '#2ecc71';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(centerX - 150, centerY);
+            ctx.lineTo(centerX + 150, centerY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function renderCytokinesis() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Due cellule separate
+            drawCell(centerX, centerY - 100, 150, 120);
+            drawCell(centerX, centerY + 100, 150, 120);
+
+            drawNucleus(centerX, centerY - 100, 100, 80);
+            drawNucleus(centerX, centerY + 100, 100, 80);
+
+            // Cellula superiore
+            drawSingleChromosome(centerX - 40, centerY - 100, CHROMOSOME_COLORS.maternal);
+            drawSingleChromosome(centerX - 10, centerY - 100, CHROMOSOME_COLORS.paternal);
+            drawSingleChromosome(centerX + 10, centerY - 100, CHROMOSOME_COLORS.maternal, 'small');
+            drawSingleChromosome(centerX + 40, centerY - 100, CHROMOSOME_COLORS.paternal, 'small');
+
+            // Cellula inferiore
+            drawSingleChromosome(centerX - 40, centerY + 100, CHROMOSOME_COLORS.maternal);
+            drawSingleChromosome(centerX - 10, centerY + 100, CHROMOSOME_COLORS.paternal);
+            drawSingleChromosome(centerX + 10, centerY + 100, CHROMOSOME_COLORS.maternal, 'small');
+            drawSingleChromosome(centerX + 40, centerY + 100, CHROMOSOME_COLORS.paternal, 'small');
+
+            // Etichetta
+            ctx.fillStyle = '#2ecc71';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('2 cellule figlie identiche (2n)', centerX - 110, centerY + 200);
+        }
+
+        // ===================================
+        // FUNZIONI DI RENDERING PER MEIOSI
+        // ===================================
+
+        function renderMeiosisInterfase() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            drawCell(centerX, centerY, 200, 180);
+            drawNucleus(centerX, centerY, 150, 130);
+
+            // 4 cromosomi replicati
+            drawReplicatedChromosome(centerX - 60, centerY - 30, CHROMOSOME_COLORS.maternal);
+            drawReplicatedChromosome(centerX - 20, centerY - 30, CHROMOSOME_COLORS.paternal);
+            drawReplicatedChromosome(centerX + 20, centerY + 20, CHROMOSOME_COLORS.maternal, 'small');
+            drawReplicatedChromosome(centerX + 60, centerY + 20, CHROMOSOME_COLORS.paternal, 'small');
+        }
+
+        function renderProphaseI() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            drawCell(centerX, centerY, 200, 180);
+            drawNucleus(centerX, centerY, 150, 130, true);
+
+            // Omologhi appaiati con crossing-over visibile
+            // Coppia di cromosomi lunghi (tetrade) con crossing-over
+            ctx.strokeStyle = '#9b59b6';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([3, 3]);
+            ctx.strokeRect(centerX - 75, centerY - 50, 50, 80);
+            ctx.setLineDash([]);
+
+            drawCrossoverChromosome(centerX - 60, centerY - 10, CHROMOSOME_COLORS.maternal, CHROMOSOME_COLORS.paternal);
+            drawReplicatedChromosome(centerX - 40, centerY - 10, CHROMOSOME_COLORS.paternal);
+
+            // Coppia di cromosomi corti (tetrade) con crossing-over
+            ctx.setLineDash([3, 3]);
+            ctx.strokeRect(centerX + 15, centerY + 10, 50, 60);
+            ctx.setLineDash([]);
+
+            drawCrossoverChromosome(centerX + 30, centerY + 40, CHROMOSOME_COLORS.maternal, CHROMOSOME_COLORS.paternal, 'small');
+            drawReplicatedChromosome(centerX + 48, centerY + 40, CHROMOSOME_COLORS.paternal, 'small');
+
+            // Etichette
+            ctx.fillStyle = '#9b59b6';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText('Sinapsi', centerX - 75, centerY - 60);
+            ctx.fillText('Crossing-over', centerX - 80, centerY + 80);
+        }
+
+        function renderMetaphaseI() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            drawCell(centerX, centerY, 200, 180);
+            drawSpindle(centerX, centerY, 120, 140);
+
+            // Tetradi allineate sulla piastra metafasica
+            // Coppia lunga
+            drawCrossoverChromosome(centerX - 60, centerY, CHROMOSOME_COLORS.maternal, CHROMOSOME_COLORS.paternal);
+            drawReplicatedChromosome(centerX - 35, centerY, CHROMOSOME_COLORS.paternal);
+
+            // Coppia corta
+            drawCrossoverChromosome(centerX + 30, centerY, CHROMOSOME_COLORS.maternal, CHROMOSOME_COLORS.paternal, 'small');
+            drawReplicatedChromosome(centerX + 50, centerY, CHROMOSOME_COLORS.paternal, 'small');
+
+            // Piastra metafasica
+            ctx.strokeStyle = '#f39c12';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(centerX - 120, centerY);
+            ctx.lineTo(centerX + 120, centerY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function renderAnaphaseI() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            drawCell(centerX, centerY, 200, 180);
+            drawSpindle(centerX, centerY, 120, 140);
+
+            // Cromosomi omologhi separati (ma cromatidi fratelli ancora uniti)
+            // Polo superiore
+            drawCrossoverChromosome(centerX - 50, centerY - 80, CHROMOSOME_COLORS.maternal, CHROMOSOME_COLORS.paternal);
+            drawCrossoverChromosome(centerX + 20, centerY - 80, CHROMOSOME_COLORS.maternal, CHROMOSOME_COLORS.paternal, 'small');
+
+            // Polo inferiore
+            drawReplicatedChromosome(centerX - 50, centerY + 80, CHROMOSOME_COLORS.paternal);
+            drawReplicatedChromosome(centerX + 20, centerY + 80, CHROMOSOME_COLORS.paternal, 'small');
+        }
+
+        function renderTelophaseI() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Due cellule in formazione
+            drawCell(centerX, centerY - 100, 150, 120);
+            drawCell(centerX, centerY + 100, 150, 120);
+
+            drawNucleus(centerX, centerY - 100, 100, 80);
+            drawNucleus(centerX, centerY + 100, 100, 80);
+
+            // Cellula superiore (cromosomi con crossing-over)
+            drawCrossoverChromosome(centerX - 30, centerY - 100, CHROMOSOME_COLORS.maternal, CHROMOSOME_COLORS.paternal);
+            drawCrossoverChromosome(centerX + 30, centerY - 100, CHROMOSOME_COLORS.maternal, CHROMOSOME_COLORS.paternal, 'small');
+
+            // Cellula inferiore (cromosomi paterni)
+            drawReplicatedChromosome(centerX - 30, centerY + 100, CHROMOSOME_COLORS.paternal);
+            drawReplicatedChromosome(centerX + 30, centerY + 100, CHROMOSOME_COLORS.paternal, 'small');
+
+            // Etichetta
+            ctx.fillStyle = '#e67e22';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText('2 cellule aploidi (n)', centerX - 70, centerY + 180);
+            ctx.fillText('Cromatidi ancora uniti', centerX - 80, centerY + 200);
+        }
+
+        function renderProphaseII() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Due cellule separate
+            drawCell(centerX - 150, centerY, 130, 150);
+            drawCell(centerX + 150, centerY, 130, 150);
+
+            drawNucleus(centerX - 150, centerY, 90, 110, true);
+            drawNucleus(centerX + 150, centerY, 90, 110, true);
+
+            // Cellula sinistra
+            drawCrossoverChromosome(centerX - 170, centerY - 20, CHROMOSOME_COLORS.maternal, CHROMOSOME_COLORS.paternal);
+            drawCrossoverChromosome(centerX - 130, centerY + 20, CHROMOSOME_COLORS.maternal, CHROMOSOME_COLORS.paternal, 'small');
+
+            // Cellula destra
+            drawReplicatedChromosome(centerX + 130, centerY - 20, CHROMOSOME_COLORS.paternal);
+            drawReplicatedChromosome(centerX + 170, centerY + 20, CHROMOSOME_COLORS.paternal, 'small');
+
+            // Fusi mitotici
+            drawSpindle(centerX - 150, centerY, 80, 100);
+            drawSpindle(centerX + 150, centerY, 80, 100);
+        }
+
+        function renderMetaphaseII() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Due cellule
+            drawCell(centerX - 150, centerY, 130, 150);
+            drawCell(centerX + 150, centerY, 130, 150);
+
+            drawSpindle(centerX - 150, centerY, 80, 100);
+            drawSpindle(centerX + 150, centerY, 80, 100);
+
+            // Cromosomi allineati in entrambe le cellule
+            // Cellula sinistra
+            drawCrossoverChromosome(centerX - 170, centerY, CHROMOSOME_COLORS.maternal, CHROMOSOME_COLORS.paternal);
+            drawCrossoverChromosome(centerX - 130, centerY, CHROMOSOME_COLORS.maternal, CHROMOSOME_COLORS.paternal, 'small');
+
+            // Cellula destra
+            drawReplicatedChromosome(centerX + 130, centerY, CHROMOSOME_COLORS.paternal);
+            drawReplicatedChromosome(centerX + 170, centerY, CHROMOSOME_COLORS.paternal, 'small');
+
+            // Piastre metafasiche
+            ctx.strokeStyle = '#f39c12';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(centerX - 200, centerY);
+            ctx.lineTo(centerX - 100, centerY);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(centerX + 100, centerY);
+            ctx.lineTo(centerX + 200, centerY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function renderAnaphaseII() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Due cellule
+            drawCell(centerX - 150, centerY, 130, 150);
+            drawCell(centerX + 150, centerY, 130, 150);
+
+            drawSpindle(centerX - 150, centerY, 80, 100);
+            drawSpindle(centerX + 150, centerY, 80, 100);
+
+            // Cromatidi separati che migrano
+            // Cellula sinistra - polo superiore
+            ctx.fillStyle = CHROMOSOME_COLORS.maternal;
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.ellipse(centerX - 170, centerY - 60, 5, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = CHROMOSOME_COLORS.maternal;
+            ctx.beginPath();
+            ctx.ellipse(centerX - 130, centerY - 60, 4, 18, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Cellula sinistra - polo inferiore
+            ctx.fillStyle = CHROMOSOME_COLORS.paternal;
+            ctx.beginPath();
+            ctx.ellipse(centerX - 170, centerY + 60, 5, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = CHROMOSOME_COLORS.paternal;
+            ctx.beginPath();
+            ctx.ellipse(centerX - 130, centerY + 60, 4, 18, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Cellula destra - polo superiore
+            ctx.fillStyle = CHROMOSOME_COLORS.paternal;
+            ctx.beginPath();
+            ctx.ellipse(centerX + 130, centerY - 60, 5, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = CHROMOSOME_COLORS.paternal;
+            ctx.beginPath();
+            ctx.ellipse(centerX + 170, centerY - 60, 4, 18, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Cellula destra - polo inferiore
+            ctx.fillStyle = CHROMOSOME_COLORS.paternal;
+            ctx.beginPath();
+            ctx.ellipse(centerX + 130, centerY + 60, 5, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = CHROMOSOME_COLORS.paternal;
+            ctx.beginPath();
+            ctx.ellipse(centerX + 170, centerY + 60, 4, 18, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        function renderTelophaseII() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Quattro cellule
+            const positions = [
+                { x: centerX - 150, y: centerY - 120 },
+                { x: centerX + 150, y: centerY - 120 },
+                { x: centerX - 150, y: centerY + 120 },
+                { x: centerX + 150, y: centerY + 120 }
+            ];
+
+            positions.forEach((pos, idx) => {
+                drawCell(pos.x, pos.y, 110, 90);
+                drawNucleus(pos.x, pos.y, 80, 65);
+
+                // Distribuzione genetica diversa
+                if (idx === 0) {
+                    // Cellula con cromosomi materni (crossing-over)
+                    ctx.fillStyle = CHROMOSOME_COLORS.maternal;
+                    ctx.strokeStyle = '#2c3e50';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.ellipse(pos.x - 20, pos.y, 5, 25, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.ellipse(pos.x + 20, pos.y, 4, 18, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                } else if (idx === 1) {
+                    // Cellula con cromosomi paterni
+                    ctx.fillStyle = CHROMOSOME_COLORS.paternal;
+                    ctx.strokeStyle = '#2c3e50';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.ellipse(pos.x - 20, pos.y, 5, 25, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.ellipse(pos.x + 20, pos.y, 4, 18, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                } else if (idx === 2) {
+                    // Cellula con cromosomi ricombinanti
+                    ctx.fillStyle = CHROMOSOME_COLORS.paternal;
+                    ctx.strokeStyle = '#2c3e50';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.ellipse(pos.x - 20, pos.y, 5, 25, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.fillStyle = CHROMOSOME_COLORS.paternal;
+                    ctx.beginPath();
+                    ctx.ellipse(pos.x + 20, pos.y, 4, 18, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                } else {
+                    // Cellula con mix
+                    ctx.fillStyle = CHROMOSOME_COLORS.paternal;
+                    ctx.strokeStyle = '#2c3e50';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.ellipse(pos.x - 20, pos.y, 5, 25, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.fillStyle = CHROMOSOME_COLORS.paternal;
+                    ctx.beginPath();
+                    ctx.ellipse(pos.x + 20, pos.y, 4, 18, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                }
+            });
+
+            // Etichetta finale
+            ctx.fillStyle = '#27ae60';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('4 cellule aploidi (n) geneticamente diverse', centerX - 160, centerY + 230);
+        }
+
+        // ===================================
+        // GESTIONE DELLO STATO E AGGIORNAMENTI
+        // ===================================
+
+        function getCurrentPhases() {
+            return currentMode === 'mitosis' ? mitosisPhases : meiosisPhases;
+        }
+
+        function updateDisplay() {
+            const phases = getCurrentPhases();
+            const phase = phases[currentPhaseIndex];
+
+            // Aggiorna pannello informativo
+            document.getElementById('modeDisplay').textContent = currentMode === 'mitosis' ? 'Mitosi' : 'Meiosi';
+            document.getElementById('phaseDisplay').textContent = phase.name;
+            document.getElementById('chromDisplay').textContent = phase.chromosomes;
+            document.getElementById('chromatidDisplay').textContent = phase.chromatids;
+            document.getElementById('ploidyDisplay').textContent = phase.ploidy;
+            document.getElementById('phaseDescription').textContent = phase.description;
+
+            // Renderizza la fase corrente
+            phase.renderFunction();
+        }
+
+        // ===================================
+        // GESTORI DEGLI EVENTI
+        // ===================================
+
+        // Selezione modalità
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentMode = btn.dataset.mode;
+                currentPhaseIndex = 0;
+                isPlaying = false;
+                document.getElementById('playPauseBtn').textContent = '▶ Play';
+                clearInterval(playInterval);
+                updateDisplay();
+            });
+        });
+
+        // Controllo Play/Pausa
+        let playInterval;
+        document.getElementById('playPauseBtn').addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            const btn = document.getElementById('playPauseBtn');
+
+            if (isPlaying) {
+                btn.textContent = '⏸ Pausa';
+                playInterval = setInterval(() => {
+                    const phases = getCurrentPhases();
+                    currentPhaseIndex++;
+                    if (currentPhaseIndex >= phases.length) {
+                        currentPhaseIndex = 0;
+                    }
+                    updateDisplay();
+                }, animationSpeed);
+            } else {
+                btn.textContent = '▶ Play';
+                clearInterval(playInterval);
+            }
+        });
+
+        // Fase successiva
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            const phases = getCurrentPhases();
+            currentPhaseIndex++;
+            if (currentPhaseIndex >= phases.length) {
+                currentPhaseIndex = phases.length - 1;
+            }
+            updateDisplay();
+        });
+
+        // Fase precedente
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            currentPhaseIndex--;
+            if (currentPhaseIndex < 0) {
+                currentPhaseIndex = 0;
+            }
+            updateDisplay();
+        });
+
+        // Reset
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            currentPhaseIndex = 0;
+            isPlaying = false;
+            document.getElementById('playPauseBtn').textContent = '▶ Play';
+            clearInterval(playInterval);
+            updateDisplay();
+        });
+
+        // ===================================
+        // GESTIONE MODALI
+        // ===================================
+
+        // Modale Approfondimenti
+        const helpModal = document.getElementById('helpModal');
+        const helpBtn = document.getElementById('helpBtn');
+        const closeHelp = document.getElementById('closeHelp');
+
+        helpBtn.addEventListener('click', () => {
+            helpModal.style.display = 'block';
+        });
+
+        closeHelp.addEventListener('click', () => {
+            helpModal.style.display = 'none';
+        });
+
+        // Gestione tabs nella modale
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                btn.classList.add('active');
+                document.getElementById(`${btn.dataset.tab}-tab`).classList.add('active');
+            });
+        });
+
+        // ===================================
+        // GESTIONE ACCORDION PER DOMANDE GUIDA
+        // ===================================
+
+        // Aggiungi event listeners agli accordion headers
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const accordionItem = header.parentElement;
+                const accordionContent = header.nextElementSibling;
+                const isActive = header.classList.contains('active');
+
+                // Chiudi tutti gli altri accordion
+                document.querySelectorAll('.accordion-header').forEach(h => {
+                    h.classList.remove('active');
+                    h.nextElementSibling.classList.remove('active');
+                });
+
+                // Se l'accordion cliccato non era attivo, aprilo
+                if (!isActive) {
+                    header.classList.add('active');
+                    accordionContent.classList.add('active');
+                }
+            });
+        });
+
+        // ===================================
+        // SISTEMA QUIZ
+        // ===================================
+
+        const quizQuestions = [
+            {
+                question: 'Quante cellule figlie produce la mitosi?',
+                options: ['1 cellula', '2 cellule', '4 cellule', '8 cellule'],
+                correct: 1,
+                explanation: 'La mitosi produce 2 cellule figlie identiche alla cellula madre.'
+            },
+            {
+                question: 'In quale fase della meiosi avviene il crossing-over?',
+                options: ['Profase I', 'Metafase I', 'Profase II', 'Anafase I'],
+                correct: 0,
+                explanation: 'Il crossing-over avviene durante la Profase I, quando i cromosomi omologhi si appaiano.'
+            },
+            {
+                question: 'Cosa si separa durante l\'Anafase della mitosi?',
+                options: ['Cromosomi omologhi', 'Cromatidi fratelli', 'Cellule figlie', 'Tetradi'],
+                correct: 1,
+                explanation: 'Durante l\'Anafase mitotica, i cromatidi fratelli si separano e migrano ai poli opposti.'
+            },
+            {
+                question: 'Qual è la ploidia delle cellule prodotte dalla meiosi?',
+                options: ['Diploide (2n)', 'Aploide (n)', 'Triploide (3n)', 'Tetraploide (4n)'],
+                correct: 1,
+                explanation: 'La meiosi produce 4 cellule aploidi (n), con metà del numero di cromosomi della cellula madre.'
+            },
+            {
+                question: 'Cosa si allinea sulla piastra metafasica durante la Metafase I della meiosi?',
+                options: ['Singoli cromosomi', 'Cromatidi fratelli', 'Coppie di omologhi (tetradi)', 'Centrioli'],
+                correct: 2,
+                explanation: 'Durante la Metafase I, le coppie di cromosomi omologhi (tetradi) si allineano sulla piastra metafasica.'
+            }
+        ];
+
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+        let quizAnswered = false;
+
+        const quizModal = document.getElementById('quizModal');
+        const quizBtn = document.getElementById('quizBtn');
+        const closeQuiz = document.getElementById('closeQuiz');
+        const quizContent = document.getElementById('quizContent');
+
+        quizBtn.addEventListener('click', () => {
+            quizModal.style.display = 'block';
+            startQuiz();
+        });
+
+        closeQuiz.addEventListener('click', () => {
+            quizModal.style.display = 'none';
+        });
+
+        function startQuiz() {
+            currentQuizIndex = 0;
+            quizScore = 0;
+            quizAnswered = false;
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            if (currentQuizIndex >= quizQuestions.length) {
+                renderQuizResults();
+                return;
+            }
+
+            const question = quizQuestions[currentQuizIndex];
+            quizAnswered = false;
+
+            quizContent.innerHTML = `
+                <div class="quiz-question">
+                    <h3>Domanda ${currentQuizIndex + 1} di ${quizQuestions.length}</h3>
+                    <p style="font-size: 1.1em; margin: 15px 0; color: #2c3e50;">${question.question}</p>
+                    <div class="quiz-options" id="quizOptions">
+                        ${question.options.map((option, idx) => `
+                            <div class="quiz-option" data-index="${idx}">
+                                ${option}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div id="quizFeedback"></div>
+                </div>
+                <div class="quiz-nav">
+                    <button class="control-btn" id="quizPrevBtn" ${currentQuizIndex === 0 ? 'disabled' : ''}>← Precedente</button>
+                    <button class="control-btn secondary" id="quizNextBtn" disabled>Successiva →</button>
+                </div>
+            `;
+
+            // Aggiungi event listeners alle opzioni
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    if (quizAnswered) return;
+                    checkAnswer(parseInt(option.dataset.index));
+                });
+            });
+
+            // Navigazione quiz
+            document.getElementById('quizNextBtn').addEventListener('click', () => {
+                currentQuizIndex++;
+                renderQuizQuestion();
+            });
+
+            if (currentQuizIndex > 0) {
+                document.getElementById('quizPrevBtn').addEventListener('click', () => {
+                    currentQuizIndex--;
+                    renderQuizQuestion();
+                });
+            }
+        }
+
+        function checkAnswer(selectedIndex) {
+            quizAnswered = true;
+            const question = quizQuestions[currentQuizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            const feedback = document.getElementById('quizFeedback');
+            const nextBtn = document.getElementById('quizNextBtn');
+
+            options.forEach((option, idx) => {
+                option.style.pointerEvents = 'none';
+                if (idx === question.correct) {
+                    option.classList.add('correct');
+                }
+                if (idx === selectedIndex && idx !== question.correct) {
+                    option.classList.add('incorrect');
+                }
+            });
+
+            if (selectedIndex === question.correct) {
+                quizScore++;
+                feedback.innerHTML = `<div class="quiz-feedback correct">✓ Corretto! ${question.explanation}</div>`;
+            } else {
+                feedback.innerHTML = `<div class="quiz-feedback incorrect">✗ Errato. ${question.explanation}</div>`;
+            }
+
+            nextBtn.disabled = false;
+        }
+
+        function renderQuizResults() {
+            const percentage = Math.round((quizScore / quizQuestions.length) * 100);
+            let message = '';
+
+            if (percentage >= 80) {
+                message = 'Eccellente! Hai una ottima comprensione dei processi di divisione cellulare! 🎉';
+            } else if (percentage >= 60) {
+                message = 'Buon lavoro! Continua a ripassare per migliorare ulteriormente. 👍';
+            } else {
+                message = 'Continua a studiare! Rivedi le spiegazioni e riprova. 📚';
+            }
+
+            quizContent.innerHTML = `
+                <div class="quiz-results">
+                    <h2>Quiz Completato!</h2>
+                    <div class="quiz-score">${quizScore}/${quizQuestions.length}</div>
+                    <p style="font-size: 1.3em; margin: 20px 0;">${percentage}% corretto</p>
+                    <p style="font-size: 1.1em; color: #495057; margin: 20px 0;">${message}</p>
+                    <button class="control-btn secondary" onclick="location.reload()">Riprova Quiz</button>
+                </div>
+            `;
+        }
+
+        // Chiudi modali cliccando fuori
+        window.addEventListener('click', (e) => {
+            if (e.target === helpModal) {
+                helpModal.style.display = 'none';
+            }
+            if (e.target === quizModal) {
+                quizModal.style.display = 'none';
+            }
+        });
+
+        // ===================================
+        // INIZIALIZZAZIONE
+        // ===================================
+
+        // Rendering iniziale
+        updateDisplay();
+    </script>
+</body>
+
+</html>

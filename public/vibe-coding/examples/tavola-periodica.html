@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tavola Periodica Interattiva</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+        :root {
+            --color-white: rgba(255, 255, 255, 1);
+            --color-black: rgba(0, 0, 0, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-400: rgba(45, 166, 178, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-red-500: rgba(192, 21, 47, 1);
+            --color-orange-400: rgba(230, 129, 97, 1);
+            --color-orange-500: rgba(168, 75, 47, 1);
+            --color-brown-600-rgb: 94 82 64;
+            --color-teal-500-rgb: 33 128 141;
+            --color-slate-900-rgb: 19 52 59;
+            --color-slate-500-rgb: 98 108 113;
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+            --font-family-base: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+            --space-4: 4px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --space-32: 32px;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            --duration-normal: 250ms;
+            --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+            --cat-alcalini: #ff8a8a;
+            --cat-alcalino-terrosi: #ffe066;
+            --cat-lantanidi: #d4a5d4;
+            --cat-attinidi: #e6a3d0;
+            --cat-transizione: #ffb88c;
+            --cat-post-transizione: #c8f7d0;
+            --cat-metalloidi: #b8d4ff;
+            --cat-non-metalli: #d0f4f0;
+            --cat-alogeni: #d4caff;
+            --cat-gas-nobili: #fff9c4;
+            --cat-sconosciuti: #e8e8e8;
+        }
+
+        [data-theme="dark"] {
+            --color-gray-400-rgb: 119 124 124;
+            --color-teal-300-rgb: 50 184 198;
+            --color-gray-300-rgb: 167 169 169;
+            --color-gray-200-rgb: 245 245 245;
+            --color-background: var(--color-charcoal-700);
+            --color-surface: var(--color-charcoal-800);
+            --color-text: var(--color-gray-200);
+            --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+            --color-primary: var(--color-teal-300);
+            --color-primary-hover: var(--color-teal-400);
+            --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+            --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+            --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            html:not([data-theme="light"]) {
+                --color-gray-400-rgb: 119 124 124;
+                --color-teal-300-rgb: 50 184 198;
+                --color-gray-300-rgb: 167 169 169;
+                --color-gray-200-rgb: 245 245 245;
+                --color-background: var(--color-charcoal-700);
+                --color-surface: var(--color-charcoal-800);
+                --color-text: var(--color-gray-200);
+                --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+                --color-primary: var(--color-teal-300);
+                --color-primary-hover: var(--color-teal-400);
+                --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+                --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            padding: clamp(8px, 1vh, 20px) clamp(8px, 2vw, 40px);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 clamp(4px, 0.5vw, 16px);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: clamp(8px, 1vh, 16px);
+        }
+
+        h1 {
+            font-size: clamp(1.2rem, 2vw, 2.4rem);
+            font-weight: 700;
+            margin-bottom: clamp(4px, 0.5vh, 8px);
+            color: var(--color-primary);
+        }
+
+        .intro {
+            font-size: clamp(0.8rem, 1vw, 1.1rem);
+            color: var(--color-text-secondary);
+            max-width: 800px;
+            margin: 0 auto clamp(6px, 0.8vh, 12px);
+        }
+
+        .info-button-container {
+            text-align: center;
+            margin-bottom: clamp(8px, 1vh, 16px);
+        }
+
+        .btn-info {
+            padding: var(--space-12) var(--space-24);
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-base);
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: var(--font-family-base);
+            cursor: pointer;
+            transition: all var(--duration-normal) var(--ease-standard);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-8);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-info:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-info .icon {
+            font-size: 1.2rem;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: clamp(6px, 0.8vw, 12px);
+            justify-content: center;
+            align-items: center;
+            margin-bottom: clamp(8px, 1.2vh, 16px);
+            background: var(--color-surface);
+            padding: clamp(8px, 0.8vw, 16px);
+            border-radius: var(--radius-base);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-box {
+            flex: 1 1 300px;
+            max-width: 400px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: var(--space-12) var(--space-16);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            font-size: 1rem;
+            font-family: var(--font-family-base);
+            background: var(--color-background);
+            color: var(--color-text);
+            transition: border-color var(--duration-normal) var(--ease-standard);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px var(--color-focus-ring);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: var(--space-12);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        select {
+            padding: var(--space-8) var(--space-12);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            font-size: 1rem;
+            font-family: var(--font-family-base);
+            background: var(--color-background);
+            color: var(--color-text);
+            cursor: pointer;
+            transition: border-color var(--duration-normal) var(--ease-standard);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px var(--color-focus-ring);
+        }
+
+        .btn-reset {
+            padding: var(--space-8) var(--space-20);
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-base);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--duration-normal) var(--ease-standard);
+        }
+
+        .btn-reset:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .theme-switcher {
+            padding: var(--space-8) var(--space-16);
+            background: var(--color-background);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            font-size: 1rem;
+            font-weight: 500;
+            font-family: var(--font-family-base);
+            cursor: pointer;
+            transition: all var(--duration-normal) var(--ease-standard);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-8);
+            min-width: 120px;
+        }
+
+        .theme-switcher:hover {
+            background: var(--color-surface);
+            border-color: var(--color-primary);
+            transform: translateY(-1px);
+        }
+
+        .theme-switcher .theme-icon {
+            font-size: 1.2rem;
+            display: inline-block;
+            transition: transform var(--duration-normal) var(--ease-standard);
+        }
+
+        .theme-switcher:hover .theme-icon {
+            transform: rotate(20deg);
+        }
+
+        .periodic-table {
+            display: grid;
+            grid-template-columns: repeat(18, minmax(30px, 1fr));
+            gap: clamp(2px, 0.25vw, 5px);
+            margin-bottom: clamp(6px, 0.8vh, 12px);
+        }
+
+        .element {
+            aspect-ratio: 1;
+            background: var(--color-surface);
+            border: 2px solid var(--color-card-border);
+            border-radius: var(--radius-base);
+            padding: clamp(4px, 0.6vw, 14px);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            transition: all var(--duration-normal) var(--ease-standard);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .element:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .element.filtered {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .element.highlighted-category {
+            opacity: 1;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .element.other-category {
+            opacity: 0.3;
+        }
+
+        .atomic-number {
+            font-size: clamp(0.5rem, 0.6vw + 0.2rem, 0.65rem);
+            font-weight: 600;
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            color: var(--color-charcoal-700);
+        }
+
+        .symbol {
+            font-size: clamp(1.1rem, 1.5vw + 0.5rem, 1.74rem);
+            font-weight: 700;
+            margin-top: 10px;
+            color: var(--color-charcoal-800);
+        }
+
+        .name {
+            font-size: clamp(0.45rem, 0.5vw + 0.2rem, 0.54rem);
+            font-weight: 500;
+            color: var(--color-charcoal-700);
+        }
+
+        .mass {
+            font-size: clamp(0.45rem, 0.45vw + 0.2rem, 0.51rem);
+            color: var(--color-charcoal-700);
+            margin-top: 2px;
+        }
+
+        .spacer {
+            background: transparent;
+            border: none;
+            cursor: default;
+            box-shadow: none;
+        }
+
+        .spacer:hover {
+            transform: none;
+        }
+
+        .lanthanides,
+        .actinides {
+            display: grid;
+            grid-template-columns: repeat(15, minmax(30px, 1fr));
+            gap: clamp(2px, 0.25vw, 5px);
+            margin-bottom: clamp(6px, 0.8vh, 12px);
+        }
+
+        .series-label {
+            font-weight: 700;
+            font-size: clamp(0.85rem, 1vw, 1.3rem);
+            margin-bottom: clamp(2px, 0.3vh, 4px);
+            color: var(--color-primary);
+        }
+
+        .legend {
+            background: var(--color-surface);
+            padding: clamp(10px, 1.2vw, 16px);
+            border-radius: var(--radius-base);
+            box-shadow: var(--shadow-sm);
+            margin-top: clamp(8px, 1vh, 16px);
+        }
+
+        .legend h3 {
+            font-size: clamp(1rem, 1.2vw, 1.4rem);
+            margin-bottom: clamp(8px, 1vh, 12px);
+            color: var(--color-text);
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--space-12);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            cursor: pointer;
+            padding: var(--space-8);
+            border-radius: var(--radius-base);
+            transition: background var(--duration-normal) var(--ease-standard);
+        }
+
+        .legend-item:hover {
+            background: rgba(var(--color-brown-600-rgb), 0.05);
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: var(--radius-base);
+            border: 2px solid var(--color-card-border);
+        }
+
+        .legend-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .modal-how-to .how-to-list {
+            list-style: none;
+            display: grid;
+            gap: var(--space-16);
+        }
+
+        .modal-how-to .how-to-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-12);
+            padding: var(--space-16);
+            background: var(--color-background);
+            border-radius: var(--radius-base);
+            transition: all var(--duration-normal) var(--ease-standard);
+        }
+
+        .modal-how-to .how-to-list li:hover {
+            transform: translateX(4px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .modal-how-to .step-icon {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            background: var(--color-primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .modal-how-to .step-text {
+            flex: 1;
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        .modal-how-to .step-text strong {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        .questions-section {
+            background: var(--color-surface);
+            padding: clamp(10px, 1.2vw, 16px);
+            border-radius: var(--radius-base);
+            box-shadow: var(--shadow-sm);
+            margin-top: clamp(8px, 1vh, 16px);
+        }
+
+        .questions-section h3 {
+            font-size: clamp(1rem, 1.2vw, 1.4rem);
+            margin-bottom: clamp(8px, 1vh, 12px);
+            color: var(--color-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .questions-section h3:hover {
+            color: var(--color-primary-hover);
+        }
+
+        .toggle-icon {
+            font-size: 1.2rem;
+            transition: transform var(--duration-normal) var(--ease-standard);
+        }
+
+        .toggle-icon.expanded {
+            transform: rotate(180deg);
+        }
+
+        .questions-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s var(--ease-standard);
+        }
+
+        .questions-content.expanded {
+            max-height: 1000px;
+        }
+
+        .question-list {
+            list-style: none;
+            display: grid;
+            gap: var(--space-12);
+            padding-top: var(--space-12);
+        }
+
+        .question-item {
+            padding: var(--space-16);
+            background: var(--color-background);
+            border-radius: var(--radius-base);
+            border-left: 4px solid var(--color-primary);
+            color: var(--color-text);
+            line-height: 1.6;
+            transition: all var(--duration-normal) var(--ease-standard);
+        }
+
+        .question-item:hover {
+            transform: translateX(4px);
+            border-left-color: var(--color-primary-hover);
+            box-shadow: var(--shadow-md);
+        }
+
+        .question-item strong {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        .btn-refresh-questions {
+            padding: var(--space-12) var(--space-24);
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-base);
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: var(--font-family-base);
+            cursor: pointer;
+            transition: all var(--duration-normal) var(--ease-standard);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-8);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-refresh-questions:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .questions-button-container {
+            text-align: center;
+            margin-bottom: var(--space-16);
+        }
+
+        .dice-icon {
+            font-size: 1.2rem;
+        }
+
+        .element.highlighted-group {
+            opacity: 1;
+            box-shadow: 0 0 20px var(--color-primary);
+            transform: scale(1.05);
+            z-index: 5;
+        }
+
+        .element.dimmed-group {
+            opacity: 0.2;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s var(--ease-standard);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background-color: var(--color-surface);
+            margin: auto;
+            padding: clamp(16px, 3vw, 32px);
+            border-radius: var(--radius-lg);
+            width: 80vw;
+            max-width: 600px;
+            box-shadow: var(--shadow-lg);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: slideDown 0.3s var(--ease-standard);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translate(-50%, calc(-50% - 50px));
+                opacity: 0;
+            }
+
+            to {
+                transform: translate(-50%, -50%);
+                opacity: 1;
+            }
+        }
+
+        .close {
+            position: absolute;
+            right: clamp(12px, 3vw, 20px);
+            top: clamp(12px, 3vw, 20px);
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 700;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: color var(--duration-normal) var(--ease-standard);
+        }
+
+        .close:hover {
+            color: var(--color-text);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: clamp(8px, 2vw, 16px);
+            margin-bottom: clamp(12px, 3vw, 24px);
+        }
+
+        .modal-symbol {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .modal-title {
+            flex: 1;
+        }
+
+        .modal-title h2 {
+            font-size: clamp(1.3rem, 4vw, 2rem);
+            margin-bottom: var(--space-4);
+        }
+
+        .modal-title .atomic-info {
+            font-size: clamp(0.85rem, 2vw, 1rem);
+            color: var(--color-text-secondary);
+        }
+
+        .modal-body {
+            display: grid;
+            gap: clamp(8px, 2vw, 16px);
+        }
+
+        .info-row {
+            display: grid;
+            grid-template-columns: minmax(120px, 180px) 1fr;
+            gap: clamp(8px, 2vw, 12px);
+            padding: clamp(8px, 2vw, 12px);
+            background: var(--color-background);
+            border-radius: var(--radius-base);
+        }
+
+        .info-label {
+            font-weight: 600;
+            font-size: clamp(0.8rem, 2vw, 0.95rem);
+            color: var(--color-text-secondary);
+        }
+
+        .info-value {
+            color: var(--color-text);
+            font-weight: 500;
+            font-size: clamp(0.8rem, 2vw, 0.95rem);
+        }
+
+        /* Schermi grandi - font più grandi */
+        @media (min-width: 1400px) and (max-width: 1799px) {
+            h1 {
+                font-size: 2.4rem;
+            }
+
+            .intro {
+                font-size: 1.1rem;
+            }
+
+            .atomic-number {
+                font-size: 0.85rem;
+            }
+
+            .symbol {
+                font-size: 2.2rem;
+            }
+
+            .name {
+                font-size: 0.8rem;
+            }
+
+            .mass {
+                font-size: 0.75rem;
+            }
+
+            .legend h3 {
+                font-size: 1.4rem;
+            }
+
+            .legend-text {
+                font-size: 1.05rem;
+            }
+
+            .questions-section h3 {
+                font-size: 1.4rem;
+            }
+
+            .question-item {
+                font-size: 1.05rem;
+            }
+        }
+
+        /* Schermi molto grandi - font ancora più grandi */
+        @media (min-width: 1800px) {
+            h1 {
+                font-size: 2.8rem;
+            }
+
+            .intro {
+                font-size: 1.2rem;
+            }
+
+            .periodic-table {
+                gap: 4px;
+            }
+
+            .lanthanides,
+            .actinides {
+                gap: 4px;
+            }
+
+            .element {
+                padding: var(--space-12);
+            }
+
+            .atomic-number {
+                font-size: 1rem;
+                top: 6px;
+                left: 8px;
+            }
+
+            .symbol {
+                font-size: 2.6rem;
+                margin-top: 14px;
+            }
+
+            .name {
+                font-size: 0.9rem;
+            }
+
+            .mass {
+                font-size: 0.85rem;
+            }
+
+            .series-label {
+                font-size: 1.4rem;
+            }
+
+            .legend h3 {
+                font-size: 1.6rem;
+            }
+
+            .legend-text {
+                font-size: 1.15rem;
+            }
+
+            .legend-color {
+                width: 36px;
+                height: 36px;
+            }
+
+            .questions-section h3 {
+                font-size: 1.5rem;
+            }
+
+            .question-item {
+                font-size: 1.15rem;
+                padding: var(--space-20);
+            }
+        }
+
+        /* Tablet landscape e schermi medi */
+        @media (max-width: 1200px) {
+            .periodic-table {
+                grid-template-columns: repeat(18, minmax(45px, 1fr));
+            }
+
+            .lanthanides,
+            .actinides {
+                grid-template-columns: repeat(15, minmax(52px, 1fr));
+            }
+
+            .symbol {
+                font-size: 1.7rem;
+            }
+
+            .name {
+                font-size: 0.6rem;
+            }
+
+            .mass {
+                font-size: 0.6rem;
+            }
+        }
+
+        /* Tablet portrait */
+        @media (max-width: 900px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .intro {
+                font-size: 0.95rem;
+            }
+
+            .periodic-table {
+                grid-template-columns: repeat(18, minmax(38px, 1fr));
+            }
+
+            .lanthanides,
+            .actinides {
+                grid-template-columns: repeat(15, minmax(44px, 1fr));
+            }
+
+            .symbol {
+                font-size: 1.4rem;
+            }
+
+            .name {
+                font-size: 0.55rem;
+            }
+
+            .mass {
+                font-size: 0.55rem;
+            }
+
+            .atomic-number {
+                font-size: 0.65rem;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            body {
+                padding: 4px;
+            }
+
+            .container {
+                padding: 0;
+            }
+
+            h1 {
+                font-size: 1rem;
+                margin-bottom: 2px;
+            }
+
+            .intro {
+                display: none;
+            }
+
+            .info-button-container {
+                margin-bottom: 4px;
+            }
+
+            .btn-info {
+                font-size: 0.75rem;
+                padding: 4px 8px;
+            }
+
+            .search-box {
+                display: none;
+            }
+
+            .controls {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 4px;
+                padding: 4px;
+                margin-bottom: 4px;
+                justify-content: space-between;
+            }
+
+            .filter-group {
+                gap: 4px;
+                flex: 1 1 auto;
+            }
+
+            .filter-group label {
+                display: none;
+            }
+
+            select {
+                padding: 2px 4px;
+                font-size: 0.75rem;
+            }
+
+            .btn-reset {
+                padding: 2px 6px;
+                font-size: 0.75rem;
+            }
+
+            .theme-switcher {
+                padding: 2px 6px;
+                font-size: 0.75rem;
+                min-width: auto;
+            }
+
+            .theme-switcher .theme-icon {
+                font-size: 1rem;
+            }
+
+            .periodic-table {
+                grid-template-columns: repeat(18, minmax(30px, 1fr));
+                gap: 2px;
+                margin-bottom: 4px;
+            }
+
+            .lanthanides,
+            .actinides {
+                grid-template-columns: repeat(15, minmax(35px, 1fr));
+                gap: 2px;
+                margin-bottom: 4px;
+            }
+
+            .series-label {
+                font-size: 0.85rem;
+                margin-bottom: 2px;
+            }
+
+            .element {
+                padding: var(--space-4);
+            }
+
+            .atomic-number {
+                font-size: 0.5rem;
+            }
+
+            .symbol {
+                font-size: 1.1rem;
+            }
+
+            .name,
+            .mass {
+                font-size: 0.45rem;
+            }
+
+            .modal-content {
+                width: 80vw;
+                padding: var(--space-12);
+                max-height: 75vh;
+                top: 5vh;
+                left: 0;
+                right: 0;
+                margin: 0 auto;
+                transform: none;
+                animation: slideDownMobile 0.3s var(--ease-standard);
+            }
+
+            @keyframes slideDownMobile {
+                from {
+                    top: -50px;
+                    opacity: 0;
+                }
+
+                to {
+                    top: 5vh;
+                    opacity: 1;
+                }
+            }
+
+            .modal-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--space-8);
+            }
+
+            .modal-symbol {
+                font-size: 2.5rem;
+            }
+
+            .modal-title h2 {
+                font-size: 1.3rem;
+            }
+
+            .info-row {
+                grid-template-columns: 1fr;
+                gap: var(--space-4);
+            }
+
+            .info-label,
+            .info-value {
+                font-size: 0.85rem;
+            }
+
+            .legend {
+                padding: 6px;
+                margin-top: 4px;
+            }
+
+            .legend h3 {
+                font-size: 0.9rem;
+                margin-bottom: 4px;
+            }
+
+            .legend-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 4px;
+            }
+
+            .legend-item {
+                padding: 4px;
+            }
+
+            .legend-text {
+                font-size: 0.75rem;
+            }
+
+            .legend-color {
+                width: 24px;
+                height: 24px;
+            }
+
+            .questions-section {
+                padding: 6px;
+                margin-top: 4px;
+            }
+
+            .questions-section h3 {
+                font-size: 0.9rem;
+                margin-bottom: 4px;
+            }
+
+            .question-item {
+                padding: 6px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Mobile molto piccolo */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.2rem;
+            }
+
+            .btn-info,
+            .btn-reset,
+            .theme-switcher {
+                font-size: 0.9rem;
+                padding: var(--space-8) var(--space-12);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Tavola Periodica degli Elementi</h1>
+            <p class="intro">Esplora la Tavola Periodica. Clicca su un elemento per scoprire i dettagli o usa i filtri
+                per esplorare le categorie.</p>
+            <div class="info-button-container">
+                <button class="btn-info" id="btnHowTo">
+                    <span class="icon">ℹ️</span>
+                    <span>Come usare questa applicazione</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Cerca per nome o simbolo...">
+            </div>
+
+            <div class="filter-group">
+                <label for="statoFilter">Stato:</label>
+                <select id="statoFilter">
+                    <option value="">Tutti</option>
+                    <option value="Solido">Solido</option>
+                    <option value="Liquido">Liquido</option>
+                    <option value="Gas">Gas</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="categoriaFilter">Categoria:</label>
+                <select id="categoriaFilter">
+                    <option value="">Tutte</option>
+                    <option value="Metalli Alcalini">Metalli Alcalini</option>
+                    <option value="Metalli Alcalino-Terrosi">Metalli Alcalino-Terrosi</option>
+                    <option value="Lantanidi">Lantanidi</option>
+                    <option value="Attinidi">Attinidi</option>
+                    <option value="Metalli di Transizione">Metalli di Transizione</option>
+                    <option value="Metalli di Post-transizione">Metalli di Post-transizione</option>
+                    <option value="Metalloidi">Metalloidi</option>
+                    <option value="Altri Non Metalli">Altri Non Metalli</option>
+                    <option value="Alogeni">Alogeni</option>
+                    <option value="Gas Nobili">Gas Nobili</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="tipoFilter">Tipo:</label>
+                <select id="tipoFilter">
+                    <option value="">Tutti</option>
+                    <option value="Metallo">Metallo</option>
+                    <option value="Non Metallo">Non Metallo</option>
+                    <option value="Metalloide">Metalloide</option>
+                </select>
+            </div>
+
+            <button class="btn-reset" id="resetBtn">Reset Filtri</button>
+
+            <button class="theme-switcher" id="themeSwitcher">
+                <span class="theme-icon" id="themeIcon">🌓</span>
+                <span id="themeLabel">System</span>
+            </button>
+        </div>
+
+        <div class="periodic-table" id="periodicTable"></div>
+
+        <div class="series-label">Lantanidi</div>
+        <div class="lanthanides" id="lanthanides"></div>
+
+        <div class="series-label">Attinidi</div>
+        <div class="actinides" id="actinides"></div>
+
+        <div class="legend">
+            <h3>Legenda Categorie</h3>
+            <div class="legend-grid" id="legend"></div>
+        </div>
+
+        <div class="questions-section">
+            <h3 id="questionsToggle">
+                <span><span class="icon">🎓</span> Domande Guida per l'Esplorazione</span>
+                <span class="toggle-icon">▼</span>
+            </h3>
+            <div class="questions-content" id="questionsContent">
+                <div class="questions-button-container">
+                    <button class="btn-refresh-questions" id="refreshQuestions">
+                        <span class="dice-icon">🎲</span>
+                        <span>Carica 5 domande casuali</span>
+                    </button>
+                </div>
+                <ul class="question-list" id="questionList">
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-header">
+                <div class="modal-symbol" id="modalSymbol"></div>
+                <div class="modal-title">
+                    <h2 id="modalName"></h2>
+                    <div class="atomic-info" id="modalAtomicInfo"></div>
+                </div>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <div id="modalHowTo" class="modal">
+        <div class="modal-content modal-how-to">
+            <span class="close" id="closeHowTo">&times;</span>
+            <div class="modal-header">
+                <div class="modal-symbol">ℹ️</div>
+                <div class="modal-title">
+                    <h2>Come usare la Tavola Periodica</h2>
+                </div>
+            </div>
+            <div class="modal-body">
+                <ul class="how-to-list">
+                    <li>
+                        <div class="step-icon">1</div>
+                        <div class="step-text"><strong>Clicca su un elemento</strong> per visualizzare informazioni
+                            dettagliate come configurazione elettronica, punti di fusione/ebollizione, elettronegatività
+                            e storia della scoperta.</div>
+                    </li>
+                    <li>
+                        <div class="step-icon">2</div>
+                        <div class="step-text"><strong>Passa il mouse su un elemento</strong> per evidenziare
+                            automaticamente tutti gli elementi dello stesso gruppo/colonna (famiglia chimica con
+                            proprietà simili).</div>
+                    </li>
+                    <li>
+                        <div class="step-icon">3</div>
+                        <div class="step-text"><strong>Usa la barra di ricerca</strong> per trovare rapidamente elementi
+                            per nome completo (es. "Ossigeno") o simbolo chimico (es. "O").</div>
+                    </li>
+                    <li>
+                        <div class="step-icon">4</div>
+                        <div class="step-text"><strong>Applica i filtri</strong> per esplorare elementi in base a stato
+                            fisico (solido/liquido/gas), categoria chimica o tipo (metallo/non metallo/metalloide).
+                        </div>
+                    </li>
+                    <li>
+                        <div class="step-icon">5</div>
+                        <div class="step-text"><strong>Passa il mouse sulla legenda</strong> in basso per evidenziare
+                            tutte le categorie chimiche (metalli alcalini, alogeni, gas nobili, metalli di transizione,
+                            ecc.).</div>
+                    </li>
+                    <li>
+                        <div class="step-icon">6</div>
+                        <div class="step-text"><strong>Cambia tema</strong> usando i pulsanti Chiaro/Scuro/System per
+                            adattare l'applicazione alle tue preferenze di visualizzazione.</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme management with three-state button
+        const themeSwitcher = document.getElementById('themeSwitcher');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeLabel = document.getElementById('themeLabel');
+        const html = document.documentElement;
+
+        // Theme configurations
+        const themes = [
+            { name: 'system', icon: '🌓', label: 'System' },
+            { name: 'light', icon: '☀️', label: 'Chiaro' },
+            { name: 'dark', icon: '🌙', label: 'Scuro' }
+        ];
+
+        // Load saved theme or default to 'system'
+        let currentThemeIndex = 0;
+        const savedTheme = localStorage.getItem('theme') || 'system';
+        currentThemeIndex = themes.findIndex(t => t.name === savedTheme);
+        if (currentThemeIndex === -1) currentThemeIndex = 0;
+
+        applyTheme(currentThemeIndex);
+
+        function applyTheme(themeIndex) {
+            const theme = themes[themeIndex];
+
+            // Update button UI
+            themeIcon.textContent = theme.icon;
+            themeLabel.textContent = theme.label;
+
+            // Apply theme to HTML
+            if (theme.name === 'system') {
+                html.removeAttribute('data-theme');
+            } else {
+                html.setAttribute('data-theme', theme.name);
+            }
+
+            // Save preference
+            localStorage.setItem('theme', theme.name);
+        }
+
+        // Cycle through themes on button click
+        themeSwitcher.addEventListener('click', () => {
+            currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+            applyTheme(currentThemeIndex);
+        });        // Questions section toggle
+        const questionsToggle = document.getElementById('questionsToggle');
+        const questionsContent = document.getElementById('questionsContent');
+        const toggleIcon = questionsToggle.querySelector('.toggle-icon');
+
+        questionsToggle.addEventListener('click', () => {
+            questionsContent.classList.toggle('expanded');
+            toggleIcon.classList.toggle('expanded');
+        });
+
+        // Educational questions pool (32 questions)
+        const allQuestions = [
+            "Qual è l'elemento con l'elettronegatività più alta? (Suggerimento: cerca tra i non metalli in alto a destra)",
+            "Quanti elementi sono liquidi a temperatura ambiente? Riesci a trovarli tutti? (Suggerimento: usa il filtro 'Liquido')",
+            "Confronta i punti di fusione dei metalli alcalini (gruppo 1). Noti un pattern man mano che scendi nel gruppo?",
+            "Quali elementi sono stati scoperti nell'antichità? Cosa hanno in comune? (Suggerimento: controlla l'anno di scoperta)",
+            "Esplora i gas nobili (gruppo 18). Perché sono chiamati 'nobili'? Osserva i loro stati di ossidazione.",
+            "Trova l'elemento più pesante naturale. Quale categoria appartiene? (Suggerimento: cerca tra gli attinidi)",
+            "Qual è la differenza tra metalli di transizione e metalli di post-transizione? Confronta le loro proprietà.",
+            "Perché gli alogeni (gruppo 17) sono così reattivi? Osserva la loro configurazione elettronica.",
+            "Quale elemento ha il punto di fusione più alto? E il più basso? (Suggerimento: usa la funzione di ricerca)",
+            "Confronta le masse atomiche dei lantanidi. Seguono un andamento regolare?",
+            "Quali elementi hanno stati di ossidazione variabili? Perché? (Suggerimento: cerca tra i metalli di transizione)",
+            "Identifica tutti i metalloidi. Cosa li rende 'semi-metalli'?",
+            "Qual è l'elemento più abbondante nella crosta terrestre? Riesci a trovarlo nella tavola?",
+            "Confronta il Sodio (Na) e il Potassio (K). Quali somiglianze noti?",
+            "Perché l'Idrogeno è posizionato sopra i metalli alcalini ma non appartiene al gruppo?",
+            "Quale gruppo di elementi è completamente gassoso a temperatura ambiente?",
+            "Trova gli elementi radioattivi. Cosa hanno in comune? (Suggerimento: cerca dopo l'elemento 83)",
+            "Qual è la relazione tra numero atomico e massa atomica? Ci sono eccezioni?",
+            "Confronta Cloro (Cl) e Bromo (Br). Come cambiano le proprietà scendendo nel gruppo degli alogeni?",
+            "Quali elementi sono essenziali per la vita? Riesci a identificarne almeno 6?",
+            "Perché l'Oro (Au) è così resistente alla corrosione? Osserva la sua posizione e categoria.",
+            "Confronta il punto di ebollizione di Mercurio (Hg) con altri metalli. Perché è un'eccezione?",
+            "Quali elementi sono stati scoperti negli ultimi 50 anni? (Suggerimento: controlla l'anno di scoperta)",
+            "Cosa hanno in comune tutti gli elementi del gruppo 2? Osserva la loro configurazione elettronica.",
+            "Perché il Carbonio (C) è fondamentale per la vita? Quali proprietà uniche possiede?",
+            "Trova gli elementi con elettronegatività più bassa. Cosa hanno in comune?",
+            "Confronta Ferro (Fe), Cobalto (Co) e Nichel (Ni). Perché sono chiamati metalli ferromagnetici?",
+            "Qual è la differenza tra lantanidi e attinidi? Osserva i loro numeri atomici.",
+            "Quali elementi sono utilizzati nei semiconduttori? (Suggerimento: cerca tra i metalloidi)",
+            "Perché l'Elio (He) è l'unico gas nobile liquido a temperature estremamente basse?",
+            "Confronta le dimensioni atomiche lungo un periodo (riga). Cosa osservi?",
+            "Quali elementi hanno configurazione elettronica anomala? Perché? (Suggerimento: Cromo e Rame)"
+        ];
+
+        // Function to load 5 random questions
+        function loadRandomQuestions() {
+            const questionList = document.getElementById('questionList');
+            questionList.innerHTML = '';
+
+            // Get 5 random questions
+            const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
+            const selectedQuestions = shuffled.slice(0, 5);
+
+            // Render questions
+            selectedQuestions.forEach((question, index) => {
+                const li = document.createElement('li');
+                li.className = 'question-item';
+                li.innerHTML = `<strong>Q${index + 1}:</strong> ${question}`;
+                questionList.appendChild(li);
+            });
+        }
+
+        // Load initial random questions
+        loadRandomQuestions();
+
+        // Refresh questions button
+        document.getElementById('refreshQuestions').addEventListener('click', () => {
+            loadRandomQuestions();
+        });
+
+        const elementi = [
+            { numero: 1, simbolo: 'H', nome: 'Idrogeno', massa: 1.008, categoria: 'Altri Non Metalli', tipo: 'Non Metallo', configurazione: '1s¹', stati_ossidazione: '+1, -1', fusione_C: -259.16, ebollizione_C: -252.87, elettronegativita: 2.20, stato_fisico_STP: 'Gas', scopritore: 'Henry Cavendish', anno: 1766, riga: 1, colonna: 1 },
+            { numero: 2, simbolo: 'He', nome: 'Elio', massa: 4.003, categoria: 'Gas Nobili', tipo: 'Non Metallo', configurazione: '1s²', stati_ossidazione: '0', fusione_C: -272.20, ebollizione_C: -268.93, elettronegativita: null, stato_fisico_STP: 'Gas', scopritore: 'Pierre Janssen', anno: 1868, riga: 1, colonna: 18 },
+            { numero: 3, simbolo: 'Li', nome: 'Litio', massa: 6.941, categoria: 'Metalli Alcalini', tipo: 'Metallo', configurazione: '[He] 2s¹', stati_ossidazione: '+1', fusione_C: 180.54, ebollizione_C: 1342, elettronegativita: 0.98, stato_fisico_STP: 'Solido', scopritore: 'Johan August Arfwedson', anno: 1817, riga: 2, colonna: 1 },
+            { numero: 4, simbolo: 'Be', nome: 'Berillio', massa: 9.012, categoria: 'Metalli Alcalino-Terrosi', tipo: 'Metallo', configurazione: '[He] 2s²', stati_ossidazione: '+2', fusione_C: 1287, ebollizione_C: 2470, elettronegativita: 1.57, stato_fisico_STP: 'Solido', scopritore: 'Louis Nicolas Vauquelin', anno: 1798, riga: 2, colonna: 2 },
+            { numero: 5, simbolo: 'B', nome: 'Boro', massa: 10.811, categoria: 'Metalloidi', tipo: 'Metalloide', configurazione: '[He] 2s² 2p¹', stati_ossidazione: '+3', fusione_C: 2076, ebollizione_C: 3927, elettronegativita: 2.04, stato_fisico_STP: 'Solido', scopritore: 'Joseph Louis Gay-Lussac', anno: 1808, riga: 2, colonna: 13 },
+            { numero: 6, simbolo: 'C', nome: 'Carbonio', massa: 12.011, categoria: 'Altri Non Metalli', tipo: 'Non Metallo', configurazione: '[He] 2s² 2p²', stati_ossidazione: '+4, +2, -4', fusione_C: 3550, ebollizione_C: 4027, elettronegativita: 2.55, stato_fisico_STP: 'Solido', scopritore: 'Antichità', anno: null, riga: 2, colonna: 14 },
+            { numero: 7, simbolo: 'N', nome: 'Azoto', massa: 14.007, categoria: 'Altri Non Metalli', tipo: 'Non Metallo', configurazione: '[He] 2s² 2p³', stati_ossidazione: '+5, +4, +3, +2, +1, -1, -2, -3', fusione_C: -210.00, ebollizione_C: -195.79, elettronegativita: 3.04, stato_fisico_STP: 'Gas', scopritore: 'Daniel Rutherford', anno: 1772, riga: 2, colonna: 15 },
+            { numero: 8, simbolo: 'O', nome: 'Ossigeno', massa: 15.999, categoria: 'Altri Non Metalli', tipo: 'Non Metallo', configurazione: '[He] 2s² 2p⁴', stati_ossidazione: '-2, -1', fusione_C: -218.79, ebollizione_C: -182.95, elettronegativita: 3.44, stato_fisico_STP: 'Gas', scopritore: 'Carl Wilhelm Scheele', anno: 1772, riga: 2, colonna: 16 },
+            { numero: 9, simbolo: 'F', nome: 'Fluoro', massa: 18.998, categoria: 'Alogeni', tipo: 'Non Metallo', configurazione: '[He] 2s² 2p⁵', stati_ossidazione: '-1', fusione_C: -219.62, ebollizione_C: -188.12, elettronegativita: 3.98, stato_fisico_STP: 'Gas', scopritore: 'Henri Moissan', anno: 1886, riga: 2, colonna: 17 },
+            { numero: 10, simbolo: 'Ne', nome: 'Neon', massa: 20.180, categoria: 'Gas Nobili', tipo: 'Non Metallo', configurazione: '[He] 2s² 2p⁶', stati_ossidazione: '0', fusione_C: -248.59, ebollizione_C: -246.08, elettronegativita: null, stato_fisico_STP: 'Gas', scopritore: 'William Ramsay', anno: 1898, riga: 2, colonna: 18 },
+            { numero: 11, simbolo: 'Na', nome: 'Sodio', massa: 22.990, categoria: 'Metalli Alcalini', tipo: 'Metallo', configurazione: '[Ne] 3s¹', stati_ossidazione: '+1', fusione_C: 97.72, ebollizione_C: 883, elettronegativita: 0.93, stato_fisico_STP: 'Solido', scopritore: 'Humphry Davy', anno: 1807, riga: 3, colonna: 1 },
+            { numero: 12, simbolo: 'Mg', nome: 'Magnesio', massa: 24.305, categoria: 'Metalli Alcalino-Terrosi', tipo: 'Metallo', configurazione: '[Ne] 3s²', stati_ossidazione: '+2', fusione_C: 650, ebollizione_C: 1090, elettronegativita: 1.31, stato_fisico_STP: 'Solido', scopritore: 'Joseph Black', anno: 1755, riga: 3, colonna: 2 },
+            { numero: 13, simbolo: 'Al', nome: 'Alluminio', massa: 26.982, categoria: 'Metalli di Post-transizione', tipo: 'Metallo', configurazione: '[Ne] 3s² 3p¹', stati_ossidazione: '+3', fusione_C: 660.32, ebollizione_C: 2519, elettronegativita: 1.61, stato_fisico_STP: 'Solido', scopritore: 'Hans Christian Ørsted', anno: 1825, riga: 3, colonna: 13 },
+            { numero: 14, simbolo: 'Si', nome: 'Silicio', massa: 28.086, categoria: 'Metalloidi', tipo: 'Metalloide', configurazione: '[Ne] 3s² 3p²', stati_ossidazione: '+4, +2, -4', fusione_C: 1414, ebollizione_C: 3265, elettronegativita: 1.90, stato_fisico_STP: 'Solido', scopritore: 'Jöns Jacob Berzelius', anno: 1824, riga: 3, colonna: 14 },
+            { numero: 15, simbolo: 'P', nome: 'Fosforo', massa: 30.974, categoria: 'Altri Non Metalli', tipo: 'Non Metallo', configurazione: '[Ne] 3s² 3p³', stati_ossidazione: '+5, +3, -3', fusione_C: 44.15, ebollizione_C: 280.5, elettronegativita: 2.19, stato_fisico_STP: 'Solido', scopritore: 'Hennig Brand', anno: 1669, riga: 3, colonna: 15 },
+            { numero: 16, simbolo: 'S', nome: 'Zolfo', massa: 32.065, categoria: 'Altri Non Metalli', tipo: 'Non Metallo', configurazione: '[Ne] 3s² 3p⁴', stati_ossidazione: '+6, +4, +2, -2', fusione_C: 115.21, ebollizione_C: 444.72, elettronegativita: 2.58, stato_fisico_STP: 'Solido', scopritore: 'Antichità', anno: null, riga: 3, colonna: 16 },
+            { numero: 17, simbolo: 'Cl', nome: 'Cloro', massa: 35.453, categoria: 'Alogeni', tipo: 'Non Metallo', configurazione: '[Ne] 3s² 3p⁵', stati_ossidazione: '+7, +5, +3, +1, -1', fusione_C: -101.5, ebollizione_C: -34.04, elettronegativita: 3.16, stato_fisico_STP: 'Gas', scopritore: 'Carl Wilhelm Scheele', anno: 1774, riga: 3, colonna: 17 },
+            { numero: 18, simbolo: 'Ar', nome: 'Argon', massa: 39.948, categoria: 'Gas Nobili', tipo: 'Non Metallo', configurazione: '[Ne] 3s² 3p⁶', stati_ossidazione: '0', fusione_C: -189.35, ebollizione_C: -185.85, elettronegativita: null, stato_fisico_STP: 'Gas', scopritore: 'Lord Rayleigh', anno: 1894, riga: 3, colonna: 18 },
+            { numero: 19, simbolo: 'K', nome: 'Potassio', massa: 39.098, categoria: 'Metalli Alcalini', tipo: 'Metallo', configurazione: '[Ar] 4s¹', stati_ossidazione: '+1', fusione_C: 63.38, ebollizione_C: 759, elettronegativita: 0.82, stato_fisico_STP: 'Solido', scopritore: 'Humphry Davy', anno: 1807, riga: 4, colonna: 1 },
+            { numero: 20, simbolo: 'Ca', nome: 'Calcio', massa: 40.078, categoria: 'Metalli Alcalino-Terrosi', tipo: 'Metallo', configurazione: '[Ar] 4s²', stati_ossidazione: '+2', fusione_C: 842, ebollizione_C: 1484, elettronegativita: 1.00, stato_fisico_STP: 'Solido', scopritore: 'Humphry Davy', anno: 1808, riga: 4, colonna: 2 },
+            { numero: 21, simbolo: 'Sc', nome: 'Scandio', massa: 44.956, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Ar] 3d¹ 4s²', stati_ossidazione: '+3', fusione_C: 1541, ebollizione_C: 2836, elettronegativita: 1.36, stato_fisico_STP: 'Solido', scopritore: 'Lars Fredrik Nilson', anno: 1879, riga: 4, colonna: 3 },
+            { numero: 22, simbolo: 'Ti', nome: 'Titanio', massa: 47.867, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Ar] 3d² 4s²', stati_ossidazione: '+4, +3, +2', fusione_C: 1668, ebollizione_C: 3287, elettronegativita: 1.54, stato_fisico_STP: 'Solido', scopritore: 'William Gregor', anno: 1791, riga: 4, colonna: 4 },
+            { numero: 23, simbolo: 'V', nome: 'Vanadio', massa: 50.942, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Ar] 3d³ 4s²', stati_ossidazione: '+5, +4, +3, +2', fusione_C: 1910, ebollizione_C: 3407, elettronegativita: 1.63, stato_fisico_STP: 'Solido', scopritore: 'Andrés Manuel del Río', anno: 1801, riga: 4, colonna: 5 },
+            { numero: 24, simbolo: 'Cr', nome: 'Cromo', massa: 51.996, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Ar] 3d⁵ 4s¹', stati_ossidazione: '+6, +3, +2', fusione_C: 1907, ebollizione_C: 2671, elettronegativita: 1.66, stato_fisico_STP: 'Solido', scopritore: 'Louis Nicolas Vauquelin', anno: 1797, riga: 4, colonna: 6 },
+            { numero: 25, simbolo: 'Mn', nome: 'Manganese', massa: 54.938, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Ar] 3d⁵ 4s²', stati_ossidazione: '+7, +4, +3, +2', fusione_C: 1246, ebollizione_C: 2061, elettronegativita: 1.55, stato_fisico_STP: 'Solido', scopritore: 'Johan Gottlieb Gahn', anno: 1774, riga: 4, colonna: 7 },
+            { numero: 26, simbolo: 'Fe', nome: 'Ferro', massa: 55.845, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Ar] 3d⁶ 4s²', stati_ossidazione: '+3, +2', fusione_C: 1538, ebollizione_C: 2862, elettronegativita: 1.83, stato_fisico_STP: 'Solido', scopritore: 'Antichità', anno: null, riga: 4, colonna: 8 },
+            { numero: 27, simbolo: 'Co', nome: 'Cobalto', massa: 58.933, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Ar] 3d⁷ 4s²', stati_ossidazione: '+3, +2', fusione_C: 1495, ebollizione_C: 2927, elettronegativita: 1.88, stato_fisico_STP: 'Solido', scopritore: 'Georg Brandt', anno: 1735, riga: 4, colonna: 9 },
+            { numero: 28, simbolo: 'Ni', nome: 'Nichel', massa: 58.693, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Ar] 3d⁸ 4s²', stati_ossidazione: '+3, +2', fusione_C: 1455, ebollizione_C: 2913, elettronegativita: 1.91, stato_fisico_STP: 'Solido', scopritore: 'Axel Fredrik Cronstedt', anno: 1751, riga: 4, colonna: 10 },
+            { numero: 29, simbolo: 'Cu', nome: 'Rame', massa: 63.546, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Ar] 3d¹⁰ 4s¹', stati_ossidazione: '+2, +1', fusione_C: 1084.62, ebollizione_C: 2562, elettronegativita: 1.90, stato_fisico_STP: 'Solido', scopritore: 'Antichità', anno: null, riga: 4, colonna: 11 },
+            { numero: 30, simbolo: 'Zn', nome: 'Zinco', massa: 65.38, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Ar] 3d¹⁰ 4s²', stati_ossidazione: '+2', fusione_C: 419.53, ebollizione_C: 907, elettronegativita: 1.65, stato_fisico_STP: 'Solido', scopritore: 'Antichità', anno: null, riga: 4, colonna: 12 },
+            { numero: 31, simbolo: 'Ga', nome: 'Gallio', massa: 69.723, categoria: 'Metalli di Post-transizione', tipo: 'Metallo', configurazione: '[Ar] 3d¹⁰ 4s² 4p¹', stati_ossidazione: '+3', fusione_C: 29.76, ebollizione_C: 2204, elettronegativita: 1.81, stato_fisico_STP: 'Solido', scopritore: 'Lecoq de Boisbaudran', anno: 1875, riga: 4, colonna: 13 },
+            { numero: 32, simbolo: 'Ge', nome: 'Germanio', massa: 72.64, categoria: 'Metalloidi', tipo: 'Metalloide', configurazione: '[Ar] 3d¹⁰ 4s² 4p²', stati_ossidazione: '+4, +2', fusione_C: 938.25, ebollizione_C: 2833, elettronegativita: 2.01, stato_fisico_STP: 'Solido', scopritore: 'Clemens Winkler', anno: 1886, riga: 4, colonna: 14 },
+            { numero: 33, simbolo: 'As', nome: 'Arsenico', massa: 74.922, categoria: 'Metalloidi', tipo: 'Metalloide', configurazione: '[Ar] 3d¹⁰ 4s² 4p³', stati_ossidazione: '+5, +3, -3', fusione_C: 817, ebollizione_C: 614, elettronegativita: 2.18, stato_fisico_STP: 'Solido', scopritore: 'Albertus Magnus', anno: 1250, riga: 4, colonna: 15 },
+            { numero: 34, simbolo: 'Se', nome: 'Selenio', massa: 78.96, categoria: 'Altri Non Metalli', tipo: 'Non Metallo', configurazione: '[Ar] 3d¹⁰ 4s² 4p⁴', stati_ossidazione: '+6, +4, -2', fusione_C: 221, ebollizione_C: 685, elettronegativita: 2.55, stato_fisico_STP: 'Solido', scopritore: 'Jöns Jacob Berzelius', anno: 1817, riga: 4, colonna: 16 },
+            { numero: 35, simbolo: 'Br', nome: 'Bromo', massa: 79.904, categoria: 'Alogeni', tipo: 'Non Metallo', configurazione: '[Ar] 3d¹⁰ 4s² 4p⁵', stati_ossidazione: '+5, +3, +1, -1', fusione_C: -7.2, ebollizione_C: 58.8, elettronegativita: 2.96, stato_fisico_STP: 'Liquido', scopritore: 'Antoine Jérôme Balard', anno: 1826, riga: 4, colonna: 17 },
+            { numero: 36, simbolo: 'Kr', nome: 'Kripton', massa: 83.798, categoria: 'Gas Nobili', tipo: 'Non Metallo', configurazione: '[Ar] 3d¹⁰ 4s² 4p⁶', stati_ossidazione: '0', fusione_C: -157.36, ebollizione_C: -153.22, elettronegativita: 3.00, stato_fisico_STP: 'Gas', scopritore: 'William Ramsay', anno: 1898, riga: 4, colonna: 18 },
+            { numero: 37, simbolo: 'Rb', nome: 'Rubidio', massa: 85.468, categoria: 'Metalli Alcalini', tipo: 'Metallo', configurazione: '[Kr] 5s¹', stati_ossidazione: '+1', fusione_C: 39.31, ebollizione_C: 688, elettronegativita: 0.82, stato_fisico_STP: 'Solido', scopritore: 'Robert Bunsen', anno: 1861, riga: 5, colonna: 1 },
+            { numero: 38, simbolo: 'Sr', nome: 'Stronzio', massa: 87.62, categoria: 'Metalli Alcalino-Terrosi', tipo: 'Metallo', configurazione: '[Kr] 5s²', stati_ossidazione: '+2', fusione_C: 777, ebollizione_C: 1382, elettronegativita: 0.95, stato_fisico_STP: 'Solido', scopritore: 'William Cruickshank', anno: 1790, riga: 5, colonna: 2 },
+            { numero: 39, simbolo: 'Y', nome: 'Ittrio', massa: 88.906, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Kr] 4d¹ 5s²', stati_ossidazione: '+3', fusione_C: 1526, ebollizione_C: 3345, elettronegativita: 1.22, stato_fisico_STP: 'Solido', scopritore: 'Johan Gadolin', anno: 1794, riga: 5, colonna: 3 },
+            { numero: 40, simbolo: 'Zr', nome: 'Zirconio', massa: 91.224, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Kr] 4d² 5s²', stati_ossidazione: '+4', fusione_C: 1855, ebollizione_C: 4409, elettronegativita: 1.33, stato_fisico_STP: 'Solido', scopritore: 'Martin Heinrich Klaproth', anno: 1789, riga: 5, colonna: 4 },
+            { numero: 41, simbolo: 'Nb', nome: 'Niobio', massa: 92.906, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Kr] 4d⁴ 5s¹', stati_ossidazione: '+5, +3', fusione_C: 2477, ebollizione_C: 4744, elettronegativita: 1.6, stato_fisico_STP: 'Solido', scopritore: 'Charles Hatchett', anno: 1801, riga: 5, colonna: 5 },
+            { numero: 42, simbolo: 'Mo', nome: 'Molibdeno', massa: 95.96, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Kr] 4d⁵ 5s¹', stati_ossidazione: '+6, +4, +3', fusione_C: 2623, ebollizione_C: 4639, elettronegativita: 2.16, stato_fisico_STP: 'Solido', scopritore: 'Carl Wilhelm Scheele', anno: 1778, riga: 5, colonna: 6 },
+            { numero: 43, simbolo: 'Tc', nome: 'Tecnezio', massa: 98.00, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Kr] 4d⁵ 5s²', stati_ossidazione: '+7, +6, +4', fusione_C: 2157, ebollizione_C: 4265, elettronegativita: 1.9, stato_fisico_STP: 'Solido', scopritore: 'Carlo Perrier', anno: 1937, riga: 5, colonna: 7 },
+            { numero: 44, simbolo: 'Ru', nome: 'Rutenio', massa: 101.07, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Kr] 4d⁷ 5s¹', stati_ossidazione: '+3, +4, +6, +8', fusione_C: 2334, ebollizione_C: 4150, elettronegativita: 2.2, stato_fisico_STP: 'Solido', scopritore: 'Karl Ernst Claus', anno: 1844, riga: 5, colonna: 8 },
+            { numero: 45, simbolo: 'Rh', nome: 'Rodio', massa: 102.91, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Kr] 4d⁸ 5s¹', stati_ossidazione: '+3, +4', fusione_C: 1964, ebollizione_C: 3695, elettronegativita: 2.28, stato_fisico_STP: 'Solido', scopritore: 'William Hyde Wollaston', anno: 1803, riga: 5, colonna: 9 },
+            { numero: 46, simbolo: 'Pd', nome: 'Palladio', massa: 106.42, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Kr] 4d¹⁰', stati_ossidazione: '+2, +4', fusione_C: 1554.9, ebollizione_C: 2963, elettronegativita: 2.20, stato_fisico_STP: 'Solido', scopritore: 'William Hyde Wollaston', anno: 1803, riga: 5, colonna: 10 },
+            { numero: 47, simbolo: 'Ag', nome: 'Argento', massa: 107.87, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Kr] 4d¹⁰ 5s¹', stati_ossidazione: '+1', fusione_C: 961.78, ebollizione_C: 2162, elettronegativita: 1.93, stato_fisico_STP: 'Solido', scopritore: 'Antichità', anno: null, riga: 5, colonna: 11 },
+            { numero: 48, simbolo: 'Cd', nome: 'Cadmio', massa: 112.41, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Kr] 4d¹⁰ 5s²', stati_ossidazione: '+2', fusione_C: 321.07, ebollizione_C: 767, elettronegativita: 1.69, stato_fisico_STP: 'Solido', scopritore: 'Karl Samuel Leberecht Hermann', anno: 1817, riga: 5, colonna: 12 },
+            { numero: 49, simbolo: 'In', nome: 'Indio', massa: 114.82, categoria: 'Metalli di Post-transizione', tipo: 'Metallo', configurazione: '[Kr] 4d¹⁰ 5s² 5p¹', stati_ossidazione: '+3', fusione_C: 156.60, ebollizione_C: 2072, elettronegativita: 1.78, stato_fisico_STP: 'Solido', scopritore: 'Ferdinand Reich', anno: 1863, riga: 5, colonna: 13 },
+            { numero: 50, simbolo: 'Sn', nome: 'Stagno', massa: 118.71, categoria: 'Metalli di Post-transizione', tipo: 'Metallo', configurazione: '[Kr] 4d¹⁰ 5s² 5p²', stati_ossidazione: '+4, +2', fusione_C: 231.93, ebollizione_C: 2602, elettronegativita: 1.96, stato_fisico_STP: 'Solido', scopritore: 'Antichità', anno: null, riga: 5, colonna: 14 },
+            { numero: 51, simbolo: 'Sb', nome: 'Antimonio', massa: 121.76, categoria: 'Metalloidi', tipo: 'Metalloide', configurazione: '[Kr] 4d¹⁰ 5s² 5p³', stati_ossidazione: '+5, +3, -3', fusione_C: 630.63, ebollizione_C: 1587, elettronegativita: 2.05, stato_fisico_STP: 'Solido', scopritore: 'Antichità', anno: null, riga: 5, colonna: 15 },
+            { numero: 52, simbolo: 'Te', nome: 'Tellurio', massa: 127.60, categoria: 'Metalloidi', tipo: 'Metalloide', configurazione: '[Kr] 4d¹⁰ 5s² 5p⁴', stati_ossidazione: '+6, +4, -2', fusione_C: 449.51, ebollizione_C: 988, elettronegativita: 2.1, stato_fisico_STP: 'Solido', scopritore: 'Franz-Joseph Müller von Reichenstein', anno: 1782, riga: 5, colonna: 16 },
+            { numero: 53, simbolo: 'I', nome: 'Iodio', massa: 126.90, categoria: 'Alogeni', tipo: 'Non Metallo', configurazione: '[Kr] 4d¹⁰ 5s² 5p⁵', stati_ossidazione: '+7, +5, +1, -1', fusione_C: 113.7, ebollizione_C: 184.3, elettronegativita: 2.66, stato_fisico_STP: 'Solido', scopritore: 'Bernard Courtois', anno: 1811, riga: 5, colonna: 17 },
+            { numero: 54, simbolo: 'Xe', nome: 'Xenon', massa: 131.29, categoria: 'Gas Nobili', tipo: 'Non Metallo', configurazione: '[Kr] 4d¹⁰ 5s² 5p⁶', stati_ossidazione: '0', fusione_C: -111.75, ebollizione_C: -108.04, elettronegativita: 2.60, stato_fisico_STP: 'Gas', scopritore: 'William Ramsay', anno: 1898, riga: 5, colonna: 18 },
+            { numero: 55, simbolo: 'Cs', nome: 'Cesio', massa: 132.91, categoria: 'Metalli Alcalini', tipo: 'Metallo', configurazione: '[Xe] 6s¹', stati_ossidazione: '+1', fusione_C: 28.44, ebollizione_C: 671, elettronegativita: 0.79, stato_fisico_STP: 'Solido', scopritore: 'Robert Bunsen', anno: 1860, riga: 6, colonna: 1 },
+            { numero: 56, simbolo: 'Ba', nome: 'Bario', massa: 137.33, categoria: 'Metalli Alcalino-Terrosi', tipo: 'Metallo', configurazione: '[Xe] 6s²', stati_ossidazione: '+2', fusione_C: 727, ebollizione_C: 1897, elettronegativita: 0.89, stato_fisico_STP: 'Solido', scopritore: 'Humphry Davy', anno: 1808, riga: 6, colonna: 2 },
+            { numero: 57, simbolo: 'La', nome: 'Lantanio', massa: 138.91, categoria: 'Lantanidi', tipo: 'Metallo', configurazione: '[Xe] 5d¹ 6s²', stati_ossidazione: '+3', fusione_C: 920, ebollizione_C: 3464, elettronegativita: 1.1, stato_fisico_STP: 'Solido', scopritore: 'Carl Gustaf Mosander', anno: 1839, riga: 8, colonna: 3 },
+            { numero: 58, simbolo: 'Ce', nome: 'Cerio', massa: 140.12, categoria: 'Lantanidi', tipo: 'Metallo', configurazione: '[Xe] 4f¹ 5d¹ 6s²', stati_ossidazione: '+4, +3', fusione_C: 795, ebollizione_C: 3443, elettronegativita: 1.12, stato_fisico_STP: 'Solido', scopritore: 'Martin Heinrich Klaproth', anno: 1803, riga: 8, colonna: 4 },
+            { numero: 59, simbolo: 'Pr', nome: 'Praseodimio', massa: 140.91, categoria: 'Lantanidi', tipo: 'Metallo', configurazione: '[Xe] 4f³ 6s²', stati_ossidazione: '+3', fusione_C: 931, ebollizione_C: 3520, elettronegativita: 1.13, stato_fisico_STP: 'Solido', scopritore: 'Carl Auer von Welsbach', anno: 1885, riga: 8, colonna: 5 },
+            { numero: 60, simbolo: 'Nd', nome: 'Neodimio', massa: 144.24, categoria: 'Lantanidi', tipo: 'Metallo', configurazione: '[Xe] 4f⁴ 6s²', stati_ossidazione: '+3', fusione_C: 1021, ebollizione_C: 3074, elettronegativita: 1.14, stato_fisico_STP: 'Solido', scopritore: 'Carl Auer von Welsbach', anno: 1885, riga: 8, colonna: 6 },
+            { numero: 61, simbolo: 'Pm', nome: 'Promezio', massa: 145.00, categoria: 'Lantanidi', tipo: 'Metallo', configurazione: '[Xe] 4f⁵ 6s²', stati_ossidazione: '+3', fusione_C: 1042, ebollizione_C: 3000, elettronegativita: 1.13, stato_fisico_STP: 'Solido', scopritore: 'Jacob A. Marinsky', anno: 1945, riga: 8, colonna: 7 },
+            { numero: 62, simbolo: 'Sm', nome: 'Samario', massa: 150.36, categoria: 'Lantanidi', tipo: 'Metallo', configurazione: '[Xe] 4f⁶ 6s²', stati_ossidazione: '+3, +2', fusione_C: 1074, ebollizione_C: 1794, elettronegativita: 1.17, stato_fisico_STP: 'Solido', scopritore: 'Lecoq de Boisbaudran', anno: 1879, riga: 8, colonna: 8 },
+            { numero: 63, simbolo: 'Eu', nome: 'Europio', massa: 151.96, categoria: 'Lantanidi', tipo: 'Metallo', configurazione: '[Xe] 4f⁷ 6s²', stati_ossidazione: '+3, +2', fusione_C: 822, ebollizione_C: 1596, elettronegativita: 1.2, stato_fisico_STP: 'Solido', scopritore: 'Eugène-Anatole Demarçay', anno: 1901, riga: 8, colonna: 9 },
+            { numero: 64, simbolo: 'Gd', nome: 'Gadolinio', massa: 157.25, categoria: 'Lantanidi', tipo: 'Metallo', configurazione: '[Xe] 4f⁷ 5d¹ 6s²', stati_ossidazione: '+3', fusione_C: 1313, ebollizione_C: 3273, elettronegativita: 1.2, stato_fisico_STP: 'Solido', scopritore: 'Jean Charles Galissard de Marignac', anno: 1880, riga: 8, colonna: 10 },
+            { numero: 65, simbolo: 'Tb', nome: 'Terbio', massa: 158.93, categoria: 'Lantanidi', tipo: 'Metallo', configurazione: '[Xe] 4f⁹ 6s²', stati_ossidazione: '+3', fusione_C: 1356, ebollizione_C: 3230, elettronegativita: 1.2, stato_fisico_STP: 'Solido', scopritore: 'Carl Gustaf Mosander', anno: 1843, riga: 8, colonna: 11 },
+            { numero: 66, simbolo: 'Dy', nome: 'Disprosio', massa: 162.50, categoria: 'Lantanidi', tipo: 'Metallo', configurazione: '[Xe] 4f¹⁰ 6s²', stati_ossidazione: '+3', fusione_C: 1412, ebollizione_C: 2567, elettronegativita: 1.22, stato_fisico_STP: 'Solido', scopritore: 'Lecoq de Boisbaudran', anno: 1886, riga: 8, colonna: 12 },
+            { numero: 67, simbolo: 'Ho', nome: 'Olmio', massa: 164.93, categoria: 'Lantanidi', tipo: 'Metallo', configurazione: '[Xe] 4f¹¹ 6s²', stati_ossidazione: '+3', fusione_C: 1474, ebollizione_C: 2700, elettronegativita: 1.23, stato_fisico_STP: 'Solido', scopritore: 'Marc Delafontaine', anno: 1878, riga: 8, colonna: 13 },
+            { numero: 68, simbolo: 'Er', nome: 'Erbio', massa: 167.26, categoria: 'Lantanidi', tipo: 'Metallo', configurazione: '[Xe] 4f¹² 6s²', stati_ossidazione: '+3', fusione_C: 1529, ebollizione_C: 2868, elettronegativita: 1.24, stato_fisico_STP: 'Solido', scopritore: 'Carl Gustaf Mosander', anno: 1843, riga: 8, colonna: 14 },
+            { numero: 69, simbolo: 'Tm', nome: 'Tulio', massa: 168.93, categoria: 'Lantanidi', tipo: 'Metallo', configurazione: '[Xe] 4f¹³ 6s²', stati_ossidazione: '+3', fusione_C: 1545, ebollizione_C: 1950, elettronegativita: 1.25, stato_fisico_STP: 'Solido', scopritore: 'Per Teodor Cleve', anno: 1879, riga: 8, colonna: 15 },
+            { numero: 70, simbolo: 'Yb', nome: 'Itterbio', massa: 173.05, categoria: 'Lantanidi', tipo: 'Metallo', configurazione: '[Xe] 4f¹⁴ 6s²', stati_ossidazione: '+3, +2', fusione_C: 819, ebollizione_C: 1196, elettronegativita: 1.1, stato_fisico_STP: 'Solido', scopritore: 'Jean Charles Galissard de Marignac', anno: 1878, riga: 8, colonna: 16 },
+            { numero: 71, simbolo: 'Lu', nome: 'Lutezio', massa: 174.97, categoria: 'Lantanidi', tipo: 'Metallo', configurazione: '[Xe] 4f¹⁴ 5d¹ 6s²', stati_ossidazione: '+3', fusione_C: 1663, ebollizione_C: 3402, elettronegativita: 1.27, stato_fisico_STP: 'Solido', scopritore: 'Georges Urbain', anno: 1907, riga: 8, colonna: 17 },
+            { numero: 72, simbolo: 'Hf', nome: 'Afnio', massa: 178.49, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Xe] 4f¹⁴ 5d² 6s²', stati_ossidazione: '+4', fusione_C: 2233, ebollizione_C: 4603, elettronegativita: 1.3, stato_fisico_STP: 'Solido', scopritore: 'Dirk Coster', anno: 1923, riga: 6, colonna: 4 },
+            { numero: 73, simbolo: 'Ta', nome: 'Tantalio', massa: 180.95, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Xe] 4f¹⁴ 5d³ 6s²', stati_ossidazione: '+5', fusione_C: 3017, ebollizione_C: 5458, elettronegativita: 1.5, stato_fisico_STP: 'Solido', scopritore: 'Anders Gustaf Ekeberg', anno: 1802, riga: 6, colonna: 5 },
+            { numero: 74, simbolo: 'W', nome: 'Tungsteno', massa: 183.84, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Xe] 4f¹⁴ 5d⁴ 6s²', stati_ossidazione: '+6, +4, +2', fusione_C: 3422, ebollizione_C: 5555, elettronegativita: 2.36, stato_fisico_STP: 'Solido', scopritore: 'Juan José Elhuyar', anno: 1783, riga: 6, colonna: 6 },
+            { numero: 75, simbolo: 'Re', nome: 'Renio', massa: 186.21, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Xe] 4f¹⁴ 5d⁵ 6s²', stati_ossidazione: '+7, +6, +4', fusione_C: 3186, ebollizione_C: 5596, elettronegativita: 1.9, stato_fisico_STP: 'Solido', scopritore: 'Walter Noddack', anno: 1925, riga: 6, colonna: 7 },
+            { numero: 76, simbolo: 'Os', nome: 'Osmio', massa: 190.23, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Xe] 4f¹⁴ 5d⁶ 6s²', stati_ossidazione: '+4, +3', fusione_C: 3033, ebollizione_C: 5012, elettronegativita: 2.2, stato_fisico_STP: 'Solido', scopritore: 'Smithson Tennant', anno: 1803, riga: 6, colonna: 8 },
+            { numero: 77, simbolo: 'Ir', nome: 'Iridio', massa: 192.22, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Xe] 4f¹⁴ 5d⁷ 6s²', stati_ossidazione: '+4, +3', fusione_C: 2466, ebollizione_C: 4428, elettronegativita: 2.20, stato_fisico_STP: 'Solido', scopritore: 'Smithson Tennant', anno: 1803, riga: 6, colonna: 9 },
+            { numero: 78, simbolo: 'Pt', nome: 'Platino', massa: 195.08, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Xe] 4f¹⁴ 5d⁹ 6s¹', stati_ossidazione: '+4, +2', fusione_C: 1768.3, ebollizione_C: 3825, elettronegativita: 2.28, stato_fisico_STP: 'Solido', scopritore: 'Antonio de Ulloa', anno: 1735, riga: 6, colonna: 10 },
+            { numero: 79, simbolo: 'Au', nome: 'Oro', massa: 196.97, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Xe] 4f¹⁴ 5d¹⁰ 6s¹', stati_ossidazione: '+3, +1', fusione_C: 1064.18, ebollizione_C: 2856, elettronegativita: 2.54, stato_fisico_STP: 'Solido', scopritore: 'Antichità', anno: null, riga: 6, colonna: 11 },
+            { numero: 80, simbolo: 'Hg', nome: 'Mercurio', massa: 200.59, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Xe] 4f¹⁴ 5d¹⁰ 6s²', stati_ossidazione: '+2, +1', fusione_C: -38.83, ebollizione_C: 356.73, elettronegativita: 2.00, stato_fisico_STP: 'Liquido', scopritore: 'Antichità', anno: null, riga: 6, colonna: 12 },
+            { numero: 81, simbolo: 'Tl', nome: 'Tallio', massa: 204.38, categoria: 'Metalli di Post-transizione', tipo: 'Metallo', configurazione: '[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p¹', stati_ossidazione: '+3, +1', fusione_C: 304, ebollizione_C: 1473, elettronegativita: 1.62, stato_fisico_STP: 'Solido', scopritore: 'William Crookes', anno: 1861, riga: 6, colonna: 13 },
+            { numero: 82, simbolo: 'Pb', nome: 'Piombo', massa: 207.2, categoria: 'Metalli di Post-transizione', tipo: 'Metallo', configurazione: '[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p²', stati_ossidazione: '+4, +2', fusione_C: 327.46, ebollizione_C: 1749, elettronegativita: 2.33, stato_fisico_STP: 'Solido', scopritore: 'Antichità', anno: null, riga: 6, colonna: 14 },
+            { numero: 83, simbolo: 'Bi', nome: 'Bismuto', massa: 208.98, categoria: 'Metalli di Post-transizione', tipo: 'Metallo', configurazione: '[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³', stati_ossidazione: '+5, +3', fusione_C: 271.3, ebollizione_C: 1564, elettronegativita: 2.02, stato_fisico_STP: 'Solido', scopritore: 'Claude François Geoffroy', anno: 1753, riga: 6, colonna: 15 },
+            { numero: 84, simbolo: 'Po', nome: 'Polonio', massa: 209.00, categoria: 'Metalli di Post-transizione', tipo: 'Metallo', configurazione: '[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴', stati_ossidazione: '+4, +2', fusione_C: 254, ebollizione_C: 962, elettronegativita: 2.0, stato_fisico_STP: 'Solido', scopritore: 'Marie Curie', anno: 1898, riga: 6, colonna: 16 },
+            { numero: 85, simbolo: 'At', nome: 'Astato', massa: 210.00, categoria: 'Alogeni', tipo: 'Non Metallo', configurazione: '[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁵', stati_ossidazione: '+7, +5, +3, +1, -1', fusione_C: 302, ebollizione_C: 337, elettronegativita: 2.2, stato_fisico_STP: 'Solido', scopritore: 'Dale R. Corson', anno: 1940, riga: 6, colonna: 17 },
+            { numero: 86, simbolo: 'Rn', nome: 'Radon', massa: 222.00, categoria: 'Gas Nobili', tipo: 'Non Metallo', configurazione: '[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁶', stati_ossidazione: '0', fusione_C: -71, ebollizione_C: -61.7, elettronegativita: 2.2, stato_fisico_STP: 'Gas', scopritore: 'Friedrich Ernst Dorn', anno: 1900, riga: 6, colonna: 18 },
+            { numero: 87, simbolo: 'Fr', nome: 'Francio', massa: 223.00, categoria: 'Metalli Alcalini', tipo: 'Metallo', configurazione: '[Rn] 7s¹', stati_ossidazione: '+1', fusione_C: 27, ebollizione_C: 677, elettronegativita: 0.7, stato_fisico_STP: 'Solido', scopritore: 'Marguerite Perey', anno: 1939, riga: 7, colonna: 1 },
+            { numero: 88, simbolo: 'Ra', nome: 'Radio', massa: 226.00, categoria: 'Metalli Alcalino-Terrosi', tipo: 'Metallo', configurazione: '[Rn] 7s²', stati_ossidazione: '+2', fusione_C: 696, ebollizione_C: 1737, elettronegativita: 0.9, stato_fisico_STP: 'Solido', scopritore: 'Marie Curie', anno: 1898, riga: 7, colonna: 2 },
+            { numero: 89, simbolo: 'Ac', nome: 'Attinio', massa: 227.00, categoria: 'Attinidi', tipo: 'Metallo', configurazione: '[Rn] 6d¹ 7s²', stati_ossidazione: '+3', fusione_C: 1050, ebollizione_C: 3200, elettronegativita: 1.1, stato_fisico_STP: 'Solido', scopritore: 'André-Louis Debierne', anno: 1899, riga: 9, colonna: 3 },
+            { numero: 90, simbolo: 'Th', nome: 'Torio', massa: 232.04, categoria: 'Attinidi', tipo: 'Metallo', configurazione: '[Rn] 6d² 7s²', stati_ossidazione: '+4', fusione_C: 1750, ebollizione_C: 4788, elettronegativita: 1.3, stato_fisico_STP: 'Solido', scopritore: 'Jöns Jacob Berzelius', anno: 1828, riga: 9, colonna: 4 },
+            { numero: 91, simbolo: 'Pa', nome: 'Protoattinio', massa: 231.04, categoria: 'Attinidi', tipo: 'Metallo', configurazione: '[Rn] 5f² 6d¹ 7s²', stati_ossidazione: '+5, +4', fusione_C: 1572, ebollizione_C: 4000, elettronegativita: 1.5, stato_fisico_STP: 'Solido', scopritore: 'Kasimir Fajans', anno: 1913, riga: 9, colonna: 5 },
+            { numero: 92, simbolo: 'U', nome: 'Uranio', massa: 238.03, categoria: 'Attinidi', tipo: 'Metallo', configurazione: '[Rn] 5f³ 6d¹ 7s²', stati_ossidazione: '+6, +5, +4, +3', fusione_C: 1135, ebollizione_C: 4131, elettronegativita: 1.38, stato_fisico_STP: 'Solido', scopritore: 'Martin Heinrich Klaproth', anno: 1789, riga: 9, colonna: 6 },
+            { numero: 93, simbolo: 'Np', nome: 'Nettunio', massa: 237.00, categoria: 'Attinidi', tipo: 'Metallo', configurazione: '[Rn] 5f⁴ 6d¹ 7s²', stati_ossidazione: '+6, +5, +4, +3', fusione_C: 644, ebollizione_C: 4000, elettronegativita: 1.36, stato_fisico_STP: 'Solido', scopritore: 'Edwin McMillan', anno: 1940, riga: 9, colonna: 7 },
+            { numero: 94, simbolo: 'Pu', nome: 'Plutonio', massa: 244.00, categoria: 'Attinidi', tipo: 'Metallo', configurazione: '[Rn] 5f⁶ 7s²', stati_ossidazione: '+6, +5, +4, +3', fusione_C: 640, ebollizione_C: 3228, elettronegativita: 1.28, stato_fisico_STP: 'Solido', scopritore: 'Glenn T. Seaborg', anno: 1940, riga: 9, colonna: 8 },
+            { numero: 95, simbolo: 'Am', nome: 'Americio', massa: 243.00, categoria: 'Attinidi', tipo: 'Metallo', configurazione: '[Rn] 5f⁷ 7s²', stati_ossidazione: '+6, +5, +4, +3', fusione_C: 1176, ebollizione_C: 2011, elettronegativita: 1.3, stato_fisico_STP: 'Solido', scopritore: 'Glenn T. Seaborg', anno: 1944, riga: 9, colonna: 9 },
+            { numero: 96, simbolo: 'Cm', nome: 'Curio', massa: 247.00, categoria: 'Attinidi', tipo: 'Metallo', configurazione: '[Rn] 5f⁷ 6d¹ 7s²', stati_ossidazione: '+4, +3', fusione_C: 1345, ebollizione_C: 3100, elettronegativita: 1.3, stato_fisico_STP: 'Solido', scopritore: 'Glenn T. Seaborg', anno: 1944, riga: 9, colonna: 10 },
+            { numero: 97, simbolo: 'Bk', nome: 'Berkelio', massa: 247.00, categoria: 'Attinidi', tipo: 'Metallo', configurazione: '[Rn] 5f⁹ 7s²', stati_ossidazione: '+4, +3', fusione_C: 986, ebollizione_C: 2627, elettronegativita: 1.3, stato_fisico_STP: 'Solido', scopritore: 'Stanley G. Thompson', anno: 1949, riga: 9, colonna: 11 },
+            { numero: 98, simbolo: 'Cf', nome: 'Californio', massa: 251.00, categoria: 'Attinidi', tipo: 'Metallo', configurazione: '[Rn] 5f¹⁰ 7s²', stati_ossidazione: '+4, +3', fusione_C: 900, ebollizione_C: 1470, elettronegativita: 1.3, stato_fisico_STP: 'Solido', scopritore: 'Stanley G. Thompson', anno: 1950, riga: 9, colonna: 12 },
+            { numero: 99, simbolo: 'Es', nome: 'Einsteinio', massa: 252.00, categoria: 'Attinidi', tipo: 'Metallo', configurazione: '[Rn] 5f¹¹ 7s²', stati_ossidazione: '+3', fusione_C: 860, ebollizione_C: 996, elettronegativita: 1.3, stato_fisico_STP: 'Solido', scopritore: 'Albert Ghiorso', anno: 1952, riga: 9, colonna: 13 },
+            { numero: 100, simbolo: 'Fm', nome: 'Fermio', massa: 257.00, categoria: 'Attinidi', tipo: 'Metallo', configurazione: '[Rn] 5f¹² 7s²', stati_ossidazione: '+3', fusione_C: 1527, ebollizione_C: null, elettronegativita: 1.3, stato_fisico_STP: 'Solido', scopritore: 'Albert Ghiorso', anno: 1952, riga: 9, colonna: 14 },
+            { numero: 101, simbolo: 'Md', nome: 'Mendelevio', massa: 258.00, categoria: 'Attinidi', tipo: 'Metallo', configurazione: '[Rn] 5f¹³ 7s²', stati_ossidazione: '+3, +2', fusione_C: 827, ebollizione_C: null, elettronegativita: 1.3, stato_fisico_STP: 'Solido', scopritore: 'Albert Ghiorso', anno: 1955, riga: 9, colonna: 15 },
+            { numero: 102, simbolo: 'No', nome: 'Nobelio', massa: 259.00, categoria: 'Attinidi', tipo: 'Metallo', configurazione: '[Rn] 5f¹⁴ 7s²', stati_ossidazione: '+3, +2', fusione_C: 827, ebollizione_C: null, elettronegativita: 1.3, stato_fisico_STP: 'Solido', scopritore: 'Albert Ghiorso', anno: 1958, riga: 9, colonna: 16 },
+            { numero: 103, simbolo: 'Lr', nome: 'Laurenzio', massa: 262.00, categoria: 'Attinidi', tipo: 'Metallo', configurazione: '[Rn] 5f¹⁴ 6d¹ 7s²', stati_ossidazione: '+3', fusione_C: 1627, ebollizione_C: null, elettronegativita: 1.3, stato_fisico_STP: 'Solido', scopritore: 'Albert Ghiorso', anno: 1961, riga: 9, colonna: 17 },
+            { numero: 104, simbolo: 'Rf', nome: 'Rutherfordio', massa: 267.00, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Rn] 5f¹⁴ 6d² 7s²', stati_ossidazione: '+4', fusione_C: null, ebollizione_C: null, elettronegativita: null, stato_fisico_STP: 'Solido', scopritore: 'Albert Ghiorso', anno: 1964, riga: 7, colonna: 4 },
+            { numero: 105, simbolo: 'Db', nome: 'Dubnio', massa: 268.00, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Rn] 5f¹⁴ 6d³ 7s²', stati_ossidazione: '+5', fusione_C: null, ebollizione_C: null, elettronegativita: null, stato_fisico_STP: 'Solido', scopritore: 'Albert Ghiorso', anno: 1967, riga: 7, colonna: 5 },
+            { numero: 106, simbolo: 'Sg', nome: 'Seaborgio', massa: 271.00, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Rn] 5f¹⁴ 6d⁴ 7s²', stati_ossidazione: '+6', fusione_C: null, ebollizione_C: null, elettronegativita: null, stato_fisico_STP: 'Solido', scopritore: 'Albert Ghiorso', anno: 1974, riga: 7, colonna: 6 },
+            { numero: 107, simbolo: 'Bh', nome: 'Bohrio', massa: 272.00, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Rn] 5f¹⁴ 6d⁵ 7s²', stati_ossidazione: '+7', fusione_C: null, ebollizione_C: null, elettronegativita: null, stato_fisico_STP: 'Solido', scopritore: 'Peter Armbruster', anno: 1981, riga: 7, colonna: 7 },
+            { numero: 108, simbolo: 'Hs', nome: 'Hassio', massa: 277.00, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Rn] 5f¹⁴ 6d⁶ 7s²', stati_ossidazione: '+8', fusione_C: null, ebollizione_C: null, elettronegativita: null, stato_fisico_STP: 'Solido', scopritore: 'Peter Armbruster', anno: 1984, riga: 7, colonna: 8 },
+            { numero: 109, simbolo: 'Mt', nome: 'Meitnerio', massa: 276.00, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Rn] 5f¹⁴ 6d⁷ 7s²', stati_ossidazione: '+6, +4, +3', fusione_C: null, ebollizione_C: null, elettronegativita: null, stato_fisico_STP: 'Solido', scopritore: 'Peter Armbruster', anno: 1982, riga: 7, colonna: 9 },
+            { numero: 110, simbolo: 'Ds', nome: 'Darmstadtio', massa: 281.00, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Rn] 5f¹⁴ 6d⁸ 7s²', stati_ossidazione: '+6, +4, +2', fusione_C: null, ebollizione_C: null, elettronegativita: null, stato_fisico_STP: 'Solido', scopritore: 'Peter Armbruster', anno: 1994, riga: 7, colonna: 10 },
+            { numero: 111, simbolo: 'Rg', nome: 'Roentgenio', massa: 280.00, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Rn] 5f¹⁴ 6d⁹ 7s²', stati_ossidazione: '+5, +3, +1', fusione_C: null, ebollizione_C: null, elettronegativita: null, stato_fisico_STP: 'Solido', scopritore: 'Peter Armbruster', anno: 1994, riga: 7, colonna: 11 },
+            { numero: 112, simbolo: 'Cn', nome: 'Copernicio', massa: 285.00, categoria: 'Metalli di Transizione', tipo: 'Metallo', configurazione: '[Rn] 5f¹⁴ 6d¹⁰ 7s²', stati_ossidazione: '+2', fusione_C: null, ebollizione_C: null, elettronegativita: null, stato_fisico_STP: 'Gas', scopritore: 'Sigurd Hofmann', anno: 1996, riga: 7, colonna: 12 },
+            { numero: 113, simbolo: 'Nh', nome: 'Nihonio', massa: 284.00, categoria: 'Metalli di Post-transizione', tipo: 'Metallo', configurazione: '[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p¹', stati_ossidazione: '+1', fusione_C: null, ebollizione_C: null, elettronegativita: null, stato_fisico_STP: 'Solido', scopritore: 'RIKEN', anno: 2003, riga: 7, colonna: 13 },
+            { numero: 114, simbolo: 'Fl', nome: 'Flerovio', massa: 289.00, categoria: 'Metalli di Post-transizione', tipo: 'Metallo', configurazione: '[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p²', stati_ossidazione: '+2', fusione_C: null, ebollizione_C: null, elettronegativita: null, stato_fisico_STP: 'Solido', scopritore: 'Yuri Oganessian', anno: 1998, riga: 7, colonna: 14 },
+            { numero: 115, simbolo: 'Mc', nome: 'Moscovio', massa: 288.00, categoria: 'Metalli di Post-transizione', tipo: 'Metallo', configurazione: '[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p³', stati_ossidazione: '+3, +1', fusione_C: null, ebollizione_C: null, elettronegativita: null, stato_fisico_STP: 'Solido', scopritore: 'Yuri Oganessian', anno: 2003, riga: 7, colonna: 15 },
+            { numero: 116, simbolo: 'Lv', nome: 'Livermorio', massa: 293.00, categoria: 'Metalli di Post-transizione', tipo: 'Metallo', configurazione: '[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁴', stati_ossidazione: '+2', fusione_C: null, ebollizione_C: null, elettronegativita: null, stato_fisico_STP: 'Solido', scopritore: 'Yuri Oganessian', anno: 2000, riga: 7, colonna: 16 },
+            { numero: 117, simbolo: 'Ts', nome: 'Tennessinio', massa: 294.00, categoria: 'Alogeni', tipo: 'Non Metallo', configurazione: '[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁵', stati_ossidazione: '+5, +3, +1, -1', fusione_C: null, ebollizione_C: null, elettronegativita: null, stato_fisico_STP: 'Solido', scopritore: 'Yuri Oganessian', anno: 2010, riga: 7, colonna: 17 },
+            { numero: 118, simbolo: 'Og', nome: 'Oganesson', massa: 294.00, categoria: 'Gas Nobili', tipo: 'Non Metallo', configurazione: '[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁶', stati_ossidazione: '0', fusione_C: null, ebollizione_C: null, elettronegativita: null, stato_fisico_STP: 'Solido', scopritore: 'Yuri Oganessian', anno: 2002, riga: 7, colonna: 18 }
+        ];
+
+        const categoriaColors = {
+            'Metalli Alcalini': 'var(--cat-alcalini)',
+            'Metalli Alcalino-Terrosi': 'var(--cat-alcalino-terrosi)',
+            'Lantanidi': 'var(--cat-lantanidi)',
+            'Attinidi': 'var(--cat-attinidi)',
+            'Metalli di Transizione': 'var(--cat-transizione)',
+            'Metalli di Post-transizione': 'var(--cat-post-transizione)',
+            'Metalloidi': 'var(--cat-metalloidi)',
+            'Altri Non Metalli': 'var(--cat-non-metalli)',
+            'Alogeni': 'var(--cat-alogeni)',
+            'Gas Nobili': 'var(--cat-gas-nobili)'
+        };
+
+        // Render periodic table
+        function renderPeriodicTable() {
+            const table = document.getElementById('periodicTable');
+            table.innerHTML = '';
+
+            const mainElements = elementi.filter(el => el.riga <= 7 && el.categoria !== 'Lantanidi' && el.categoria !== 'Attinidi');
+
+            for (let row = 1; row <= 7; row++) {
+                for (let col = 1; col <= 18; col++) {
+                    const element = mainElements.find(el => el.riga === row && el.colonna === col);
+
+                    if (element) {
+                        const div = createElementDiv(element, true);
+                        table.appendChild(div);
+                    } else {
+                        // Add spacer for empty cells
+                        const spacer = document.createElement('div');
+                        spacer.className = 'element spacer';
+                        table.appendChild(spacer);
+                    }
+                }
+            }
+
+            // Render lanthanides
+            const lanthanides = document.getElementById('lanthanides');
+            lanthanides.innerHTML = '';
+            const lanthanideElements = elementi.filter(el => el.categoria === 'Lantanidi');
+            lanthanideElements.forEach(el => {
+                lanthanides.appendChild(createElementDiv(el, false));
+            });
+
+            // Render actinides
+            const actinides = document.getElementById('actinides');
+            actinides.innerHTML = '';
+            const actinideElements = elementi.filter(el => el.categoria === 'Attinidi');
+            actinideElements.forEach(el => {
+                actinides.appendChild(createElementDiv(el, false));
+            });
+        }
+
+        // Create element div
+        function createElementDiv(element, isMainGrid = false) {
+            const div = document.createElement('div');
+            div.className = 'element';
+            div.style.backgroundColor = categoriaColors[element.categoria];
+            div.dataset.numero = element.numero;
+            div.dataset.simbolo = element.simbolo;
+            div.dataset.nome = element.nome;
+            div.dataset.categoria = element.categoria;
+            div.dataset.tipo = element.tipo;
+            div.dataset.stato = element.stato_fisico_STP;
+
+            // Solo elementi della griglia principale hanno data-colonna per l'highlighting
+            if (isMainGrid) {
+                div.dataset.colonna = element.colonna;
+            }
+
+            div.innerHTML = `
+                <div class="atomic-number">${element.numero}</div>
+                <div class="symbol">${element.simbolo}</div>
+                <div class="name">${element.nome}</div>
+                <div class="mass">${element.massa.toFixed(2)}</div>
+            `;
+
+            div.addEventListener('click', () => showModal(element));
+
+            // Hover per evidenziare gruppo/colonna solo per griglia principale
+            if (isMainGrid) {
+                div.addEventListener('mouseenter', () => highlightGroup(element.colonna));
+                div.addEventListener('mouseleave', () => clearGroupHighlight());
+            }
+
+            return div;
+        }
+
+        function highlightGroup(column) {
+            const allElements = document.querySelectorAll('.element:not(.spacer)');
+            allElements.forEach(el => {
+                // Solo elementi della griglia principale hanno data-colonna
+                if (!el.dataset.colonna) return;
+
+                const elementColumn = parseInt(el.dataset.colonna);
+                if (elementColumn === column) {
+                    el.classList.add('highlighted-group');
+                } else {
+                    el.classList.add('dimmed-group');
+                }
+            });
+        }
+
+        function clearGroupHighlight() {
+            const allElements = document.querySelectorAll('.element:not(.spacer)');
+            allElements.forEach(el => {
+                el.classList.remove('highlighted-group', 'dimmed-group');
+            });
+        }
+
+        // Show modal
+        function showModal(element) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalSymbol').textContent = element.simbolo;
+            document.getElementById('modalSymbol').style.color = categoriaColors[element.categoria];
+            document.getElementById('modalName').textContent = element.nome;
+            document.getElementById('modalAtomicInfo').textContent = `Numero Atomico: ${element.numero} | Massa Atomica: ${element.massa.toFixed(2)} u`;
+
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="info-row">
+                    <div class="info-label">Categoria:</div>
+                    <div class="info-value">${element.categoria}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Tipo:</div>
+                    <div class="info-value">${element.tipo}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Configurazione Elettronica:</div>
+                    <div class="info-value">${element.configurazione}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Stati di Ossidazione:</div>
+                    <div class="info-value">${element.stati_ossidazione}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Punto di Fusione:</div>
+                    <div class="info-value">${element.fusione_C !== null ? element.fusione_C + ' °C' : 'Non disponibile'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Punto di Ebollizione:</div>
+                    <div class="info-value">${element.ebollizione_C !== null ? element.ebollizione_C + ' °C' : 'Non disponibile'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Elettronegatività:</div>
+                    <div class="info-value">${element.elettronegativita !== null ? element.elettronegativita : 'Non disponibile'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Stato Fisico (STP):</div>
+                    <div class="info-value">${element.stato_fisico_STP}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Scopritore:</div>
+                    <div class="info-value">${element.scopritore}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Anno di Scoperta:</div>
+                    <div class="info-value">${element.anno !== null ? element.anno : 'Antichità'}</div>
+                </div>
+            `;
+
+            modal.style.display = 'block';
+        }
+
+        // Close modal
+        document.querySelector('.close').addEventListener('click', () => {
+            document.getElementById('modal').style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('modal');
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // How To modal management
+        const btnHowTo = document.getElementById('btnHowTo');
+        const modalHowTo = document.getElementById('modalHowTo');
+        const closeHowTo = document.getElementById('closeHowTo');
+
+        btnHowTo.addEventListener('click', () => {
+            modalHowTo.style.display = 'block';
+        });
+
+        closeHowTo.addEventListener('click', () => {
+            modalHowTo.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modalHowTo) {
+                modalHowTo.style.display = 'none';
+            }
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+        // Filter functionality
+        document.getElementById('statoFilter').addEventListener('change', applyFilters);
+        document.getElementById('categoriaFilter').addEventListener('change', applyFilters);
+        document.getElementById('tipoFilter').addEventListener('change', applyFilters);
+
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statoFilter = document.getElementById('statoFilter').value;
+            const categoriaFilter = document.getElementById('categoriaFilter').value;
+            const tipoFilter = document.getElementById('tipoFilter').value;
+
+            const allElements = document.querySelectorAll('.element:not(.spacer)');
+
+            allElements.forEach(el => {
+                const nome = el.dataset.nome.toLowerCase();
+                const simbolo = el.dataset.simbolo.toLowerCase();
+                const stato = el.dataset.stato;
+                const categoria = el.dataset.categoria;
+                const tipo = el.dataset.tipo;
+
+                const matchesSearch = searchTerm === '' || nome.includes(searchTerm) || simbolo.includes(searchTerm);
+                const matchesStato = statoFilter === '' || stato === statoFilter;
+                const matchesCategoria = categoriaFilter === '' || categoria === categoriaFilter;
+                const matchesTipo = tipoFilter === '' || tipo === tipoFilter;
+
+                if (matchesSearch && matchesStato && matchesCategoria && matchesTipo) {
+                    el.classList.remove('filtered');
+                } else {
+                    el.classList.add('filtered');
+                }
+            });
+        }
+
+        // Reset filters
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statoFilter').value = '';
+            document.getElementById('categoriaFilter').value = '';
+            document.getElementById('tipoFilter').value = '';
+            applyFilters();
+        });
+
+        // Render legend
+        function renderLegend() {
+            const legend = document.getElementById('legend');
+            legend.innerHTML = '';
+
+            Object.entries(categoriaColors).forEach(([categoria, color]) => {
+                const item = document.createElement('div');
+                item.className = 'legend-item';
+                item.dataset.categoria = categoria;
+
+                item.innerHTML = `
+                    <div class="legend-color" style="background-color: ${color};"></div>
+                    <div class="legend-text">${categoria}</div>
+                `;
+
+                item.addEventListener('mouseenter', () => highlightCategory(categoria));
+                item.addEventListener('mouseleave', () => clearHighlight());
+
+                legend.appendChild(item);
+            });
+        }
+
+        function highlightCategory(categoria) {
+            const allElements = document.querySelectorAll('.element:not(.spacer)');
+            allElements.forEach(el => {
+                if (el.dataset.categoria === categoria) {
+                    el.classList.add('highlighted-category');
+                } else {
+                    el.classList.add('other-category');
+                }
+            });
+        }
+
+        function clearHighlight() {
+            const allElements = document.querySelectorAll('.element:not(.spacer)');
+            allElements.forEach(el => {
+                el.classList.remove('highlighted-category', 'other-category');
+            });
+        }
+
+        // Initialize
+        renderPeriodicTable();
+        renderLegend();
+    </script>
+</body>
+
+</html>

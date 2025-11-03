@@ -1,0 +1,2218 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizzatore 3D di Macromolecole Biologiche</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            color: #333;
+        }
+
+        #container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+
+        #canvas-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #info-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 350px;
+            z-index: 10;
+        }
+
+        #info-overlay h2 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+
+        #info-overlay p {
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 5px 0;
+        }
+
+        #info-overlay .label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        #control-panel {
+            width: 360px;
+            background: #ffffff;
+            padding: 25px;
+            overflow-y: auto;
+            box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        h1 {
+            font-size: 22px;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 3px solid #764ba2;
+            padding-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h3 {
+            font-size: 15px;
+            margin-bottom: 12px;
+            color: #444;
+            font-weight: 600;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        select,
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 13px;
+            transition: border 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            max-height: 200px;
+        }
+
+        select:focus,
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .radio-group {
+            margin-bottom: 12px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .radio-group input[type="radio"] {
+            margin-right: 8px;
+            width: auto;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+            width: auto;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #ffc107;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #856404;
+        }
+
+        .instructions strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #856404;
+        }
+
+        .info-note {
+            background: #e7f3ff;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #004085;
+            margin-top: 8px;
+        }
+
+        /* Modal */
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        #modal-content {
+            background: white;
+            margin: 40px auto;
+            padding: 30px;
+            max-width: 800px;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        #modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #999;
+            cursor: pointer;
+            background: none;
+            border: none;
+            width: auto;
+            padding: 0;
+            line-height: 1;
+        }
+
+        #modal-close:hover {
+            color: #333;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #modal h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        #modal h3 {
+            color: #764ba2;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        #modal p {
+            line-height: 1.7;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        #modal .warning {
+            background: #fff3cd;
+            padding: 12px;
+            border-left: 4px solid #ffc107;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        #modal .equation {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #667eea;
+            line-height: 1.8;
+        }
+
+        #modal ul {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        #modal li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px 40px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #667eea;
+            display: none;
+            z-index: 100;
+        }
+
+        /* Mobile Toggle Button */
+        #mobile-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            transition: transform 0.2s;
+        }
+
+        #mobile-toggle:active {
+            transform: scale(0.95);
+        }
+
+        /* Overlay per chiudere il pannello su mobile */
+        #panel-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        /* Media Queries per Mobile */
+        @media (max-width: 768px) {
+            #container {
+                flex-direction: column;
+            }
+
+            #info-overlay {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                max-width: none;
+                padding: 12px 15px;
+                font-size: 12px;
+            }
+
+            #info-overlay h2 {
+                font-size: 16px;
+                margin-bottom: 6px;
+            }
+
+            #info-overlay p {
+                font-size: 11px;
+                line-height: 1.4;
+                margin: 3px 0;
+            }
+
+            #control-panel {
+                position: fixed;
+                top: 0;
+                right: 0;
+                width: 85%;
+                max-width: 360px;
+                height: 100vh;
+                padding: 20px;
+                transform: translateX(100%);
+                z-index: 1000;
+                box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+            }
+
+            #control-panel.open {
+                transform: translateX(0);
+            }
+
+            #panel-overlay.visible {
+                display: block;
+            }
+
+            #mobile-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            h1 {
+                font-size: 18px;
+                margin-bottom: 15px;
+            }
+
+            .section {
+                margin-bottom: 20px;
+                padding: 12px;
+            }
+
+            .section h3 {
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+
+            label {
+                font-size: 12px;
+                margin-bottom: 5px;
+            }
+
+            select,
+            input[type="text"],
+            input[type="number"],
+            textarea {
+                padding: 10px;
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+
+            button {
+                padding: 12px;
+                font-size: 13px;
+                margin-bottom: 8px;
+            }
+
+            .instructions {
+                font-size: 11px;
+                padding: 10px;
+            }
+
+            #modal-content {
+                margin: 20px;
+                padding: 20px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            #modal h2 {
+                font-size: 18px;
+            }
+
+            #modal h3 {
+                font-size: 16px;
+            }
+
+            #modal p,
+            #modal li {
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #info-overlay {
+                position: relative;
+                top: 0;
+                left: 0;
+                right: 0;
+                margin: 10px;
+            }
+
+            #control-panel {
+                width: 90%;
+            }
+
+            #mobile-toggle {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+                bottom: 15px;
+                right: 15px;
+            }
+        }
+
+        /* Nasconde protein-options di default */
+        #protein-options.hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Overlay per chiudere pannello su mobile -->
+    <div id="panel-overlay"></div>
+
+    <!-- Pulsante toggle mobile -->
+    <button id="mobile-toggle" aria-label="Apri controlli">⚙️</button>
+
+    <div id="container">
+        <!-- Canvas 3D -->
+        <div id="canvas-container">
+            <div id="loading">Generazione in corso...</div>
+            <div id="info-overlay">
+                <h2 id="struct-name">DNA-B (12 bp)</h2>
+                <p><span class="label">Residui/Basi:</span> <span id="residue-count">12</span></p>
+                <p><span class="label">Peso Molecolare:</span> <span id="mol-weight">~7440 Da</span></p>
+                <p id="bio-function">Il DNA-B è la forma fisiologica del DNA nelle cellule, caratterizzata da una doppia
+                    elica destrorsa con un solco maggiore e minore distinti.</p>
+            </div>
+        </div>
+
+        <!-- Pannello di controllo -->
+        <div id="control-panel">
+            <h1>Controlli Molecolari</h1>
+
+            <!-- Selezione struttura -->
+            <div class="section">
+                <h3>Selezione Struttura</h3>
+                <label for="structure-select">Tipo di Molecola:</label>
+                <select id="structure-select">
+                    <option value="dna">DNA-B (Sequenza Personalizzata)</option>
+                    <option value="hemoglobin">Emoglobina (Struttura Quaternaria)</option>
+                    <option value="lysozyme">Lisozima (Enzima)</option>
+                    <option value="antibody">Anticorpo IgG (Immunoglobulina)</option>
+                    <option value="helix">Alfa-Elica (Esempio Semplice)</option>
+                    <option value="sheet">Foglio-Beta (Esempio Semplice)</option>
+                </select>
+            </div>
+
+            <!-- Modalità visualizzazione -->
+            <div class="section">
+                <h3>Modalità di Visualizzazione</h3>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="render-mode" value="stick" checked>
+                        Stick (Bastoncini)
+                    </label>
+                    <label>
+                        <input type="radio" name="render-mode" value="sphere">
+                        Space-filling (Sfere)
+                    </label>
+                    <label>
+                        <input type="radio" name="render-mode" value="cartoon">
+                        Cartoon/Ribbon (Nastro)
+                    </label>
+                </div>
+            </div>
+
+            <!-- Opzioni DNA -->
+            <div class="section" id="dna-options">
+                <h3>Opzioni DNA</h3>
+                <label for="dna-sequence">Sequenza (A, T, C, G, N):</label>
+                <textarea id="dna-sequence"
+                    placeholder="Es: ATCGATCGATCG o incolla sequenze lunghe...">ATCGATCGATCG</textarea>
+                <div class="info-note">
+                    <strong>Nota:</strong> Puoi inserire sequenze lunghe (migliaia di basi). La lettera 'N' rappresenta
+                    basi non determinate e sarà visualizzata in grigio. Solo i caratteri A, T, C, G, N sono validi.
+                </div>
+                <button id="generate-dna">Genera DNA Personalizzato</button>
+
+                <div class="checkbox-group" id="show-grooves-option">
+                    <input type="checkbox" id="show-grooves" checked>
+                    <label for="show-grooves">Evidenzia Solchi Maggiore/Minore</label>
+                </div>
+            </div>
+
+            <!-- Opzioni Proteine -->
+            <div class="section hidden" id="protein-options">
+                <h3>Opzioni Proteine</h3>
+                <label for="color-scheme">Colorazione:</label>
+                <select id="color-scheme">
+                    <option value="secondary">Per Struttura Secondaria</option>
+                    <option value="residue">Per Tipo di Amminoacido</option>
+                </select>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="highlight-active">
+                    <label for="highlight-active">Evidenzia Sito Attivo (Demo)</label>
+                </div>
+            </div>
+
+            <!-- Pulsante Spiega -->
+            <div class="section">
+                <button id="explain-btn">📚 Metodo di Generazione</button>
+            </div>
+
+            <!-- Istruzioni -->
+            <div class="instructions">
+                <strong>Istruzioni Guida:</strong>
+                • Trascina per ruotare la molecola<br>
+                • Usa la rotella del mouse per zoomare<br>
+                • Click destro (o due dita) per spostare<br>
+            </div>
+
+            <!-- Domande Guida Dinamiche -->
+            <div class="instructions" id="guide-questions">
+                <strong>Domande Guida:</strong>
+                <span id="question-text">Seleziona una molecola per visualizzare le domande guida.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Spiegazione -->
+    <div id="modal">
+        <div id="modal-content">
+            <button id="modal-close">&times;</button>
+            <h2>Metodo di Generazione e Principi Fisici</h2>
+
+            <div class="warning">
+                <strong>⚠️ Nota Importante:</strong> Questa è una generazione di modello geometrico basata su parametri
+                strutturali medi derivati da cristallografia e NMR, non una simulazione di dinamica molecolare (MD) in
+                tempo reale. Le coordinate sono calcolate analiticamente usando parametri stereochimici standard.
+            </div>
+
+            <h3>Generazione del DNA-B</h3>
+            <p>
+                Il DNA-B è modellato come una doppia elica destrorsa. Ogni nucleotide è posizionato usando coordinate
+                cilindriche trasformate in coordinate cartesiane. I parametri chiave utilizzati sono:
+            </p>
+            <ul>
+                <li><strong>Rise (h):</strong> 3.4 Å — l'avanzamento verticale per coppia di basi</li>
+                <li><strong>Twist (θ):</strong> 36° — la rotazione angolare per coppia di basi (10 bp per giro completo)
+                </li>
+                <li><strong>Raggio elicoidale:</strong> ~10 Å per lo scheletro fosfato-zucchero</li>
+                <li><strong>Larghezza nastro:</strong> Variabile per evidenziare i solchi maggiore (~22 Å) e minore (~12
+                    Å)</li>
+            </ul>
+
+            <div class="equation">
+                <strong>Equazioni di posizionamento (coordinate cilindriche → cartesiane):</strong><br><br>
+                Per il filamento 1:<br>
+                x₁ = r · cos(n · θ)<br>
+                y₁ = r · sin(n · θ)<br>
+                z₁ = n · h<br><br>
+
+                Per il filamento 2 (opposto e antiparallelo, sfasato di 180°):<br>
+                x₂ = r · cos(n · θ + π)<br>
+                y₂ = r · sin(n · θ + π)<br>
+                z₂ = n · h<br><br>
+
+                dove n = indice della coppia di basi, r = raggio, θ = twist angolare, h = rise.
+            </div>
+
+            <h3>Rappresentazione Cartoon/Ribbon Migliorata</h3>
+            <p>
+                Nella modalità Cartoon, il DNA viene rappresentato con:
+            </p>
+            <ul>
+                <li><strong>Nastri piatti e larghi:</strong> Gli scheletri fosfato-desossiribosio sono mostrati come
+                    nastri larghi (non tube circolari) che seguono l'elica, evidenziando la geometria planare del
+                    backbone.</li>
+                <li><strong>Basi differenziate:</strong> Le purine (A, G) sono mostrate con forme più grandi (doppio
+                    anello aromatico), mentre le pirimidine (T, C) sono più piccole (singolo anello). Ogni base è
+                    colorata distintamente.</li>
+                <li><strong>Pioli di connessione:</strong> Cilindri sottili collegano le basi complementari,
+                    rappresentando i legami idrogeno di Watson-Crick (2 legami per A-T, 3 per G-C).</li>
+                <li><strong>Solchi evidenziati:</strong> La larghezza del nastro varia in modo sinusoidale per
+                    evidenziare le regioni del solco maggiore (più largo) e minore (più stretto), fondamentali per il
+                    riconoscimento da parte di proteine.</li>
+            </ul>
+
+            <p>
+                Le basi azotate sono posizionate perpendicolarmente all'asse elicoidale e colorate secondo lo schema
+                canonico: Adenina (verde), Timina (blu), Citosina (giallo), Guanina (rosso), N-non determinata (grigio).
+            </p>
+
+            <h3>Gestione di Sequenze Lunghe</h3>
+            <p>
+                Per sequenze molto lunghe (>1000 bp), il visualizzatore utilizza tecniche di ottimizzazione delle
+                performance:
+            </p>
+            <ul>
+                <li><strong>Geometry Merging:</strong> Gli elementi ripetitivi sono combinati in geometrie unificate.
+                </li>
+                <li><strong>InstancedMesh:</strong> Per atomi dello stesso tipo, viene usato l'instancing per ridurre i
+                    draw calls.</li>
+                <li><strong>Livello di dettaglio adattivo:</strong> In modalità Cartoon, per sequenze >500 bp vengono
+                    mostrati meno "pioli" per mantenere le performance fluide.</li>
+            </ul>
+
+            <h3>Generazione dell'Alfa-Elica</h3>
+            <p>
+                L'alfa-elica è la struttura secondaria proteica più comune, stabilizzata da legami idrogeno tra il
+                gruppo C=O del residuo <em>i</em> e il gruppo N-H del residuo <em>i+4</em>. La geometria è definita
+                dagli angoli diedri del backbone:
+            </p>
+
+            <div class="equation">
+                <strong>Angoli diedri (Ramachandran):</strong><br>
+                φ ≈ -57° (angolo N-Cα)<br>
+                ψ ≈ -47° (angolo Cα-C)<br>
+                ω ≈ 180° (legame peptidico, planare trans)<br><br>
+
+                <strong>Parametri geometrici:</strong><br>
+                • Pitch (passo): ~5.4 Å per giro<br>
+                • Residui per giro: 3.6<br>
+                • Rise per residuo: ~1.5 Å
+            </div>
+
+            <p>
+                Il posizionamento di ogni atomo Cα successivo è calcolato applicando una matrice di rotazione 3D che
+                incorpora gli angoli φ e ψ, seguita da una traslazione lungo l'asse dell'elica.
+            </p>
+
+            <div class="equation">
+                <strong>Trasformazione di coordinate (semplificata):</strong><br>
+                r<sub>i+1</sub> = R(φ, ψ) · r<sub>i</sub> + t<br><br>
+                dove R è la matrice di rotazione composta e t è il vettore di traslazione assiale.
+            </div>
+
+            <h3>Generazione del Foglio-Beta</h3>
+            <p>
+                I fogli-beta sono formati da filamenti estesi (strand) stabilizzati da legami idrogeno intermolecolari.
+                Possono essere paralleli o antiparalleli. Per questa demo, generiamo due filamenti antiparalleli.
+            </p>
+
+            <div class="equation">
+                <strong>Angoli diedri per strand beta:</strong><br>
+                φ ≈ -120°<br>
+                ψ ≈ +120°<br><br>
+
+                <strong>Parametri geometrici:</strong><br>
+                • Distanza Cα-Cα lungo lo strand: ~3.5 Å<br>
+                • Distanza tra strand: ~4.7 Å
+            </div>
+
+            <h3>Generazione dell'Emoglobina (Struttura Quaternaria)</h3>
+            <p>
+                L'emoglobina è modellata come un complesso di 4 subunità proteiche: 2 catene α e 2 catene β, disposte
+                in una configurazione tetraedrica. Ogni subunità è rappresentata principalmente come α-elica:
+            </p>
+            <ul>
+                <li><strong>Catene α (2 subunità):</strong> ~35 residui ciascuna, colorate in rosa (#ff69b4)</li>
+                <li><strong>Catene β (2 subunità):</strong> ~35 residui ciascuna, colorate in arancione chiaro (#ffa07a)
+                </li>
+                <li><strong>Disposizione spaziale:</strong> Le 4 subunità sono posizionate ai vertici di un tetraedro
+                    con offsets (±8, ±8, 0) Å dal centro</li>
+                <li><strong>Siti di legame eme:</strong> Identificati nei residui 15-20 di ogni subunità (zona centrale
+                    dell'elica dove si inserirebbe il gruppo eme con Fe²⁺)</li>
+            </ul>
+            <p>
+                Ogni subunità segue la geometria dell'α-elica standard (3.6 residui/giro), permettendo di visualizzare
+                come le singole catene polipeptidiche si assemblano in una struttura quaternaria funzionale. Nella
+                realtà,
+                l'emoglobina umana contiene 141 aa nelle catene α e 146 aa nelle catene β.
+            </p>
+
+            <h3>Generazione del Lisozima (Enzima con Struttura Mista)</h3>
+            <p>
+                Il lisozima è modellato come proteina globulare con architettura α/β, rappresentativa di molti enzimi:
+            </p>
+            <ul>
+                <li><strong>α-elica N-terminale:</strong> 25 residui, struttura primaria di ancoraggio</li>
+                <li><strong>Regione loop/coil:</strong> 10 residui, permette flessibilità conformazionale</li>
+                <li><strong>β-sheet antiparallelo:</strong> 2 strand da 7 residui ciascuno, formano un core strutturale
+                    rigido</li>
+                <li><strong>α-elica C-terminale:</strong> 25 residui, contiene il <strong>sito attivo
+                        catalitico</strong>
+                    (residui 60-65 di tipo GLU)</li>
+            </ul>
+            <p>
+                Il sito attivo è posizionato in una cavità formata dalla giustapposizione delle diverse strutture
+                secondarie. Quando attivato tramite il checkbox, i residui catalitici sono evidenziati in ciano
+                (#00ffff),
+                simulando l'identificazione cristallografica di residui funzionali chiave (GLU 35 e ASP 52 nel lisozima
+                reale).
+            </p>
+
+            <h3>Generazione dell'Anticorpo IgG (Immunoglobulina)</h3>
+            <p>
+                L'anticorpo è generato con la caratteristica architettura a "Y" degli anticorpi IgG, composta da 4
+                catene
+                polipeptidiche:
+            </p>
+            <ul>
+                <li><strong>Regione Fc (Stelo della Y):</strong> 2 catene pesanti (H1, H2) da 30 residui ciascuna,
+                    disposte parallelamente con separazione di 4 Å. Colorate in rosa (#ff69b4)</li>
+                <li><strong>Regione Fab - Braccio 1:</strong> Catena pesante H1-Fab + catena leggera L1, ciascuna da 25
+                    residui. Si estendono verso sinistra-alto</li>
+                <li><strong>Regione Fab - Braccio 2:</strong> Catena pesante H2-Fab + catena leggera L2 (blu #4169e1),
+                    simmetriche al braccio 1, si estendono verso destra-alto</li>
+                <li><strong>Siti di legame antigene:</strong> Localizzati agli ultimi 5 residui (CDR - Complementarity
+                    Determining Regions) di ogni braccio Fab, dove avverrebbe il riconoscimento specifico dell'antigene
+                </li>
+            </ul>
+            <p>
+                Ogni catena presenta struttura mista: α-elica nei primi 15 residui, β-sheet negli ultimi 10. La
+                geometria
+                a Y è ottenuta tramite traslazioni progressive lungo direzioni divergenti (±x, +y, +z), simulando
+                l'angolo
+                di apertura caratteristico delle IgG (~120-150° tra i bracci Fab).
+            </p>
+
+            <h3>Sistema di Colorazione per Proprietà degli Amminoacidi</h3>
+            <p>
+                Nelle modalità "Per Tipo di Amminoacido", gli atomi Cα (e conseguentemente i ribbon/tube in modalità
+                Cartoon)
+                sono colorati in base alle proprietà chimico-fisiche dei residui secondo la classificazione standard:
+            </p>
+            <ul>
+                <li><strong style="color: #888;">Idrofobici (Bianco/Grigio #f0f0f0):</strong> ALA, VAL, LEU, ILE, MET,
+                    PHE, TRP, PRO — tendono a localizzarsi nel core interno delle proteine</li>
+                <li><strong style="color: #0a0;">Polari non carichi (Verde #00ff00):</strong> SER, THR, CYS, TYR, ASN,
+                    GLN
+                    — possono formare legami idrogeno, spesso in superficie</li>
+                <li><strong style="color: #00f;">Carichi positivamente (Blu #0000ff):</strong> LYS, ARG, HIS — basici,
+                    attratti da cariche negative, spesso in siti di legame</li>
+                <li><strong style="color: #f00;">Carichi negativamente (Rosso #ff0000):</strong> ASP, GLU — acidi,
+                    possono
+                    coordinare ioni metallici, spesso in siti catalitici</li>
+                <li><strong style="color: #ff0;">Glicina (Giallo #ffff00):</strong> GLY — residuo speciale senza catena
+                    laterale, permette massima flessibilità conformazionale</li>
+            </ul>
+            <p>
+                Questa colorazione è applicata a livello atomico verificando il campo <code>residueType</code> di ogni
+                atomo e mappandolo tramite la struttura <code>RESIDUE_TO_PROPERTY</code>. Permette di identificare
+                visivamente pattern di distribuzione di idrofobicità, clustering di cariche, e potenziali siti
+                funzionali.
+            </p>
+
+            <h3>Limitazioni del Modello</h3>
+            <ul>
+                <li>Le coordinate sono <strong>ideali</strong> e non tengono conto di fluttuazioni termiche o effetti di
+                    solvente.</li>
+                <li>Gli atomi di idrogeno non sono modellati esplicitamente.</li>
+                <li>I solchi maggiore e minore del DNA hanno dimensioni medie; nella realtà variano con la sequenza.
+                </li>
+                <li>Le strutture proteiche complesse (Emoglobina, Lisozima, Anticorpo) sono <strong>semplificazioni
+                        geometriche</strong> e non riproducono le coordinate cristallografiche esatte.</li>
+                <li>I siti attivi e di legame sono posizionati in modo approssimativo per scopi didattici.</li>
+                <li>Le catene laterali degli amminoacidi non sono modellate; solo gli atomi Cα sono rappresentati.</li>
+                <li>Per visualizzazioni scientifiche precise, si raccomanda l'uso di file PDB sperimentali e software
+                    come PyMOL, Chimera, VMD o Mol*.</li>
+            </ul>
+
+            <h3>Riferimenti Didattici</h3>
+            <p>
+                <strong>DNA e Acidi Nucleici:</strong><br>
+                • <strong>Watson & Crick (1953)</strong> — Molecular Structure of Nucleic Acids, Nature<br>
+                • <strong>PyMOL Documentation</strong> — Nucleic Acid Cartoon Representations<br>
+                • <strong>Molecular Biology of the Cell</strong> (Alberts et al.) — Cap. 4: DNA Structure<br><br>
+
+                <strong>Proteine e Strutture Secondarie:</strong><br>
+                • <strong>Principi di Biochimica di Lehninger</strong> (Nelson & Cox) — Cap. 4 (Proteine) e Cap. 5
+                (Funzione)<br>
+                • <strong>Branden & Tooze</strong> — Introduction to Protein Structure (2nd ed.)<br>
+                • <strong>Ramachandran Plot</strong> — Conformational angles φ and ψ in protein structures<br><br>
+
+                <strong>Molecole Specifiche:</strong><br>
+                • <strong>Emoglobina:</strong> PDB 1HHO, 2HHB — Perutz et al., Oxy- and Deoxyhemoglobin<br>
+                • <strong>Lisozima:</strong> PDB 1LYZ — Blake et al., Hen Egg-White Lysozyme<br>
+                • <strong>IgG:</strong> PDB 1IGT, 1HZH — Harris et al., Immunoglobulin structures<br><br>
+
+                <strong>Visualizzazione Molecolare:</strong><br>
+                • <strong>RCSB Protein Data Bank</strong> (rcsb.org) — Database strutture sperimentali<br>
+                • <strong>Three.js Documentation</strong> — WebGL 3D Graphics Library
+            </p>
+        </div>
+    </div>
+
+    <!-- Three.js e OrbitControls tramite CDN -->
+    <!-- Fallback per Safari iOS < 16.4 -->
+    <script>
+        // Verifica supporto importmap
+        if (!HTMLScriptElement.supports || !HTMLScriptElement.supports('importmap')) {
+            console.warn('Import maps non supportate, caricamento fallback');
+        }
+    </script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // ============================================
+        // SETUP SCENA, CAMERA, RENDERER
+        // ============================================
+
+        const canvasContainer = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a1a2e);
+
+        const camera = new THREE.PerspectiveCamera(
+            60,
+            canvasContainer.clientWidth / canvasContainer.clientHeight,
+            0.1,
+            10000
+        );
+        camera.position.set(40, 30, 50);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        canvasContainer.appendChild(renderer.domElement);
+
+        // Controlli orbitali
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance = 20;
+        controls.maxDistance = 5000;
+
+        // Luci
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.7);
+        directionalLight1.position.set(50, 50, 50);
+        scene.add(directionalLight1);
+
+        const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
+        directionalLight2.position.set(-50, -50, -50);
+        scene.add(directionalLight2);
+
+        const directionalLight3 = new THREE.DirectionalLight(0xffffff, 0.3);
+        directionalLight3.position.set(0, 100, 0);
+        scene.add(directionalLight3);
+
+        // Griglia di riferimento
+        const gridHelper = new THREE.GridHelper(100, 20, 0x444444, 0x222222);
+        scene.add(gridHelper);
+
+        // ============================================
+        // COSTANTI FISICHE E PARAMETRI STEREOCHIMICI
+        // ============================================
+
+        const DNA_RISE = 3.4;
+        const DNA_TWIST = 36;
+        const DNA_RADIUS = 10;
+        const BASE_OFFSET = 5;
+
+        const HELIX_PHI = -57;
+        const HELIX_PSI = -47;
+        const HELIX_RISE_PER_RES = 1.5;
+        const HELIX_RADIUS = 2.3;
+
+        const BETA_PHI = -120;
+        const BETA_PSI = 120;
+        const BETA_CA_DISTANCE = 3.5;
+        const BETA_STRAND_SPACING = 4.7;
+
+        const BASE_COLORS = {
+            'A': 0x00ff00,
+            'T': 0x0000ff,
+            'C': 0xffff00,
+            'G': 0xff0000,
+            'N': 0x888888
+        };
+
+        const VDW_RADII = {
+            'C': 1.7,
+            'N': 1.55,
+            'O': 1.52,
+            'P': 1.8,
+            'S': 1.8
+        };
+
+        // Proprietà degli amminoacidi per colorazione
+        const AMINO_ACID_PROPERTIES = {
+            // Idrofobici (bianco/grigio chiaro)
+            'hydrophobic': { color: 0xf0f0f0, residues: ['ALA', 'VAL', 'LEU', 'ILE', 'MET', 'PHE', 'TRP', 'PRO'] },
+            // Polari non carichi (verde)
+            'polar': { color: 0x00ff00, residues: ['SER', 'THR', 'CYS', 'TYR', 'ASN', 'GLN'] },
+            // Carichi positivamente (blu)
+            'positive': { color: 0x0000ff, residues: ['LYS', 'ARG', 'HIS'] },
+            // Carichi negativamente (rosso)
+            'negative': { color: 0xff0000, residues: ['ASP', 'GLU'] },
+            // Glicina (speciale, giallo)
+            'special': { color: 0xffff00, residues: ['GLY'] }
+        };
+
+        // Mappa inversa per accesso rapido
+        const RESIDUE_TO_PROPERTY = {};
+        Object.entries(AMINO_ACID_PROPERTIES).forEach(([prop, data]) => {
+            data.residues.forEach(res => {
+                RESIDUE_TO_PROPERTY[res] = { property: prop, color: data.color };
+            });
+        });
+
+        // Domande guida per ogni molecola
+        const GUIDE_QUESTIONS = {
+            'dna': 'Riesci a identificare il solco maggiore (più ampio) e il solco minore (più stretto) nel DNA? Le coppie di basi A-T e G-C hanno dimensioni simili?',
+            'hemoglobin': 'Riesci a identificare le 4 subunità dell\'emoglobina? Osserva come le α-eliche (rosa) dominano la struttura. Dove si troverebbero i gruppi eme?',
+            'lysozyme': 'Puoi distinguere le α-eliche dai β-foglietti? Il sito attivo (evidenziato in ciano quando attivato) si trova in una cavità della proteina.',
+            'antibody': 'Riconosci la caratteristica forma a "Y" dell\'anticorpo? Le catene pesanti (rosa) e leggere (blu) sono visibili. Dove si legherebbe l\'antigene?',
+            'helix': 'Questa è una α-elica ideale. Conta i residui: ogni 3.6 residui completano un giro completo dell\'elica.',
+            'sheet': 'Osserva i due filamenti del foglio-β. Sono disposti in modo antiparallelo (direzioni opposte).'
+        };
+
+        // ============================================
+        // VARIABILI GLOBALI
+        // ============================================
+
+        let currentMolecule = null;
+        let currentStructureType = 'dna';
+        let currentRenderMode = 'stick';
+        let currentSequence = 'ATCGATCGATCG';
+        let highlightActiveSite = false;
+        let showGrooves = true;
+        let proteinColorScheme = 'secondary'; // 'secondary' o 'residue'
+
+        // ============================================
+        // FUNZIONI DI GENERAZIONE GEOMETRICA
+        // ============================================
+
+        function generateDNA(sequence) {
+            const atoms = [];
+            const bonds = [];
+            const numBases = sequence.length;
+
+            console.log(`Generazione DNA con ${numBases} basi...`);
+
+            for (let i = 0; i < numBases; i++) {
+                const base1 = sequence[i].toUpperCase();
+
+                let base2;
+                if (base1 === 'N') {
+                    base2 = 'N';
+                } else {
+                    base2 = base1 === 'A' ? 'T' :
+                        base1 === 'T' ? 'A' :
+                            base1 === 'C' ? 'G' :
+                                base1 === 'G' ? 'C' : 'N';
+                }
+
+                const theta = (i * DNA_TWIST) * Math.PI / 180;
+                const z = i * DNA_RISE;
+
+                const x1_backbone = DNA_RADIUS * Math.cos(theta);
+                const y1_backbone = DNA_RADIUS * Math.sin(theta);
+                const x1_base = BASE_OFFSET * Math.cos(theta);
+                const y1_base = BASE_OFFSET * Math.sin(theta);
+
+                const theta2 = theta + Math.PI;
+                const x2_backbone = DNA_RADIUS * Math.cos(theta2);
+                const y2_backbone = DNA_RADIUS * Math.sin(theta2);
+                const x2_base = BASE_OFFSET * Math.cos(theta2);
+                const y2_base = BASE_OFFSET * Math.sin(theta2);
+
+                const backbone1 = {
+                    x: x1_backbone, y: y1_backbone, z: z,
+                    type: 'P', color: 0xffa500, base: base1, theta: theta
+                };
+                const base1_atom = {
+                    x: x1_base, y: y1_base, z: z,
+                    type: 'N', color: BASE_COLORS[base1] || 0x888888, base: base1,
+                    isPurine: (base1 === 'A' || base1 === 'G')
+                };
+
+                const backbone2 = {
+                    x: x2_backbone, y: y2_backbone, z: z,
+                    type: 'P', color: 0xffa500, base: base2, theta: theta2
+                };
+                const base2_atom = {
+                    x: x2_base, y: y2_base, z: z,
+                    type: 'N', color: BASE_COLORS[base2] || 0x888888, base: base2,
+                    isPurine: (base2 === 'A' || base2 === 'G')
+                };
+
+                atoms.push(backbone1, base1_atom, backbone2, base2_atom);
+
+                const idx = i * 4;
+                bonds.push([idx, idx + 1]);
+                bonds.push([idx + 2, idx + 3]);
+                bonds.push([idx + 1, idx + 3]);
+
+                if (i > 0) {
+                    bonds.push([idx, idx - 4]);
+                    bonds.push([idx + 2, idx - 2]);
+                }
+            }
+
+            console.log(`DNA generato: ${atoms.length} atomi, ${bonds.length} legami`);
+            return { atoms, bonds, type: 'dna', sequence };
+        }
+
+        function generateAlphaHelix(length) {
+            const atoms = [];
+            const bonds = [];
+
+            const phi = HELIX_PHI * Math.PI / 180;
+            const psi = HELIX_PSI * Math.PI / 180;
+            const anglePerResidue = (360 / 3.6) * Math.PI / 180;
+
+            for (let i = 0; i < length; i++) {
+                const theta = i * anglePerResidue;
+                const x = HELIX_RADIUS * Math.cos(theta);
+                const y = HELIX_RADIUS * Math.sin(theta);
+                const z = i * HELIX_RISE_PER_RES;
+
+                const ca = {
+                    x: x, y: y, z: z,
+                    type: 'CA',
+                    color: 0xff69b4,
+                    residue: i,
+                    isActiveSite: (i === 3 || i === 4 || i === 7)
+                };
+
+                atoms.push(ca);
+
+                if (i > 0) {
+                    bonds.push([i, i - 1]);
+                }
+            }
+
+            return { atoms, bonds, type: 'helix', length };
+        }
+
+        function generateBetaSheet(rows, length) {
+            const atoms = [];
+            const bonds = [];
+
+            for (let row = 0; row < rows; row++) {
+                const zOffset = row * BETA_STRAND_SPACING;
+                const direction = (row % 2 === 0) ? 1 : -1;
+
+                for (let i = 0; i < length; i++) {
+                    const x = (direction === 1 ? i : (length - 1 - i)) * BETA_CA_DISTANCE;
+                    const y = 0;
+                    const z = zOffset;
+
+                    const ca = {
+                        x: x, y: y, z: z,
+                        type: 'CA',
+                        color: 0x4169e1,
+                        residue: row * length + i,
+                        strand: row,
+                        secondaryStructure: 'sheet',
+                        residueType: 'VAL'
+                    };
+
+                    atoms.push(ca);
+
+                    const idx = row * length + i;
+                    if (i > 0) {
+                        bonds.push([idx, idx - 1]);
+                    }
+
+                    if (row > 0 && i < length) {
+                        const prevRowIdx = (row - 1) * length + i;
+                        bonds.push([idx, prevRowIdx]);
+                    }
+                }
+            }
+
+            return { atoms, bonds, type: 'sheet', rows, length };
+        }
+
+        // Genera Emoglobina (4 subunità: 2 alfa, 2 beta)
+        function generateHemoglobin() {
+            const atoms = [];
+            const bonds = [];
+            const subunitLength = 35; // residui per subunità
+
+            // Posizioni delle 4 subunità (disposizione tetraedrica semplificata)
+            const subunits = [
+                { offset: { x: -8, y: -8, z: 0 }, type: 'alpha', color: 0xff69b4, label: 'α1' },
+                { offset: { x: 8, y: -8, z: 0 }, type: 'alpha', color: 0xff69b4, label: 'α2' },
+                { offset: { x: -8, y: 8, z: 0 }, type: 'beta', color: 0xffa07a, label: 'β1' },
+                { offset: { x: 8, y: 8, z: 0 }, type: 'beta', color: 0xffa07a, label: 'β2' }
+            ];
+
+            const residueTypes = ['LEU', 'VAL', 'ALA', 'GLY', 'SER', 'THR', 'LYS', 'GLU'];
+
+            subunits.forEach((subunit, subIdx) => {
+                const startIdx = atoms.length;
+                const anglePerResidue = (360 / 3.6) * Math.PI / 180;
+
+                for (let i = 0; i < subunitLength; i++) {
+                    const theta = i * anglePerResidue;
+                    const x = subunit.offset.x + HELIX_RADIUS * Math.cos(theta);
+                    const y = subunit.offset.y + HELIX_RADIUS * Math.sin(theta);
+                    const z = subunit.offset.z + i * HELIX_RISE_PER_RES;
+
+                    const ca = {
+                        x, y, z,
+                        type: 'CA',
+                        color: subunit.color,
+                        residue: subIdx * subunitLength + i,
+                        subunit: subunit.label,
+                        subunitType: subunit.type,
+                        secondaryStructure: 'helix',
+                        residueType: residueTypes[i % residueTypes.length],
+                        // I siti di legame dell'eme sarebbero vicini al centro di ogni subunità
+                        isHemeBinding: (i >= 15 && i <= 20)
+                    };
+
+                    atoms.push(ca);
+
+                    if (i > 0) {
+                        bonds.push([startIdx + i, startIdx + i - 1]);
+                    }
+                }
+            });
+
+            return { atoms, bonds, type: 'hemoglobin', subunits: 4, name: 'Emoglobina' };
+        }
+
+        // Genera Lisozima (enzima con struttura mista α/β)
+        function generateLysozyme() {
+            const atoms = [];
+            const bonds = [];
+            let atomIndex = 0;
+
+            const residueTypes = ['HIS', 'ASP', 'GLU', 'LYS', 'ARG', 'SER', 'THR', 'TYR', 'CYS', 'GLY'];
+
+            // Parte 1: α-elica N-terminale (residui 1-25)
+            const helix1Length = 25;
+            const anglePerResidue = (360 / 3.6) * Math.PI / 180;
+            for (let i = 0; i < helix1Length; i++) {
+                const theta = i * anglePerResidue;
+                const x = HELIX_RADIUS * Math.cos(theta) - 10;
+                const y = HELIX_RADIUS * Math.sin(theta);
+                const z = i * HELIX_RISE_PER_RES - 15;
+
+                atoms.push({
+                    x, y, z,
+                    type: 'CA',
+                    color: 0xff69b4,
+                    residue: i,
+                    secondaryStructure: 'helix',
+                    residueType: residueTypes[i % residueTypes.length]
+                });
+
+                if (i > 0) bonds.push([atomIndex, atomIndex - 1]);
+                atomIndex++;
+            }
+
+            // Parte 2: Loop/Coil (residui 26-35)
+            const loopLength = 10;
+            for (let i = 0; i < loopLength; i++) {
+                const t = i / loopLength;
+                const x = -10 + t * 15;
+                const y = 3 * Math.sin(t * Math.PI * 2);
+                const z = helix1Length * HELIX_RISE_PER_RES - 15 + t * 5;
+
+                atoms.push({
+                    x, y, z,
+                    type: 'CA',
+                    color: 0x90ee90,
+                    residue: helix1Length + i,
+                    secondaryStructure: 'coil',
+                    residueType: residueTypes[(helix1Length + i) % residueTypes.length]
+                });
+
+                if (i > 0) bonds.push([atomIndex, atomIndex - 1]);
+                atomIndex++;
+            }
+
+            // Parte 3: β-sheet (residui 36-50, 2 strand)
+            const sheetStart = atomIndex;
+            for (let row = 0; row < 2; row++) {
+                const sheetLength = 7;
+                const zOffset = helix1Length * HELIX_RISE_PER_RES - 15 + loopLength * 0.5 + row * BETA_STRAND_SPACING;
+                const direction = (row % 2 === 0) ? 1 : -1;
+
+                for (let i = 0; i < sheetLength; i++) {
+                    const x = 5 + (direction === 1 ? i : (sheetLength - 1 - i)) * BETA_CA_DISTANCE;
+                    const y = 0;
+                    const z = zOffset;
+
+                    atoms.push({
+                        x, y, z,
+                        type: 'CA',
+                        color: 0x4169e1,
+                        residue: helix1Length + loopLength + row * sheetLength + i,
+                        secondaryStructure: 'sheet',
+                        strand: row,
+                        residueType: residueTypes[(helix1Length + loopLength + row * sheetLength + i) % residueTypes.length]
+                    });
+
+                    if (i > 0) bonds.push([atomIndex, atomIndex - 1]);
+                    atomIndex++;
+
+                    if (row > 0 && i < sheetLength) {
+                        const prevRowIdx = sheetStart + i;
+                        bonds.push([atomIndex - 1, prevRowIdx]);
+                    }
+                }
+            }
+
+            // Parte 4: α-elica C-terminale con sito attivo (residui 51-75)
+            const helix2Start = atomIndex;
+            const helix2Length = 25;
+            for (let i = 0; i < helix2Length; i++) {
+                const theta = i * anglePerResidue + Math.PI;
+                const x = HELIX_RADIUS * Math.cos(theta) + 5;
+                const y = HELIX_RADIUS * Math.sin(theta) - 5;
+                const z = i * HELIX_RISE_PER_RES;
+
+                const isActiveSite = (i >= 10 && i <= 15); // Residui 60-65: sito catalitico
+
+                atoms.push({
+                    x, y, z,
+                    type: 'CA',
+                    color: 0xff69b4,
+                    residue: helix1Length + loopLength + 14 + i,
+                    secondaryStructure: 'helix',
+                    isActiveSite: isActiveSite,
+                    residueType: isActiveSite ? 'GLU' : residueTypes[i % residueTypes.length]
+                });
+
+                if (i > 0) bonds.push([atomIndex, atomIndex - 1]);
+                atomIndex++;
+            }
+
+            return {
+                atoms,
+                bonds,
+                type: 'lysozyme',
+                name: 'Lisozima',
+                activeSiteResidues: [60, 61, 62, 63, 64, 65]
+            };
+        }
+
+        // Genera Anticorpo IgG (forma a Y)
+        function generateAntibody() {
+            const atoms = [];
+            const bonds = [];
+            let atomIndex = 0;
+
+            const residueTypes = ['VAL', 'LEU', 'SER', 'THR', 'LYS', 'GLU', 'ASP', 'CYS'];
+            const anglePerResidue = (360 / 3.6) * Math.PI / 180;
+
+            // Regione Fc (stelo della Y) - catene pesanti
+            const fcLength = 30;
+            for (let chain = 0; chain < 2; chain++) {
+                const xOffset = chain === 0 ? -2 : 2;
+                const startIdx = atomIndex;
+
+                for (let i = 0; i < fcLength; i++) {
+                    const theta = i * anglePerResidue;
+                    const x = xOffset + HELIX_RADIUS * Math.cos(theta) * 0.5;
+                    const y = HELIX_RADIUS * Math.sin(theta) * 0.5;
+                    const z = -i * HELIX_RISE_PER_RES;
+
+                    atoms.push({
+                        x, y, z,
+                        type: 'CA',
+                        color: 0xff69b4, // Rosa per catene pesanti
+                        residue: atomIndex,
+                        chain: `H${chain + 1}`,
+                        region: 'Fc',
+                        secondaryStructure: 'helix',
+                        residueType: residueTypes[i % residueTypes.length]
+                    });
+
+                    if (i > 0) bonds.push([atomIndex, atomIndex - 1]);
+                    atomIndex++;
+                }
+            }
+
+            // Braccio 1 della Y (Fab) - catena pesante + leggera
+            const fabLength = 25;
+
+            // Braccio 1 - catena pesante
+            for (let i = 0; i < fabLength; i++) {
+                const theta = i * anglePerResidue;
+                const t = i / fabLength;
+                const x = -2 + t * (-15);
+                const y = HELIX_RADIUS * Math.sin(theta) * 0.5 + t * 10;
+                const z = t * 5;
+
+                atoms.push({
+                    x, y, z,
+                    type: 'CA',
+                    color: 0xff69b4,
+                    residue: atomIndex,
+                    chain: 'H1-Fab',
+                    region: 'Fab1',
+                    secondaryStructure: i < 15 ? 'helix' : 'sheet',
+                    residueType: residueTypes[i % residueTypes.length],
+                    isAntigenBinding: i >= 20 // Regione CDR
+                });
+
+                if (i > 0) bonds.push([atomIndex, atomIndex - 1]);
+                atomIndex++;
+            }
+
+            // Braccio 1 - catena leggera
+            for (let i = 0; i < fabLength; i++) {
+                const theta = i * anglePerResidue + Math.PI;
+                const t = i / fabLength;
+                const x = -4 + t * (-13);
+                const y = HELIX_RADIUS * Math.sin(theta) * 0.5 + t * 12;
+                const z = t * 5;
+
+                atoms.push({
+                    x, y, z,
+                    type: 'CA',
+                    color: 0x4169e1, // Blu per catene leggere
+                    residue: atomIndex,
+                    chain: 'L1',
+                    region: 'Fab1',
+                    secondaryStructure: i < 15 ? 'helix' : 'sheet',
+                    residueType: residueTypes[i % residueTypes.length],
+                    isAntigenBinding: i >= 20
+                });
+
+                if (i > 0) bonds.push([atomIndex, atomIndex - 1]);
+                atomIndex++;
+            }
+
+            // Braccio 2 della Y (Fab) - simmetrico al braccio 1
+            // Braccio 2 - catena pesante
+            for (let i = 0; i < fabLength; i++) {
+                const theta = i * anglePerResidue;
+                const t = i / fabLength;
+                const x = 2 + t * 15;
+                const y = HELIX_RADIUS * Math.sin(theta) * 0.5 + t * 10;
+                const z = t * 5;
+
+                atoms.push({
+                    x, y, z,
+                    type: 'CA',
+                    color: 0xff69b4,
+                    residue: atomIndex,
+                    chain: 'H2-Fab',
+                    region: 'Fab2',
+                    secondaryStructure: i < 15 ? 'helix' : 'sheet',
+                    residueType: residueTypes[i % residueTypes.length],
+                    isAntigenBinding: i >= 20
+                });
+
+                if (i > 0) bonds.push([atomIndex, atomIndex - 1]);
+                atomIndex++;
+            }
+
+            // Braccio 2 - catena leggera
+            for (let i = 0; i < fabLength; i++) {
+                const theta = i * anglePerResidue + Math.PI;
+                const t = i / fabLength;
+                const x = 4 + t * 13;
+                const y = HELIX_RADIUS * Math.sin(theta) * 0.5 + t * 12;
+                const z = t * 5;
+
+                atoms.push({
+                    x, y, z,
+                    type: 'CA',
+                    color: 0x4169e1,
+                    residue: atomIndex,
+                    chain: 'L2',
+                    region: 'Fab2',
+                    secondaryStructure: i < 15 ? 'helix' : 'sheet',
+                    residueType: residueTypes[i % residueTypes.length],
+                    isAntigenBinding: i >= 20
+                });
+
+                if (i > 0) bonds.push([atomIndex, atomIndex - 1]);
+                atomIndex++;
+            }
+
+            return {
+                atoms,
+                bonds,
+                type: 'antibody',
+                name: 'Anticorpo IgG',
+                chains: 4,
+                antigenBindingSites: 2
+            };
+        }
+
+        // ============================================
+        // FUNZIONI DI RENDERING
+        // ============================================
+
+        function renderStickOptimized(moleculeData) {
+            const group = new THREE.Group();
+            const { atoms, bonds } = moleculeData;
+
+            const sphereGeom = new THREE.SphereGeometry(0.4, 8, 8);
+
+            const atomsByColor = {};
+            atoms.forEach(atom => {
+                let color = atom.color;
+
+                // Colorazione per proprietà amminoacidi (solo proteine)
+                if (moleculeData.type !== 'dna' && proteinColorScheme === 'residue' && atom.residueType) {
+                    const propData = RESIDUE_TO_PROPERTY[atom.residueType];
+                    if (propData) {
+                        color = propData.color;
+                    }
+                }
+
+                if (highlightActiveSite && atom.isActiveSite) {
+                    color = 0x00ffff;
+                }
+                if (!atomsByColor[color]) {
+                    atomsByColor[color] = [];
+                }
+                atomsByColor[color].push(atom);
+            });
+
+            Object.entries(atomsByColor).forEach(([color, atomList]) => {
+                const material = new THREE.MeshPhongMaterial({ color: parseInt(color) });
+                const instancedMesh = new THREE.InstancedMesh(sphereGeom, material, atomList.length);
+
+                const matrix = new THREE.Matrix4();
+                atomList.forEach((atom, idx) => {
+                    matrix.setPosition(atom.x, atom.y, atom.z);
+                    instancedMesh.setMatrixAt(idx, matrix);
+                });
+                instancedMesh.instanceMatrix.needsUpdate = true;
+                group.add(instancedMesh);
+            });
+
+            if (bonds.length > 0) {
+                const bondGeometries = [];
+                bonds.forEach(([idx1, idx2]) => {
+                    const atom1 = atoms[idx1];
+                    const atom2 = atoms[idx2];
+
+                    const direction = new THREE.Vector3(
+                        atom2.x - atom1.x,
+                        atom2.y - atom1.y,
+                        atom2.z - atom1.z
+                    );
+                    const length = direction.length();
+
+                    const cylinderGeom = new THREE.CylinderGeometry(0.15, 0.15, length, 4);
+                    const cylinder = new THREE.Mesh(cylinderGeom);
+
+                    cylinder.position.set(
+                        (atom1.x + atom2.x) / 2,
+                        (atom1.y + atom2.y) / 2,
+                        (atom1.z + atom2.z) / 2
+                    );
+
+                    direction.normalize();
+                    cylinder.quaternion.setFromUnitVectors(
+                        new THREE.Vector3(0, 1, 0),
+                        direction
+                    );
+
+                    cylinder.updateMatrix();
+                    bondGeometries.push(cylinder.geometry.clone().applyMatrix4(cylinder.matrix));
+                });
+
+                const mergedBondGeom = mergeGeometries(bondGeometries);
+
+                const bondMaterial = new THREE.MeshPhongMaterial({ color: 0xcccccc });
+                const bondMesh = new THREE.Mesh(mergedBondGeom, bondMaterial);
+                group.add(bondMesh);
+            }
+
+            return group;
+        }
+
+        function mergeGeometries(geometries) {
+            const merged = new THREE.BufferGeometry();
+            const positions = [];
+            const normals = [];
+            const indices = [];
+            let indexOffset = 0;
+
+            geometries.forEach(geom => {
+                const pos = geom.attributes.position;
+                const norm = geom.attributes.normal;
+                const idx = geom.index;
+
+                for (let i = 0; i < pos.count; i++) {
+                    positions.push(pos.getX(i), pos.getY(i), pos.getZ(i));
+                    if (norm) normals.push(norm.getX(i), norm.getY(i), norm.getZ(i));
+                }
+
+                if (idx) {
+                    for (let i = 0; i < idx.count; i++) {
+                        indices.push(idx.getX(i) + indexOffset);
+                    }
+                    indexOffset += pos.count;
+                }
+            });
+
+            merged.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            if (normals.length > 0) {
+                merged.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+            }
+            if (indices.length > 0) {
+                merged.setIndex(indices);
+            }
+            merged.computeVertexNormals();
+
+            return merged;
+        }
+
+        function renderStick(moleculeData) {
+            if (moleculeData.atoms.length > 400) {
+                return renderStickOptimized(moleculeData);
+            }
+
+            const group = new THREE.Group();
+            const { atoms, bonds } = moleculeData;
+
+            atoms.forEach(atom => {
+                const sphereGeom = new THREE.SphereGeometry(0.4, 16, 16);
+                let color = atom.color;
+
+                // Colorazione per proprietà amminoacidi
+                if (moleculeData.type !== 'dna' && proteinColorScheme === 'residue' && atom.residueType) {
+                    const propData = RESIDUE_TO_PROPERTY[atom.residueType];
+                    if (propData) color = propData.color;
+                }
+
+                if (highlightActiveSite && atom.isActiveSite) {
+                    color = 0x00ffff;
+                }
+
+                const material = new THREE.MeshPhongMaterial({ color });
+                const sphere = new THREE.Mesh(sphereGeom, material);
+                sphere.position.set(atom.x, atom.y, atom.z);
+                group.add(sphere);
+            });
+
+            bonds.forEach(([idx1, idx2]) => {
+                const atom1 = atoms[idx1];
+                const atom2 = atoms[idx2];
+
+                const direction = new THREE.Vector3(
+                    atom2.x - atom1.x,
+                    atom2.y - atom1.y,
+                    atom2.z - atom1.z
+                );
+                const length = direction.length();
+                direction.normalize();
+
+                const cylinderGeom = new THREE.CylinderGeometry(0.15, 0.15, length, 8);
+                const material = new THREE.MeshPhongMaterial({ color: 0xcccccc });
+                const cylinder = new THREE.Mesh(cylinderGeom, material);
+
+                cylinder.position.set(
+                    (atom1.x + atom2.x) / 2,
+                    (atom1.y + atom2.y) / 2,
+                    (atom1.z + atom2.z) / 2
+                );
+
+                cylinder.quaternion.setFromUnitVectors(
+                    new THREE.Vector3(0, 1, 0),
+                    direction
+                );
+
+                group.add(cylinder);
+            });
+
+            return group;
+        }
+
+        function renderSpaceFilling(moleculeData) {
+            const group = new THREE.Group();
+            const { atoms } = moleculeData;
+
+            if (atoms.length > 400) {
+                const sphereGeom = new THREE.SphereGeometry(1.5, 16, 16);
+
+                const atomsByColor = {};
+                atoms.forEach(atom => {
+                    let color = atom.color;
+
+                    // Colorazione per proprietà amminoacidi
+                    if (moleculeData.type !== 'dna' && proteinColorScheme === 'residue' && atom.residueType) {
+                        const propData = RESIDUE_TO_PROPERTY[atom.residueType];
+                        if (propData) color = propData.color;
+                    }
+
+                    if (highlightActiveSite && atom.isActiveSite) color = 0x00ffff;
+                    if (!atomsByColor[color]) atomsByColor[color] = [];
+                    atomsByColor[color].push(atom);
+                });
+
+                Object.entries(atomsByColor).forEach(([color, atomList]) => {
+                    const material = new THREE.MeshPhongMaterial({ color: parseInt(color) });
+                    const instancedMesh = new THREE.InstancedMesh(sphereGeom, material, atomList.length);
+
+                    const matrix = new THREE.Matrix4();
+                    atomList.forEach((atom, idx) => {
+                        const radius = VDW_RADII[atom.type] || 1.5;
+                        matrix.identity();
+                        matrix.makeScale(radius / 1.5, radius / 1.5, radius / 1.5);
+                        matrix.setPosition(atom.x, atom.y, atom.z);
+                        instancedMesh.setMatrixAt(idx, matrix);
+                    });
+                    instancedMesh.instanceMatrix.needsUpdate = true;
+                    group.add(instancedMesh);
+                });
+            } else {
+                atoms.forEach(atom => {
+                    const radius = VDW_RADII[atom.type] || 1.5;
+                    const sphereGeom = new THREE.SphereGeometry(radius, 24, 24);
+
+                    let color = atom.color;
+
+                    // Colorazione per proprietà amminoacidi
+                    if (moleculeData.type !== 'dna' && proteinColorScheme === 'residue' && atom.residueType) {
+                        const propData = RESIDUE_TO_PROPERTY[atom.residueType];
+                        if (propData) color = propData.color;
+                    }
+
+                    if (highlightActiveSite && atom.isActiveSite) {
+                        color = 0x00ffff;
+                    }
+
+                    const material = new THREE.MeshPhongMaterial({ color });
+                    const sphere = new THREE.Mesh(sphereGeom, material);
+                    sphere.position.set(atom.x, atom.y, atom.z);
+                    group.add(sphere);
+                });
+            }
+
+            return group;
+        }
+
+        function renderCartoonDNA(moleculeData) {
+            const group = new THREE.Group();
+            const { atoms, sequence } = moleculeData;
+
+            const backbone1 = [];
+            const backbone2 = [];
+            const bases = [];
+
+            atoms.forEach((atom, idx) => {
+                if (atom.type === 'P') {
+                    if (idx % 4 === 0) backbone1.push(atom);
+                    else backbone2.push(atom);
+                } else {
+                    bases.push(atom);
+                }
+            });
+
+            const createFlatRibbon = (backboneAtoms, baseColor, isFirstStrand) => {
+                if (backboneAtoms.length < 2) return;
+
+                const points = backboneAtoms.map(a => new THREE.Vector3(a.x, a.y, a.z));
+                const curve = new THREE.CatmullRomCurve3(points);
+
+                const segments = Math.min(backboneAtoms.length * 8, 512);
+                const ribbonPoints = curve.getPoints(segments);
+
+                const positions = [];
+                const normals = [];
+                const indices = [];
+
+                const ribbonWidth = 1.5;
+
+                for (let i = 0; i < ribbonPoints.length; i++) {
+                    const point = ribbonPoints[i];
+                    const nextPoint = ribbonPoints[Math.min(i + 1, ribbonPoints.length - 1)];
+
+                    const tangent = new THREE.Vector3().subVectors(nextPoint, point).normalize();
+
+                    const toCenter = new THREE.Vector3(-point.x, -point.y, 0).normalize();
+                    const binormal = new THREE.Vector3().crossVectors(tangent, toCenter).normalize();
+
+                    let width = ribbonWidth;
+                    if (showGrooves && i < backboneAtoms.length) {
+                        const theta = backboneAtoms[Math.floor(i / 8)]?.theta || 0;
+                        const grooveFactor = 0.7 + 0.3 * Math.sin(theta * 2);
+                        width *= grooveFactor;
+                    }
+
+                    const left = new THREE.Vector3().addVectors(point, binormal.clone().multiplyScalar(width / 2));
+                    const right = new THREE.Vector3().addVectors(point, binormal.clone().multiplyScalar(-width / 2));
+
+                    positions.push(left.x, left.y, left.z);
+                    positions.push(right.x, right.y, right.z);
+
+                    const up = new THREE.Vector3(0, 0, 1);
+                    normals.push(up.x, up.y, up.z);
+                    normals.push(up.x, up.y, up.z);
+
+                    if (i < ribbonPoints.length - 1) {
+                        const base = i * 2;
+                        indices.push(base, base + 1, base + 2);
+                        indices.push(base + 1, base + 3, base + 2);
+                    }
+                }
+
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+                geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+                geometry.setIndex(indices);
+                geometry.computeVertexNormals();
+
+                const material = new THREE.MeshPhongMaterial({
+                    color: baseColor,
+                    side: THREE.DoubleSide,
+                    shininess: 30,
+                    specular: 0x444444
+                });
+                const ribbon = new THREE.Mesh(geometry, material);
+                group.add(ribbon);
+            };
+
+            createFlatRibbon(backbone1, 0xff6b6b, true);
+            createFlatRibbon(backbone2, 0x4ecdc4, false);
+
+            const baseSampling = bases.length > 1000 ? 10 : bases.length > 500 ? 5 : 1;
+
+            for (let i = 0; i < bases.length; i += 2) {
+                if (i % baseSampling !== 0) continue;
+
+                const base1 = bases[i];
+                const base2 = bases[i + 1];
+
+                if (!base1 || !base2) continue;
+
+                const isPurine1 = base1.isPurine;
+                const size1 = isPurine1 ? 2.0 : 1.4;
+                const depth1 = isPurine1 ? 0.6 : 0.4;
+
+                const boxGeom1 = new THREE.BoxGeometry(size1, size1, depth1);
+                const material1 = new THREE.MeshPhongMaterial({
+                    color: base1.color,
+                    shininess: 50
+                });
+                const box1 = new THREE.Mesh(boxGeom1, material1);
+                box1.position.set(base1.x, base1.y, base1.z);
+
+                const angle = Math.atan2(base1.y, base1.x);
+                box1.rotation.z = angle;
+
+                group.add(box1);
+
+                const isPurine2 = base2.isPurine;
+                const size2 = isPurine2 ? 2.0 : 1.4;
+                const depth2 = isPurine2 ? 0.6 : 0.4;
+
+                const boxGeom2 = new THREE.BoxGeometry(size2, size2, depth2);
+                const material2 = new THREE.MeshPhongMaterial({
+                    color: base2.color,
+                    shininess: 50
+                });
+                const box2 = new THREE.Mesh(boxGeom2, material2);
+                box2.position.set(base2.x, base2.y, base2.z);
+                box2.rotation.z = angle + Math.PI;
+
+                group.add(box2);
+
+                const rungStart = new THREE.Vector3(base1.x, base1.y, base1.z);
+                const rungEnd = new THREE.Vector3(base2.x, base2.y, base2.z);
+                const rungDirection = new THREE.Vector3().subVectors(rungEnd, rungStart);
+                const rungLength = rungDirection.length();
+
+                const cylinderGeom = new THREE.CylinderGeometry(0.2, 0.2, rungLength, 6);
+                const cylinderMaterial = new THREE.MeshPhongMaterial({
+                    color: 0xaaaaaa,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                const cylinder = new THREE.Mesh(cylinderGeom, cylinderMaterial);
+
+                cylinder.position.set(
+                    (rungStart.x + rungEnd.x) / 2,
+                    (rungStart.y + rungEnd.y) / 2,
+                    (rungStart.z + rungEnd.z) / 2
+                );
+
+                rungDirection.normalize();
+                cylinder.quaternion.setFromUnitVectors(
+                    new THREE.Vector3(0, 1, 0),
+                    rungDirection
+                );
+
+                group.add(cylinder);
+            }
+
+            return group;
+        }
+
+        function renderCartoon(moleculeData) {
+            const { type } = moleculeData;
+
+            if (type === 'dna') {
+                return renderCartoonDNA(moleculeData);
+            } else if (type === 'helix' || type === 'sheet' || type === 'hemoglobin' || type === 'lysozyme' || type === 'antibody') {
+                const group = new THREE.Group();
+                const { atoms } = moleculeData;
+
+                // Raggruppa atomi per struttura secondaria o catena
+                const segments = [];
+                let currentSegment = [atoms[0]];
+                let currentProp = atoms[0].secondaryStructure || atoms[0].subunit || atoms[0].chain;
+
+                for (let i = 1; i < atoms.length; i++) {
+                    const atom = atoms[i];
+                    const atomProp = atom.secondaryStructure || atom.subunit || atom.chain;
+
+                    if (atomProp === currentProp && i < atoms.length - 1) {
+                        currentSegment.push(atom);
+                    } else {
+                        if (i === atoms.length - 1) currentSegment.push(atom);
+                        segments.push({ atoms: currentSegment, property: currentProp });
+                        currentSegment = [atom];
+                        currentProp = atomProp;
+                    }
+                }
+                if (currentSegment.length > 0) {
+                    segments.push({ atoms: currentSegment, property: currentProp });
+                }
+
+                // Renderizza ogni segmento
+                segments.forEach(segment => {
+                    if (segment.atoms.length < 2) return;
+
+                    const points = segment.atoms.map(a => new THREE.Vector3(a.x, a.y, a.z));
+                    const curve = new THREE.CatmullRomCurve3(points);
+
+                    const firstAtom = segment.atoms[0];
+                    let color = firstAtom.color;
+                    let radius = 1.2;
+
+                    // Colorazione per proprietà residui
+                    if (proteinColorScheme === 'residue' && firstAtom.residueType) {
+                        const propData = RESIDUE_TO_PROPERTY[firstAtom.residueType];
+                        if (propData) color = propData.color;
+                    }
+
+                    // Dimensione ribbon basata su struttura secondaria
+                    if (firstAtom.secondaryStructure === 'sheet') {
+                        radius = 1.8; // Più largo per sheet
+                    } else if (firstAtom.secondaryStructure === 'coil') {
+                        radius = 0.6; // Più sottile per coil
+                    }
+
+                    const tubeGeom = new THREE.TubeGeometry(curve, Math.max(32, points.length * 2), radius, 12, false);
+                    const material = new THREE.MeshPhongMaterial({
+                        color,
+                        side: THREE.DoubleSide,
+                        shininess: 40
+                    });
+                    const tube = new THREE.Mesh(tubeGeom, material);
+                    group.add(tube);
+                });
+
+                if (highlightActiveSite && type === 'helix') {
+                    atoms.forEach(atom => {
+                        if (atom.isActiveSite) {
+                            const sphereGeom = new THREE.SphereGeometry(2, 16, 16);
+                            const mat = new THREE.MeshPhongMaterial({
+                                color: 0x00ffff,
+                                transparent: true,
+                                opacity: 0.6
+                            });
+                            const sphere = new THREE.Mesh(sphereGeom, mat);
+                            sphere.position.set(atom.x, atom.y, atom.z);
+                            group.add(sphere);
+                        }
+                    });
+                }
+
+                return group;
+            }
+        }
+
+        async function renderMolecule(moleculeData, mode) {
+            showLoading(true);
+
+            await new Promise(resolve => setTimeout(resolve, 50));
+
+            if (currentMolecule) {
+                scene.remove(currentMolecule);
+            }
+
+            let newMolecule;
+            switch (mode) {
+                case 'stick':
+                    newMolecule = renderStick(moleculeData);
+                    break;
+                case 'sphere':
+                    newMolecule = renderSpaceFilling(moleculeData);
+                    break;
+                case 'cartoon':
+                    newMolecule = renderCartoon(moleculeData);
+                    break;
+                default:
+                    newMolecule = renderStick(moleculeData);
+            }
+
+            const box = new THREE.Box3().setFromObject(newMolecule);
+            const center = box.getCenter(new THREE.Vector3());
+            newMolecule.position.sub(center);
+
+            scene.add(newMolecule);
+            currentMolecule = newMolecule;
+
+            const size = box.getSize(new THREE.Vector3());
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const fov = camera.fov * (Math.PI / 180);
+            let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
+            cameraZ *= 1.5;
+            camera.position.set(cameraZ * 0.7, cameraZ * 0.5, cameraZ);
+            camera.lookAt(0, 0, 0);
+            controls.update();
+
+            updateInfoPanel(moleculeData);
+            showLoading(false);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function updateInfoPanel(moleculeData) {
+            const { type, sequence, length, rows, name: molName } = moleculeData;
+
+            let name, residues, weight, func;
+
+            if (type === 'dna') {
+                name = `DNA-B (${sequence.length} bp)`;
+                residues = sequence.length;
+                weight = `~${(sequence.length * 620).toFixed(0)} Da`;
+                func = 'Il DNA-B è la forma fisiologica del DNA nelle cellule, caratterizzata da una doppia elica destrorsa con un solco maggiore e minore distinti.';
+            } else if (type === 'hemoglobin') {
+                name = 'Emoglobina (Hb)';
+                residues = 574; // 141 aa x 2 (alfa) + 146 aa x 2 (beta)
+                weight = '~64500 Da';
+                func = 'Proteina quaternaria con 4 subunità (2α, 2β) che trasporta ossigeno nel sangue. Ogni subunità contiene un gruppo eme.';
+            } else if (type === 'lysozyme') {
+                name = 'Lisozima';
+                residues = moleculeData.atoms.length;
+                weight = `~${(residues * 110).toFixed(0)} Da`;
+                func = 'Enzima antibatterico che idrolizza i legami glicosidici nel peptidoglicano della parete cellulare batterica. Presente in lacrime, saliva e albume.';
+            } else if (type === 'antibody') {
+                name = 'Anticorpo IgG';
+                residues = moleculeData.atoms.length;
+                weight = '~150000 Da';
+                func = 'Immunoglobulina a forma di Y con 2 catene pesanti (H) e 2 leggere (L). Riconosce antigeni specifici attraverso le regioni Fab. La regione Fc media funzioni effettrici.';
+            } else if (type === 'helix') {
+                name = `Alfa-Elica (${length} aa)`;
+                residues = length;
+                weight = `~${(length * 110).toFixed(0)} Da`;
+                func = "L'alfa-elica è una struttura secondaria comune nelle proteine, stabilizzata da legami idrogeno tra residui i e i+4.";
+            } else if (type === 'sheet') {
+                name = `Foglio-Beta (${rows}x${length} aa)`;
+                residues = rows * length;
+                weight = `~${(rows * length * 110).toFixed(0)} Da`;
+                func = 'I fogli-beta formano strutture estese stabilizzate da legami idrogeno tra strand.';
+            }
+
+            document.getElementById('struct-name').textContent = name;
+            document.getElementById('residue-count').textContent = residues;
+            document.getElementById('mol-weight').textContent = weight;
+            document.getElementById('bio-function').textContent = func;
+
+            // Aggiorna domande guida
+            const questionElement = document.getElementById('question-text');
+            if (GUIDE_QUESTIONS[currentStructureType]) {
+                questionElement.textContent = GUIDE_QUESTIONS[currentStructureType];
+            }
+        }
+
+        // ============================================
+        // GESTIONE EVENTI UI
+        // ============================================
+
+        // Toggle pannello mobile
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const controlPanel = document.getElementById('control-panel');
+        const panelOverlay = document.getElementById('panel-overlay');
+
+        function openPanel() {
+            controlPanel.classList.add('open');
+            panelOverlay.classList.add('visible');
+            mobileToggle.innerHTML = '✕';
+        }
+
+        function closePanel() {
+            controlPanel.classList.remove('open');
+            panelOverlay.classList.remove('visible');
+            mobileToggle.innerHTML = '⚙️';
+        }
+
+        mobileToggle.addEventListener('click', () => {
+            if (controlPanel.classList.contains('open')) {
+                closePanel();
+            } else {
+                openPanel();
+            }
+        });
+
+        panelOverlay.addEventListener('click', closePanel);
+
+        // Chiudi pannello dopo aver generato su mobile
+        function closePanelOnMobile() {
+            if (window.innerWidth <= 768) {
+                setTimeout(closePanel, 300);
+            }
+        }
+
+        document.getElementById('structure-select').addEventListener('change', (e) => {
+            currentStructureType = e.target.value;
+
+            const dnaOptions = document.getElementById('dna-options');
+            const proteinOptions = document.getElementById('protein-options');
+
+            if (currentStructureType === 'dna') {
+                dnaOptions.style.display = 'block';
+                proteinOptions.classList.add('hidden');
+            } else {
+                dnaOptions.style.display = 'none';
+                proteinOptions.classList.remove('hidden');
+            }
+
+            loadStructure();
+            closePanelOnMobile();
+        });
+
+        document.querySelectorAll('input[name="render-mode"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                currentRenderMode = e.target.value;
+                loadStructure();
+                closePanelOnMobile();
+            });
+        });
+
+        document.getElementById('generate-dna').addEventListener('click', () => {
+            let seq = document.getElementById('dna-sequence').value.toUpperCase();
+            seq = seq.replace(/\s+/g, '').replace(/[^ATCGN]/g, '');
+
+            if (seq.length === 0) {
+                alert('Inserisci una sequenza valida (A, T, C, G, N)');
+                return;
+            }
+
+            if (seq.length > 10000) {
+                if (!confirm(`La sequenza contiene ${seq.length} basi. Il rendering potrebbe richiedere tempo. Continuare?`)) {
+                    return;
+                }
+            }
+
+            document.getElementById('dna-sequence').value = seq;
+            currentSequence = seq;
+            loadStructure();
+            closePanelOnMobile();
+        });
+
+        document.getElementById('show-grooves').addEventListener('change', (e) => {
+            showGrooves = e.target.checked;
+            if (currentStructureType === 'dna') {
+                loadStructure();
+            }
+        });
+
+        document.getElementById('highlight-active').addEventListener('change', (e) => {
+            highlightActiveSite = e.target.checked;
+            loadStructure();
+        });
+
+        document.getElementById('color-scheme').addEventListener('change', (e) => {
+            proteinColorScheme = e.target.value;
+            loadStructure();
+            closePanelOnMobile();
+        });
+
+        document.getElementById('explain-btn').addEventListener('click', () => {
+            document.getElementById('modal').style.display = 'block';
+        });
+
+        document.getElementById('modal-close').addEventListener('click', () => {
+            document.getElementById('modal').style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modal')) {
+                document.getElementById('modal').style.display = 'none';
+            }
+        });
+
+        async function loadStructure() {
+            let moleculeData;
+
+            switch (currentStructureType) {
+                case 'dna':
+                    moleculeData = generateDNA(currentSequence);
+                    break;
+                case 'hemoglobin':
+                    moleculeData = generateHemoglobin();
+                    break;
+                case 'lysozyme':
+                    moleculeData = generateLysozyme();
+                    break;
+                case 'antibody':
+                    moleculeData = generateAntibody();
+                    break;
+                case 'helix':
+                    moleculeData = generateAlphaHelix(10);
+                    break;
+                case 'sheet':
+                    moleculeData = generateBetaSheet(2, 5);
+                    break;
+            }
+
+            await renderMolecule(moleculeData, currentRenderMode);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        loadStructure();
+        animate();
+
+    </script>
+</body>
+
+</html>

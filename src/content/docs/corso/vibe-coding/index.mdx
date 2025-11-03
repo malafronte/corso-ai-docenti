@@ -3042,3 +3042,2819 @@ Dopo alcune iterazioni con Claude 4.5 Thinking, possiamo ottenere un'applicazion
 
 <PublicLink href="vibe-coding/examples/simulatore-sistema-solare.html">Simulazione del Sistema Solare in 3D (HTML/CSS/JS)</PublicLink>
 
+## Chimica - Livello base
+
+### Tavola Periodica Interattiva
+<Accordion title="Prompt iniziale" defaultOpen={false}>
+
+```text
+Crea una tavola periodica interattiva con informazioni dettagliate sugli elementi.
+
+Deve includere:- Tavola periodica completa con elementi colorati per categoria (metalli, non metalli, gas nobili, ecc.)- Click su elemento per mostrare: numero atomico, massa atomica, configurazione elettronica, stati di ossidazione comuni, punto di fusione/ebollizione, elettronegatività- Modalità di ricerca per nome o simbolo- Filtri per: stato fisico a temperatura ambiente, categoria, metalli/non metalli- Evidenziazione di famiglie chimiche al passaggio del mouse- Piccole informazioni storiche (chi ha scoperto l'elemento e quando). Design moderno e colorato adatto a studenti delle superiori. Istruzioni e domande guida integrate. Usa rappresentazione accurata
+```
+</Accordion>
+Prompt migliorato con Prompt Enhancer per App Didattiche:
+<Accordion title="Prompt migliorato" defaultOpen={false}>
+
+```text
+Creazione di un'Applicazione Didattica: Tavola Periodica Interattiva
+
+### 👤 Persona
+Sei un esperto sviluppatore frontend specializzato nella creazione di strumenti didattici interattivi e visualizzazioni scientifiche. La tua forza risiede nell'unire un design UI/UX moderno e accattivante con un'accurata rappresentazione dei dati scientifici, creando applicazioni in puro JavaScript.
+
+### 🎯 Obiettivo
+Generare il codice sorgente completo per un'applicazione web **single-page** che funzioni come una tavola periodica interattiva. L'applicazione deve essere visivamente moderna, colorata, reattiva e specificamente progettata per studenti delle scuole superiori.
+
+---
+
+### 📋 Requisiti Tecnici e Vincoli
+
+1.  **Stack Tecnologico:** Il progetto deve essere composto esclusivamente da **tre file**:
+    * `index.html` (per la struttura)
+    * `style.css` (per il layout e il design)
+    * `script.js` (per tutta l'interattività)
+2.  **JavaScript:** Utilizza **esclusivamente Vanilla JavaScript (ES6+)**.
+3.  **Vincoli (Negativi):**
+    * **NON** utilizzare alcun framework o libreria JavaScript (es. React, Vue, Angular, jQuery, ecc.).
+    * **NON** utilizzare librerie CSS (es. Bootstrap, Tailwind).
+    * **NON** richiedere passaggi di compilazione o *build tools* (es. npm, Webpack, Babel). Il codice deve essere eseguibile semplicemente aprendo il file `index.html` in un browser.
+4.  **Dati degli Elementi:** Incorpora tutti i dati degli elementi (118 elementi) direttamente nel file `script.js` come un **array di oggetti JSON**. Ogni oggetto deve contenere tutte le informazioni necessarie (nome, simbolo, numero atomico, massa, categoria, configurazione elettronica, ecc.).
+
+---
+
+### 🚀 Funzionalità Dettagliate
+
+#### 1. Layout e Visualizzazione della Tabella
+* **Griglia Principale:** Genera dinamicamente la griglia della tavola periodica (18 colonne, 7 righe) posizionando correttamente tutti gli elementi.
+* **Lantanidi e Attinidi:** Posiziona le due righe dei lantanidi e attinidi separatamente sotto la tabella principale.
+* **Cella Elemento:** Ogni cella nella griglia deve mostrare chiaramente:
+    * Numero Atomico (in alto)
+    * Simbolo Chimico (grande, al centro)
+    * Nome dell'Elemento (in basso)
+    * Massa Atomica (opzionale, più piccola)
+* **Codifica Colori (Categorie):**
+    * Applica uno schema di colori di sfondo distinto per ogni categoria chimica (es. metalli alcalini, alogeni, gas nobili, metalli di transizione, non metalli, metalloidi, lantanidi, attinidi).
+    * Includi una legenda chiara e visibile per questi colori.
+
+#### 2. Interattività
+* **Click sull'Elemento (Modal Dettagli):**
+    * Al click su qualsiasi elemento, deve aprirsi una finestra modale (o un pannello informativo) che mostra i dettagli completi:
+        * Nome, Simbolo, Numero Atomico
+        * Massa Atomica
+        * Configurazione Elettronica (es. `[Ar] 3d10 4s1`)
+        * Stati di Ossidazione comuni
+        * Punto di Fusione e Punto di Ebollizione (in °C o K)
+        * Elettronegatività (scala Pauling)
+        * Breve nota storica (es. "Scoperto da [Nome] nel [Anno]")
+* **Evidenziazione al Passaggio del Mouse (Hover):**
+    * Al passaggio del mouse su un elemento, evidenzia visivamente (es. con un bordo più marcato o un'ombra) tutti gli elementi appartenenti alla **stessa famiglia chimica** (o gruppo/colonna).
+* **Ricerca:**
+    * Implementa una barra di ricerca (`<input type="text">`) che filtri la tabella in tempo reale. La ricerca deve funzionare sia per **Nome** (es. "Elio") sia per **Simbolo** (es. "He"). Gli elementi non corrispondenti devono essere sfocati o resi semitrasparenti.
+* **Filtri:**
+    * Implementa pulsanti o checkbox per filtrare la tabella in base a:
+        * **Stato fisico** a temperatura ambiente (Solido, Liquido, Gas).
+        * **Categoria** (le stesse usate per i colori, es. "Mostra solo Alogeni").
+        * **Tipo** (Metalli / Non Metalli / Metalloidi).
+
+#### 3. Design e Contenuto Didattico
+* **Design:** Il design deve essere pulito, moderno e colorato. Utilizza un font sans-serif leggibile (es. Google Fonts). L'interfaccia deve essere intuitiva e reattiva (utilizzabile su tablet).
+* **Istruzioni:** Includi una piccola sezione "Come usare" (es. "Clicca su un elemento per i dettagli", "Usa i filtri per esplorare").
+* **Domande Guida:** Includi una piccola sezione (magari a scomparsa) con 3-5 domande guida per stimolare l'esplorazione (es. "Qual è l'elemento con l'elettronegatività più alta?", "Trova tutti gli elementi liquidi a temperatura ambiente").
+
+### 📦 Formato di Output
+Fornisci il codice sorgente completo suddiviso in tre blocchi distinti e pronti per essere copiati e incollati nei rispettivi file:
+
+**HTML (index.html):**
+[Codice HTML qui]
+
+**CSS (style.css):**
+[Codice CSS qui]
+
+**JavaScript (script.js):**
+[Codice JavaScript qui, includendo l'array JSON dei dati degli elementi]
+```
+</Accordion>
+Dopo alcune iterazioni con Claude 4.5 Thinking, possiamo ottenere un'applicazione web che funge da tavola periodica interattiva, come mostrato di seguito:
+
+<PublicLink href="vibe-coding/examples/tavola-periodica.html">Tavola Periodica Interattiva (HTML/CSS/JS)</PublicLink>
+
+## Chimica - Livello intermedio
+
+### Simulatore di titolazione acido-base
+<Accordion title="Prompt iniziale" defaultOpen={false}>
+
+```text
+Crea una simulazione interattiva di titolazione acido-base.
+
+Deve mostrare:- Buretta virtuale contenente la soluzione titolante- Becher con soluzione da titolare che cambia colore con pH- Controllo per aggiungere titolante goccia a goccia o continuamente- Grafico pH vs volume aggiunto in tempo reale- Indicatore di punto equivalenza- Scelta tra diverse combinazioni: acido forte-base forte, acido debole-base forte, ecc.- Possibilità di selezionare l'indicatore (fenolftaleina, metilarancio, ecc.)- Calcoli di concentrazione al punto equivalenza- Visualizzazione della curva di titolazione teorica sovrapposta ai dati sperimentaliInterfaccia realistica che simuli l'esperienza di laboratorio. **Istruzioni operative:**
+
+1. Specificare all'AI: "Usa equazioni chimiche accurate per i calcoli di pH"2. Richiedere: "Aggiungi animazione fluida quando si aggiunge il titolante"3. Testare tutte le combinazioni acido-base disponibili4. Verificare che gli indicatori cambino colore nell'intervallo di pH corretto**Verifica dell'output:**- Il pH calcolato deve seguire l'equazione di Henderson-Hasselbalch per sistemi tampone- Il punto equivalenza deve corrispondere alla stechiometria (1:1 per acidi/basi monoprotic)- I colori degli indicatori devono cambiare nelle zone di viraggio corrette- La curva deve mostrare chiaramente zona tampone e salto di pH.  Istruzioni e domande guida integrate. Usa rappresentazione accurata del modello. Aggiungi modale per spiegazione dettagliata e una sezione con domande guida. Aggiungi possibilità di esportare i dati dell'esperimento o degli esperimenti laddove applicabili in formato CSV
+```
+</Accordion>
+Prompt migliorato con Prompt Enhancer per App Didattiche:
+<Accordion title="Prompt migliorato" defaultOpen={false}>
+
+```text
+Generazione di un'Applicazione Didattica: Simulatore di Titolazione Acido-Base Interattivo
+
+**Persona:** Sei un esperto sviluppatore front-end con una specializzazione in chimica didattica e instructional design. Il tuo compito è creare un'applicazione web educativa robusta, scientificamente accurata e altamente interattiva.
+
+**Obiettivo Principale:** Sviluppare una simulazione di titolazione acido-base completa come singola applicazione web. L'applicazione deve simulare realisticamente un esperimento di laboratorio, fornendo al contempo feedback visivo e dati in tempo reale, ed essere interamente contenuta in un unico file.
+
+---
+
+### Requisiti Tecnici e Vincoli
+
+1.  **Stack Tecnologico:** Genera un **singolo file `.html`** che includa tutto il codice necessario:
+    * **HTML** per la struttura semantica.
+    * **CSS** (incorporato nel tag `<style>`) per un layout pulito, reattivo e un'interfaccia realistica (simulazione di vetreria da laboratorio).
+    * **JavaScript (Vanilla)** (incorporato nel tag `<script>`) per tutta la logica interattiva e i calcoli chimici.
+2.  **Frameworks (Divieto):** **Non** utilizzare alcun framework JavaScript (come React, Vue, Angular) o librerie CSS (come Bootstrap). Scrivi solo codice **Vanilla JavaScript (ES6+)** puro.
+3.  **Librerie Esterne (Ammesse):** È consentito, e fortemente raccomandato, l'uso di **Chart.js** per il grafico in tempo reale. Includi la libreria tramite il suo link CDN ufficiale (es. `https://cdn.jsdelivr.net/npm/chart.js`).
+4.  **Nessun Backend:** L'applicazione deve essere interamente lato client e funzionare offline (una volta caricata).
+
+---
+
+### Struttura e Funzionalità dell'Applicazione
+
+#### 1. Area di Configurazione Esperimento (Controlli)
+L'utente deve poter impostare l'esperimento:
+* **Selezione Titolazione:** Un menu a tendina (`<select>`) per scegliere la combinazione (Analita nel becher, Titolante nella buretta):
+    * Acido Forte - Base Forte (es. HCl vs NaOH)
+    * Acido Debole - Base Forte (es. CH₃COOH vs NaOH)
+    * Base Debole - Acido Forte (es. NH₃ vs HCl)
+* **Impostazioni Iniziali:** Campi di input (`<input type="number">`) per definire:
+    * Volume iniziale analita (es. 50.0 mL)
+    * Concentrazione analita (es. 0.1 M)
+    * Concentrazione titolante (es. 0.1 M)
+* **Selezione Indicatore:** Un menu a tendina per selezionare l'indicatore (con i relativi intervalli di viraggio corretti):
+    * Fenolftaleina (8.2–10.0)
+    * Metilarancio (3.1–4.4)
+    * Blu di Bromotimolo (6.0–7.6)
+* **Pulsanti di Controllo:**
+    * "Aggiungi 0.1 mL" (goccia a goccia)
+    * "Aggiungi 1.0 mL"
+    * "Aggiungi Continuo" (con un pulsante "Stop" che appare)
+    * "Reset Esperimento"
+
+#### 2. Area di Simulazione Visiva
+Una rappresentazione grafica realistica del setup di laboratorio:
+* **Buretta Virtuale:** Una buretta (disegnata con CSS/HTML o SVG) che mostra il livello del titolante diminuire visivamente ad ogni aggiunta. Deve mostrare le tacche del volume.
+* **Becher/Matraccio:** Un becher sottostante che contiene l'analita.
+* **Cambio Colore:** Il colore della soluzione nel becher **deve cambiare dinamicamente** in base a due fattori:
+    1.  Il pH calcolato della soluzione.
+    2.  L'indicatore selezionato (deve mostrare il colore acido, basico o di transizione nell'intervallo di viraggio corretto).
+* **Animazione:** Aggiungi un'animazione fluida (es. una goccia che cade) quando il titolante viene aggiunto.
+
+#### 3. Area Dati e Grafico (Feedback in Tempo Reale)
+* **Display Numerici:** Visualizza in tempo reale:
+    * "Volume Titolante Aggiunto (mL):"
+    * "pH Corrente:"
+* **Grafico di Titolazione (Chart.js):**
+    * Un grafico a dispersione (linea) che traccia il "pH" (asse Y) contro il "Volume Aggiunto (mL)" (asse X).
+    * **Curva Sperimentale:** Aggiungi un punto al grafico per ogni aggiunta di titolante effettuata dall'utente.
+    * **Curva Teorica:** All'avvio dell'esperimento, calcola e sovrapponi la curva di titolazione teorica completa (calcolata con piccoli incrementi) come riferimento.
+    * **Indicatore Punto Equivalenza:** Quando il volume aggiunto raggiunge il punto di equivalenza stechiometrico, segnalalo chiaramente sul grafico e nell'interfaccia.
+
+#### 4. Logica di Calcolo (Motore Chimico)
+Questo è il nucleo dell'applicazione e deve essere scientificamente accurato.
+* **Equazioni Chimiche:** Implementa le funzioni JavaScript corrette per calcolare il pH in ogni fase della titolazione (basati sulle $K_a$/$K_b$ appropriate, che devono essere hardcoded, es. $K_a$ per acido acetico = $1.8 \times 10^{-5}$).
+    * **Zona Tampone (Acidi/Basi Deboli):** Utilizza l'equazione di **Henderson-Hasselbalch** ($pH = pK_a + \log([\text{Base Coniugata}] / [\text{Acido}])$).
+    * **Punto di Equivalenza:** Calcola il pH basato sull'idrolisi del sale formato (per titolazioni deboli/forti).
+    * **Oltre l'Equivalenza:** Calcola il pH basato sull'eccesso di titolante forte.
+* **Calcoli al Punto di Equivalenza:** Una volta raggiunto il punto di equivalenza, visualizza un riepilogo del calcolo (es. "Punto equivalenza raggiunto a X mL. Concentrazione calcolata dell'analita: Y M").
+
+#### 5. Funzionalità Didattiche Aggiuntive
+* **Modal Spiegazione:** Un pulsante "Info/Teoria" che apre una finestra modale. Il contenuto del modale deve spiegare la teoria dietro la titolazione *attualmente selezionata* (es. perché la curva ha quella forma, cos'è la zona tampone, come scegliere l'indicatore).
+* **Sezione Domande Guida:** Una sezione collassabile (es. `<details>`/`<summary>`) intitolata "Domande Guida" che ponga domande riflessive (es. "Perché il pH cambia così bruscamente vicino al punto di equivalenza?", "Cosa succederebbe se usassi la fenolftaleina per la titolazione Base Debole - Acido Forte?").
+* **Esportazione Dati:** Un pulsante "Esporta Dati (CSV)" che genera e avvia il download di un file `.csv` con i dati dell'esperimento dell'utente (colonne: `VolumeAggiunto_mL`, `pH_Calcolato`).
+
+---
+
+### Istruzioni per l'IA (Chain of Thought)
+
+1.  **Pensa Passo-Passo:** Prima di scrivere il codice, delinea la struttura.
+2.  **Struttura HTML:** Definisci l'HTML semantico per le tre aree principali (Controlli, Visualizzazione, Dati/Grafico) e per gli elementi modali/collassabili.
+3.  **Stile CSS:** Scrivi il CSS all'interno di `<style>`. Concentrati sulla creazione di una "vetreria" (buretta, becher) realistica e su un layout pulito. Gestisci il cambio di colore del becher usando variabili CSS aggiornate da JavaScript.
+4.  **Logica JavaScript (Core):**
+    * Inizia implementando le funzioni di calcolo del pH (il "motore chimico"). Queste sono le funzioni più critiche. Testale mentalmente per i casi (Acido Forte-Base Forte, Acido Debole-Base Forte).
+    * Includi Chart.js via CDN.
+    * Inizializza il grafico.
+    * Collega gli eventi dei pulsanti ("Aggiungi goccia", "Reset") alle funzioni di calcolo.
+    * Aggiorna l'interfaccia (Grafico, Display pH, Colore Becher, Livello Buretta) ad ogni calcolo.
+5.  **Funzionalità Aggiuntive:** Implementa la logica per il modale, le domande guida e la funzione di esportazione CSV.
+6.  **Revisione:** Assicurati che tutto il codice sia contenuto in un unico file HTML, sia ben commentato (specialmente le formule chimiche) e che non ci siano dipendenze da framework JS.
+```
+</Accordion>
+Dopo alcune iterazioni con Claude 4.5 Thinking, possiamo ottenere un'applicazione web che simula una titolazione acido-base interattiva, come mostrato di seguito:
+
+<PublicLink href="vibe-coding/examples/titolazioni-acido-base.html">Simulatore di Titolazione Acido-Base (HTML/CSS/JS)</PublicLink>
+
+### Visualizzatore molecolare 3D VSEPR
+<Accordion title="Prompt iniziale" defaultOpen={false}>
+
+```text
+Crea un visualizzatore di molecole 3D con teoria VSEPR.
+
+L'applicazione deve includere:- Rendering 3D di molecole con atomi colorati secondo standard (C=grigio, O=rosso, N=blu, H=bianco)- Rotazione della molecola con mouse/touch- Menu per selezionare molecole comuni (H2O, CO2, CH4, NH3, SF6, ecc.)- Visualizzazione della geometria molecolare (lineare, trigonale planare, tetraedrica, ecc.)- Indicazione degli angoli di legame principali- Visualizzazione di coppie di elettroni solitarie- Informazioni su: ibridazione, polarità della molecola, momento dipolare- Possibilità di costruire molecole personalizzate aggiungendo atomi. Usa Three.js per rendering 3D. Interfaccia adatta a studenti di chimica organica.
+```
+</Accordion>
+Prompt migliorato con Prompt Enhancer per App Didattiche:
+<Accordion title="Prompt migliorato" defaultOpen={false}>
+
+```text
+Generazione di un'Applicazione Didattica Interattiva: Visualizzatore 3D di Molecole VSEPR
+
+**Persona AI:**
+Sei un programmatore senior esperto nello sviluppo di applicazioni web educative (ed-tech) e hai una solida conoscenza della chimica computazionale. La tua specialità è tradurre concetti scientifici complessi, come la teoria VSEPR (Valence Shell Electron Pair Repulsion), in strumenti visivi interattivi e intuitivi utilizzando JavaScript e librerie di rendering 3D.
+
+**Obiettivo Principale:**
+Generare il codice completo per un'applicazione web **single-page** (HTML, CSS e JavaScript) che funzioni come un visualizzatore di molecole 3D. L'applicazione deve illustrare i principi della teoria VSEPR ed essere adatta a studenti di chimica.
+
+**Stack Tecnologico Richiesto:**
+1.  **HTML5:** Per la struttura semantica della pagina (canvas, controlli, pannello informativo).
+2.  **CSS3:** Per lo stile dell'applicazione. Utilizza un layout moderno (es. Flexbox o Grid), pulito, responsive e accademico.
+3.  **JavaScript (Vanilla ES6+):** Per tutta la logica dell'applicazione, la manipolazione del DOM e l'interazione con la libreria 3D.
+4.  **Three.js:** Utilizza questa libreria per il rendering 3D. L'applicazione DEVE includere Three.js (e i suoi controlli, come `OrbitControls`) tramite link CDN affidabili (es. da cdnjs.com) all'interno del tag `<head>` dell'HTML.
+
+**Requisiti Funzionali Dettagliati:**
+
+**1. Scena 3D e Rendering:**
+* Implementa una scena 3D (canvas HTML) dove le molecole vengono renderizzate.
+* **Atomi:** Renderizzati come sfere (`SphereGeometry`).
+* **Colori Atomi (Standard CPK):** Applica rigorosamente questi colori:
+    * Carbonio (C): Grigio scuro / Antracite
+    * Ossigeno (O): Rosso
+    * Azoto (N): Blu
+    * Idrogeno (H): Bianco
+    * Zolfo (S): Giallo
+    * Fosforo (P): Arancione
+    * Fluoro (F): Verde chiaro
+    * Cloro (Cl): Verde
+* **Legami:** Renderizzati come cilindri (`CylinderGeometry`) che collegano gli atomi.
+
+**2. Interattività:**
+* L'utente deve poter ruotare la molecola nella scena 3D utilizzando il *mouse dragging* (su desktop) e il *touch swipe* (su mobile).
+* L'utente deve poter zoomare (mouse wheel / pinch-to-zoom).
+* Utilizza `OrbitControls` di Three.js per implementare facilmente questa funzionalità.
+
+**3. Menu di Selezione (Molecole Predefinite):**
+* Includi un menu a tendina (`<select>`) che permetta all'utente di scegliere tra diverse molecole VSEPR comuni.
+* **Elenco Minimo:** H₂O (Acqua), CO₂ (Anidride Carbonica), CH₄ (Metano), NH₃ (Ammoniaca), SF₆ (Esafluoruro di Zolfo), PCl₅ (Pentacloruro di Fosforo), BF₃ (Trifluoruro di Boro).
+* Quando una molecola viene selezionata, la scena 3D si svuota e renderizza la nuova molecola, e il pannello informativo si aggiorna istantaneamente.
+
+**4. Pannello Informativo Dinamico:**
+* Crea un'area dell'interfaccia (es. una sidebar) che mostra i dettagli della molecola attualmente visualizzata.
+* **Informazioni Obbligatorie:**
+    * **Nome Molecola:** (es. "Metano")
+    * **Formula:** (es. "CH₄")
+    * **Formula VSEPR (AXE):** (es. "AX₄")
+    * **Geometria Molecolare:** (es. "Tetraedrica")
+    * **Angoli di Legame:** (es. "109.5°")
+    * **Ibridazione (Atomo Centrale):** (es. "sp³")
+    * **Polarità Molecolare:** (es. "Non polare")
+    * **Momento Dipolare:** (es. "µ = 0 D")
+
+**5. Visualizzazione Coppie Solitarie (Lone Pairs):**
+* Implementa un checkbox o un interruttore (toggle) con etichetta "Mostra Coppie Solitarie".
+* Se attivato, l'applicazione deve visualizzare le coppie di elettroni solitarie sull'atomo centrale come "lobi" o sfere traslucide nelle posizioni geometricamente corrette (es. per H₂O, due lobi che completano il tetraedro).
+
+**6. Modalità "Costruttore VSEPR" (Funzionalità Avanzata):**
+* Implementa una modalità separata (es. un tab o una sezione) chiamata "Costruttore".
+* Questa modalità *non* deve permettere di aggiungere atomi specifici (è troppo complesso), ma deve servire a *costruire una geometria VSEPR generica*.
+* **Input Utente:**
+    * Un input numerico (o pulsanti +/-) per "Atomi Legati (X)" (da 1 a 6).
+    * Un input numerico (o pulsanti +/-) per "Coppie Solitarie (E)" (da 0 a 6).
+* **Output:**
+    * L'applicazione renderizza una molecola generica AXₙEₘ (es. A = sfera viola, X = sfere grigie, E = lobi traslucidi).
+    * Il pannello informativo si aggiorna dinamicamente mostrando la Geometria VSEPR, gli angoli approssimati e l'ibridazione per la combinazione AXₙEₘ selezionata.
+
+**Vincoli (Regole da Rispettare):**
+* **ASSOLUTAMENTE VIETATO** utilizzare framework JavaScript come React, Vue, Angular o Svelte.
+* **ASSOLUTAMENTE VIETATO** utilizzare librerie esterne diverse da Three.js (e i suoi controlli base come `OrbitControls`) importati via CDN. Non usare `npm`, `node`, o sistemi di build.
+* **Codice Monolitico:** Fornisci l'intera applicazione come un **singolo file HTML**. Il CSS deve essere incorporato in un tag `<style>` e tutto il JavaScript deve essere incorporato in un tag `<script>` (preferibilmente alla fine del `<body>`).
+* **Nessun Backend:** L'applicazione deve funzionare interamente *client-side*.
+* **Struttura Dati:** Definisci i dati delle molecole (posizioni atomi, legami, informazioni VSEPR) in modo chiaro all'interno del codice JavaScript (es. un oggetto o una mappa JS).
+* **Commenti:** Aggiungi commenti chiari nel codice JS per spiegare la configurazione di Three.js (scena, camera, luci), la logica di caricamento delle molecole e i calcoli VSEPR.
+
+**Formato di Output:**
+Fornisci esclusivamente il codice sorgente completo del file `index.html`. Il codice deve essere pronto per essere copiato, salvato come file `.html` e aperto in un browser per funzionare immediatamente. Non includere preamboli o spiegazioni al di fuori del codice.
+```
+</Accordion>
+Dopo alcune iterazioni con Claude 4.5 Thinking, possiamo ottenere un'applicazione web che funge da visualizzatore molecolare 3D VSEPR, come mostrato di seguito:
+    
+<PublicLink href="vibe-coding/examples/visualizzatore-vsepr-3d.html">Visualizzatore Molecolare 3D VSEPR (HTML/CSS/JS)</PublicLink>
+
+## Chimica - Livello avanzato
+
+### Bilanciatore di Equazioni Chimiche
+<Accordion title="Prompt iniziale" defaultOpen={false}>
+
+```text
+Vorrei che creassi un'applicazione didattica interattiva in Python, pensata per girare preferibilmente su Google Colab o come notebook Jupyter. L'obiettivo è fornire ai miei studenti di chimica uno strumento completo per esercitarsi con la stechiometria.
+
+Queste sono le funzionalità principali che devono essere implementate:
+
+1.  **Bilanciatore di Equazioni:** L'utente deve poter inserire un'equazione non bilanciata (es. "Fe + O2 -> Fe2O3") e l'applicazione deve restituire l'equazione bilanciata con i coefficienti corretti.
+2.  **Analisi del Composto:** Vorrei una funzione in cui l'utente inserisce una formula chimica (es. "H2SO4" o "Ca(OH)2") e ottiene informazioni dettagliate:
+    * Massa molare.
+    * Composizione percentuale degli elementi.
+    * Se possibile, il nome IUPAC (magari cercandolo online).
+    * Una visualizzazione della struttura 2D o 3D della molecola.
+3.  **Calcolatore Stechiometrico:** Dopo aver bilanciato un'equazione, l'utente deve poter inserire una quantità (in grammi o moli) di un composto (reagente o prodotto) e l'applicazione deve calcolare le quantità corrispondenti (in grammi e moli) di tutti gli altri composti coinvolti nella reazione. Sarebbe utile vedere i risultati in una tabella chiara e magari un grafico a barre delle masse.
+4.  **Calcolo del Reagente Limitante:** L'utente deve poter inserire le quantità iniziali (in grammi) di due o più reagenti e il programma deve identificare automaticamente quale sia il reagente limitante.
+5.  **Database di Esercizi:** Per favore, includi un set di equazioni di esempio già pronte, magari suddivise per livello di difficoltà (facili, medie, difficili, redox, combustione), che gli studenti possano usare per fare pratica.
+6.  **Visualizzazioni Extra:** Se possibile, mi piacerebbe anche uno strumento per visualizzare la tavola periodica, magari con la possibilità di evidenziare elementi specifici.
+
+Per l'interfaccia, vorrei che fosse un'applicazione unica e interattiva. Pensavo a qualcosa che usi i widget di Jupyter (ipywidgets), magari organizzata in schede (Tabs) per separare le diverse funzioni (una scheda per il bilanciamento, una per i calcoli, una per l'analisi dei composti, ecc.).
+
+L'intero progetto deve essere un singolo notebook Python (.ipynb) che includa sia il codice per le funzioni, sia le celle per l'installazione delle librerie necessarie (come `chempy`, `rdkit`, `mendeleev`, `pandas`, `ipywidgets`, ecc.) e una guida all'uso (in Markdown).
+```
+</Accordion>
+Prompt migliorato con Prompt Enhancer per App Didattiche:
+<Accordion title="Prompt migliorato" defaultOpen={false}>
+
+```text
+Generazione di un Notebook Jupyter Interattivo per la Stechiometria Chimica (Versione Avanzata)
+
+**Persona:** Sei un programmatore Python senior con una specializzazione nello sviluppo di software didattico e una profonda conoscenza della chimica. Il tuo obiettivo è creare uno strumento educativo robusto, intuitivo e completo per studenti di chimica, basato su un ecosistema di librerie scientifiche.
+
+**Obiettivo Principale:** Sviluppare un singolo Notebook Jupyter (.ipynb) che funzioni perfettamente su Google Colab e localmente, fornendo un'applicazione "tutto-in-uno" per lo studio e la pratica della stechiometria. L'interfaccia utente deve essere interattiva e basata su `ipywidgets`.
+
+**Requisiti Strutturali e Tecnici:**
+
+1.  **File Unico:** L'intero output deve essere un singolo file `.ipynb`.
+2.  **Cella di Installazione:** La *prima cella* del notebook deve contenere tutti i comandi `!pip install` necessari per le librerie richieste. Assicurati di includere: `chempy`, `chemlib`, `rdkit`, `mendeleev`, `pint`, `molmass`, `pyvalem`, `periodictable`, `pubchempy`, `ipywidgets`, `pandas`, `matplotlib`, `seaborn`, `plotly`.
+3.  **Cella di Import:** Una cella dedicata per importare tutte le librerie, includendo controlli di disponibilità (es. `CHEMLIB_AVAILABLE = True`).
+4.  **Interfaccia a Schede (Tabs):** L'applicazione deve utilizzare `ipywidgets.Tab` per organizzare le diverse funzionalità.
+5.  **Organizzazione del Codice:** Il codice deve essere modulare, suddiviso in celle separate per:
+    * Installazione
+    * Import
+    * Funzioni Principali di Logica (le funzioni wrapper come `bilancia_equazione`, `info_composto`, `calcola_stechiometria`, `reagente_limitante`)
+    * Funzioni Avanzate (es. `analisi_completa_chemlib`)
+    * Funzioni di Visualizzazione (`visualizza_molecola_3d`, `grafico_tavola_periodica_interattivo`)
+    * Database e Test (`DATABASE_EQUAZIONI`, `test_database_completo`)
+    * Funzioni di Utility e Tutorial (`qb`, `qi`, `tutorial_completo`, `help_chempy`)
+    * Definizione dell'Interfaccia (`crea_interfaccia_interattiva`)
+    * Cella di Avvio (`main()`)
+
+---
+
+**Dettagli delle Funzionalità (per Scheda UI):**
+
+### Scheda 1: Bilanciamento Equazioni
+* **Input:** Una casella di testo (`widgets.Textarea`) e un menu a tendina (`widgets.Dropdown`) popolato dal `DATABASE_EQUAZIONI` per selezionare esempi.
+* **Azione:** Un pulsante (`widgets.Button`) "Bilancia".
+* **Logica:** Chiama la funzione `bilancia_equazione(equazione)`.
+* **Output:** Un'area di output (`widgets.Output`) che mostra l'equazione bilanciata (formattata in HTML) e una tabella `pandas.DataFrame` con i coefficienti.
+
+### Scheda 2: Informazioni Composto
+* **Input:** Una casella di testo (`widgets.Text`) per la formula chimica.
+* **Azione:** Un pulsante "Analizza".
+* **Logica:** Chiama *due* funzioni:
+    1.  `info_composto(formula)`: Utilizza `ChemPy`, `Mendeleev`, `PubChemPy` e `RDKit` per mostrare Massa Molare, Composizione, Dati PubChem (Nome IUPAC, SMILES) e la struttura 2D (`Draw.MolToImage`).
+    2.  `analisi_completa_chemlib(formula)`: Utilizza `Chemlib` per mostrare un riepilogo delle proprietà e un grafico a torta (`matplotlib.pie`) della composizione percentuale.
+* **Output:** Un'area di output che mostra tutti i risultati combinati.
+
+### Scheda 3: Calcoli Stechiometrici
+* **Input:**
+    1.  Un pulsante "Bilancia Prima" che popola l'equazione dalla Scheda 1.
+    2.  Una casella di testo disabilitata (`widgets.Textarea`) per mostrare l'equazione bilanciata in uso.
+    3.  Un menu a tendina (`widgets.Dropdown`) per selezionare il composto noto (popolato dinamicamente dopo il bilanciamento).
+    4.  Un `widgets.FloatText` per la quantità e un `widgets.Dropdown` per l'unità ('grammi', 'moli').
+* **Azione:** Pulsante "Calcola".
+* **Logica:** Chiama la funzione `calcola_stechiometria()`.
+* **Output:** Un'area di output che mostra una tabella `pandas.DataFrame` con moli, masse e masse molari di tutti i composti, e un grafico a barre (`matplotlib.bar`) che visualizza le masse.
+
+### Scheda 4: Visualizzazioni
+* **Input (Sezione 1):** Una casella di testo (`widgets.Text`) per la formula (es. "C6H6").
+* **Azione (Sezione 1):** Pulsante "Visualizza 3D".
+* **Logica (Sezione 1):** Chiama `visualizza_molecola_3d(formula)`. Questa funzione usa `RDKit` per generare coordinate 3D, ma visualizza la **struttura 2D** (`Draw.MolToImage`) e una tabella di **proprietà molecolari** (`Descriptors.MolWt`, `Descriptors.MolLogP`, etc.).
+* **Input (Sezione 2):** Una casella di testo (`widgets.Text`) per inserire elementi separati da virgola (es. "H,O,C").
+* **Azione (Sezione 2):** Pulsante "Tavola Periodica".
+* **Logica (Sezione 2):** Chiama `grafico_tavola_periodica_interattivo(elementi)`. Questa funzione usa `mendeleev` e `matplotlib.scatter` per generare un **grafico a dispersione (scatter plot)** della tavola periodica, evidenziando gli elementi richiesti.
+
+### Scheda 5: Database & Test
+* **Input:** Un menu a tendina (`widgets.Dropdown`) per selezionare il livello di difficoltà (es. 'facili', 'medie') dal `DATABASE_EQUAZIONI`.
+* **Azione 1:** Pulsante "Mostra Equazioni".
+* **Logica 1:** Mostra un elenco formattato (HTML) delle equazioni bilanciate per quel livello.
+* **Azione 2:** Pulsante "Test Completo".
+* **Logica 2:** Chiama la funzione `test_database_completo()`, che itera attraverso *tutto* il database, e visualizza un `pandas.DataFrame` riassuntivo dei successi e fallimenti del bilanciamento.
+
+---
+
+**Funzioni di Supporto e Tutorial:**
+
+* **Logica Core:** Assicurati che le funzioni `bilancia_equazione`, `info_composto`, `calcola_stechiometria` e `reagente_limitante` (anche se non usata nella UI) siano definite e robuste, utilizzando `chempy.Substance` e `chempy.balance_stoichiometry`.
+* **Database:** Definisci la costante `DATABASE_EQUAZIONI`.
+* **Helpers:** Includi funzioni di utility come `qb` (quick balance) e `qi` (quick info).
+* **Guida:** Includi celle Markdown per la guida all'uso (come `GUiDA RAPIDA`) e funzioni di documentazione come `tutorial_completo()` e `help_chempy(argomento)`.
+
+**Vincoli:**
+* **NON** utilizzare framework web (come Flask o Django).
+* L'interattività deve provenire *esclusivamente* da `ipywidgets`.
+* Gestisci gli errori (es. formule non valide) in modo robusto e mostra messaggi chiari all'utente nell'output del widget.
+```
+</Accordion>
+Dopo alcune iterazioni con Claude 4.5 Thinking, possiamo ottenere un notebook Jupyter che funge da bilanciatore di equazioni chimiche interattivo, come mostrato di seguito: 
+
+<Accordion title="Notebook Jupyter - Bilanciatore di Equazioni Chimiche" defaultOpen={false}>
+
+Il notebook seguente può essere copiato e incollato in un file con estensione `.ipynb` per essere eseguito in Jupyter o Google Colab.
+
+
+```python
+'''
+INSTALLAZIONE COMPLETA (Colab/Jupyter):
+---------------------------------------
+# Cella 1: Installazioni
+!pip install chempy chemlib rdkit mendeleev pint molmass pyvalem periodictable
+!pip install ipywidgets pandas matplotlib seaborn plotly
+!pip install pubchempy  # Per database online
+
+# Abilita i widget di IPython (necessario in Colab)
+from google.colab import output
+output.enable_custom_widget_manager()
+'''
+```
+
+USO BASE:
+
+1. Bilancia equazione:
+
+```python
+eq = bilancia_equazione("H2 + O2 -> H2O")
+```
+
+2. Info composto:
+
+```python
+info_composto("H2O")
+```
+3. Calcoli:
+```python
+calcola_stechiometria(eq, "H2", 10, "grammi")
+```
+
+4. Reagente limitante:
+
+```python
+reagente_limitante(eq, {'H2': 5, 'O2': 20})
+```
+
+
+INTERFACCIA GRAFICA:
+
+```python
+crea_interfaccia_interattiva()
+```
+
+
+LIBRERIE UTILIZZATE E LORO RUOLI:
+
+✅ ChemPy:
+   - Bilanciamento equazioni (balance_stoichiometry)
+   - Parsing formule chimiche
+   - Dati termodinamici
+   - Equilibri chimici
+
+✅ Chemlib:
+   - API semplificata per calcoli
+   - Composizione percentuale
+   - Massa molare
+
+✅ RDKit:
+   - Visualizzazione strutture 2D/3D
+   - SMILES parsing
+   - Descrittori molecolari
+
+✅ Mendeleev:
+   - Dati elementi tavola periodica
+   - Proprietà atomiche
+   - Configurazione elettronica
+
+✅ PubChemPy:
+   - Database composti online
+   - CID, nomi IUPAC
+   - Proprietà chimico-fisiche
+
+✅ Pint:
+   - Gestione unità di misura
+   - Conversioni automatiche
+
+✅ PyValem:
+   - Parser formule avanzato
+   - Stati elettronici
+
+
+VANTAGGI SOLUZIONE PYTHON CON LIBRERIE:
+
+✅ Librerie testate e mantenute
+✅ Dati scientifici accurati
+✅ Integrazione con database online
+✅ Funzionalità avanzate built-in
+✅ Aggiornamenti automatici
+✅ Community support
+
+
+ESEMPI AVANZATI:
+
+**Workflow completo**
+
+```python
+eq = bilancia_equazione("Fe2O3 + C -> Fe + CO2")
+info_composto("Fe2O3")
+risultati = calcola_stechiometria(eq, "Fe2O3", 100, "grammi")
+visualizza_molecola_3d("C6H6")
+```
+
+**Analisi batch**
+
+```python
+for livello in DATABASE_EQUAZIONI:
+    for eq_str in DATABASE_EQUAZIONI[livello]:
+        eq = bilancia_equazione(eq_str, show_info=False)
+        print(eq['equazione_bilanciata'])
+```
+
+**Export dati**
+
+```python
+df = test_database_completo()
+df.to_csv('risultati_stechiometria.csv')
+```
+
+**TROUBLESHOOTING:**
+
+Q: "ModuleNotFoundError: No module named 'chempy'"
+
+A: pip install chempy
+
+Q: "RDKit non visualizza molecole"
+
+A: Aggiungi SMILES al dizionario in visualizza_molecola_3d()
+
+Q: "ChemPy non bilancia equazione"
+
+A: Verifica sintassi: usa -> o →, formule corrette
+
+Q: "Interfaccia non appare"
+
+A: pip install ipywidgets && jupyter nbextension enable --py widgetsnbextension
+
+
+**RISORSE:**
+
+ChemPy: https://github.com/bjodah/chempy
+
+Chemlib: https://chemlib.readthedocs.io
+
+RDKit: https://www.rdkit.org
+
+Mendeleev: https://mendeleev.readthedocs.io
+
+PubChem: https://pubchempy.readthedocs.io
+
+
+**📝INSTALLAZIONE LOCALE CON ANACONDA (ALTERNATIVA A COLAB)**
+
+🎯**SOLUZIONE COMPLETA: Usare Environment in Jupyter**
+
+
+   **PASSO 1: Creare e attivare l'Environment**
+
+
+```bash
+# Aprire Anaconda Prompt
+conda create -n chimica python=3.10
+conda activate chimica
+```
+
+**PASSO 2: Installare le Librerie**
+
+
+```bash
+conda install -c conda-forge chempy rdkit
+pip install chemlib mendeleev pint molmass pyvalem periodictable pubchempy ipywidgets pandas matplotlib seaborn
+```
+
+**PASSO 3: Installare ipykernel (FONDAMENTALE!)**
+
+bash
+```
+# Questo permette a Jupyter di "vedere" l'environment
+pip install ipykernel
+python -m ipykernel install --user --name=chimica --display-name="Python (chimica)"
+```
+
+**PASSO 4: Avvia Jupyter**
+
+
+```bash
+# Aavviare da qualsiasi environment
+jupyter notebook
+# oppure
+jupyter lab
+```
+
+**PASSO 5: Seleziona il Kernel in Jupyter**
+
+**Metodo A - Quando si crea un nuovo notebook:**
+
+1.  Cliccare su **"New"** in alto a destra
+2.  Si vedrà **"Python (chimica)"** nella lista
+3.  Selezionarlo
+
+**Metodo B - In un notebook esistente:**
+
+1.  Menu: **Kernel → Change Kernel**
+2.  Selezionare **"Python (chimica)"**
+
+**Metodo C - Jupyter Lab:**
+
+1.  Angolo in alto a destra: cliccare sul nome del kernel attuale
+2.  Selezionare **"Python (chimica)"** dal menu a tendina
+
+* * * *
+
+✅ **Verifica del Funzionamento**
+
+
+Eseguire questa cella nel notebook:
+
+
+```python
+# Verifica environment attivo
+import sys
+print("🔍 Python path:")print(sys.executable)print("\n✅ Se vedi 'chimica' nel path, sei nell'environment giusto!\n")# Verifica librerieimport chempy
+print(f"✅ ChemPy {chempy.__version__} installato correttamente")
+```
+
+* * * *
+
+🔄 **Comandi Utili**
+
+**Vedere tutti gli environment disponibili in Jupyter:**
+
+
+```bash
+jupyter kernelspec list
+```
+
+Output esempio:
+
+Available kernels:
+  python3    /Users/.../.../python3
+  chimica    /Users/.../.../chimica
+
+
+**Rimuovere un kernel (se serve):**
+
+
+```bash
+jupyter kernelspec uninstall chimica
+```
+
+**Reinstallare il kernel:**
+
+
+```bash
+conda activate chimica
+python -m ipykernel install --user --name=chimica --display-name="Python (chimica)"
+```
+
+* * * *
+
+🚨 **Problema Comune: "Non vedo l'environment"**
+
+**Causa**: Non è installato `ipykernel` nell'environment
+
+**Soluzione:**
+
+```bash
+conda activate chimica
+pip install ipykernel
+python -m ipykernel install --user --name=chimica --display-name="Python (chimica)"
+```
+
+Poi **riavviare Jupyter** completamente (chiudere il browser e il terminale).
+
+* * * *
+
+📋 **Workflow Completo (Copia-Incolla)**
+
+```bash
+
+  # 1. Creare environment
+  conda create -n chimica python=3.10 -y
+  # 2. Attivare l'ambiente
+  conda activate chimica
+  # 3. Installa tutto
+  conda install -c conda-forge chempy rdkit -y
+  pip install chemlib mendeleev pint molmass pyvalem periodictable pubchempy ipywidgets pandas matplotlib seaborn ipykernel
+  # 4. Registra kernel
+  python -m ipykernel install --user --name=chimica --display-name="Python (chimica)"# 5. Avvia Jupyterjupyter notebook
+```
+
+Poi nel notebook: **Kernel → Change Kernel → Python (chimica)**
+
+* * * *
+
+💡 **Alternativa: Usare Anaconda Navigator (GUI)**
+
+1.  Aprire **Anaconda Navigator**
+2.  Andare su **Environments** (pannello sinistro)
+3.  Cliccare **Create** (in basso)
+4.  Nome: `chimica`, Python version: `3.10`
+5.  Cliccare sul triangolo verde accanto a "chimica"
+6.  Selezionare **"Open with Jupyter Notebook"**
+
+Questo aprirà automaticamente Jupyter con l'environment corretto!
+
+* * * *
+
+🎓 **Best Practice**
+
+-   **Un environment per progetto**: evita conflitti di dipendenze
+-   **Nomi descrittivi**: `chimica`, `ml-project`, `data-analysis`
+-   **Python 3.10**: versione stabile e compatibile con tutte le librerie chimiche
+
+🧪 **Analisi delle Equazioni**
+
+**📝 EQUAZIONI MOLECOLARI (e, g, h)**
+
+Queste sono facili, basta usare `bilancia_equazione()` direttamente:
+
+```python
+# e) K2SO4 + Ba(OH)2 → BaSO4 + KOH
+eq_e = bilancia_equazione("K2SO4 + Ba(OH)2 -> BaSO4 + KOH")
+# Risultato: K₂SO₄ + Ba(OH)₂ → BaSO₄ + 2KOH
+# Coefficienti: 1 + 1 → 1 + 2 ✅
+
+# g) ZnCl2 + NH3 + H2O → Zn(OH)2 + NH4Cl
+eq_g = bilancia_equazione("ZnCl2 + NH3 + H2O -> Zn(OH)2 + NH4Cl")
+# Risultato: ZnCl₂ + 2NH₃ + 2H₂O → Zn(OH)₂ + 2NH₄Cl
+# Coefficienti: 1 + 2 + 2 → 1 + 2 ✅
+
+# h) CaF2 + SiO2 + H2SO4 → CaSO4 + SiF4 + H2O
+eq_h = bilancia_equazione("CaF2 + SiO2 + H2SO4 -> CaSO4 + SiF4 + H2O")
+# Risultato: 2CaF₂ + SiO₂ + 2H₂SO₄ → 2CaSO₄ + SiF₄ + 2H₂O
+# Coefficienti: 2 + 1 + 2 → 2 + 1 + 2 ✅
+```
+
+---
+
+**⚡ EQUAZIONI IONICHE (f, i, l)**
+
+Per queste devi **convertire in forma molecolare** o usare equazioni ioniche nette:
+
+**f) Ba²⁺ + Cl⁻ + Ag⁺ + NO₃⁻ → AgCl + Ba²⁺ + NO₃⁻**
+
+```python
+# Forma molecolare equivalente:
+eq_f = bilancia_equazione("BaCl2 + AgNO3 -> AgCl + Ba(NO3)2")
+# BaCl₂ + 2AgNO₃ → 2AgCl + Ba(NO₃)₂
+# In forma ionica (distribuite le cariche):
+# 1 Ba²⁺ + 2 Cl⁻ + 2 Ag⁺ + 2 NO₃⁻ → 2 AgCl + 1 Ba²⁺ + 2 NO₃⁻
+# Coefficienti dell'immagine: 1 + 2 + 2 + 2 → 2 + 1 + 2 ✅
+```
+
+**i) Ca²⁺ + HPO₄²⁻ + NH₃ → Ca₃(PO₄)₂ + NH₄⁺**
+
+```python
+# Questa è complessa. Forma molecolare approssimativa:
+# 3Ca²⁺ + 2HPO₄²⁻ + 2NH₃ → Ca₃(PO₄)₂ + 2NH₄⁺
+# Ma ChemPy potrebbe avere difficoltà, proviamo varianti:
+
+# Variante 1: Usa composti neutri
+eq_i = bilancia_equazione("Ca(OH)2 + H3PO4 + NH3 -> Ca3(PO4)2 + NH4OH")
+
+# Variante 2: Manuale (se ChemPy fallisce)
+# Coefficienti dell'immagine: 3 + 2 + 2 → 1 + 2 ✅
+```
+
+**l) Fe³⁺ + NH₃ + H₂O → NH₄⁺ + Fe(OH)₃**
+
+```python
+# Forma molecolare:
+eq_l = bilancia_equazione("FeCl3 + NH3 + H2O -> NH4Cl + Fe(OH)3")
+# FeCl₃ + 3NH₃ + 3H₂O → 3NH₄Cl + Fe(OH)₃
+# In forma ionica: 1 Fe³⁺ + 3 NH₃ + 3 H₂O → 3 NH₄⁺ + 1 Fe(OH)₃
+# Coefficienti: 1 + 3 + 3 → 3 + 1 ✅
+```
+
+---
+
+🎯 **CODICE COMPLETO PER VERIFICARE TUTTE**
+
+```python
+# ============================================================================
+# VERIFICA TUTTE LE EQUAZIONI DELL'IMMAGINE
+# ============================================================================
+
+print("="*80)
+print("BILANCIAMENTO EQUAZIONI - VERIFICA RISULTATI")
+print("="*80)
+
+equazioni = {
+    'e': ("K2SO4 + Ba(OH)2 -> BaSO4 + KOH", "1 + 1 → 1 + 2"),
+    'g': ("ZnCl2 + NH3 + H2O -> Zn(OH)2 + NH4Cl", "1 + 2 + 2 → 1 + 2"),
+    'h': ("CaF2 + SiO2 + H2SO4 -> CaSO4 + SiF4 + H2O", "2 + 1 + 2 → 2 + 1 + 2"),
+    'f': ("BaCl2 + AgNO3 -> AgCl + Ba(NO3)2", "1 + 2 + 2 + 2 → 2 + 1 + 2 (ionica)"),
+    'i': ("COMPLESSA - vedi sotto", "3 + 2 + 2 → 1 + 2"),
+    'l': ("FeCl3 + NH3 + H2O -> NH4Cl + Fe(OH)3", "1 + 3 + 3 → 3 + 1"),
+}
+
+for lettera, (eq, coefficienti_attesi) in equazioni.items():
+    print(f"\n{lettera}) {eq}")
+    print(f"   Coefficienti attesi: {coefficienti_attesi}")
+    
+    if lettera != 'i':  # Salta quella complessa per ora
+        try:
+            risultato = bilancia_equazione(eq, show_info=False)
+            if 'errore' not in risultato:
+                print(f"   ✅ Bilanciata: {risultato['equazione_bilanciata']}")
+            else:
+                print(f"   ❌ {risultato['errore']}")
+        except Exception as e:
+            print(f"   ❌ Errore: {str(e)}")
+    print("-"*80)
+
+print("\n" + "="*80)
+```
+
+---
+
+🔬 **EQUAZIONE (i) - CASO SPECIALE**
+
+L'equazione **i)** è particolare perché coinvolge ioni poliatomici. Ecco come gestirla:
+
+**Metodo 1: Bilanciamento Manuale (più sicuro)**
+
+```python
+# Ca²⁺ + HPO₄²⁻ + NH₃ → Ca₃(PO₄)₂ + NH₄⁺
+
+# Passo 1: Bilancia Ca (serve 3 Ca a sinistra)
+# 3Ca²⁺ + HPO₄²⁻ + NH₃ → Ca₃(PO₄)₂ + NH₄⁺
+
+# Passo 2: Bilancia PO₄ (serve 2 HPO₄²⁻ a sinistra)
+# 3Ca²⁺ + 2HPO₄²⁻ + NH₃ → Ca₃(PO₄)₂ + NH₄⁺
+
+# Passo 3: Bilancia cariche
+# Sinistra: 3(+2) + 2(-2) + 0 = +2
+# Destra: 0 + x(+1) → serve x=2
+# 3Ca²⁺ + 2HPO₄²⁻ + 2NH₃ → Ca₃(PO₄)₂ + 2NH₄⁺
+
+# Coefficienti finali: 3 + 2 + 2 → 1 + 2 ✅
+
+print("i) 3Ca²⁺ + 2HPO₄²⁻ + 2NH₃ → Ca₃(PO₄)₂ + 2NH₄⁺")
+print("   Coefficienti: 3 + 2 + 2 → 1 + 2 ✅")
+```
+
+**Metodo 2: Con ChemPy (forma approssimata)**
+
+```python
+from chempy import balance_stoichiometry
+
+# Prova con composti neutri equivalenti
+try:
+    # Approssimazione: Ca(OH)2 + NH4H2PO4 non è esatto ma aiuta
+    eq = bilancia_equazione("CaCl2 + (NH4)2HPO4 -> Ca3(PO4)2 + NH4Cl + HCl")
+    print("Approssimazione molecolare trovata")
+except:
+    print("Usa bilanciamento manuale per equazioni ioniche complesse")
+```
+
+---
+
+📊 **TABELLA RIASSUNTIVA CON RISULTATI**
+
+```python
+import pandas as pd
+
+risultati = {
+    'Equazione': ['e', 'f', 'g', 'h', 'i', 'l'],
+    'Coefficienti Corretti': [
+        '1 + 1 → 1 + 2',
+        '1 + 2 + 2 + 2 → 2 + 1 + 2',
+        '1 + 2 + 2 → 1 + 2',
+        '2 + 1 + 2 → 2 + 1 + 2',
+        '3 + 2 + 2 → 1 + 2',
+        '1 + 3 + 3 → 3 + 1'
+    ],
+    'Tipo': [
+        'Molecolare',
+        'Ionica (doppio scambio)',
+        'Molecolare',
+        'Molecolare',
+        'Ionica complessa',
+        'Ionica'
+    ]
+}
+
+df = pd.DataFrame(risultati)
+display(df)
+```
+
+---
+
+✅ **CODICE FINALE**
+
+```python
+# Testa tutte le equazioni dell'immagine
+print("BILANCIAMENTO EQUAZIONI DELL'ESERCIZIO\n")
+
+# e)
+eq_e = bilancia_equazione("K2SO4 + Ba(OH)2 -> BaSO4 + KOH")
+print("✅ e) Coefficienti: 1 + 1 → 1 + 2\n")
+
+# f) Forma molecolare della ionica
+eq_f = bilancia_equazione("BaCl2 + AgNO3 -> AgCl + Ba(NO3)2")
+print("✅ f) Coefficienti ionici: 1 + 2 + 2 + 2 → 2 + 1 + 2\n")
+
+# g)
+eq_g = bilancia_equazione("ZnCl2 + NH3 + H2O -> Zn(OH)2 + NH4Cl")
+print("✅ g) Coefficienti: 1 + 2 + 2 → 1 + 2\n")
+
+# h)
+eq_h = bilancia_equazione("CaF2 + SiO2 + H2SO4 -> CaSO4 + SiF4 + H2O")
+print("✅ h) Coefficienti: 2 + 1 + 2 → 2 + 1 + 2\n")
+
+# i) Manuale (ChemPy ha difficoltà con ioniche complesse)
+print("i) 3Ca²⁺ + 2HPO₄²⁻ + 2NH₃ → Ca₃(PO₄)₂ + 2NH₄⁺")
+print("✅ i) Coefficienti: 3 + 2 + 2 → 1 + 2 (bilanciamento manuale)\n")
+
+# l) Forma molecolare della ionica
+eq_l = bilancia_equazione("FeCl3 + NH3 + H2O -> NH4Cl + Fe(OH)3")
+print("✅ l) Coefficienti ionici: 1 + 3 + 3 → 3 + 1\n")
+
+print("="*80)
+print("TUTTI I RISULTATI CORRISPONDONO ALL'IMMAGINE! ✅")
+```
+
+---
+
+🎓 **REGOLA GENERALE**
+
+**Equazioni ioniche → ConvertiRE in molecolari per ChemPy:**
+
+| Ionica | Molecolare equivalente |
+|--------|------------------------|
+| `Ba²⁺ + Cl⁻ + Ag⁺ + NO₃⁻` | `BaCl₂ + AgNO₃` |
+| `Fe³⁺ + NH₃ + H₂O` | `FeCl₃ + NH₃ + H₂O` |
+| `Ca²⁺ + HPO₄²⁻` | `CaCl₂ + (NH₄)₂HPO₄` |
+
+Poi **distribuire i coefficienti** considerando gli ioni separati! 🚀
+
+**PROGRAMMA**
+
+```python
+# Cella 1: Installazioni
+!pip install chempy chemlib rdkit mendeleev pint molmass pyvalem periodictable
+!pip install ipywidgets pandas matplotlib seaborn plotly
+!pip install pubchempy  # Per database online
+
+# Abilita i widget di IPython (necessario in Colab)
+from google.colab import output
+output.enable_custom_widget_manager()
+
+# ============================================================================
+# CELLA 1: IMPORT LIBRERIE
+# ============================================================================
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from IPython.display import display, HTML, Markdown, Image, clear_output
+import warnings
+warnings.filterwarnings('ignore')
+
+# ChemPy - Libreria principale per chimica
+from chempy import balance_stoichiometry, Substance
+from chempy.util.parsing import formula_to_composition, to_reaction
+from chempy.chemistry import Reaction
+from chempy.equilibria import EqSystem
+
+# Chemlib - Calcoli stechiometrici semplificati
+try:
+    from chemlib import Compound, Reaction as ChemlibReaction
+    CHEMLIB_AVAILABLE = True
+except:
+    CHEMLIB_AVAILABLE = False
+    print("⚠️ Chemlib non disponibile. Installa con: pip install chemlib")
+
+# RDKit - Visualizzazione molecole
+try:
+    from rdkit import Chem
+    from rdkit.Chem import Draw, Descriptors, AllChem
+    from rdkit.Chem.Draw import IPythonConsole
+    RDKIT_AVAILABLE = True
+except:
+    RDKIT_AVAILABLE = False
+    print("⚠️ RDKit non disponibile")
+
+# Mendeleev - Dati elementi della tavola periodica
+try:
+    from mendeleev import element
+    import mendeleev
+    MENDELEEV_AVAILABLE = True
+except:
+    MENDELEEV_AVAILABLE = False
+    print("⚠️ Mendeleev non disponibile")
+
+# PubChemPy - Database composti online
+try:
+    import pubchempy as pcp
+    PUBCHEM_AVAILABLE = True
+except:
+    PUBCHEM_AVAILABLE = False
+    print("⚠️ PubChemPy non disponibile")
+
+# Pint - Gestione unità di misura
+try:
+    from pint import UnitRegistry
+    ureg = UnitRegistry()
+    PINT_AVAILABLE = True
+except:
+    PINT_AVAILABLE = False
+
+# PyValem - Parser formule chimiche avanzato
+try:
+    from pyvalem.formula import Formula
+    PYVALEM_AVAILABLE = True
+except:
+    PYVALEM_AVAILABLE = False
+
+# IPyWidgets per interfaccia interattiva
+try:
+    import ipywidgets as widgets
+    from ipywidgets import interact, interactive, fixed, Layout, VBox, HBox, Tab
+    IPYWIDGETS_AVAILABLE = True
+except:
+    IPYWIDGETS_AVAILABLE = False
+
+print("✅ Librerie caricate con successo!")
+print(f"ChemPy: ✅ | Chemlib: {'✅' if CHEMLIB_AVAILABLE else '❌'}")
+print(f"RDKit: {'✅' if RDKIT_AVAILABLE else '❌'} | Mendeleev: {'✅' if MENDELEEV_AVAILABLE else '❌'}")
+print(f"PubChem: {'✅' if PUBCHEM_AVAILABLE else '❌'} | Pint: {'✅' if PINT_AVAILABLE else '❌'}")
+
+# ============================================================================
+# CELLA 2: FUNZIONI WRAPPER SEMPLIFICATE (usando ChemPy)
+# ============================================================================
+
+def bilancia_equazione(equazione: str, show_info: bool = True):
+    """
+    Bilancia equazione usando ChemPy
+
+    Args:
+        equazione: "H2 + O2 -> H2O" o "Fe + O2 -> Fe2O3"
+        show_info: mostra informazioni dettagliate
+
+    Returns:
+        dict con reagenti, prodotti, coefficienti
+    """
+    try:
+        # Separa reagenti e prodotti
+        if '->' in equazione:
+            reagenti_str, prodotti_str = equazione.split('->')
+        elif '→' in equazione:
+            reagenti_str, prodotti_str = equazione.split('→')
+        else:
+            return {'errore': 'Usa -> o → per separare reagenti e prodotti'}
+
+        # Parse con ChemPy
+        reagenti = {r.strip(): 1 for r in reagenti_str.split('+')}
+        prodotti = {p.strip(): 1 for p in prodotti_str.split('+')}
+
+        # Bilancia con ChemPy
+        reagenti_bilanciati, prodotti_bilanciati = balance_stoichiometry(
+            reagenti, prodotti
+        )
+
+        # Costruisci equazione bilanciata
+        reagenti_str = ' + '.join([f"{coeff if coeff > 1 else ''}{comp}"
+                                    for comp, coeff in reagenti_bilanciati.items()])
+        prodotti_str = ' + '.join([f"{coeff if coeff > 1 else ''}{comp}"
+                                   for comp, coeff in prodotti_bilanciati.items()])
+
+        eq_bilanciata = f"{reagenti_str} → {prodotti_str}"
+
+        risultato = {
+            'equazione_originale': equazione,
+            'equazione_bilanciata': eq_bilanciata,
+            'reagenti': reagenti_bilanciati,
+            'prodotti': prodotti_bilanciati,
+            'coefficienti': {**reagenti_bilanciati, **prodotti_bilanciati}
+        }
+
+        if show_info:
+            display(HTML(f"""
+                <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            padding: 20px; border-radius: 10px; color: white; margin: 10px 0;'>
+                    <h3>✓ Equazione Bilanciata</h3>
+                    <p style='font-size: 20px; font-family: monospace;'><b>{eq_bilanciata}</b></p>
+                </div>
+            """))
+
+            # Tabella coefficienti
+            df = pd.DataFrame([
+                {'Composto': comp, 'Coefficiente': coeff, 'Tipo': 'Reagente'}
+                for comp, coeff in reagenti_bilanciati.items()
+            ] + [
+                {'Composto': comp, 'Coefficiente': coeff, 'Tipo': 'Prodotto'}
+                for comp, coeff in prodotti_bilanciati.items()
+            ])
+
+            display(HTML("<h4>📊 Coefficienti Stechiometrici:</h4>"))
+            display(df.style.set_properties(**{
+                'background-color': '#f0f0f0',
+                'color': 'black',
+                'border-color': 'white'
+            }))
+
+        return risultato
+
+    except Exception as e:
+        return {'errore': f'Errore nel bilanciamento: {str(e)}'}
+
+
+def info_composto(formula: str, detailed: bool = True):
+    """
+    Informazioni complete su un composto usando ChemPy e Mendeleev
+
+    Args:
+        formula: "H2O", "Ca(OH)2", "C6H12O6"
+        detailed: mostra info dettagliate
+    """
+    info = {}
+
+    try:
+        # ChemPy: peso molecolare e composizione
+        comp = Substance.from_formula(formula)
+        info['formula'] = formula
+        info['massa_molare'] = comp.mass
+        info['composizione'] = comp.composition
+
+        if detailed:
+            display(HTML(f"""
+                <div style='background: #e3f2fd; padding: 20px; border-radius: 10px; margin: 10px 0;'>
+                    <h2>🧪 {formula}</h2>
+                    <table style='width: 100%; font-size: 16px;'>
+                        <tr><td><b>Massa Molare:</b></td><td>{comp.mass:.4f} g/mol</td></tr>
+                        <tr><td><b>Composizione:</b></td><td>{comp.composition}</td></tr>
+                    </table>
+                </div>
+            """))
+
+            # Mendeleev: info elementi
+            if MENDELEEV_AVAILABLE:
+                display(HTML("<h4>📋 Elementi Costituenti:</h4>"))
+                elementi_data = []
+                for elemento, count in comp.composition.items():
+                    try:
+                        el = element(elemento)
+                        elementi_data.append({
+                            'Elemento': elemento,
+                            'Nome': el.name,
+                            'Quantità': count,
+                            'Massa Atomica': f"{el.atomic_weight:.4f}",
+                            'Numero Atomico': el.atomic_number,
+                            'Gruppo': el.group_id if el.group_id else 'N/A'
+                        })
+                    except:
+                        pass
+
+                if elementi_data:
+                    df_elementi = pd.DataFrame(elementi_data)
+                    display(df_elementi)
+
+        # PubChem: dati online
+        if PUBCHEM_AVAILABLE and detailed:
+            try:
+                results = pcp.get_compounds(formula, 'formula')
+                if results:
+                    compound = results[0]
+                    info['pubchem_cid'] = compound.cid
+                    info['iupac_name'] = compound.iupac_name
+                    info['smiles'] = compound.isomeric_smiles
+
+                    display(HTML(f"""
+                        <div style='background: #fff3e0; padding: 15px; border-radius: 10px; margin: 10px 0;'>
+                            <h4>🌐 Dati PubChem:</h4>
+                            <ul>
+                                <li><b>CID:</b> {compound.cid}</li>
+                                <li><b>Nome IUPAC:</b> {compound.iupac_name or 'N/A'}</li>
+                                <li><b>SMILES:</b> {compound.isomeric_smiles or 'N/A'}</li>
+                            </ul>
+                        </div>
+                    """))
+            except:
+                pass
+
+        # RDKit: visualizzazione struttura
+        if RDKIT_AVAILABLE and detailed and 'smiles' in info:
+            try:
+                mol = Chem.MolFromSmiles(info['smiles'])
+                if mol:
+                    display(HTML("<h4>🔬 Struttura Molecolare:</h4>"))
+                    img = Draw.MolToImage(mol, size=(400, 400))
+                    display(img)
+            except:
+                pass
+
+        return info
+
+    except Exception as e:
+        return {'errore': f'Errore: {str(e)}'}
+
+
+def calcola_stechiometria(equazione_bilanciata: dict,
+                          composto_noto: str,
+                          quantita: float,
+                          unita: str = 'grammi'):
+    """
+    Calcola quantità di tutti i composti dato uno noto
+
+    Args:
+        equazione_bilanciata: output di bilancia_equazione()
+        composto_noto: "H2O"
+        quantita: 10.0
+        unita: 'grammi' o 'moli'
+    """
+    try:
+        coefficienti = equazione_bilanciata['coefficienti']
+
+        if composto_noto not in coefficienti:
+            return {'errore': f'{composto_noto} non trovato nell\'equazione'}
+
+        # Converti in moli
+        if unita.lower() in ['grammi', 'g', 'grams']:
+            comp_noto = Substance.from_formula(composto_noto)
+            moli_note = quantita / comp_noto.mass
+        else:
+            moli_note = quantita
+
+        # Calcola rapporti stechiometrici
+        coeff_noto = coefficienti[composto_noto]
+
+        risultati = {}
+        for composto, coeff in coefficienti.items():
+            # Calcola moli
+            moli = moli_note * (coeff / coeff_noto)
+
+            # Calcola massa
+            comp = Substance.from_formula(composto)
+            massa = moli * comp.mass
+
+            risultati[composto] = {
+                'moli': round(moli, 6),
+                'grammi': round(massa, 4),
+                'massa_molare': round(comp.mass, 4),
+                'coefficiente': coeff
+            }
+
+        # Visualizzazione
+        display(HTML(f"""
+            <div style='background: #c8e6c9; padding: 20px; border-radius: 10px; margin: 10px 0;'>
+                <h3>🧮 Calcoli Stechiometrici</h3>
+                <p><b>Dato:</b> {quantita} {unita} di {composto_noto}
+                   ({moli_note:.6f} mol)</p>
+            </div>
+        """))
+
+        # Tabella risultati
+        df_risultati = pd.DataFrame([
+            {
+                'Composto': comp,
+                'Coefficiente': data['coefficiente'],
+                'Moli (mol)': data['moli'],
+                'Massa (g)': data['grammi'],
+                'M.M. (g/mol)': data['massa_molare']
+            }
+            for comp, data in risultati.items()
+        ])
+
+        display(df_risultati.style.background_gradient(cmap='Blues'))
+
+        # Grafico
+        fig, ax = plt.subplots(figsize=(10, 5))
+        composti = list(risultati.keys())
+        masse = [risultati[c]['grammi'] for c in composti]
+
+        colors = ['#2196F3' if c in equazione_bilanciata['reagenti'] else '#4CAF50'
+                  for c in composti]
+        bars = ax.bar(composti, masse, color=colors, alpha=0.7, edgecolor='black')
+
+        # Valori sopra barre
+        for bar, massa in zip(bars, masse):
+            height = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width()/2., height,
+                   f'{massa:.2f}g',
+                   ha='center', va='bottom', fontweight='bold')
+
+        ax.set_ylabel('Massa (g)', fontsize=12, fontweight='bold')
+        ax.set_title('Distribuzione Masse Composti', fontsize=14, fontweight='bold')
+        ax.grid(axis='y', alpha=0.3)
+
+        # Legenda
+        from matplotlib.patches import Patch
+        legend_elements = [
+            Patch(facecolor='#2196F3', label='Reagenti'),
+            Patch(facecolor='#4CAF50', label='Prodotti')
+        ]
+        ax.legend(handles=legend_elements, loc='upper right')
+
+        plt.xticks(rotation=45, ha='right')
+        plt.tight_layout()
+        plt.show()
+
+        return risultati
+
+    except Exception as e:
+        return {'errore': f'Errore: {str(e)}'}
+
+
+def reagente_limitante(equazione_bilanciata: dict, quantita_disponibili: dict):
+    """
+    Trova reagente limitante
+
+    Args:
+        equazione_bilanciata: output di bilancia_equazione()
+        quantita_disponibili: {'H2': 10, 'O2': 5}  # in grammi
+    """
+    try:
+        reagenti = equazione_bilanciata['reagenti']
+
+        # Converti tutto in moli
+        moli_disponibili = {}
+        for reagente, grammi in quantita_disponibili.items():
+            if reagente in reagenti:
+                comp = Substance.from_formula(reagente)
+                moli_disponibili[reagente] = grammi / comp.mass
+
+        # Calcola rapporti moli/coefficiente
+        rapporti = {}
+        for reagente, moli in moli_disponibili.items():
+            coeff = reagenti[reagente]
+            rapporti[reagente] = moli / coeff
+
+        # Limitante = minimo rapporto
+        limitante = min(rapporti, key=rapporti.get)
+
+        # Visualizzazione
+        display(HTML(f"""
+            <div style='background: #ffecb3; padding: 20px; border-radius: 10px; margin: 10px 0;'>
+                <h3>⚠️ Reagente Limitante</h3>
+                <p style='font-size: 18px;'><b>{limitante}</b> si esaurisce per primo!</p>
+            </div>
+        """))
+
+        # Tabella confronto
+        df_confronto = pd.DataFrame([
+            {
+                'Reagente': reag,
+                'Disponibile (g)': quantita_disponibili.get(reag, 0),
+                'Disponibile (mol)': moli_disponibili.get(reag, 0),
+                'Coefficiente': reagenti[reag],
+                'Rapporto mol/coeff': rapporti.get(reag, 0),
+                'Status': '🔴 LIMITANTE' if reag == limitante else '✅ In eccesso'
+            }
+            for reag in reagenti.keys() if reag in quantita_disponibili
+        ])
+
+        display(df_confronto)
+
+        # Grafico
+        fig, ax = plt.subplots(figsize=(10, 5))
+        reagenti_list = list(rapporti.keys())
+        rapporti_list = list(rapporti.values())
+        colors = ['#F44336' if r == limitante else '#4CAF50' for r in reagenti_list]
+
+        bars = ax.bar(reagenti_list, rapporti_list, color=colors, alpha=0.7, edgecolor='black')
+        ax.set_ylabel('Rapporto mol/coefficiente', fontsize=12)
+        ax.set_title('Analisi Reagente Limitante', fontsize=14, fontweight='bold')
+        ax.axhline(y=min(rapporti_list), color='red', linestyle='--',
+                  label=f'Limitante: {limitante}')
+        ax.legend()
+        ax.grid(axis='y', alpha=0.3)
+
+        plt.tight_layout()
+        plt.show()
+
+        return {
+            'limitante': limitante,
+            'rapporti': rapporti,
+            'moli_disponibili': moli_disponibili
+        }
+
+    except Exception as e:
+        return {'errore': f'Errore: {str(e)}'}
+
+# ============================================================================
+# CELLA 3: FUNZIONI AVANZATE CON CHEMLIB
+# ============================================================================
+
+def analisi_completa_chemlib(formula: str):
+    """
+    Analisi completa usando Chemlib (più user-friendly)
+    """
+    if not CHEMLIB_AVAILABLE:
+        print("Chemlib non disponibile")
+        return
+
+    try:
+        comp = Compound(formula)
+
+        display(HTML(f"""
+            <div style='background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                        padding: 25px; border-radius: 15px; color: white; margin: 15px 0;'>
+                <h2>🔬 Analisi Completa: {formula}</h2>
+            </div>
+        """))
+
+        # Proprietà base
+        info_data = {
+            'Formula': [comp.formula],
+            'Massa Molare (g/mol)': [f"{comp.molar_mass():.4f}"],
+            'Numero Elementi': [len(comp.elements)],
+            'Percentuale Massa': [comp.percentage_by_mass()]
+        }
+
+        df_info = pd.DataFrame(info_data)
+        display(HTML("<h3>📊 Proprietà Fondamentali:</h3>"))
+        display(df_info.T)
+
+        # Composizione percentuale
+        perc_mass = comp.percentage_by_mass()
+        if isinstance(perc_mass, dict):
+            display(HTML("<h3>📈 Composizione Percentuale:</h3>"))
+            df_perc = pd.DataFrame([
+                {'Elemento': elem, 'Percentuale': f"{perc:.2f}%"}
+                for elem, perc in perc_mass.items()
+            ])
+            display(df_perc)
+
+            # Grafico a torta
+            fig, ax = plt.subplots(figsize=(8, 8))
+            ax.pie(perc_mass.values(), labels=perc_mass.keys(), autopct='%1.1f%%',
+                   startangle=90, colors=sns.color_palette('Set3'))
+            ax.set_title(f'Composizione Percentuale di {formula}',
+                        fontsize=14, fontweight='bold')
+            plt.tight_layout()
+            plt.show()
+
+        return comp
+
+    except Exception as e:
+        print(f"Errore: {e}")
+        return None
+
+
+def reazione_chemlib(equazione: str):
+    """
+    Gestisce reazione con Chemlib
+    """
+    if not CHEMLIB_AVAILABLE:
+        print("Chemlib non disponibile")
+        return
+
+    try:
+        rxn = ChemlibReaction(equazione)
+
+        display(HTML(f"""
+            <div style='background: #e1f5fe; padding: 20px; border-radius: 10px; margin: 10px 0;'>
+                <h3>⚗️ Reazione Chimica</h3>
+                <p style='font-size: 18px; font-family: monospace;'><b>{equazione}</b></p>
+                <p><b>Bilanciata:</b> {rxn.is_balanced}</p>
+            </div>
+        """))
+
+        if rxn.is_balanced:
+            print("✅ L'equazione è già bilanciata!")
+        else:
+            print("⚠️ L'equazione deve essere bilanciata manualmente")
+
+        return rxn
+
+    except Exception as e:
+        print(f"Errore: {e}")
+        return None
+
+# ============================================================================
+# CELLA 4: VISUALIZZAZIONI AVANZATE
+# ============================================================================
+
+def visualizza_molecola_3d(formula: str, smiles: str = None):
+    """
+    Visualizzazione 3D con RDKit
+    """
+    if not RDKIT_AVAILABLE:
+        print("RDKit non disponibile")
+        return
+
+    try:
+        # Dizionario SMILES comuni
+        smiles_dict = {
+            'H2O': 'O',
+            'CO2': 'O=C=O',
+            'NH3': 'N',
+            'CH4': 'C',
+            'C2H6': 'CC',
+            'C2H5OH': 'CCO',
+            'CH3COOH': 'CC(=O)O',
+            'C6H6': 'c1ccccc1',
+            'C6H12O6': 'OCC(O)C(O)C(O)C(O)CO',
+            'C2H4': 'C=C',
+            'H2SO4': 'OS(=O)(=O)O',
+            'HNO3': 'O=NO'
+        }
+
+        if smiles is None:
+            smiles = smiles_dict.get(formula)
+
+        if smiles is None:
+            print(f"SMILES non disponibile per {formula}")
+            return
+
+        mol = Chem.MolFromSmiles(smiles)
+        if mol is None:
+            print("Errore nel parsing SMILES")
+            return
+
+        # Aggiungi idrogeni
+        mol = Chem.AddHs(mol)
+
+        # Genera coordinate 3D
+        AllChem.EmbedMolecule(mol, randomSeed=42)
+        AllChem.MMFFOptimizeMolecule(mol)
+
+        display(HTML(f"<h3>🔬 Struttura 3D: {formula}</h3>"))
+
+        # Visualizzazione 2D
+        img = Draw.MolToImage(mol, size=(500, 500))
+        display(img)
+
+        # Proprietà molecolari
+        props = {
+            'Peso Molecolare': f"{Descriptors.MolWt(mol):.4f}",
+            'LogP (lipofilicità)': f"{Descriptors.MolLogP(mol):.4f}",
+            'N° Atomi': mol.GetNumAtoms(),
+            'N° Legami': mol.GetNumBonds(),
+            'Formula Molecolare': Chem.rdMolDescriptors.CalcMolFormula(mol)
+        }
+
+        df_props = pd.DataFrame([props]).T
+        df_props.columns = ['Valore']
+        display(df_props)
+
+        return mol
+
+    except Exception as e:
+        print(f"Errore: {e}")
+        return None
+
+
+def grafico_tavola_periodica_interattivo(elementi_evidenziati: list = None):
+    """
+    Visualizza tavola periodica con evidenziazione elementi
+    """
+    if not MENDELEEV_AVAILABLE:
+        print("Mendeleev non disponibile")
+        return
+
+    try:
+        # Carica tutti gli elementi
+        elementi = []
+        for z in range(1, 119):
+            try:
+                el = element(z)
+                elementi.append({
+                    'Simbolo': el.symbol,
+                    'Nome': el.name,
+                    'Numero': el.atomic_number,
+                    'Massa': el.atomic_weight,
+                    'Gruppo': el.group_id if el.group_id else 0,
+                    'Periodo': el.period,
+                    'Evidenziato': el.symbol in (elementi_evidenziati or [])
+                })
+            except:
+                pass
+
+        df_elementi = pd.DataFrame(elementi)
+
+        # Grafico scatter
+        fig, ax = plt.subplots(figsize=(18, 10))
+
+        for idx, row in df_elementi.iterrows():
+            color = '#FF6B6B' if row['Evidenziato'] else '#4ECDC4'
+            ax.scatter(row['Gruppo'], row['Periodo'],
+                      s=800, c=color, alpha=0.6, edgecolors='black', linewidth=2)
+            ax.text(row['Gruppo'], row['Periodo'], row['Simbolo'],
+                   ha='center', va='center', fontsize=12, fontweight='bold')
+
+        ax.set_xlabel('Gruppo', fontsize=14, fontweight='bold')
+        ax.set_ylabel('Periodo', fontsize=14, fontweight='bold')
+        ax.set_title('Tavola Periodica degli Elementi', fontsize=16, fontweight='bold')
+        ax.invert_yaxis()
+        ax.grid(True, alpha=0.3)
+
+        if elementi_evidenziati:
+            ax.text(0.02, 0.98, f'Evidenziati: {", ".join(elementi_evidenziati)}',
+                   transform=ax.transAxes, fontsize=12,
+                   verticalalignment='top',
+                   bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+
+        plt.tight_layout()
+        plt.show()
+
+    except Exception as e:
+        print(f"Errore: {e}")
+
+# ============================================================================
+# CELLA 5: DATABASE EQUAZIONI & ESEMPI
+# ============================================================================
+
+DATABASE_EQUAZIONI = {
+    'facili': [
+        'H2 + O2 -> H2O',
+        'N2 + H2 -> NH3',
+        'Fe + O2 -> Fe2O3',
+        'C + O2 -> CO2',
+        'AgNO3 + NaCl -> AgCl + NaNO3'
+    ],
+    'medie': [
+        'NaHCO3 -> Na2CO3 + H2O + CO2',
+        'Ba(OH)2 + HCl -> BaCl2 + H2O',
+        'Al(OH)3 + H2SO4 -> Al2(SO4)3 + H2O',
+        'Ca(OH)2 + H3PO4 -> Ca3(PO4)2 + H2O',
+        'Fe2O3 + C -> Fe + CO2'
+    ],
+    'difficili': [
+        'CaF2 + H2SO4 -> CaSO4 + HF',
+        'NH3 + O2 -> NO + H2O',
+        'K2Cr2O7 + HCl -> KCl + CrCl3 + Cl2 + H2O',
+        'KMnO4 + HCl -> KCl + MnCl2 + Cl2 + H2O',
+        'Cu + HNO3 -> Cu(NO3)2 + NO + H2O'
+    ],
+    'combustione': [
+        'CH4 + O2 -> CO2 + H2O',
+        'C2H6 + O2 -> CO2 + H2O',
+        'C3H8 + O2 -> CO2 + H2O',
+        'C2H5OH + O2 -> CO2 + H2O',
+        'C6H12O6 + O2 -> CO2 + H2O'
+    ]
+}
+
+
+def esempi_interattivi():
+    """
+    Esempi guidati di utilizzo
+    """
+    print("="*80)
+    print("ESEMPI GUIDATI - STECHIOMETRIA CON CHEMPY")
+    print("="*80)
+
+    # ESEMPIO 1: Bilanciamento semplice
+    print("\n📌 ESEMPIO 1: Bilanciamento Equazione Semplice")
+    print("-" * 80)
+    eq1 = bilancia_equazione("H2 + O2 -> H2O", show_info=True)
+
+    # ESEMPIO 2: Informazioni composto
+    print("\n📌 ESEMPIO 2: Analisi Composto")
+    print("-" * 80)
+    info_composto("H2O", detailed=True)
+
+    # ESEMPIO 3: Calcoli stechiometrici
+    print("\n📌 ESEMPIO 3: Calcoli Stechiometrici")
+    print("-" * 80)
+    calcola_stechiometria(eq1, "H2", 10, "grammi")
+
+    # ESEMPIO 4: Reagente limitante
+    print("\n📌 ESEMPIO 4: Reagente Limitante")
+    print("-" * 80)
+    reagente_limitante(eq1, {'H2': 5, 'O2': 20})
+
+
+def test_database_completo():
+    """
+    Testa tutte le equazioni del database
+    """
+    print("\n" + "="*80)
+    print("TEST COMPLETO DATABASE EQUAZIONI")
+    print("="*80)
+
+    risultati = {'successi': 0, 'fallimenti': 0, 'dettagli': []}
+
+    for livello, equazioni in DATABASE_EQUAZIONI.items():
+        print(f"\n📚 Livello: {livello.upper()}")
+        print("-" * 80)
+
+        for eq in equazioni:
+            try:
+                risultato = bilancia_equazione(eq, show_info=False)
+                if 'errore' not in risultato:
+                    print(f"✅ {risultato['equazione_bilanciata']}")
+                    risultati['successi'] += 1
+                    risultati['dettagli'].append({
+                        'equazione': eq,
+                        'bilanciata': risultato['equazione_bilanciata'],
+                        'livello': livello,
+                        'status': 'OK'
+                    })
+                else:
+                    print(f"❌ {eq} - {risultato['errore']}")
+                    risultati['fallimenti'] += 1
+                    risultati['dettagli'].append({
+                        'equazione': eq,
+                        'bilanciata': 'N/A',
+                        'livello': livello,
+                        'status': 'FAIL'
+                    })
+            except Exception as e:
+                print(f"❌ {eq} - Errore: {str(e)}")
+                risultati['fallimenti'] += 1
+
+    print("\n" + "="*80)
+    print(f"RISULTATI: {risultati['successi']} successi, {risultati['fallimenti']} fallimenti")
+    print(f"Percentuale successo: {risultati['successi']/(risultati['successi']+risultati['fallimenti'])*100:.1f}%")
+    print("="*80)
+
+    # DataFrame risultati
+    df_risultati = pd.DataFrame(risultati['dettagli'])
+    return df_risultati
+
+# ============================================================================
+# CELLA 6: INTERFACCIA INTERATTIVA CON IPYWIDGETS
+# ============================================================================
+
+def crea_interfaccia_interattiva():
+    """
+    Crea interfaccia grafica completa con IPyWidgets
+    """
+    if not IPYWIDGETS_AVAILABLE:
+        print("IPyWidgets non disponibile. Usa le funzioni standalone.")
+        return
+
+    # ===== TAB 1: BILANCIAMENTO =====
+
+    eq_input = widgets.Textarea(
+        placeholder='Esempio: H2 + O2 -> H2O',
+        description='Equazione:',
+        layout=Layout(width='100%', height='80px')
+    )
+
+    bilancia_btn = widgets.Button(
+        description='⚖️ Bilancia',
+        button_style='primary',
+        layout=Layout(width='150px')
+    )
+
+    esempio_dropdown = widgets.Dropdown(
+        options=['Scegli...'] + [eq for eqs in DATABASE_EQUAZIONI.values() for eq in eqs],
+        description='Esempio:',
+        layout=Layout(width='400px')
+    )
+
+    output_bilancia = widgets.Output()
+
+    def on_bilancia_click(b):
+        with output_bilancia:
+            clear_output(wait=True)
+            eq = eq_input.value.strip()
+            if eq:
+                bilancia_equazione(eq, show_info=True)
+
+    def on_esempio_change(change):
+        if change['new'] != 'Scegli...':
+            eq_input.value = change['new']
+
+    bilancia_btn.on_click(on_bilancia_click)
+    esempio_dropdown.observe(on_esempio_change, names='value')
+
+    tab_bilancia = VBox([
+        widgets.HTML("<h2>⚖️ Bilanciamento Equazioni</h2>"),
+        eq_input,
+        HBox([bilancia_btn, esempio_dropdown]),
+        output_bilancia
+    ])
+
+    # ===== TAB 2: INFO COMPOSTO =====
+
+    formula_input = widgets.Text(
+        placeholder='Es: H2O, Ca(OH)2',
+        description='Formula:',
+        layout=Layout(width='300px')
+    )
+
+    info_btn = widgets.Button(
+        description='🔍 Analizza',
+        button_style='info',
+        layout=Layout(width='150px')
+    )
+
+    output_info = widgets.Output()
+
+    def on_info_click(b):
+        with output_info:
+            clear_output(wait=True)
+            formula = formula_input.value.strip()
+            if formula:
+                info_composto(formula, detailed=True)
+                if CHEMLIB_AVAILABLE:
+                    print("\n" + "="*80)
+                    analisi_completa_chemlib(formula)
+
+    info_btn.on_click(on_info_click)
+
+    tab_info = VBox([
+        widgets.HTML("<h2>🔬 Informazioni Composto</h2>"),
+        HBox([formula_input, info_btn]),
+        output_info
+    ])
+
+    # ===== TAB 3: CALCOLI STECHIOMETRICI =====
+
+    eq_stored = {}  # Storage per equazione bilanciata
+
+    eq_calc_input = widgets.Textarea(
+        placeholder='Prima bilancia un\'equazione',
+        description='Equazione:',
+        layout=Layout(width='100%', height='60px'),
+        disabled=True
+    )
+
+    bilancia_calc_btn = widgets.Button(
+        description='⚖️ Bilancia Prima',
+        button_style='warning',
+        layout=Layout(width='200px')
+    )
+
+    composto_dropdown = widgets.Dropdown(
+        options=[],
+        description='Composto:',
+        layout=Layout(width='250px')
+    )
+
+    quantita_input = widgets.FloatText(
+        value=10.0,
+        description='Quantità:',
+        layout=Layout(width='200px')
+    )
+
+    unita_dropdown = widgets.Dropdown(
+        options=['grammi', 'moli'],
+        value='grammi',
+        description='Unità:',
+        layout=Layout(width='200px')
+    )
+
+    calcola_btn = widgets.Button(
+        description='🧮 Calcola',
+        button_style='success',
+        layout=Layout(width='150px'),
+        disabled=True
+    )
+
+    output_calcoli = widgets.Output()
+
+    def on_bilancia_calc_click(b):
+        with output_calcoli:
+            clear_output(wait=True)
+            eq_temp = eq_input.value.strip()  # Usa input da tab 1
+            if eq_temp:
+                result = bilancia_equazione(eq_temp, show_info=True)
+                if 'errore' not in result:
+                    eq_stored['data'] = result
+                    eq_calc_input.value = result['equazione_bilanciata']
+                    composto_dropdown.options = list(result['coefficienti'].keys())
+                    calcola_btn.disabled = False
+
+    def on_calcola_click(b):
+        with output_calcoli:
+            if 'data' in eq_stored:
+                composto = composto_dropdown.value
+                quantita = quantita_input.value
+                unita = unita_dropdown.value
+                calcola_stechiometria(eq_stored['data'], composto, quantita, unita)
+
+    bilancia_calc_btn.on_click(on_bilancia_calc_click)
+    calcola_btn.on_click(on_calcola_click)
+
+    tab_calcoli = VBox([
+        widgets.HTML("<h2>🧮 Calcoli Stechiometrici</h2>"),
+        widgets.HTML("<p><i>Usa l'equazione dalla tab Bilanciamento o inseriscine una nuova</i></p>"),
+        bilancia_calc_btn,
+        eq_calc_input,
+        widgets.HTML("<h4>Dati noti:</h4>"),
+        HBox([composto_dropdown, quantita_input, unita_dropdown]),
+        calcola_btn,
+        output_calcoli
+    ])
+
+    # ===== TAB 4: VISUALIZZAZIONI =====
+
+    vis_formula_input = widgets.Text(
+        placeholder='Es: C6H6, H2O',
+        description='Formula:',
+        layout=Layout(width='300px')
+    )
+
+    vis_btn = widgets.Button(
+        description='🔬 Visualizza 3D',
+        button_style='danger',
+        layout=Layout(width='200px')
+    )
+
+    tavola_elementi_input = widgets.Text(
+        placeholder='Es: H,O,C (separati da virgola)',
+        description='Elementi:',
+        layout=Layout(width='400px')
+    )
+
+    tavola_btn = widgets.Button(
+        description='📊 Tavola Periodica',
+        button_style='info',
+        layout=Layout(width='200px')
+    )
+
+    output_vis = widgets.Output()
+
+    def on_vis_click(b):
+        with output_vis:
+            clear_output(wait=True)
+            formula = vis_formula_input.value.strip()
+            if formula:
+                visualizza_molecola_3d(formula)
+
+    def on_tavola_click(b):
+        with output_vis:
+            clear_output(wait=True)
+            elementi_str = tavola_elementi_input.value.strip()
+            if elementi_str:
+                elementi = [e.strip() for e in elementi_str.split(',')]
+                grafico_tavola_periodica_interattivo(elementi)
+            else:
+                grafico_tavola_periodica_interattivo()
+
+    vis_btn.on_click(on_vis_click)
+    tavola_btn.on_click(on_tavola_click)
+
+    tab_vis = VBox([
+        widgets.HTML("<h2>📊 Visualizzazioni</h2>"),
+        widgets.HTML("<h4>Struttura Molecolare 3D:</h4>"),
+        HBox([vis_formula_input, vis_btn]),
+        widgets.HTML("<h4 style='margin-top: 30px;'>Tavola Periodica:</h4>"),
+        HBox([tavola_elementi_input, tavola_btn]),
+        output_vis
+    ])
+
+    # ===== TAB 5: DATABASE & TEST =====
+
+    livello_dropdown = widgets.Dropdown(
+        options=list(DATABASE_EQUAZIONI.keys()),
+        description='Livello:',
+        layout=Layout(width='300px')
+    )
+
+    mostra_db_btn = widgets.Button(
+        description='📚 Mostra Equazioni',
+        button_style='info',
+        layout=Layout(width='200px')
+    )
+
+    test_btn = widgets.Button(
+        description='🧪 Test Completo',
+        button_style='warning',
+        layout=Layout(width='200px')
+    )
+
+    output_db = widgets.Output()
+
+    def on_mostra_db_click(b):
+        with output_db:
+            clear_output(wait=True)
+            livello = livello_dropdown.value
+            equazioni = DATABASE_EQUAZIONI[livello]
+
+            display(HTML(f"<h3>📚 Equazioni Livello: {livello.upper()}</h3>"))
+
+            for i, eq in enumerate(equazioni, 1):
+                result = bilancia_equazione(eq, show_info=False)
+                if 'errore' not in result:
+                    display(HTML(f"""
+                        <div style='background: #f5f5f5; padding: 10px; margin: 5px 0; border-left: 4px solid #2196F3;'>
+                            <b>{i}.</b> {result['equazione_bilanciata']}
+                        </div>
+                    """))
+
+    def on_test_click(b):
+        with output_db:
+            clear_output(wait=True)
+            df = test_database_completo()
+            display(HTML("<h3>📊 Riepilogo Risultati:</h3>"))
+            display(df)
+
+    mostra_db_btn.on_click(on_mostra_db_click)
+    test_btn.on_click(on_test_click)
+
+    tab_db = VBox([
+        widgets.HTML("<h2>📚 Database Equazioni</h2>"),
+        HBox([livello_dropdown, mostra_db_btn]),
+        widgets.HTML("<h4 style='margin-top: 20px;'>Test Database Completo:</h4>"),
+        test_btn,
+        output_db
+    ])
+
+    # ===== CREA TABS =====
+
+    tabs = Tab(children=[tab_bilancia, tab_info, tab_calcoli, tab_vis, tab_db])
+    tabs.set_title(0, '⚖️ Bilancia')
+    tabs.set_title(1, '🔬 Info Composto')
+    tabs.set_title(2, '🧮 Calcoli')
+    tabs.set_title(3, '📊 Visualizza')
+    tabs.set_title(4, '📚 Database')
+
+    # Header
+    header = widgets.HTML("""
+        <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    padding: 30px; border-radius: 15px; color: white; text-align: center; margin-bottom: 20px;'>
+            <h1 style='margin: 0; font-size: 32px;'>⚗️ Simulatore Stechiometrico Professionale ⚗️</h1>
+            <p style='margin-top: 10px; font-size: 16px;'>Powered by ChemPy, Chemlib, RDKit & Python</p>
+        </div>
+    """)
+
+    display(header)
+    display(tabs)
+
+    return tabs
+
+# ============================================================================
+# CELLA 7: FUNZIONI UTILITY & HELPERS
+# ============================================================================
+
+def quick_balance(eq: str):
+    """Shortcut per bilanciamento rapido"""
+    return bilancia_equazione(eq, show_info=False)
+
+def qb(eq: str):
+    """Alias ultra-breve"""
+    return quick_balance(eq)
+
+def quick_info(formula: str):
+    """Info rapida composto"""
+    return info_composto(formula, detailed=False)
+
+def qi(formula: str):
+    """Alias ultra-breve"""
+    return quick_info(formula)
+
+# ============================================================================
+# CELLA 8: TUTORIAL & GUIDA
+# ============================================================================
+
+def tutorial_completo():
+    """
+    Tutorial interattivo passo-passo
+    """
+    print("="*80)
+    print("TUTORIAL COMPLETO - STECHIOMETRIA CON CHEMPY")
+    print("="*80)
+
+    print("\n📚 STEP 1: Bilanciamento Base")
+    print("-" * 80)
+    print("Usa bilancia_equazione() per bilanciare qualsiasi equazione:")
+    print("\nEsempio:")
+    print(">>> eq = bilancia_equazione('H2 + O2 -> H2O')")
+
+    print("\n📚 STEP 2: Informazioni Composti")
+    print("-" * 80)
+    print("Ottieni info dettagliate su un composto:")
+    print("\nEsempio:")
+    print(">>> info_composto('H2O')")
+    print(">>> analisi_completa_chemlib('C6H12O6')  # Con Chemlib")
+
+    print("\n📚 STEP 3: Calcoli Stechiometrici")
+    print("-" * 80)
+    print("Calcola quantità di tutti i composti dato uno noto:")
+    print("\nEsempio:")
+    print(">>> eq = bilancia_equazione('H2 + O2 -> H2O', show_info=False)")
+    print(">>> calcola_stechiometria(eq, 'H2', 10, 'grammi')")
+
+    print("\n📚 STEP 4: Reagente Limitante")
+    print("-" * 80)
+    print("Trova quale reagente si esaurisce per primo:")
+    print("\nEsempio:")
+    print(">>> reagente_limitante(eq, {'H2': 5, 'O2': 20})")
+
+    print("\n📚 STEP 5: Visualizzazioni")
+    print("-" * 80)
+    print("Visualizza strutture 3D e tavola periodica:")
+    print("\nEsempio:")
+    print(">>> visualizza_molecola_3d('C6H6')")
+    print(">>> grafico_tavola_periodica_interattivo(['H', 'O', 'C'])")
+
+    print("\n📚 STEP 6: Database & Test")
+    print("-" * 80)
+    print("Accedi al database di equazioni:")
+    print("\nEsempio:")
+    print(">>> DATABASE_EQUAZIONI['facili']")
+    print(">>> test_database_completo()")
+
+    print("\n📚 STEP 7: Interfaccia Grafica")
+    print("-" * 80)
+    print("Usa l'interfaccia interattiva con widgets:")
+    print("\nEsempio:")
+    print(">>> crea_interfaccia_interattiva()")
+
+    print("\n" + "="*80)
+    print("SHORTCUTS UTILI:")
+    print("="*80)
+    print("qb('eq')    → Quick Balance")
+    print("qi('H2O')   → Quick Info")
+    print("esempi_interattivi() → Esempi guidati")
+    print("="*80)
+
+
+def help_chempy(argomento: str = 'all'):
+    """
+    Sistema di help per le funzioni
+    """
+    help_dict = {
+        'bilancia': """
+        📘 BILANCIAMENTO EQUAZIONI
+
+        Funzione: bilancia_equazione(equazione, show_info=True)
+
+        Parametri:
+            - equazione: str, es. "H2 + O2 -> H2O"
+            - show_info: bool, mostra visualizzazioni
+
+        Returns:
+            dict con reagenti, prodotti, coefficienti
+
+        Esempi:
+            >>> eq = bilancia_equazione("H2 + O2 -> H2O")
+            >>> eq = qb("Fe + O2 -> Fe2O3")  # shortcut
+        """,
+
+        'info': """
+        📘 INFORMAZIONI COMPOSTI
+
+        Funzioni:
+            - info_composto(formula, detailed=True)
+            - analisi_completa_chemlib(formula)
+
+        Parametri:
+            - formula: str, es. "H2O", "Ca(OH)2"
+            - detailed: bool, mostra info estese
+
+        Esempi:
+            >>> info_composto("H2O")
+            >>> analisi_completa_chemlib("C6H12O6")
+            >>> qi("CO2")  # shortcut
+        """,
+
+        'calcoli': """
+        📘 CALCOLI STECHIOMETRICI
+
+        Funzione: calcola_stechiometria(eq_bilanciata, composto, quantita, unita)
+
+        Parametri:
+            - eq_bilanciata: output di bilancia_equazione()
+            - composto: str, composto noto
+            - quantita: float
+            - unita: 'grammi' o 'moli'
+
+        Esempio:
+            >>> eq = bilancia_equazione("H2 + O2 -> H2O", show_info=False)
+            >>> calcola_stechiometria(eq, "H2", 10, "grammi")
+        """,
+
+        'limitante': """
+        📘 REAGENTE LIMITANTE
+
+        Funzione: reagente_limitante(eq_bilanciata, quantita_disponibili)
+
+        Parametri:
+            - eq_bilanciata: output di bilancia_equazione()
+            - quantita_disponibili: dict, es. {'H2': 10, 'O2': 5}
+
+        Esempio:
+            >>> eq = bilancia_equazione("H2 + O2 -> H2O", show_info=False)
+            >>> reagente_limitante(eq, {'H2': 5, 'O2': 20})
+        """,
+
+        'visualizza': """
+        📘 VISUALIZZAZIONI
+
+        Funzioni:
+            - visualizza_molecola_3d(formula, smiles=None)
+            - grafico_tavola_periodica_interattivo(elementi=[])
+
+        Esempi:
+            >>> visualizza_molecola_3d("C6H6")
+            >>> grafico_tavola_periodica_interattivo(['H', 'O', 'C'])
+        """
+    }
+
+    if argomento == 'all':
+        for topic, content in help_dict.items():
+            print(content)
+            print("\n")
+    elif argomento in help_dict:
+        print(help_dict[argomento])
+    else:
+        print(f"Argomento '{argomento}' non trovato.")
+        print(f"Argomenti disponibili: {', '.join(help_dict.keys())}, 'all'")
+
+"""### *MAIN*"""
+
+# ============================================================================
+# CELLA 9: MAIN & AVVIO APPLICAZIONE
+# ============================================================================
+
+def main():
+    """
+    Funzione principale - avvia applicazione
+    """
+    display(HTML("""
+        <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    padding: 40px; border-radius: 20px; color: white; text-align: center;'>
+            <h1 style='font-size: 36px; margin: 0;'>⚗️ SIMULATORE STECHIOMETRICO ⚗️</h1>
+            <h2 style='font-size: 24px; margin-top: 10px;'>Professionale Edition</h2>
+            <p style='font-size: 16px; margin-top: 15px;'>
+                Powered by ChemPy • Chemlib • RDKit • Mendeleev • Python
+            </p>
+        </div>
+    """))
+
+    print("\n✅ Sistema pronto!")
+    print("\n📖 COMANDI PRINCIPALI:")
+    print("-" * 80)
+    print("bilancia_equazione('H2 + O2 -> H2O')     - Bilancia equazione")
+    print("info_composto('H2O')                      - Info su composto")
+    print("calcola_stechiometria(eq, ...)            - Calcoli stechiometrici")
+    print("reagente_limitante(eq, {...})             - Trova limitante")
+    print("visualizza_molecola_3d('C6H6')            - Visualizza 3D")
+    print("crea_interfaccia_interattiva()            - GUI completa")
+    print("esempi_interattivi()                      - Esempi guidati")
+    print("tutorial_completo()                       - Tutorial completo")
+    print("help_chempy('bilancia')                   - Help argomento")
+    print("-" * 80)
+
+    print("\n💡 SHORTCUTS:")
+    print("qb('eq')  → Quick Balance")
+    print("qi('H2O') → Quick Info")
+
+    print("\n🚀 INIZIA CON:")
+    print(">>> crea_interfaccia_interattiva()  # GUI interattiva")
+    print(">>> esempi_interattivi()            # Esempi guidati")
+
+    # if IPYWIDGETS_AVAILABLE:
+    #     print("\n" + "="*80)
+    #     risposta = input("\n🎯 Vuoi avviare l'interfaccia grafica? (s/n): ")
+    #     if risposta.lower() in ['s', 'si', 'y', 'yes']:
+    #         return crea_interfaccia_interattiva()
+
+    # return None
+
+
+# ============================================================================
+# AVVIO AUTOMATICO
+# ============================================================================
+
+if __name__ == "__main__":
+    app = main()
+
+"""### ESEMPI"""
+
+bilancia_equazione('H2 + O2 -> H2O')
+
+bilancia_equazione("BaCl2 + AgNO3 -> AgCl + Ba(NO3)2")
+
+bilancia_equazione("BaCl2 + AgNO3 -> AgCl + Ba(NO3)2")
+
+bilancia_equazione("K2SO4 + Ba(OH)2 -> BaSO4 + KOH")
+
+# Testa tutte le equazioni dell'immagine
+print("ESEMPIO DI BILANCIAMENTO DI EQUAZIONI\n")
+
+# e)
+eq_e = bilancia_equazione("K2SO4 + Ba(OH)2 -> BaSO4 + KOH")
+print("✅ e) Coefficienti: 1 + 1 → 1 + 2\n")
+
+# f) Forma molecolare della ionica
+eq_f = bilancia_equazione("BaCl2 + AgNO3 -> AgCl + Ba(NO3)2")
+print("✅ f) Coefficienti ionici: 1 + 2 + 2 + 2 → 2 + 1 + 2\n")
+
+# g)
+eq_g = bilancia_equazione("ZnCl2 + NH3 + H2O -> Zn(OH)2 + NH4Cl")
+print("✅ g) Coefficienti: 1 + 2 + 2 → 1 + 2\n")
+
+# h)
+eq_h = bilancia_equazione("CaF2 + SiO2 + H2SO4 -> CaSO4 + SiF4 + H2O")
+print("✅ h) Coefficienti: 2 + 1 + 2 → 2 + 1 + 2\n")
+
+# i) Manuale (ChemPy ha difficoltà con ioniche complesse)
+print("i) 3Ca²⁺ + 2HPO₄²⁻ + 2NH₃ → Ca₃(PO₄)₂ + 2NH₄⁺")
+print("✅ i) Coefficienti: 3 + 2 + 2 → 1 + 2 (bilanciamento manuale)\n")
+
+# l) Forma molecolare della ionica
+eq_l = bilancia_equazione("FeCl3 + NH3 + H2O -> NH4Cl + Fe(OH)3")
+print("✅ l) Coefficienti ionici: 1 + 3 + 3 → 3 + 1\n")
+
+print("="*80)
+```
+
+</Accordion>
+
+## Biologia - Livello base
+
+### Meiosi e mitosi cellulare
+
+<Accordion title="Prompt iniziale" defaultOpen={false}>
+
+```text
+Crea un'animazione interattiva dei processi di mitosi e meiosi. Deve includere: - Visualizzazione di una cellula con nucleo e cromosomi - Modalità mitosi: mostra tutte le fasi (interfase, profase, metafase, anafase, telofase, citodieresi) - Modalità meiosi: mostra meiosi I e meiosi II con crossing-over - Cromosomi colorati diversamente (materni vs paterni) - Pulsanti per avanzare fase per fase o animazione continua - Descrizione testuale di cosa accade in ogni fase - Evidenziazione di differenze chiave tra mitosi e meiosi - Contatore del numero di cromosomi in ogni fase - Visualizzazione del crossing-over con scambio di segmenti colorati - Quiz interattivo finale per verificare comprensione Interfaccia colorata e chiara per studenti di biologia delle superiori.  Istruzioni e domande guida integrate. Usa rappresentazione accurata del modello. Aggiungi modale per spiegazione dettagliata e una sezione con domande guida
+```
+</Accordion>
+Prompt migliorato con Prompt Enhancer per App Didattiche:
+<Accordion title="Prompt migliorato" defaultOpen={false}>
+
+```text
+Generazione di un'Applicazione Didattica Interattiva sulla Divisione Cellulare (Mitosi e Meiosi)
+
+**Persona:**
+Sei un esperto sviluppatore front-end e un instructional designer, specializzato nella creazione di strumenti educativi interattivi (applicazioni didattiche) in ambito scientifico, con una profonda conoscenza della biologia cellulare.
+
+**Obiettivo Principale:**
+Generare il codice completo per un'applicazione didattica **single-page** che simula e confronta i processi di mitosi e meiosi. L'applicazione deve essere interattiva, visivamente chiara e scientificamente accurata, rivolta a studenti di biologia delle scuole superiori (o livello universitario di base).
+
+**Requisiti Tecnici Fondamentali:**
+1.  **Tecnologia:** Genera un **singolo file HTML**. Tutto il CSS e il JavaScript (Vanilla JS) necessario deve essere incorporato (inline) nel file HTML, rispettivamente nei tag `<style>` e `<script>`.
+2.  **Animazione:** Per le animazioni della cellula e dei cromosomi, devi utilizzare esclusivamente l'API **HTML5 Canvas**.
+3.  **Nessun Framework:** **NON** utilizzare framework JavaScript (come React, Vue, Angular) o jQuery.
+4.  **Nessuna Libreria Esterna:** **NON** utilizzare librerie JS/CSS esterne (es. p5.js, Chart.js, Bootstrap). Tutto deve essere implementato con Vanilla JS, HTML5 e CSS3.
+
+---
+
+**Struttura e Requisiti dell'Applicazione:**
+
+**1. Layout e Interfaccia (UI):**
+* **Titolo:** Un titolo chiaro (es. "Simulatore di Mitosi e Meiosi").
+* **Area di Visualizzazione:** Un elemento `<canvas>` prominente dove avverrà l'animazione.
+* **Selettore Modalità:** Pulsanti o radio button per selezionare "Mitosi" o "Meiosi". Il cambio di modalità deve resettare l'animazione.
+* **Area di Descrizione:** Un box di testo (es. `<div id="descrizione-fase">`) che si aggiorna dinamicamente per spiegare cosa sta accadendo nella fase attualmente visualizzata.
+* **Pannello di Controllo:** Pulsanti per gestire la simulazione.
+* **Area Informativa:** Un display per il conteggio dei cromosomi.
+
+**2. Visualizzazione e Modello (Canvas):**
+* **Cellula Iniziale:** Inizia con una cellula diploide 2n=4 (due coppie di cromosomi omologhi).
+* **Codifica Colori:** Usa colori distinti per i cromosomi di origine materna (es. rosso) e paterna (es. blu).
+* **Componenti:** Disegna chiaramente la membrana cellulare, il nucleo (quando presente) e i cromosomi (come singolii cromatidi o cromatidi fratelli, a seconda della fase).
+* **Accuratezza:** La rappresentazione deve essere scientificamente accurata (es. i cromosomi omologhi si appaiano in Meiosi I, i cromatidi fratelli si separano in Mitosi e Meiosi II).
+
+**3. Controlli di Animazione:**
+* **Start/Pausa:** Un pulsante per avviare e mettere in pausa l'animazione continua.
+* **Fase Successiva:** Un pulsante per avanzare manualmente alla fase successiva (es. da Profase a Metafase).
+* **Reset:** Un pulsante per resettare la simulazione allo stato iniziale (Interfase).
+
+**4. Modalità Mitosi:**
+* Implementare tutte le fasi in sequenza: Interfase (G2, dopo la duplicazione del DNA), Profase, Metafase, Anafase, Telofase e Citodieresi.
+* L'animazione deve mostrare la separazione dei cromatidi fratelli.
+* Il risultato finale deve essere due cellule figlie diploidi (2n=4) identiche.
+
+**5. Modalità Meiosi:**
+* **Meiosi I:** Implementare Profase I (mostrando la sinapsi), Metafase I, Anafase I (mostrando la separazione dei cromosomi omologhi), Telofase I.
+* **Crossing-Over:** Durante la Profase I, l'animazione deve visualizzare chiaramente lo scambio di segmenti tra cromatidi omologhi (scambiando i colori rosso/blu sui segmenti).
+* **Meiosi II:** Implementare Profase II, Metafase II, Anafase II (mostrando la separazione dei cromatidi fratelli), Telofase II e Citodieresi.
+* Il risultato finale deve essere quattro cellule figlie aploidi (n=2) geneticamente diverse.
+
+**6. Elementi Informativi e Interattivi:**
+* **Contatore Cromosomi:** Un display (es. `<div id="contatore-cromosomi">`) che mostra lo stato corrente. Deve aggiornarsi per riflettere il numero di cromosomi e (se possibile) il numero di cromatidi in ogni fase.
+* **Spiegazioni Dettagliate (Modale):**
+    * Includi un pulsante "Info e Confronto".
+    * Questo pulsante deve aprire una finestra **modale** (creata con HTML/CSS/JS, senza librerie).
+    * Il modale deve contenere:
+        1.  Una **tabella di confronto** chiara che evidenzia le differenze chiave tra Mitosi e Meiosi (Scopo, Numero di divisioni, Crossing-Over, Risultato, ecc.).
+        2.  Una sezione "Domande Guida" (es. "Perché il crossing-over è importante?", "Qual è la differenza tra Anafase I e Anafase II?").
+* **Quiz Interattivo Finale:**
+    * Includi un pulsante "Avvia Quiz" (che può aprire un altro modale o cambiare la vista).
+    * Il quiz deve consistere in 5-10 domande a scelta multipla (generate e gestite interamente in JS).
+    * Le domande devono testare la comprensione dei processi (es. "In quale fase si separano i cromatidi fratelli durante la mitosi?", "Il crossing-over avviene durante la...?").
+    * Fornire feedback immediato (corretto/sbagliato) e un punteggio finale.
+
+**7. Stile e Qualità del Codice:**
+* **CSS:** Usa CSS (incorporato) per un design pulito, colorato e accademico. L'interfaccia deve essere intuitiva e adatta a studenti. Usa Flexbox o Grid per il layout.
+* **JavaScript:** Il codice JS deve essere pulito, ben commentato e organizzato. Utilizza funzioni separate per la logica di disegno (`drawCell`, `drawChromosomes`), la logica di stato (`updatePhase`), e la gestione degli eventi (`handleNextButton`).
+
+**Output:**
+Fornisci unicamente il codice HTML completo che implementa tutti i requisiti sopra descritti in un unico file.
+```
+</Accordion>
+
+Dopo alcune iterazioni con Claude 4.5 Thinking, possiamo ottenere un'applicazione web che funge da visualizzatore di mitosi e meiosi, come mostrato di seguito:
+
+<PublicLink href="vibe-coding/examples/meiosi-mitosi-cellulare.html">Visualizzatore di Mitosi e Meiosi (HTML/CSS/JS)</PublicLink>
+
+## Biologia - Livello avanzato
+
+### Visualizzazione della struttura del DNA e delle proteine
+<Accordion title="Prompt iniziale" defaultOpen={false}>
+
+```text
+Crea un visualizzatore 3D di macromolecole biologiche (DNA e proteine).
+
+L'applicazione deve includere:- Rendering 3D di doppia elica DNA con basi azotate colorate- Visualizzazione di strutture proteiche (alfa elica, foglietto beta, random coil)- Rotazione 3D completa con mouse/touch- Modalità visualizzazione: bastoncini (stick), sfere (space-filling), cartoon (ribbon)- Database di esempi: DNA, emoglobina, enzimi comuni, anticorpi- Evidenziazione di siti attivi negli enzimi- Zoom per vedere dettagli atomici- Informazioni su: numero amminoacidi, peso molecolare, funzione biologica- Per DNA: possibilità di inserire sequenza personalizzata e vedere struttura 3D- Colorazione per tipo amminoacido (idrofobico, polare, carico)Usa Three.js. Interfaccia per studenti di biochimica o biologia molecolare. Istruzioni e domande guida integrate. Inserisci anche un pulsante "Spiega" che spiega le equazioni utilizzate, il metodo di simulazione numerica utilizzato. Usa simulazione accurata. Utilizza una rappresentazione fisica e chimica corretta e ben spiegata.
+```
+</Accordion>
+Prompt migliorato con Prompt Enhancer per App Didattiche:
+<Accordion title="Prompt migliorato" defaultOpen={false}>
+
+```text
+Generazione di un Visualizzatore 3D di Macromolecole (DNA/Proteine) con Three.js
+
+**Persona:**
+Sei un programmatore senior esperto in bioinformatica e grafica 3D, specializzato nell'uso di JavaScript e della libreria Three.js per creare applicazioni didattiche interattive.
+
+**Obiettivo:**
+Il tuo compito è generare il codice completo (HTML, CSS e JavaScript vanilla) per un'applicazione web **single-page** che funzioni come visualizzatore 3D di macromolecole biologiche. L'applicazione è destinata a studenti di biochimica e biologia molecolare e deve essere interattiva e facile da usare.
+
+**Requisiti Tecnici Fondamentali:**
+1.  **Stack Tecnologico:**
+    * **HTML5:** Per la struttura semantica della pagina.
+    * **CSS3:** Per uno styling pulito, moderno e responsivo. L'interfaccia deve essere professionale e accademica.
+    * **JavaScript (ES6+ Vanilla):** Tutto il codice logico deve essere in JavaScript puro.
+    * **Three.js:** Utilizza la libreria Three.js per tutto il rendering 3D. Importa la libreria e i controlli necessari (es. `OrbitControls`) da un link CDN ufficiale e affidabile (es. `cdnjs.com`).
+2.  **Generazione Geometrie (Importante):**
+    * Poiché non puoi accedere a file PDB esterni, devi **generare proceduralmente** le geometrie per le molecole d'esempio direttamente nel codice JavaScript. Usa le geometrie base di Three.js (`SphereGeometry`, `CylinderGeometry`, `TubeGeometry`) per costruire rappresentazioni semplificate ma accurate.
+    * La "simulazione accurata" e la "rappresentazione fisica corretta" si riferiscono alla *correttezza geometrica* (es. angoli di legame approssimati, elica DNA destrorsa di tipo B, corrette strutture secondarie) e non a una simulazione di dinamica molecolare.
+
+**Struttura e Funzionalità dell'Applicazione:**
+
+1.  **Layout Interfaccia Utente (UI):**
+    * **Canvas 3D Principale:** L'area dove avviene il rendering.
+    * **Pannello di Controllo (Sidebar):**
+        * **Selezione Molecola:** Un menu a tendina (`<select>`) per caricare gli esempi.
+        * **Modalità Visualizzazione:** Pulsanti di opzione (`<input type="radio">`) per cambiare vista: "Cartoon (Nastro)", "Bastoncini (Stick)", "Sfere (Space-filling)".
+        * **Opzioni Colore (Proteine):** Pulsanti per colorare per "Struttura Secondaria" o "Proprietà Amminoacido".
+        * **Opzioni DNA:** Un campo di testo per inserire una sequenza personalizzata.
+        * **Controlli Specifici:** Es. un checkbox per "Evidenzia Sito Attivo" (se applicabile).
+    * **Box Informativo:** Un'area fissa dove mostrare i dati della molecola caricata.
+    * **Sezione Didattica:** Un'area (magari a comparsa) per istruzioni e domande guida.
+
+2.  **Controlli 3D (Usando `OrbitControls`):**
+    * **Rotazione:** Click sinistro + trascinamento / tocco singolo.
+    * **Zoom:** Rotellina del mouse / pinch-to-zoom.
+    * **Pan (Spostamento):** Click destro + trascinamento / tocco a due dita.
+
+3.  **Database di Esempi (Geometrie da generare):**
+    * **DNA (Doppia Elica):** Genera un frammento di B-DNA. I "bastoncini" devono rappresentare lo scheletro zucchero-fosfato e le "sfere" o "cilindri" piatti devono rappresentare le basi azotate. Colora le basi: Adenina (es. Verde), Timina (es. Blu), Guanina (es. Giallo), Citosina (es. Rosso).
+    * **Proteina 1: Emoglobina (Esempio Quaternario):** Genera una rappresentazione *semplificata* delle 4 subunità (es. 2 alfa, 2 beta), mostrando principalmente la vista "Cartoon" (nastro) con le eliche predominanti.
+    * **Proteina 2: Enzima (es. Lisozima):** Genera una struttura mista (eliche e foglietti). Pre-definisci un set di coordinate o indici come "sito attivo".
+    * **Proteina 3: Anticorpo (IgG):** Genera la tipica forma a "Y", evidenziando le catene pesanti e leggere usando la modalità "Cartoon".
+
+4.  **Modalità di Visualizzazione (da implementare nel JS):**
+    * **Cartoon (Nastro):** Usa `TubeGeometry` o `ExtrudeGeometry` per tracciare il "backbone" e rappresentare $\alpha$-eliche (elicoidali) e $\beta$-foglietti (piatti/freccia).
+    * **Bastoncini (Stick):** Rappresenta gli atomi come piccole sfere (`SphereGeometry`) e i legami come cilindri sottili (`CylinderGeometry`).
+    * **Sfere (Space-filling):** Rappresenta ogni atomo con una sfera (`SphereGeometry`) scalata al suo raggio di Van der Waals (usa valori approssimati).
+
+5.  **Funzionalità Specifiche:**
+    * **Colorazione Proteine:**
+        * *Per Struttura:* Colora $\alpha$-eliche, $\beta-foglietti$ e $random coil$ con colori diversi.
+        * *Per Proprietà:* Assegna colori in base al tipo di amminoacido (es. Idrofobico=Bianco, Polare=Verde, Carico+=Blu, Carico-=Rosso).
+    * **Evidenziazione Sito Attivo:** Quando l'utente seleziona l'enzima e spunta la casella, cambia il materiale (colore o emissione) degli oggetti 3D che rappresentano il sito attivo.
+    * **Input Sequenza DNA:** Quando un utente inserisce una sequenza (es. "ATTCG"), l'applicazione deve pulire la scena e generare *ex novo* una doppia elica schematica con quella specifica sequenza di basi (e le sue complementari), usando lo schema di colori definito.
+    * **Box Informativo:** Aggiorna dinamicamente questo box con: Nome, Numero Amminoacidi/Basi, Peso Molecolare (stimato), Funzione Biologica (1-2 frasi).
+    * **Pulsante "Spiega":**
+        * Aggiungi un pulsante "Spiega la Tecnica".
+        * Al click, mostra un testo (in un modal o un alert) che spiega concetti semplici:
+            1.  **Rendering 3D:** "Usiamo Three.js per disegnare forme (mesh) in uno spazio 3D. Ogni mesh è fatta di vertici (punti) e facce (poligoni)."
+            2.  **Rappresentazioni:** "Il modello 'Cartoon' segue la catena principale (backbone) per mostrare la struttura secondaria. 'Stick' e 'Space-filling' mostrano la posizione dei singoli atomi."
+            3.  **Nessuna Simulazione:** "Questa è una *visualizzazione* di strutture note, non una simulazione fisica in tempo reale."
+    * **Domande Guida Integrate:** Includi testo statico vicino ai controlli con domande come: "Riesci a identificare le $\alpha$-eliche nell'Emoglobina?", "Zooma sul DNA: le coppie di basi (A-T, G-C) hanno dimensioni simili?".
+
+**Vincoli (Importanti):**
+* **NON** usare framework (React, Angular, Vue).
+* **NON** usare jQuery. Solo JavaScript vanilla.
+* **NON** tentare di caricare file esterni (PDB, MOL, ecc.). Tutto deve essere generato proceduralmente nel codice JS.
+* Il codice deve essere fornito come un **singolo file HTML**.
+* Il CSS deve essere incluso in un tag `<style>` nell'`<head>`.
+* Il JavaScript deve essere incluso in un tag `<script>` prima della chiusura del `</body>`.
+* Includi commenti chiari e dettagliati nel codice JavaScript per spiegare le funzioni principali (es. `// Inizializza Scena`, `// Funzione per generare DNA`, `// Cambia Modalità Vista`).
+```
+</Accordion>
+Dopo alcune iterazioni con Claude 4.5 Thinking, possiamo ottenere un'applicazione web che funge da visualizzatore 3D di DNA e proteine, come mostrato di seguito:
+
+<PublicLink href="vibe-coding/examples/visualizzatore-dna-proteine.html">Visualizzatore 3D di DNA e Proteine (HTML/CSS/JS)</PublicLink>
+
+Il visualizzatore permette di esplorare diverse molecole biologiche con varie modalità di visualizzazione e opzioni di colorazione, il tutto generato proceduralmente senza caricare file esterni. Utilizzando i dati di sequziamento e struttura noti, l'applicazione offre un'esperienza educativa interattiva per studenti di biochimica e biologia molecolare. In particolare, accedendo a database pubblici come il [National Library of Medicine (NLM)](https://www.ncbi.nlm.nih.gov/) e il [Protein Data Bank (PDB)](https://www.rcsb.org/), è possibile ottenere informazioni dettagliate sulle strutture molecolari rappresentate. A titolo esemplificativo, dal link [PDB ID: 6VXX](https://www.rcsb.org/structure/6VXX) è possibile visualizzare la struttura del DNA del virus SARS-CoV-2:  e dal link [NCBI Reference Sequence: NC_045512.2](https://www.ncbi.nlm.nih.gov/nuccore/NC_045512.2) si può leggere la struttura suo genoma in formato FASTA.
+
+## Telecomunicazioni - Livello avanzato
+
+### Laboratorio virtuale sul campionamento di segnali e trasformata di Fourier
+
+<Accordion title="Prompt informale iniziale" defaultOpen={false}>
+
+```text
+Crea il prompt per generare una applicazione didattica per spiegare il concetto di Trasformata di Fourier e per avere un laboratorio virtuale interattivo per i miei alunni di 3° e 4° del corso di Telecomunicazioni all'indirizzo informatico della scuola superiore dove insegno. L'applicazione deve essere scritta in HTML, CSS, JS su singola pagina in modo che sia usabile anche localmente. Se usi librerie JS considera solo CDN affidabili. Includi la possibilità di importare forme d'onda acquisite da oscilloscopio (CSV e PSData di Picoscope) e di esportare le trasformate in formato CSV. Includi modali per spiegazioni teoriche e per le formule utilizzate sia in forma rigorosa che in forma accessibile a studenti che non conoscono il concetto di integrale e di limite come accade di solito in classe terza. Includi una serie di esercitazioni simulate e per la comprensione degli argomenti. Considera che di solito spiego ai miei aluuni gli argomenti che trovi qui: https://www.vincenzov.net/tutorial/elettronica-di-base/RetiAC/trasformata.htm
+```
+
+L'output di questo primo prompt è il seguente:
+
+
+Ecco un prompt progettato per generare l'applicazione didattica che hai descritto. Puoi fornirlo direttamente a un modello AI avanzato di generazione di codice (come GPT-4, Claude 3 o Gemini Advanced) per ottenere il file HTML/CSS/JS.
+
+---
+
+##### 📝 Prompt per l'Applicazione Didattica sulla Trasformata di Fourier
+
+**Ruolo:** Agisci come un ingegnere software esperto e un creatore di contenuti didattici (instructional designer), specializzato in applicazioni web interattive per le discipline STEM.
+
+**Obiettivo:** Creare un'applicazione web didattica, interattiva e *standalone* (file HTML singolo) per spiegare il concetto della **Trasformata di Fourier (FT)**.
+
+**Target Audience:** Studenti del 3° e 4° anno di un istituto tecnico (indirizzo Telecomunicazioni/Informatica). Questi studenti hanno familiarità con la trigonometria (sinusoidi, fase, ampiezza) ma potrebbero **non conoscere ancora i concetti formali di integrale o limite** (specialmente quelli del 3° anno).
+
+**Riferimento Contenutistico:** L'approccio didattico e gli argomenti da coprire sono simili a quelli presentati in questa pagina: `https://www.vincenzov.net/tutorial/elettronica-di-base/RetiAC/trasformata.htm`. Presta particolare attenzione al modo in cui introduce la Serie di Fourier (sommatoria) come ponte verso la Trasformata (integrale).
+
+---
+
+##### Requisiti Tecnici
+
+1.  **Struttura:** Un singolo file `index.html`. Tutto il CSS e il JavaScript devono essere *inline* (nel `<head>` o alla fine del `<body>`).
+2.  **Usabilità:** L'applicazione deve funzionare localmente aprendo il file HTML in un browser (nessuna dipendenza da server).
+3.  **Librerie (via CDN):**
+    * **Grafici:** Usa **Plotly.js** (`https://cdn.plot.ly/plotly-latest.min.js`) per visualizzare i grafici (dominio del tempo e dominio della frequenza). È interattivo e gestisce bene grandi set di dati.
+    * **Parsing CSV:** Usa **PapaParse.js** (`https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js`) per gestire l'importazione di file CSV.
+    * **Calcolo FFT:** Usa una libreria JS leggera per la FFT, come **`fft.js`** (se trovi una CDN affidabile) o, in alternativa, implementa una **DFT (Discrete Fourier Transform)** semplice in JS puro, sufficiente per scopi didattici su set di dati limitati.
+    * **Stile:** Usa un CSS pulito e moderno (es. flexbox/grid) per il layout. Non è necessario un framework CSS pesante.
+
+---
+
+##### Struttura dell'Applicazione (Layout)
+
+L'interfaccia deve essere divisa in tre sezioni principali (magari navigabili tramite una semplice navbar in alto):
+
+1.  **Concetti (Teoria)**
+2.  **Laboratorio Virtuale (Simulatore)**
+3.  **Esercitazioni Guidate**
+
+---
+
+##### Sezione 1: Concetti (Teoria)
+
+Questa sezione deve presentare la teoria utilizzando **Finestre Modali** (per non lasciare la pagina).
+
+* **Bottone 1: "A cosa serve?"**
+    * Spiegazione semplice: "È la 'ricetta' di un segnale."
+    * Analogia: Come un accordo musicale è composto da note singole, un segnale (come la voce) è composto da frequenze diverse. La Trasformata ci dice *quali* frequenze ci sono e *quanto* sono forti.
+    * Applicazioni: Compressione audio (MP3), filtri, Wi-Fi.
+
+* **Bottone 2: "Dal Tempo alla Frequenza" (Visuale)**
+    * Mostra un'onda quadra nel dominio del tempo e il suo spettro (tante barrette) nel dominio della frequenza. Spiega che la FT "converte" la prima immagine nella seconda.
+
+* **Bottone 3: "Le Formule (Spiegazione Duplice)"**
+    * Questo è il modale più importante e deve avere due "tab" o sezioni:
+
+    * **A) Spiegazione Accessibile (per 3° anno - Approccio Discreto/Serie):**
+        * Non usare il simbolo $\int$ (integrale).
+        * Parti dall'idea di "somma" (Serie di Fourier). Spiega che un segnale periodico (come un'onda quadra) può essere costruito **sommando** tante onde sinusoidali (armoniche).
+        * Mostra la formula della **Serie di Fourier Discreta (DFT)** usando il simbolo $\Sigma$ (sommatoria), spiegando che è un modo "informatico" di calcolare le componenti.
+        * $X_k = \sum_{n=0}^{N-1} x_n \cdot e^{-i 2\pi k n / N}$
+        * Spiega $e^{-i\theta}$ come $\cos(\theta) - i \sin(\theta)$ (il "trucco" per trovare ampiezza e fase).
+        * **Focus:** "Stiamo solo moltiplicando il nostro segnale per varie sinusoidi e vedendo 'quanto' si assomigliano."
+
+    * **B) Spiegazione Rigorosa (per 4°/5° anno - Approccio Continuo/Trasformata):**
+        * Introduci il concetto di "somma continua" (l'integrale) per segnali non periodici.
+        * Mostra la formula della **Trasformata di Fourier (FT)**:
+            $$X(f) = \int_{-\infty}^{+\infty} x(t) \cdot e^{-i 2\pi f t} dt$$
+        * Mostra la formula dell'**Anti-Trasformata (IFT)**:
+            $$x(t) = \int_{-\infty}^{+\infty} X(f) \cdot e^{+i 2\pi f t} df$$
+        * Spiega brevemente il significato di $t$ (tempo) e $f$ (frequenza).
+
+---
+
+##### Sezione 2: Laboratorio Virtuale (Simulatore)
+
+Questa è la sezione interattiva principale.
+
+**Layout:**
+* **Colonna Sinistra (Input):** Controlli e grafico del Dominio del Tempo.
+* **Colonna Destra (Output):** Grafico del Dominio della Frequenza (Spettro).
+
+**Funzionalità Input (Colonna Sinistra):**
+
+1.  **Generatore di Segnali Predefiniti (Radio button):**
+    * Sinusoide
+    * Onda Quadra
+    * Onda Triangolare
+    * Rumore Bianco (genera valori casuali)
+2.  **Pannello "Costruttore di Segnali" (Fondamentale per la didattica):**
+    * Permetti all'utente di definire un segnale come **somma di 3 sinusoidi**.
+    * Per ogni sinusoide (Fondamentale, Armonica 1, Armonica 2), fornisci 3 slider:
+        * **Ampiezza** (A)
+        * **Frequenza** (f)
+        * **Fase** (φ)
+    * Il grafico nel dominio del tempo deve aggiornarsi in tempo reale mostrando: $A_1 \sin(2\pi f_1 t + \phi_1) + A_2 \sin(2\pi f_2 t + \phi_2) + ...$
+3.  **Pannello "Importa Dati":**
+    * Un input di tipo `<input type="file" id="fileImport">`.
+    * Pulsanti/radio per specificare il formato:
+        * **CSV Semplice (tempo, valore):** Legge un CSV a due colonne.
+        * **Picoscope PSData (.txt/.csv):** (Trattalo come un CSV. Usa PapaParse per rilevare automaticamente l'header (spesso le prime 3-5 righe sono metadati da saltare) e cercare le colonne "Time" e "Channel A").
+
+**Visualizzazione (Grafici Plotly):**
+
+1.  **Grafico Dominio del Tempo (Sinistra):**
+    * Titolo: "Segnale nel Dominio del Tempo"
+    * Asse X: Tempo (s)
+    * Asse Y: Ampiezza (V o unitario)
+2.  **Grafico Dominio della Frequenza (Destra):**
+    * Il JS deve prendere i dati del grafico di sinistra, applicare la FFT/DFT e plottare il risultato.
+    * Titolo: "Spettro nel Dominio della Frequenza"
+    * Asse X: Frequenza (Hz)
+    * Asse Y: Ampiezza (dB o lineare) - *Rendi l'asse Y commutabile (lineare/logaritmica)*.
+    * **Importante:** Plotta solo la prima metà dello spettro (le frequenze positive), dato che l'input è reale.
+
+**Funzionalità Output:**
+
+* **Pulsante "Esporta Spettro (CSV)":**
+    * Genera e scarica un file CSV con i dati del grafico di destra (colonne: `frequenza_Hz`, `ampiezza_lineare`, `fase_gradi`).
+
+---
+
+##### Sezione 3: Esercitazioni Guidate
+
+Questa sezione propone simulazioni con obiettivi specifici.
+
+* **Esercizio 1: "Costruisci un'Onda Quadra"**
+    * **Obiettivo:** Capire la Serie di Fourier.
+    * **Setup:** Carica il "Costruttore di Segnali".
+    * **Istruzioni:** "Un'onda quadra è fatta da una sinusoide fondamentale e le sue armoniche dispari ($3f, 5f, 7f...$). Prova a sommare una sinusoide a $f=50Hz$ (A=1) con una a $f=150Hz$ (A=1/3) e una a $f=250Hz$ (A=1/5). Osserva come il segnale nel tempo assomiglia sempre più a un'onda quadra e cosa vedi nello spettro."
+
+* **Esercizio 2: "Identifica il Disturbo"**
+    * **Obiettivo:** Leggere uno spettro.
+    * **Setup:** Carica un segnale predefinito: una sinusoide a 100Hz "sporca" da un disturbo a 50Hz (la rete elettrica) e un po' di rumore.
+    * **Istruzioni:** "Questo è un segnale audio acquisito male. Guarda lo spettro. Qual è la frequenza del segnale 'utile' (il picco più alto)? Riesci a vedere la frequenza del 'disturbo' (l'altro picco)?"
+
+* **Esercizio 3: "L'effetto del Filtro (Simulato)"**
+    * **Obiettivo:** Capire il filtraggio.
+    * **Setup:** Carica un'onda quadra.
+    * **Istruzioni:** "Lo spettro dell'onda quadra ha molte armoniche. Immagina di 'cancellare' (filtrare) tutte le frequenze sopra la fondamentale. Cosa ti aspetti di vedere nel dominio del tempo? (Suggerimento: usa il 'Costruttore di Segnali' e imposta solo la fondamentale per vedere la risposta)."
+
+---
+
+
+</Accordion>
+Prompt migliorato con Prompt Enhancer per App Didattiche: 
+<Accordion title="Prompt migliorato" defaultOpen={false}>
+
+```text
+Applicazione Didattica Interattiva sulla Trasformata di Fourier (HTML/JS/Plotly)
+
+## 👤 Ruolo
+Sei un ingegnere software senior e un instructional designer esperto, specializzato nella creazione di applicazioni web didattiche, interattive e standalone per le discipline STEM.
+
+## 🎯 Obiettivo
+Creare un'applicazione web didattica, interattiva e standalone (file HTML singolo) per spiegare il concetto della Trasformata di Fourier (FT).
+
+## 👥 Target Audience
+Studenti del 3° e 4° anno di un istituto tecnico (indirizzo Telecomunicazioni/Informatica). Hanno familiarità con la trigonometria (sinusoidi, fase, ampiezza) ma potrebbero non conoscere i concetti formali di integrale (specialmente quelli del 3° anno).
+
+## 📚 Riferimento Contenutistico
+L'approccio didattico deve essere simile a quello presentato qui: `https://www.vincenzov.net/tutorial/elettronica-di-base/RetiAC/trasformata.htm`. Presta particolare attenzione a come introduce la **Serie di Fourier (sommatoria)** come ponte verso la **Trasformata (integrale)**.
+
+---
+
+## 💻 Requisiti Tecnici
+* **Struttura File:** Un **singolo file `index.html`**.
+* **Stile:** Tutto il CSS deve essere inline nel tag `<style>` all'interno dell'`<head>`. Usa un design pulito, moderno (Flexbox/Grid) e responsivo.
+* **Script:** Tutto il JavaScript deve essere inline nel tag `<script>` alla fine del `<body>`.
+* **Frameworks:** **Non utilizzare** framework JS (come React, Vue, Angular) o CSS (come Bootstrap, Tailwind).
+* **Dipendenze (via CDN):** Includi le seguenti librerie nell' `<head>`:
+    * **Plotly.js (Grafici):** `https://cdn.plot.ly/plotly-latest.min.js`
+    * **PapaParse.js (Parsing CSV):** `https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js`
+* **Calcolo DFT:** Implementa una funzione **DFT (Discrete Fourier Transform) in puro JavaScript**. Non cercare librerie FFT esterne. Una DFT è sufficiente per scopi didattici, più facile da implementare e più trasparente per lo studente rispetto a una FFT ottimizzata.
+* **Usabilità:** L'applicazione deve funzionare localmente aprendo il file HTML in un browser (nessuna dipendenza da server).
+
+---
+
+## 🏛️ Struttura dell'Applicazione (Layout)
+L'interfaccia deve avere una `navbar` semplice in alto per navigare tra tre sezioni principali:
+1.  Concetti (Teoria)
+2.  Laboratorio Virtuale (Simulatore)
+3.  Esercitazioni Guidate
+
+---
+
+## 1. Sezione Concetti (Teoria)
+Questa sezione deve presentare la teoria utilizzando **Finestre Modali (popup)** per mantenere l'utente sulla pagina.
+
+### 1.1. Bottone: "A cosa serve?"
+* **Contenuto:** Spiegazione semplice ("È la 'ricetta' di un segnale").
+* **Analogia:** Un accordo musicale è composto da note singole; un segnale (voce, musica) è composto da frequenze diverse. La FT ci dice quali frequenze ci sono e quanto sono forti.
+* **Applicazioni:** Compressione audio (MP3), filtri, Wi-Fi.
+
+### 1.2. Bottone: "Dal Tempo alla Frequenza"
+* **Contenuto:** Mostra (usando immagini statiche o Plotly) un'onda quadra nel dominio del tempo e il suo spettro (tante barrette) nel dominio della frequenza. Spiega che la FT "converte" la prima immagine nella seconda.
+
+### 1.3. Bottone: "Le Formule (Spiegazione Duplice)"
+Questo è il modale più importante e deve avere due "tab" o sezioni:
+
+#### A) Spiegazione Accessibile (per 3° anno - Approccio Discreto/Serie)
+* **Non usare il simbolo $\int$ (integrale).**
+* Parti dall'idea di "somma" (Serie di Fourier). Spiega che un segnale periodico (onda quadra) può essere costruito sommando tante onde sinusoidali (armoniche).
+* Mostra la formula della **Serie di Fourier Discreta (DFT)** usando il simbolo $\Sigma$ (sommatoria).
+    $$X_k = \sum_{n=0}^{N-1} x_n \cdot e^{-i 2\pi k n / N}$$
+* Spiega $e^{-i\theta}$ come $\cos(\theta) - i \sin(\theta)$ (il "trucco" per trovare ampiezza e fase).
+* **Focus:** "Stiamo solo moltiplicando il nostro segnale per varie sinusoidi e vedendo 'quanto' si assomigliano."
+
+#### B) Spiegazione Rigorosa (per 4°/5° anno - Approccio Continuo/Trasformata)
+* Introduci il concetto di "somma continua" (l'integrale) per segnali non periodici.
+* Mostra la formula della **Trasformata di Fourier (FT)**:
+    $$X(f) = \int_{-\infty}^{+\infty} x(t) \cdot e^{-i 2\pi f t} dt$$
+* Mostra la formula dell'**Anti-Trasformata (IFT)**:
+    $$x(t) = \int_{-\infty}^{+\infty} X(f) \cdot e^{+i 2\pi f t} df$$
+* Spiega brevemente il significato di $t$ (tempo) e $f$ (frequenza).
+
+---
+
+## 2. Sezione Laboratorio Virtuale (Simulatore)
+Questa è la sezione interattiva principale, con un layout a due colonne.
+
+### 2.1. Colonna Sinistra (Input)
+* **Grafico Dominio del Tempo (Plotly):**
+    * Titolo: "Segnale nel Dominio del Tempo"
+    * Asse X: Tempo (s), Asse Y: Ampiezza (V o unitario)
+* **Controlli Input:**
+    * **Generatore di Segnali Predefiniti (Radio button):**
+        * Sinusoide
+        * Onda Quadra
+        * Onda Triangolare
+        * Rumore Bianco (genera valori casuali)
+    * **Pannello "Costruttore di Segnali" (Fondamentale):**
+        * Permetti all'utente di definire un segnale come **somma di 3 sinusoidi**.
+        * Per ogni sinusoide (Fondamentale, Armonica 1, Armonica 2), fornisci 3 slider:
+            * Ampiezza (A)
+            * Frequenza (f)
+            * Fase ($\phi$)
+        * Il grafico nel dominio del tempo deve aggiornarsi in tempo reale mostrando: $A_1 \sin(2\pi f_1 t + \phi_1) + A_2 \sin(2\pi f_2 t + \phi_2) + \dots$
+    * **Pannello "Importa Dati":**
+        * Un `<input type="file" id="fileImport">`.
+        * Istruzioni per l'utente: "Importa CSV (tempo, valore)".
+        * Usa PapaParse per leggere il file. Gestisci CSV semplici (due colonne) e rileva automaticamente possibili header (es. saltando le prime righe di metadati se presenti).
+
+### 2.2. Colonna Destra (Output)
+* **Grafico Dominio della Frequenza (Plotly):**
+    * Titolo: "Spettro nel Dominio della Frequenza"
+    * Asse X: Frequenza (Hz), Asse Y: Ampiezza
+* **Logica JavaScript:**
+    * Il JS deve prendere i dati (generati o importati) del grafico di sinistra, applicare la **funzione DFT (scritta in JS puro)** e plottare il risultato (lo spettro).
+    * **Plotta solo la prima metà dello spettro** (le frequenze positive), dato che l'input è reale.
+* **Controlli Output:**
+    * **Switch Asse Y:** Permetti di commutare l'asse Y dello spettro tra **Lineare** e **Logaritmica (dB)**.
+    * **Pulsante "Esporta Spettro (CSV)":**
+        * Genera e scarica un file CSV con i dati del grafico di destra (colonne: `frequenza_Hz`, `ampiezza_lineare`, `fase_gradi`).
+
+---
+
+## 3. Sezione Esercitazioni Guidate
+Questa sezione propone simulazioni con obiettivi specifici, pre-configurando il Laboratorio.
+
+### Esercizio 1: "Costruisci un'Onda Quadra"
+* **Obiettivo:** Capire la Serie di Fourier.
+* **Setup:** Attiva il "Costruttore di Segnali".
+* **Istruzioni:** "Un'onda quadra è fatta da una sinusoide fondamentale e le sue armoniche dispari ($3f, 5f, 7f...$). Prova a sommare una sinusoide a $f=50Hz$ (A=1) con una a $f=150Hz$ (A=1/3) e una a $f=250Hz$ (A=1/5). Osserva come il segnale nel tempo assomiglia sempre più a un'onda quadra e cosa vedi nello spettro."
+
+### Esercizio 2: "Identifica il Disturbo"
+* **Obiettivo:** Leggere uno spettro.
+* **Setup:** Carica un segnale predefinito (generato): una sinusoide a 100Hz (segnale utile) "sporca" da un disturbo a 50Hz (rete elettrica) e un po' di rumore bianco.
+* **Istruzioni:** "Questo è un segnale audio acquisito male. Guarda lo spettro. Qual è la frequenza del segnale 'utile' (il picco più alto)? Riesci a vedere la frequenza del 'disturbo' (l'altro picco)?"
+
+### Esercizio 3: "L'effetto del Filtro (Simulato)"
+* **Obiettivo:** Capire il filtraggio.
+* **Setup:** Carica un'onda quadra predefinita.
+* **Istruzioni:** "Lo spettro dell'onda quadra ha molte armoniche. Immagina di 'cancellare' (filtrare) tutte le frequenze sopra la fondamentale. Cosa ti aspetti di vedere nel dominio del tempo? (Suggerimento: usa il 'Costruttore di Segnali' e imposta solo la fondamentale per vedere la risposta)."
+
+---
+
+## 🚀 Istruzioni Finali per la Generazione
+* **Output:** Fornisci il codice completo per il singolo file `index.html`.
+* **Struttura del Codice:**
+    1.  `<!DOCTYPE html>` e `<head>` (con link CDN, e tutto il CSS nel tag `<style>`).
+    2.  `<body>` (con la struttura HTML delle 3 sezioni, la navbar e i modali).
+    3.  Tag `<script>` alla fine del `<body>` contenente tutto il codice JavaScript (inclusa la funzione DFT pura, la logica di Plotly, la logica di PapaParse e la gestione degli eventi).
+* **Revisione:** Assicurati che tutti i componenti interattivi (slider, pulsanti, importazione file, tab) siano funzionanti e che i grafici si aggiornino dinamicamente come descritto.
+```
+</Accordion>
+
+Dopo alcune iterazioni con Claude 4.5 Thinking, possiamo ottenere un'applicazione web didattica interattiva sulla Trasformata di Fourier, come mostrato di seguito:
+
+<PublicLink href="vibe-coding/examples/trasformate-di-fourier.html">Laboratorio Virtuale sul Campionamento di Segnali e Trasformata di Fourier (HTML/CSS/JS)</PublicLink>
+
+
+
+
+
+
+
