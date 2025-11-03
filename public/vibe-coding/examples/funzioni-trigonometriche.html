@@ -1050,6 +1050,7 @@ sin²(θ) + cos²(θ) = 1
             <label><input type="checkbox" value="sin" checked> y = sin(x)</label>
             <label><input type="checkbox" value="cos" checked> y = cos(x)</label>
             <label><input type="checkbox" value="tan"> y = tan(x)</label>
+            <label><input type="checkbox" value="cot"> y = cot(x)</label>
         </div>
 
         <h3>y = A·sin(B·x + C) + D</h3>
@@ -1792,10 +1793,20 @@ sin²(θ) + cos²(θ) = 1
                     var tanData = x.map(function (val) {
                         var y = Math.tan(val);
                         return (Math.abs(y) > 10) ? null : { x: val, y: y };
-                    });
+                    }).filter(function (point) { return point !== null; });
                     datasets.push({
                         label: 'y = tan(x)', data: tanData,
                         borderColor: jsColors.tan, borderWidth: 2, spanGaps: false, pointRadius: 0
+                    });
+                }
+                if (state.functions.cot) {
+                    var cotData = x.map(function (val) {
+                        var y = 1 / Math.tan(val);
+                        return (Math.abs(y) > 10) ? null : { x: val, y: y };
+                    }).filter(function (point) { return point !== null; });
+                    datasets.push({
+                        label: 'y = cot(x)', data: cotData,
+                        borderColor: jsColors.cot, borderWidth: 2, spanGaps: false, pointRadius: 0
                     });
                 }
 
@@ -2938,7 +2949,6 @@ sin²(θ) + cos²(θ) = 1
                             startBtn: document.getElementById('s7-p-start-btn'),
                             resetBtn: document.getElementById('s7-p-reset-btn')
                         },
-                        elevationCanvas: document.getElementById('s7-elevation-canvas'),
                         // Controlli SHO
                         sho: {
                             A: document.getElementById('s7-A'), AVal: document.getElementById('s7-A-val'),
