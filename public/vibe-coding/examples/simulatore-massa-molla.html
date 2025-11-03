@@ -22,12 +22,14 @@
         }
 
         .main-container {
+            width: 95%;
             max-width: 1600px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
             padding: 30px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
         }
 
         h1 {
@@ -92,6 +94,7 @@
             display: flex;
             gap: 10px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .control-group input[type="range"] {
@@ -136,6 +139,35 @@
             border-radius: 5px;
             font-size: 0.9em;
             text-align: center;
+        }
+
+        /* Make number inputs and sliders stack on small screens to avoid overflow */
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 12px;
+            }
+
+            .input-row {
+                gap: 8px;
+            }
+
+            .control-group input[type="number"] {
+                width: 100%;
+                flex: 0 0 100%;
+            }
+
+            .control-group input[type="range"] {
+                flex: 1 1 100%;
+                min-width: 0;
+            }
+
+            .button-group button {
+                width: 100%;
+            }
+
+            .chart-wrapper canvas {
+                height: 180px !important;
+            }
         }
 
         .control-group select {

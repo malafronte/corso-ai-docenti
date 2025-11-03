@@ -746,6 +746,18 @@
             offsetY: 0
         };
 
+        // View transform (pan & zoom)
+        let viewPan = { x: 0, y: 0 }; // in pixels
+        let baseOriginX = CANVAS_WIDTH / 2;
+        let baseOriginY = CANVAS_HEIGHT / 2;
+        let isPanning = false; // mouse middle-button panning
+        let panStart = { x: 0, y: 0 };
+        let viewPanStart = { x: 0, y: 0 };
+        let isPanningTouch = false; // single-finger pan on touch
+        let pinchState = { active: false, startDist: 0, startScale: SCALE, midLogical: null, viewPanStart: { x: 0, y: 0 } };
+        const MIN_SCALE = 1; // min pixels per logical unit
+        const MAX_SCALE = 80; // max pixels per logical unit
+
         // Conversioni coordinate
         function canvasToLogical(canvasX, canvasY) {
             return {
@@ -796,8 +808,12 @@
             // Aggiorna variabili globali
             CANVAS_WIDTH = cssWidth;
             CANVAS_HEIGHT = cssHeight;
-            ORIGIN_X = CANVAS_WIDTH / 2;
-            ORIGIN_Y = CANVAS_HEIGHT / 2;
+            // base origin (center) senza pan
+            baseOriginX = CANVAS_WIDTH / 2;
+            baseOriginY = CANVAS_HEIGHT / 2;
+            // ORIGIN include pan offset
+            ORIGIN_X = baseOriginX + viewPan.x;
+            ORIGIN_Y = baseOriginY + viewPan.y;
 
             render();
         }
@@ -1024,11 +1040,19 @@
 
         // Event handlers
         canvas.addEventListener('mousedown', (e) => {
+            // Middle button (button === 1) starts panning of the view
+            if (e.button === 1) {
+                isPanning = true;
+                panStart = { x: e.clientX, y: e.clientY };
+                viewPanStart = { x: viewPan.x, y: viewPan.y };
+                return;
+            }
+
             const rect = canvas.getBoundingClientRect();
             const canvasX = e.clientX - rect.left;
             const canvasY = e.clientY - rect.top;
 
-            // Prova A poi B (priorità visiva)
+            // Prova B poi A (priorità visiva: B sopra A)
             let hit = checkHit(canvasX, canvasY, vectorB);
             if (hit) {
                 dragState = { active: true, vector: vectorB, part: hit, offsetX: 0, offsetY: 0 };
@@ -1038,10 +1062,26 @@
             hit = checkHit(canvasX, canvasY, vectorA);
             if (hit) {
                 dragState = { active: true, vector: vectorA, part: hit, offsetX: 0, offsetY: 0 };
+            } else {
+                // click on empty area: nothing (could start panning with left button if desired)
             }
         });
 
         canvas.addEventListener('mousemove', (e) => {
+            // If panning with middle button
+            if (isPanning) {
+                e.preventDefault();
+                const dx = e.clientX - panStart.x;
+                const dy = e.clientY - panStart.y;
+                viewPan.x = viewPanStart.x + dx;
+                viewPan.y = viewPanStart.y + dy;
+                // update origin
+                ORIGIN_X = baseOriginX + viewPan.x;
+                ORIGIN_Y = baseOriginY + viewPan.y;
+                render();
+                return;
+            }
+
             if (!dragState.active) return;
 
             const rect = canvas.getBoundingClientRect();
@@ -1079,11 +1119,157 @@
 
         canvas.addEventListener('mouseup', () => {
             dragState.active = false;
+            // stop panning if middle button released
+            isPanning = false;
         });
 
         canvas.addEventListener('mouseleave', () => {
             dragState.active = false;
         });
+
+        // Touch support for mobile / tablet: pan and pinch-to-zoom + single-finger pan
+        // Use passive: false so we can call preventDefault() and avoid synthetic mouse events
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+
+            if (e.touches.length === 2) {
+                // Pinch start
+                const t0 = e.touches[0];
+                const t1 = e.touches[1];
+                const dx = t1.clientX - t0.clientX;
+                const dy = t1.clientY - t0.clientY;
+                pinchState.startDist = Math.hypot(dx, dy);
+                pinchState.startScale = SCALE;
+                pinchState.viewPanStart = { x: viewPan.x, y: viewPan.y };
+                // midpoint in canvas coords
+                const midX = (t0.clientX + t1.clientX) / 2 - rect.left;
+                const midY = (t0.clientY + t1.clientY) / 2 - rect.top;
+                pinchState.midLogical = canvasToLogical(midX, midY);
+                pinchState.active = true;
+                // cancel any dragState
+                dragState.active = false;
+                isPanningTouch = false;
+                return;
+            }
+
+            // Single touch: try hit detection for vectors, otherwise start touch-pan
+            const touch = e.touches[0];
+            const canvasX = touch.clientX - rect.left;
+            const canvasY = touch.clientY - rect.top;
+
+            let hit = checkHit(canvasX, canvasY, vectorB);
+            if (hit) {
+                dragState = { active: true, vector: vectorB, part: hit, offsetX: 0, offsetY: 0 };
+                return;
+            }
+
+            hit = checkHit(canvasX, canvasY, vectorA);
+            if (hit) {
+                dragState = { active: true, vector: vectorA, part: hit, offsetX: 0, offsetY: 0 };
+                return;
+            }
+
+            // Start single-finger pan of the view
+            isPanningTouch = true;
+            panStart = { x: touch.clientX, y: touch.clientY };
+            viewPanStart = { x: viewPan.x, y: viewPan.y };
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+
+            if (pinchState.active && e.touches.length >= 2) {
+                const t0 = e.touches[0];
+                const t1 = e.touches[1];
+                const dx = t1.clientX - t0.clientX;
+                const dy = t1.clientY - t0.clientY;
+                const dist = Math.hypot(dx, dy);
+                const factor = dist / pinchState.startDist;
+                let newScale = pinchState.startScale * factor;
+                newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
+
+                // Keep midpoint logical point under the same screen position
+                SCALE = newScale;
+                // recompute origin and then correct pan so that midLogical maps to midpoint
+                ORIGIN_X = baseOriginX + viewPan.x;
+                ORIGIN_Y = baseOriginY + viewPan.y;
+
+                const midCanvasAfter = logicalToCanvas(pinchState.midLogical.x, pinchState.midLogical.y);
+                // midpoint current screen coords
+                const midX = (t0.clientX + t1.clientX) / 2 - rect.left;
+                const midY = (t0.clientY + t1.clientY) / 2 - rect.top;
+
+                const deltaX = midCanvasAfter.x - midX;
+                const deltaY = midCanvasAfter.y - midY;
+
+                viewPan.x -= deltaX;
+                viewPan.y -= deltaY;
+                ORIGIN_X = baseOriginX + viewPan.x;
+                ORIGIN_Y = baseOriginY + viewPan.y;
+
+                render();
+                return;
+            }
+
+            if (isPanningTouch && e.touches.length === 1) {
+                const touch = e.touches[0];
+                const dx = touch.clientX - panStart.x;
+                const dy = touch.clientY - panStart.y;
+                viewPan.x = viewPanStart.x + dx;
+                viewPan.y = viewPanStart.y + dy;
+                ORIGIN_X = baseOriginX + viewPan.x;
+                ORIGIN_Y = baseOriginY + viewPan.y;
+                render();
+                return;
+            }
+
+            // If a vector is being dragged, handle as before
+            if (dragState.active) {
+                const touch = e.touches[0];
+                const canvasX = touch.clientX - rect.left;
+                const canvasY = touch.clientY - rect.top;
+                const logical = canvasToLogical(canvasX, canvasY);
+
+                if (dragState.part === 'tail') {
+                    dragState.vector.tailX = logical.x;
+                    dragState.vector.tailY = logical.y;
+                } else if (dragState.part === 'tip') {
+                    const dx = logical.x - dragState.vector.tailX;
+                    const dy = logical.y - dragState.vector.tailY;
+                    dragState.vector.magnitude = Math.sqrt(dx * dx + dy * dy);
+                    dragState.vector.angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+                    if (dragState.vector === vectorA) {
+                        document.getElementById('moduloA').value = dragState.vector.magnitude;
+                        document.getElementById('angoloA').value = dragState.vector.angle;
+                        document.getElementById('moduloA-value').textContent = dragState.vector.magnitude.toFixed(1);
+                        document.getElementById('angoloA-value').textContent = dragState.vector.angle.toFixed(0) + '°';
+                    } else {
+                        document.getElementById('moduloB').value = dragState.vector.magnitude;
+                        document.getElementById('angoloB').value = dragState.vector.angle;
+                        document.getElementById('moduloB-value').textContent = dragState.vector.magnitude.toFixed(1);
+                        document.getElementById('angoloB-value').textContent = dragState.vector.angle.toFixed(0) + '°';
+                    }
+                }
+
+                render();
+            }
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', (e) => {
+            // if fingers reduced to zero, clear states
+            dragState.active = false;
+            isPanningTouch = false;
+            pinchState.active = false;
+        }, { passive: false });
+
+        canvas.addEventListener('touchcancel', (e) => {
+            dragState.active = false;
+            isPanningTouch = false;
+            pinchState.active = false;
+        }, { passive: false });
 
         // Slider controls
         document.getElementById('moduloA').addEventListener('input', (e) => {
@@ -1244,6 +1430,39 @@
                 canvasOverlay.style.transform = 'translate(0px, 0px)';
             }
         }
+
+        // Wheel zoom (desktop): zoom toward pointer
+        canvas.addEventListener('wheel', (e) => {
+            // If overlay dragging or other UI interaction, ignore
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const canvasX = e.clientX - rect.left;
+            const canvasY = e.clientY - rect.top;
+
+            // Logical point under cursor before zoom
+            const logical = canvasToLogical(canvasX, canvasY);
+
+            // Zoom factor
+            const ZOOM_STEP = 1.08;
+            let factor = (e.deltaY < 0) ? ZOOM_STEP : 1 / ZOOM_STEP;
+            let newScale = SCALE * factor;
+            newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
+            SCALE = newScale;
+
+            // After changing SCALE, compute where that logical point ends up and adjust pan
+            ORIGIN_X = baseOriginX + viewPan.x;
+            ORIGIN_Y = baseOriginY + viewPan.y;
+            const newCanvas = logicalToCanvas(logical.x, logical.y);
+            const deltaX = newCanvas.x - canvasX;
+            const deltaY = newCanvas.y - canvasY;
+
+            viewPan.x -= deltaX;
+            viewPan.y -= deltaY;
+            ORIGIN_X = baseOriginX + viewPan.x;
+            ORIGIN_Y = baseOriginY + viewPan.y;
+
+            render();
+        }, { passive: false });
 
         // Inizializza
         resizeCanvas();

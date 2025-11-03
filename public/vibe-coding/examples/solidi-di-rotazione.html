@@ -189,6 +189,8 @@
             height: 600px;
             border-radius: var(--radius-md);
             box-shadow: var(--shadow-md);
+            position: relative;
+            /* rende il contenitore riferimento per il pulsante */
         }
 
         .fullscreen #three-canvas {
@@ -199,7 +201,7 @@
 
         .fullscreen-btn {
             position: absolute;
-            top: var(--space-lg);
+            bottom: var(--space-lg);
             right: var(--space-lg);
             background: rgba(37, 99, 235, 0.9);
             color: white;
@@ -695,11 +697,6 @@
             </div>
 
             <div class="visualization-area">
-                <button id="fullscreen-btn" class="fullscreen-btn">
-                    <span id="fullscreen-icon">⛶</span>
-                    <span id="fullscreen-text">Schermo Intero</span>
-                </button>
-
                 <div id="visualization-controls" class="visualization-controls show">
                     <div class="viz-checkbox" id="curve-checkbox">
                         <input type="checkbox" id="show-curve" checked>
@@ -715,7 +712,12 @@
                     </div>
                 </div>
 
-                <div id="three-canvas"></div>
+                <div id="three-canvas">
+                    <button id="fullscreen-btn" class="fullscreen-btn">
+                        <span id="fullscreen-icon">⛶</span>
+                        <span id="fullscreen-text">Schermo Intero</span>
+                    </button>
+                </div>
 
                 <div id="results" class="results-section hidden">
                     <div class="results-title">
