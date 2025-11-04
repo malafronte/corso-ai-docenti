@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizzatore Funzioni 3D - Strumento Didattico</title>
+
+    <!-- CDN Esterne -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+
+    <style>
+        :root {
+            --color-primary: #2196F3;
+            --color-primary-hover: #1976D2;
+            --color-secondary: #4CAF50;
+            --color-background: #f5f5f5;
+            --color-surface: #ffffff;
+            --color-text: #212121;
+            --color-text-secondary: #757575;
+            --color-border: #e0e0e0;
+            --color-error: #f44336;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Pannello Controlli */
+        .controls-panel {
+            background-color: var(--color-surface);
+            border-right: 1px solid var(--color-border);
+            overflow-y: auto;
+            padding: var(--spacing-lg);
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .controls-panel h1 {
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-primary);
+        }
+
+        .control-group {
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .control-group:last-child {
+            border-bottom: none;
+        }
+
+        .control-group h2 {
+            font-size: 1rem;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text);
+            font-weight: 600;
+        }
+
+        label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: var(--spacing-sm) 12px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: 'Courier New', monospace;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin: var(--spacing-sm) 0;
+        }
+
+        .range-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+        }
+
+        .range-value {
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .domain-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+        }
+
+        .domain-input {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .domain-input label {
+            margin-bottom: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            margin-top: var(--spacing-sm);
+        }
+
+        button:hover {
+            background-color: var(--color-primary-hover);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button.secondary {
+            background-color: var(--color-secondary);
+        }
+
+        button.secondary:hover {
+            background-color: #43A047;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .info-box {
+            background-color: #E3F2FD;
+            border-left: 4px solid var(--color-primary);
+            padding: var(--spacing-md);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .info-box h3 {
+            font-size: 0.875rem;
+            margin-bottom: var(--spacing-sm);
+            color: var(--color-primary);
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            margin-top: var(--spacing-sm);
+        }
+
+        .info-box li {
+            margin-bottom: 4px;
+        }
+
+        /* Pannello Visualizzazione */
+        .visualization-panel {
+            display: flex;
+            flex-direction: column;
+            padding: var(--spacing-lg);
+            background-color: var(--color-background);
+        }
+
+        #plot-container {
+            flex: 1;
+            background-color: var(--color-surface);
+            border-radius: var(--radius);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            min-height: 500px;
+        }
+
+        .error-message {
+            background-color: #FFEBEE;
+            color: var(--color-error);
+            padding: var(--spacing-md);
+            border-radius: var(--radius);
+            margin-top: var(--spacing-md);
+            display: none;
+            font-size: 0.875rem;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Overlay Controls Toggle */
+        .controls-toggle-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .controls-toggle-btn:hover {
+            background-color: var(--color-primary-hover);
+            transform: scale(1.05);
+        }
+
+        .controls-toggle-btn:active {
+            transform: scale(0.95);
+        }
+
+        .controls-toggle-btn.hidden {
+            display: none !important;
+        }
+
+        /* Close Panel Button (mobile) */
+        .controls-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1002;
+            background-color: var(--color-error);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .controls-close-btn:hover {
+            background-color: #d32f2f;
+            transform: scale(1.05);
+        }
+
+        .controls-close-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Fullscreen Toggle Button */
+        .fullscreen-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1001;
+            background-color: var(--color-secondary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .fullscreen-btn:hover {
+            background-color: #43A047;
+            transform: scale(1.05);
+        }
+
+        .fullscreen-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Fullscreen mode */
+        .app-container.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            grid-template-columns: 1fr;
+        }
+
+        .app-container.fullscreen .controls-panel {
+            display: none;
+        }
+
+        .app-container.fullscreen .controls-toggle-btn {
+            display: none;
+        }
+
+        /* Parametric sliders container */
+        .parametric-sliders {
+            display: none;
+            margin-top: var(--spacing-md);
+        }
+
+        .parametric-sliders.show {
+            display: block;
+        }
+
+        .k-slider-group {
+            /* Always visible by default */
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+
+            .controls-panel {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 90%;
+                max-width: 380px;
+                height: 100vh;
+                z-index: 1000;
+                transition: left 0.3s ease;
+                box-shadow: 4px 0 12px rgba(0, 0, 0, 0.2);
+            }
+
+            .controls-panel.open {
+                left: 0;
+            }
+
+            .controls-panel.open .controls-close-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .controls-toggle-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .visualization-panel {
+                grid-column: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .controls-panel {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .controls-toggle-btn,
+            .fullscreen-btn {
+                width: 48px;
+                height: 48px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Pulsante Toggle Controlli (Mobile/Tablet) -->
+        <button class="controls-toggle-btn" id="controls-toggle" aria-label="Toggle Controls">
+            ☰
+        </button>
+
+        <!-- Pulsante Fullscreen -->
+        <button class="fullscreen-btn" id="fullscreen-toggle" aria-label="Toggle Fullscreen">
+            ⛶
+        </button>
+
+        <!-- Pannello Controlli (Sinistra) -->
+        <div class="controls-panel" id="controls-panel">
+            <!-- Pulsante Chiudi (Mobile/Tablet) -->
+            <button class="controls-close-btn" id="controls-close" aria-label="Close Controls">
+                ✕
+            </button>
+
+            <h1>📊 Visualizzatore 3D</h1>
+
+            <!-- Funzione -->
+            <div class="control-group">
+                <h2>Funzione z = f(x, y)</h2>
+                <label for="function-input">Inserisci la funzione (puoi usare: x, y, k, sin, cos, exp, sqrt, pow, abs,
+                    log, tan)</label>
+                <input type="text" id="function-input" value="x^2 + y^2" placeholder="es. sin(x) * cos(y)">
+
+                <label for="example-menu" style="margin-top: 12px;">Oppure scegli un esempio:</label>
+                <select id="example-menu">
+                    <option value="">-- Seleziona esempio --</option>
+                    <option value="x^2 + y^2" selected>Paraboloide: x² + y²</option>
+                    <option value="x^2 - y^2">Sella: x² - y²</option>
+                    <option value="sin(sqrt(x^2 + y^2))">Onda radiale: sin(√(x² + y²))</option>
+                    <option value="sin(k*x) * cos(k*y)">Onda 2D: sin(kx)·cos(ky)</option>
+                    <option value="exp(-(x^2 + y^2))">Gaussiana: e^(-(x²+y²))</option>
+                    <option value="abs(x) + abs(y)">Piramide: |x| + |y|</option>
+                    <option value="sin(x*y)">sin(xy)</option>
+                    <option value="(x^2)/(a^2) + (y^2)/(b^2)" data-parametric="true">Paraboloide parametrico: x²/a² +
+                        y²/b²</option>
+                </select>
+            </div>
+
+            <!-- Parametro k -->
+            <div class="control-group" id="k-parameter-group">
+                <h2>Parametri</h2>
+                <div class="k-slider-group">
+                    <label for="k-slider">Valore di k (usalo nella funzione):</label>
+                    <input type="range" id="k-slider" min="0.1" max="5" step="0.1" value="1">
+                    <div class="range-display">
+                        <span>Min: 0.1</span>
+                        <span class="range-value">k = <span id="k-value">1.0</span></span>
+                        <span>Max: 5.0</span>
+                    </div>
+                </div>
+
+                <!-- Parametri a e b per paraboloide parametrico -->
+                <div class="parametric-sliders" id="parametric-sliders">
+                    <label for="a-slider">Valore di a:</label>
+                    <input type="range" id="a-slider" min="0.5" max="5" step="0.1" value="2">
+                    <div class="range-display">
+                        <span>Min: 0.5</span>
+                        <span class="range-value">a = <span id="a-value">2.0</span></span>
+                        <span>Max: 5.0</span>
+                    </div>
+
+                    <label for="b-slider" style="margin-top: 12px;">Valore di b:</label>
+                    <input type="range" id="b-slider" min="0.5" max="5" step="0.1" value="2">
+                    <div class="range-display">
+                        <span>Min: 0.5</span>
+                        <span class="range-value">b = <span id="b-value">2.0</span></span>
+                        <span>Max: 5.0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dominio -->
+            <div class="control-group">
+                <h2>Dominio</h2>
+                <div class="domain-grid">
+                    <div class="domain-input">
+                        <label for="x-min">x min:</label>
+                        <input type="number" id="x-min" value="-5" step="0.5">
+                    </div>
+                    <div class="domain-input">
+                        <label for="x-max">x max:</label>
+                        <input type="number" id="x-max" value="5" step="0.5">
+                    </div>
+                    <div class="domain-input">
+                        <label for="y-min">y min:</label>
+                        <input type="number" id="y-min" value="-5" step="0.5">
+                    </div>
+                    <div class="domain-input">
+                        <label for="y-max">y max:</label>
+                        <input type="number" id="y-max" value="5" step="0.5">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risoluzione -->
+            <div class="control-group">
+                <h2>Risoluzione Griglia</h2>
+                <label for="resolution-slider">Numero di punti per asse:</label>
+                <input type="range" id="resolution-slider" min="20" max="100" step="5" value="50">
+                <div class="range-display">
+                    <span>20×20</span>
+                    <span class="range-value"><span id="resolution-value">50</span>×<span
+                            id="resolution-value-2">50</span></span>
+                    <span>100×100</span>
+                </div>
+            </div>
+
+            <!-- Opzioni Visualizzazione -->
+            <div class="control-group">
+                <h2>Opzioni Avanzate</h2>
+                <!-- Checkbox per il gradiente rimossa per semplificare l'interfaccia -->
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="contours-projection-toggle" name="contours-projection-toggle">
+                    <label for="contours-projection-toggle">Mostra Curve di Livello (proiezione)</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="contours-surface-toggle" name="contours-surface-toggle" checked>
+                    <label for="contours-surface-toggle">Mostra Linee di Livello in Quota</label>
+                </div>
+            </div>
+
+            <!-- Azioni -->
+            <div class="control-group">
+                <h2>Azioni</h2>
+                <button id="update-plot-btn">🔄 Genera Grafico</button>
+                <button id="export-csv" class="secondary">📥 Esporta CSV</button>
+                <button id="screenshot-btn" class="secondary">📸 Screenshot Grafico</button>
+            </div>
+
+            <!-- Informazioni Didattiche -->
+            <div class="control-group">
+                <div class="info-box">
+                    <h3>💡 Guida Didattica</h3>
+                    <p><strong>Obiettivi di Apprendimento:</strong></p>
+                    <ul>
+                        <li>Visualizzare superfici 3D</li>
+                        <li>Comprendere il concetto di funzione a due variabili</li>
+                        <li>Esplorare l'effetto di parametri</li>
+                        <li>Analizzare curve di livello</li>
+                        <li>Studiare il gradiente (vettore delle derivate parziali)</li>
+                    </ul>
+                    <p style="margin-top: 8px;"><strong>Istruzioni:</strong> Modifica la funzione, varia i parametri e
+                        osserva come cambia la superficie. Usa il mouse per ruotare la vista 3D.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pannello Visualizzazione (Destra) -->
+        <div class="visualization-panel">
+            <div id="plot-container"></div>
+            <div id="error-message" class="error-message"></div>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // CONFIGURAZIONE E STATO GLOBALE
+        // ========================================
+
+        let currentData = {
+            x: [],
+            y: [],
+            z: [],
+            functionString: '',
+            gradientArrows: [],
+            isFullscreen: false
+        };
+
+        // ========================================
+        // UTILITÀ: LINSPACE
+        // ========================================
+
+        /**
+         * Genera un array di valori equispaziati
+         * @param {number} start - Valore iniziale
+         * @param {number} stop - Valore finale
+         * @param {number} num - Numero di punti
+         * @returns {number[]} Array di valori
+         */
+        function linspace(start, stop, num) {
+            const arr = [];
+            const step = (stop - start) / (num - 1);
+            for (let i = 0; i < num; i++) {
+                arr.push(start + step * i);
+            }
+            return arr;
+        }
+
+        // ========================================
+        // GENERAZIONE DATI GRIGLIA
+        // ========================================
+
+        /**
+         * Genera i dati x, y, z per la superficie 3D
+         * @param {string} fnString - Stringa della funzione matematica
+         * @param {object} domain - Oggetto con xMin, xMax, yMin, yMax
+         * @param {number} resolution - Numero di punti per asse
+         * @param {number} k - Parametro k
+         * @param {number} a - Parametro a
+         * @param {number} b - Parametro b
+         * @returns {object} Oggetto con array x, y, z
+         */
+        function generateGridData(fnString, domain, resolution, k, a, b) {
+            try {
+                // Compila la funzione con math.js
+                const compiledFn = math.compile(fnString);
+
+                // Genera gli array x e y
+                const xArray = linspace(domain.xMin, domain.xMax, resolution);
+                const yArray = linspace(domain.yMin, domain.yMax, resolution);
+
+                // Genera la matrice z
+                const zMatrix = [];
+
+                for (let i = 0; i < yArray.length; i++) {
+                    const row = [];
+                    for (let j = 0; j < xArray.length; j++) {
+                        try {
+                            // Valuta la funzione con scope {x, y, k, a, b}
+                            const result = compiledFn.evaluate({
+                                x: xArray[j],
+                                y: yArray[i],
+                                k: k,
+                                a: a,
+                                b: b
+                            });
+
+                            // Gestisci risultati non numerici o infiniti
+                            if (typeof result === 'number' && isFinite(result)) {
+                                row.push(result);
+                            } else {
+                                row.push(null);
+                            }
+                        } catch (evalError) {
+                            row.push(null);
+                        }
+                    }
+                    zMatrix.push(row);
+                }
+
+                return {
+                    x: xArray,
+                    y: yArray,
+                    z: zMatrix,
+                    success: true
+                };
+
+            } catch (error) {
+                console.error('Errore nella generazione dei dati:', error);
+                return {
+                    x: [],
+                    y: [],
+                    z: [],
+                    success: false,
+                    error: error.message
+                };
+            }
+        }
+
+        // ========================================
+        // CALCOLO GRADIENTE NUMERICO
+        // ========================================
+
+        /**
+         * Calcola il gradiente numerico in un punto (x0, y0)
+         * @param {string} fnString - Stringa della funzione
+         * @param {number} x0 - Coordinata x
+         * @param {number} y0 - Coordinata y
+         * @param {number} k - Parametro k
+         * @param {number} a - Parametro a
+         * @param {number} b - Parametro b
+         * @returns {object} Oggetto con componenti {dx, dy}
+         */
+        function calculateGradient(fnString, x0, y0, k, a, b) {
+            try {
+                const compiledFn = math.compile(fnString);
+                const h = 0.001; // Step per differenza finita
+
+                // f(x0, y0)
+                const f0 = compiledFn.evaluate({ x: x0, y: y0, k: k, a: a, b: b });
+
+                // Derivata parziale rispetto a x: (f(x0+h, y0) - f(x0, y0)) / h
+                const fx_plus = compiledFn.evaluate({ x: x0 + h, y: y0, k: k, a: a, b: b });
+                const dx = (fx_plus - f0) / h;
+
+                // Derivata parziale rispetto a y: (f(x0, y0+h) - f(x0, y0)) / h
+                const fy_plus = compiledFn.evaluate({ x: x0, y: y0 + h, k: k, a: a, b: b });
+                const dy = (fy_plus - f0) / h;
+
+                return { dx, dy, z0: f0 };
+
+            } catch (error) {
+                console.error('Errore nel calcolo del gradiente:', error);
+                return null;
+            }
+        }
+
+        // ========================================
+        // AGGIORNAMENTO GRAFICO PLOTLY
+        // ========================================
+
+        /**
+         * Aggiorna il grafico Plotly con i nuovi dati
+         */
+        function updatePlot() {
+            // Leggi i valori dagli input
+            const fnString = document.getElementById('function-input').value.trim();
+            const k = parseFloat(document.getElementById('k-slider').value);
+            const a = parseFloat(document.getElementById('a-slider').value);
+            const b = parseFloat(document.getElementById('b-slider').value);
+            const xMin = parseFloat(document.getElementById('x-min').value);
+            const xMax = parseFloat(document.getElementById('x-max').value);
+            const yMin = parseFloat(document.getElementById('y-min').value);
+            const yMax = parseFloat(document.getElementById('y-max').value);
+            const resolution = parseInt(document.getElementById('resolution-slider').value);
+            const showContoursProjection = document.getElementById('contours-projection-toggle').checked;
+            const showContoursSurface = document.getElementById('contours-surface-toggle').checked;
+
+            // Validazione
+            if (!fnString) {
+                showError('Inserisci una funzione valida');
+                return;
+            }
+
+            if (xMin >= xMax || yMin >= yMax) {
+                showError('I valori min devono essere minori dei valori max');
+                return;
+            }
+
+            // Nascondi errori precedenti
+            hideError();
+
+            // Genera i dati
+            const domain = { xMin, xMax, yMin, yMax };
+            const data = generateGridData(fnString, domain, resolution, k, a, b);
+
+            if (!data.success) {
+                showError(`Errore nella funzione: ${data.error}`);
+                return;
+            }
+
+            // Salva i dati correnti
+            currentData.x = data.x;
+            currentData.y = data.y;
+            currentData.z = data.z;
+            currentData.functionString = fnString;
+            currentData.gradientArrows = [];
+
+            // Configura la traccia surface
+            const surfaceTrace = {
+                type: 'surface',
+                x: data.x,
+                y: data.y,
+                z: data.z,
+                colorscale: 'Viridis',
+                colorbar: {
+                    title: 'z',
+                    titleside: 'right'
+                },
+                contours: {
+                    z: {
+                        show: showContoursSurface,
+                        usecolormap: true,
+                        highlightcolor: '#42A5F5',
+                        project: { z: showContoursProjection },
+                        highlightwidth: 2,
+                        width: 2
+                    }
+                },
+                showscale: true,
+                name: 'f(x,y)'
+            };
+
+            // Rimuovo riferimento alla variabile non definita showContoursLabels
+
+            // Layout
+            const layout = {
+                title: {
+                    text: `z = ${fnString}`,
+                    font: { size: 16 }
+                },
+                scene: {
+                    xaxis: { title: 'x' },
+                    yaxis: { title: 'y' },
+                    zaxis: { title: 'z' },
+                    camera: {
+                        eye: { x: 1.5, y: 1.5, z: 1.3 }
+                    }
+                },
+                margin: { l: 0, r: 0, t: 40, b: 0 },
+                autosize: true
+            };
+
+            // Config
+            const config = {
+                responsive: true,
+                displayModeBar: true,
+                displaylogo: false,
+                modeBarButtonsToRemove: ['toImage']
+            };
+
+            // Renderizza il grafico
+            Plotly.newPlot('plot-container', [surfaceTrace], layout, config);
+        }
+
+        // ========================================
+        // GESTIONE CLICK PER GRADIENTE
+        // ========================================
+
+        /**
+         * Gestisce il click sul grafico per mostrare il gradiente
+         */
+        function handlePlotClick(eventData) {
+                // Controllo sicuro: l'elemento della checkbox potrebbe essere stato rimosso
+                const gradientToggleEl = document.getElementById('gradient-toggle');
+                const gradientEnabled = gradientToggleEl ? gradientToggleEl.checked : false;
+
+                if (!gradientEnabled || !eventData.points || eventData.points.length === 0) {
+                    return;
+                }
+
+            const point = eventData.points[0];
+            const x0 = point.x;
+            const y0 = point.y;
+            const k = parseFloat(document.getElementById('k-slider').value);
+            const a = parseFloat(document.getElementById('a-slider').value);
+            const b = parseFloat(document.getElementById('b-slider').value);
+
+            // Calcola il gradiente
+            const gradient = calculateGradient(currentData.functionString, x0, y0, k, a, b);
+
+            if (!gradient) {
+                showError('Impossibile calcolare il gradiente in questo punto');
+                return;
+            }
+
+            // Normalizza e scala il vettore gradiente per la visualizzazione
+            const magnitude = Math.sqrt(gradient.dx ** 2 + gradient.dy ** 2);
+            const scale = 0.5; // Scala della freccia
+
+            if (magnitude === 0) {
+                showError('Il gradiente è zero in questo punto (punto critico)');
+                return;
+            }
+
+            const arrowDx = (gradient.dx / magnitude) * scale;
+            const arrowDy = (gradient.dy / magnitude) * scale;
+
+            // Crea la traccia della freccia (linea 3D)
+            const arrowTrace = {
+                type: 'scatter3d',
+                mode: 'lines+markers',
+                x: [x0, x0 + arrowDx],
+                y: [y0, y0 + arrowDy],
+                z: [gradient.z0, gradient.z0],
+                line: {
+                    color: '#FF5722',
+                    width: 6
+                },
+                marker: {
+                    size: [4, 8],
+                    color: ['#FF5722', '#D84315'],
+                    symbol: ['circle', 'diamond']
+                },
+                name: `∇f(${x0.toFixed(2)}, ${y0.toFixed(2)})`
+            };
+
+            // Aggiungi la freccia al grafico
+            Plotly.addTraces('plot-container', arrowTrace);
+            currentData.gradientArrows.push(arrowTrace);
+        }
+
+        // ========================================
+        // ESPORTAZIONE CSV
+        // ========================================
+
+        /**
+         * Esporta i dati correnti in formato CSV
+         */
+        function exportCSV() {
+            if (currentData.x.length === 0) {
+                showError('Nessun dato da esportare. Genera prima un grafico.');
+                return;
+            }
+
+            let csv = 'x,y,z\n';
+
+            // Itera sulla griglia
+            for (let i = 0; i < currentData.y.length; i++) {
+                for (let j = 0; j < currentData.x.length; j++) {
+                    const x = currentData.x[j];
+                    const y = currentData.y[i];
+                    const z = currentData.z[i][j];
+
+                    if (z !== null && isFinite(z)) {
+                        csv += `${x},${y},${z}\n`;
+                    }
+                }
+            }
+
+            // Crea un blob e scarica il file
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'funzione_3d_dati.csv');
+            link.style.visibility = 'hidden';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // ========================================
+        // SCREENSHOT GRAFICO
+        // ========================================
+
+        /**
+         * Cattura uno screenshot del grafico corrente
+         */
+        function takeScreenshot() {
+            const plotDiv = document.getElementById('plot-container');
+
+            // Verifica che ci sia un grafico
+            if (!plotDiv || !plotDiv.data || plotDiv.data.length === 0) {
+                showError('Nessun grafico da catturare. Genera prima un grafico.');
+                return;
+            }
+
+            // Usa Plotly.downloadImage per generare lo screenshot
+            Plotly.downloadImage(plotDiv, {
+                format: 'png',
+                width: 1920,
+                height: 1080,
+                filename: 'grafico_3d_screenshot'
+            }).then(function () {
+                console.log('Screenshot salvato con successo');
+            }).catch(function (err) {
+                console.error('Errore durante il salvataggio dello screenshot:', err);
+                showError('Errore durante il salvataggio dello screenshot');
+            });
+        }
+
+        // ========================================
+        // GESTIONE ERRORI
+        // ========================================
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = '⚠️ ' + message;
+            errorDiv.classList.add('show');
+        }
+
+        function hideError() {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.classList.remove('show');
+        }
+
+        // ========================================
+        // GESTIONE MOBILE/TABLET E FULLSCREEN
+        // ========================================
+
+        /**
+         * Toggle del pannello controlli (mobile/tablet)
+         */
+        function toggleControls() {
+            const panel = document.getElementById('controls-panel');
+            const toggleBtn = document.getElementById('controls-toggle');
+            panel.classList.add('open');
+            toggleBtn.classList.add('hidden');
+        }
+
+        /**
+         * Chiude il pannello controlli (mobile/tablet)
+         */
+        function closeControls() {
+            const panel = document.getElementById('controls-panel');
+            const toggleBtn = document.getElementById('controls-toggle');
+            panel.classList.remove('open');
+            toggleBtn.classList.remove('hidden');
+        }
+
+        /**
+         * Toggle modalità fullscreen
+         */
+        function toggleFullscreen() {
+            const appContainer = document.querySelector('.app-container');
+            const fullscreenBtn = document.getElementById('fullscreen-toggle');
+
+            if (!currentData.isFullscreen) {
+                // Entra in fullscreen
+                if (appContainer.requestFullscreen) {
+                    appContainer.requestFullscreen();
+                } else if (appContainer.webkitRequestFullscreen) {
+                    appContainer.webkitRequestFullscreen();
+                } else if (appContainer.msRequestFullscreen) {
+                    appContainer.msRequestFullscreen();
+                }
+                appContainer.classList.add('fullscreen');
+                fullscreenBtn.textContent = '✕';
+                currentData.isFullscreen = true;
+            } else {
+                // Esci da fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                appContainer.classList.remove('fullscreen');
+                fullscreenBtn.textContent = '⛶';
+                currentData.isFullscreen = false;
+            }
+
+            // Ridimensiona il grafico
+            setTimeout(() => {
+                Plotly.Plots.resize('plot-container');
+            }, 100);
+        }
+
+        /**
+         * Gestisce il cambio di funzione per mostrare/nascondere parametri
+         */
+        function handleFunctionChange() {
+            const selectedOption = document.getElementById('example-menu').selectedOptions[0];
+            const isParametric = selectedOption && selectedOption.dataset.parametric === 'true';
+            const parametricSliders = document.getElementById('parametric-sliders');
+
+            if (isParametric) {
+                parametricSliders.classList.add('show');
+            } else {
+                parametricSliders.classList.remove('show');
+            }
+        }
+
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Pulsante genera grafico
+            document.getElementById('update-plot-btn').addEventListener('click', updatePlot);
+
+            // Pulsanti mobile
+            document.getElementById('controls-toggle').addEventListener('click', toggleControls);
+            document.getElementById('controls-close').addEventListener('click', closeControls);
+            document.getElementById('fullscreen-toggle').addEventListener('click', toggleFullscreen);
+
+            // Chiudi il pannello quando si clicca fuori (solo mobile)
+            document.addEventListener('click', function (e) {
+                const panel = document.getElementById('controls-panel');
+                const toggleBtn = document.getElementById('controls-toggle');
+
+                if (window.innerWidth <= 1024 &&
+                    panel.classList.contains('open') &&
+                    !panel.contains(e.target) &&
+                    e.target !== toggleBtn) {
+                    closeControls();
+                }
+            });
+
+            // Menu esempi
+            document.getElementById('example-menu').addEventListener('change', function (e) {
+                const value = e.target.value;
+                if (value) {
+                    document.getElementById('function-input').value = value;
+                    handleFunctionChange();
+                }
+            });
+
+            // Slider k - solo aggiorna il display
+            document.getElementById('k-slider').addEventListener('input', function (e) {
+                document.getElementById('k-value').textContent = parseFloat(e.target.value).toFixed(1);
+            });
+
+            // Slider a - solo aggiorna il display
+            document.getElementById('a-slider').addEventListener('input', function (e) {
+                document.getElementById('a-value').textContent = parseFloat(e.target.value).toFixed(1);
+            });
+
+            // Slider b - solo aggiorna il display
+            document.getElementById('b-slider').addEventListener('input', function (e) {
+                document.getElementById('b-value').textContent = parseFloat(e.target.value).toFixed(1);
+            });
+
+            // Slider risoluzione - solo aggiorna il display
+            document.getElementById('resolution-slider').addEventListener('input', function (e) {
+                const val = e.target.value;
+                document.getElementById('resolution-value').textContent = val;
+                document.getElementById('resolution-value-2').textContent = val;
+            });
+
+            // Evento plotly_click per gradiente - corretta registrazione
+            document.getElementById('plot-container').addEventListener('plotly_click', handlePlotClick);
+
+            // Esportazione CSV
+            document.getElementById('export-csv').addEventListener('click', exportCSV);
+
+            // Screenshot del grafico
+            document.getElementById('screenshot-btn').addEventListener('click', takeScreenshot);
+
+            // Gestione eventi fullscreen
+            document.addEventListener('fullscreenchange', function () {
+                if (!document.fullscreenElement) {
+                    const appContainer = document.querySelector('.app-container');
+                    appContainer.classList.remove('fullscreen');
+                    document.getElementById('fullscreen-toggle').textContent = '⛶';
+                    currentData.isFullscreen = false;
+                    setTimeout(() => {
+                        Plotly.Plots.resize('plot-container');
+                    }, 100);
+                }
+            });
+
+            // Carica e visualizza il primo esempio all'avvio
+            const firstExample = document.querySelector('#example-menu option[value="x^2 + y^2"]');
+            if (firstExample) {
+                document.getElementById('function-input').value = firstExample.value;
+                document.getElementById('example-menu').value = firstExample.value;
+                handleFunctionChange();
+
+                // Genera automaticamente il grafico iniziale dopo il caricamento
+                setTimeout(() => {
+                    updatePlot();
+                }, 500);
+            }
+        });
+    </script>
+</body>
+
+</html>

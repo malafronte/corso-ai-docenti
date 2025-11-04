@@ -63,7 +63,7 @@ Un buon prompt permette di ottenere risultati significativamente migliori e in m
 
 #### il Prompt Enhancer per App Didattiche
 
-Negli esempi di questo articolo è stata usata una **Gem di Gemini** con le seguenti caratteristiche:
+Negli esempi di questo articolo è stata usata una **Gem di Gemini** con Gemini Pro con le seguenti caratteristiche:
 
 - Nome: **Prompt Enhancer per App Didattiche**
 
@@ -134,7 +134,7 @@ Di seguito è presentata una raccolta di prompt esemplificativi, suddivisi per d
 ```text
 Crea un visualizzatore interattivo di funzioni matematiche in una variabile.
 
-Deve includere:- Piano cartesiano con griglia regolabile- Campo input per inserire funzioni (supporto per sin, cos, exp, log, sqrt, abs, ecc.). L'applicazione deve essere in grado di effettuare il parsing delle espressioni inserite dall'utente e di valutarle con precisione per creare i punti del grafico - Grafico della funzione che si aggiorna in tempo reale- Visualizzazione di: zeri, massimi/minimi locali, asintoti- Possibilità di sovrapporre multiple funzioni con colori diversi- Calcolo numerico di derivata e integrale- Tabella valori funzione per x selezionati- Zoom e pan del grafico Interfaccia adatta a studenti di analisi matematica delle superiori. Genera un unico file HTML (CSS/JS inline).  Istruzioni e domande guida integrate. Usa rappresentazione accurata. Aggiungi un pulsante per esportare il grafico delle funzioni in CSV
+Deve includere:- Piano cartesiano con griglia regolabile- Campo input per inserire funzioni (supporto per sin, cos, exp, log, sqrt, abs, ecc.). L'applicazione deve essere in grado di effettuare il parsing delle espressioni inserite dall'utente e di valutarle con precisione per creare i punti del grafico - Grafico della funzione che si aggiorna in tempo reale- Visualizzazione di: zeri, massimi/minimi locali, asintoti- Possibilità di sovrapporre multiple funzioni con colori diversi- Calcolo numerico di derivata e integrale- Tabella valori funzione per x selezionati- Zoom e pan del grafico Interfaccia adatta a studenti di analisi matematica delle superiori. Istruzioni e domande guida integrate. Usa rappresentazione accurata. Aggiungi un pulsante per esportare il grafico delle funzioni in CSV.
 ```
 
 </Accordion>
@@ -143,9 +143,9 @@ L'esecuzione del prompt iniziale sopra descritto produce un'applicazione web di 
 
 Nel Prompt Enhancer inseriamo il testo ***migliora il seguente prompt** """Crea un visualizzatore interattivo di funzioni matematiche in una variabile. Deve includere..."""*. 
 
-**Si noti l'uso delle triplette di virgolette (`"""`) per indicare il testo da migliorare**. 
+**Si noti l'uso delle triple virgolette (`"""`) per racchiudere il testo da migliorare**. 
 
-**Nel caso il Prompt Enhancer ci chiedesse se deve essere usato HTML/CSS/JS o Python**, risponderemmo che deve essere usato HTML/CSS/JS ( scriveremmo ***usa HTML/CSS/JS*** nella chat del Prompt Enhancer) in quanto l'applicazione richiesta non necessita di funzionalità complesse di backend o di elaborazione dati che richiederebbero Python.
+**Nel caso il Prompt Enhancer ci chiedesse se deve essere usato HTML/CSS/JS o Python oppure proponesse direttamente Python**, risponderemmo che deve essere usato HTML/CSS/JS ( scriveremmo ***usa HTML/CSS/JS*** nella chat del Prompt Enhancer) in quanto l'applicazione richiesta non necessita di funzionalità complesse di backend o di elaborazione dati che richiederebbero Python.
 
 <Accordion title="Prompt migliorato con Prompt Enhancer per App Didattiche" defaultOpen={false}>
 
@@ -223,7 +223,7 @@ In Perplexity AI, utilizziamo il modello Claude 4.5 Thinking (disponibile nella 
 
 ![Esempio di output dell'applicazione web generata](perplexity-ai-prompt-example.png)
 
-Non sempre il codice generato è perfetto al primo tentativo, quindi potrebbe essere necessario effettuare alcune correzioni manuali o iterare ulteriormente con l'AI per migliorare l'applicazione. Il file generato da Claude 4.5 Thinking può essere copiato e incollato in un editor di testo e salvato con estensione `.html` per essere eseguito in un browser web.
+**Non sempre il codice generato è perfetto al primo tentativo, quindi potrebbe essere necessario effettuare alcune correzioni manuali o iterare ulteriormente con l'AI per migliorare l'applicazione**. Il file generato da Claude 4.5 Thinking può essere copiato e incollato in un editor di testo e salvato con estensione `.html` per essere eseguito in un browser web.
 
 Dopo qualche iterazione con Claude 4.5 Thinking, è possibile ottenere un'applicazione web funzionale e didatticamente valida per l'insegnamento dell'analisi matematica nelle scuole superiori, come ad esempio la seguente app:
 
@@ -339,12 +339,13 @@ Questo Prompt è stato inserito in Gemini 2.5 Pro che ha generato il codice comp
 ```text
 Crea un'applicazione per visualizzare trasformazioni geometriche nel piano.
 
-Deve includere:- Piano cartesiano con figura geometrica iniziale (quadrato, triangolo, o forma personalizzata)- Menu per selezionare tipo di trasformazione: traslazione, rotazione, riflessione, dilatazione, shear- Slider per parametri della trasformazione (angolo rotazione, fattore scala, ecc.)- Visualizzazione simultanea di oggetto originale (trasparente) e trasformato (opaco)- Rappresentazione matriciale della trasformazione applicata- Composizione di trasformazioni multiple in sequenza- Griglia che si trasforma insieme all'oggetto per visualizzare deformazione dello spazio- Calcolo di determinante (fattore di scala area)- Traccia del movimento dei vertici durante la trasformazione Interfaccia colorata adatta a studenti di geometria analitica o algebra lineare. Genera un unico file HTML (CSS/JS inline).  Istruzioni e domande guida integrate. Usa rappresentazione accurata. Aggiungi un pulsante per esportare dati rilevanti in CSV
+Deve includere:- Piano cartesiano con figura geometrica iniziale (quadrato, triangolo, o forma personalizzata)- Menu per selezionare tipo di trasformazione: traslazione, rotazione, riflessione, dilatazione, shear- Slider per parametri della trasformazione (angolo rotazione, fattore scala, ecc.)- Visualizzazione simultanea di oggetto originale (trasparente) e trasformato (opaco)- Rappresentazione matriciale della trasformazione applicata- Composizione di trasformazioni multiple in sequenza- Griglia che si trasforma insieme all'oggetto per visualizzare deformazione dello spazio- Calcolo di determinante (fattore di scala area)- Traccia del movimento dei vertici durante la trasformazione Interfaccia colorata adatta a studenti di geometria analitica o algebra lineare. Istruzioni e domande guida integrate. Usa rappresentazione accurata. Aggiungi un pulsante per esportare dati rilevanti in CSV.
 ```
 
 </Accordion>
 
 Prompt migliorato con Prompt Enhancer per App Didattiche:
+
 <Accordion title="Prompt migliorato" defaultOpen={false}>
 
 ```text
@@ -420,6 +421,7 @@ Lo strumento è progettato per studenti delle scuole superiori o universitari (g
 ---
 Genera ora il codice completo per questo file `geometric_transforms.html`.
 ```
+
 </Accordion>
 
 Il prompt migliorato è stato inserito in Perplexity AI con Claude 4.5 Thinking che ha generato il codice completo per l'applicazione richiesta. Il risultato finale è l'applicazione seguente:
@@ -435,7 +437,7 @@ Il prompt migliorato è stato inserito in Perplexity AI con Claude 4.5 Thinking 
 ```text
 Crea un visualizzatore 3D interattivo per funzioni di due variabili z = f(x,y).
 
-L'applicazione deve includere:- Rendering 3D della superficie con griglia colorata secondo l'altezza z- Rotazione completa con mouse/touch (orbita camera)- Campo input per funzioni (supporto per sin, cos, exp, sqrt, x^2, y^2, x*y, ecc.)- Esempi predefiniti: paraboloide, sella, cono, funzioni trigonometriche composte- Proiezione delle curve di livello sul piano xy- Slider per modificare parametri della funzione- Visualizzazione vettori gradiente in punti selezionati- Scala colori che rappresenta valori di z (da blu=basso a rosso=alto)- Controlli per dominio x e y (min, max)Usa Three.js. Interfaccia per studenti di analisi 2 o matematica avanzata. Genera un unico file HTML (CSS/JS inline).  Istruzioni e domande guida integrate. Usa rappresentazione accurata. Aggiungi un pulsante per esportare il grafico delle funzioni in CSV
+L'applicazione deve includere:- Rendering 3D della superficie con griglia colorata secondo l'altezza z- Rotazione completa con mouse/touch (orbita camera)- Campo input per funzioni (supporto per sin, cos, exp, sqrt, x^2, y^2, x*y, ecc.)- Esempi predefiniti: paraboloide, sella, cono, funzioni trigonometriche composte- Proiezione delle curve di livello sul piano xy- Slider per modificare parametri della funzione- Visualizzazione vettori gradiente in punti selezionati- Scala colori che rappresenta valori di z (da blu=basso a rosso=alto)- Controlli per dominio x e y (min, max). Interfaccia per studenti di analisi 2 o matematica avanzata. Istruzioni e domande guida integrate. Usa rappresentazione accurata. Aggiungi un pulsante per esportare il grafico delle funzioni in CSV.
 ```
 
 </Accordion>
@@ -549,6 +551,14 @@ Studenti di corsi universitari di Analisi Matematica 2, Ingegneria o Matematica 
 Dopo qualche iterazione con Claude 4.5 Thinking, possiamo ottenere un'applicazione web che permette di visualizzare funzioni di due variabili in 3D, come ad esempio la seguente:
 
 <PublicLink href="vibe-coding/examples/funzioni-in-due-variabili.html">Funzioni in Due Variabili (HTML/CSS/JS)</PublicLink>
+
+(In questo caso la libreria utilizzata per il rendering 3D è Three.js)
+
+Altra variante, ottenuta sempre con Claude 4.5 Thinking, è la seguente:
+
+<PublicLink href="vibe-coding/examples/visualizzatore-3d-funzioni.html">Visualizzatore 3D di Funzioni (HTML/CSS/JS)</PublicLink>
+
+(In questo caso la libreria utilizzata per il rendering 3D è Plotly.js)
 
 ### Esploratore di serie numeriche e loro convergenza
 <Accordion title="Prompt iniziale" defaultOpen={false}>
