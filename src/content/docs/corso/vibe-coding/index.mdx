@@ -7,6 +7,21 @@ import Accordion from '@components/Accordion.astro';
 
 import PublicLink from '@components/PublicLink.astro';
 
+import AudioPlayer from "@components/AudioPlayer.astro";
+import lessonAudio from "@assets/audio-lessons/Vibe_Coding_-_Rivoluzionare_la_Didattica_con_l_IA_–_Guida_per_Do.m4a";
+import VideoPlayer from "@components/VideoPlayer.astro";
+import lessonVideo from "@assets/video-lessons/Vibe_Coding_-_App_Senza_Codice.mp4";
+
+## Ascolta la lezione
+
+<AudioPlayer src={lessonAudio} filename="Lezione: Vibe Coding - Creare App senza saper programmare" />
+
+## Guarda la lezione
+<VideoPlayer
+  src={lessonVideo}
+  filename="Video: App Senza Codice"
+/>
+
 ## Introduzione
 
 Il "vibe coding" rappresenta un paradigma rivoluzionario nell'utilizzo dell'intelligenza artificiale per la didattica delle discipline STEM. Questo approccio consente ai docenti di generare applicazioni interattive, simulazioni complesse e strumenti didattici avanzati senza possedere competenze di programmazione, attraverso l'uso strategico dei Large Language Models (LLM) come Claude, ChatGPT, Gemini e Copilot.

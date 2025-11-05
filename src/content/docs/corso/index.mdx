@@ -8,7 +8,23 @@ import profileImage from '@assets/images/prof-gennaro-malafronte-action-figure-6
 
 import ObfuscatedEmail from '@components/ObfuscatedEmail.astro';
 
-## Breve presentazione 
+
+import AudioPlayer from "@components/AudioPlayer.astro";
+import lessonAudio from "@assets/audio-lessons/Corso_-_AI_e_Didattica__La_Rivoluzione_Consapevole_del_Docente_tra_Prom.m4a";
+import VideoPlayer from "@components/VideoPlayer.astro";
+import lessonVideo from "@assets/video-lessons/Corso_-_L_IA_in_Classe__Una_Guida_per_Insegnanti.mp4";
+
+## Ascolta la lezione
+
+<AudioPlayer src={lessonAudio} filename="Presentazione del corso" />
+
+## Guarda la lezione
+<VideoPlayer
+  src={lessonVideo}
+  filename="Video: L'IA in Classe"
+/>
+
+## Breve presentazione
 
 Questo corso introduttivo nasce con l'obiettivo di fornire ai docenti le conoscenze e le competenze pratiche per utilizzare l'IA non solo come uno strumento personale di produttività, ma come un vero e proprio alleato per la progettazione di esperienze di apprendimento più inclusive, personalizzate e stimolanti per i nostri studenti.
 Attraverso un percorso pratico e laboratoriale, verranno esplorate le potenzialità, i meccanismi e le implicazioni etiche di questa tecnologia, per diventare protagonisti attivi dell'innovazione nella scuola.

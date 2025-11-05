@@ -5,6 +5,21 @@ description: Strumenti visivi e strategie di supporto basati sull'uso dell'Intel
 
 import PublicLink from '@components/PublicLink.astro';
 
+import AudioPlayer from "@components/AudioPlayer.astro";
+import lessonAudio from "@assets/audio-lessons/Creativity_And_Inclusion_-_IA_Creativa_e_BES__La_Rivoluzione_Visiva_per_l_Inclusione_Scola.m4a";
+import VideoPlayer from "@components/VideoPlayer.astro";
+import lessonVideo from "@assets/video-lessons/Creativity_And_Inclusion_-_IA__Creatività_e_Inclusione.mp4";
+
+## Ascolta la lezione
+
+<AudioPlayer src={lessonAudio} filename="Lezione: IA per la Creatività e l'Inclusione" />
+
+## Guarda la lezione
+<VideoPlayer
+  src={lessonVideo}
+  filename="Video: IA per la Creatività e l'Inclusione"
+/>
+
 ## IA per la Creatività e l'Inclusione: strumenti visivi e strategie di supporto
 
 ### Introduzione: dall'astrazione testuale alla rappresentazione visiva

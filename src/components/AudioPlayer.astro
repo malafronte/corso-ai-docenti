@@ -1,0 +1,50 @@
+---
+const {
+  src = "",
+  ariaLabel = "Audio player",
+  filename,
+} = Astro.props as {
+  src?: string;
+  ariaLabel?: string;
+  filename?: string;
+};
+
+// Resolve audioSrc server-side. If `src` is an absolute URL or starts with '/', use it as-is.
+let audioSrc: string = src;
+if (!/^https?:\/\//i.test(src) && !src.startsWith("/")) {
+  try {
+    // Resolve relative to the project source so Vite/Astro can process it when statically imported.
+    audioSrc = new URL(`../assets/audio-lessons/${src}`, import.meta.url).href;
+  } catch (e) {
+    audioSrc = src;
+  }
+}
+---
+
+<div class="audio-player">
+  <audio controls src={audioSrc} aria-label={ariaLabel} preload="metadata">
+    <source src={audioSrc} type="audio/mp4" />
+    Your browser does not support the audio element.
+  </audio>
+  {
+    filename ? (
+      <div class="audio-meta">
+        <span>{filename}</span>
+        <a href={audioSrc} download style="margin-left:0.5rem">
+          Download
+        </a>
+      </div>
+    ) : null
+  }
+</div>
+
+<style>
+  .audio-player {
+    margin: 0.75rem 0 1.25rem 0;
+  }
+  .audio-meta {
+    margin-top: 0.35rem;
+    font-size: 0.9rem;
+    color: var(--astro-content-text-muted, #666);
+  }
+</style>
