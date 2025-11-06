@@ -309,11 +309,17 @@ const encodedSrc = encodeURIComponent(videoSrc);
     /* stronger border color for light theme so it is visible */
     --video-border-color: rgba(0, 0, 0, 0.32);
     --video-box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+    /* mini icon contrast for light theme */
+    --mini-icon-bg: rgba(0, 0, 0, 0.04);
+    --mini-icon-border: rgba(0, 0, 0, 0.06);
   }
   @media (prefers-color-scheme: dark) {
     .video-player {
       --video-border-color: rgba(255, 255, 255, 0.12);
       --video-box-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+      /* mini icon contrast for dark theme: light inner rectangle */
+      --mini-icon-bg: rgba(255, 255, 255, 0.03);
+      --mini-icon-border: rgba(255, 255, 255, 0.06);
     }
   }
   .video-meta {
@@ -413,10 +419,12 @@ const encodedSrc = encodeURIComponent(videoSrc);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
-    background: rgba(0, 0, 0, 0.04);
+    border-radius: 6px;
+    background: var(--mini-icon-bg);
+    border: 1px solid var(--mini-icon-border);
     color: var(--astro-content-text, inherit);
     font-size: 1rem;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.02) inset;
   }
   .video-active {
     position: relative;

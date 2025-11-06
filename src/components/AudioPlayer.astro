@@ -9,17 +9,15 @@ const {
   filename?: string;
 };
 
-// Resolve audioSrc server-side. If `src` is an absolute URL or starts with '/', use it as-is.
+// Resolve audioSrc server-side
 let audioSrc: string = src;
 if (!/^https?:\/\//i.test(src) && !src.startsWith("/")) {
   try {
-    // Resolve relative to the project source so Vite/Astro can process it when statically imported.
     audioSrc = new URL(`../assets/audio-lessons/${src}`, import.meta.url).href;
   } catch (e) {
     audioSrc = src;
   }
 }
-// small unique id for DOM targets
 const uid = `ap-${Math.random().toString(36).slice(2, 9)}`;
 ---
 
@@ -49,12 +47,33 @@ const uid = `ap-${Math.random().toString(36).slice(2, 9)}`;
         const title =
           container.dataset.audioFilename || document.title || "Audio";
 
+        // Keep-alive timer per prevenire sospensione
+        let keepAliveInterval = null;
+
+        function startKeepAlive() {
+          if (keepAliveInterval) return;
+
+          // Aggiorna posizione ogni 5 secondi per mantenere attivo il player
+          keepAliveInterval = setInterval(() => {
+            if (!audio.paused) {
+              updatePositionState();
+              console.log("Keep-alive tick:", audio.currentTime);
+            }
+          }, 5000);
+        }
+
+        function stopKeepAlive() {
+          if (keepAliveInterval) {
+            clearInterval(keepAliveInterval);
+            keepAliveInterval = null;
+          }
+        }
+
         // Wake Lock management
         let wakeLock = null;
         let wakeLockRequested = false;
 
         async function requestWakeLock() {
-          // Evita richieste duplicate
           if (wakeLockRequested || wakeLock !== null) return;
 
           try {
@@ -63,7 +82,6 @@ const uid = `ap-${Math.random().toString(36).slice(2, 9)}`;
               wakeLock = await navigator.wakeLock.request("screen");
               console.log("Wake Lock attivato");
 
-              // Rilascia il flag quando viene rilasciato
               if (wakeLock && typeof wakeLock.addEventListener === "function") {
                 wakeLock.addEventListener("release", () => {
                   console.log("Wake Lock rilasciato dal sistema");
@@ -184,7 +202,8 @@ const uid = `ap-${Math.random().toString(36).slice(2, 9)}`;
             if (navigator.mediaSession)
               navigator.mediaSession.playbackState = "playing";
           } catch (e) {}
-          // Richiedi Wake Lock quando l'audio inizia
+          // Avvia keep-alive e Wake Lock
+          startKeepAlive();
           requestWakeLock();
         });
 
@@ -193,7 +212,8 @@ const uid = `ap-${Math.random().toString(36).slice(2, 9)}`;
             if (navigator.mediaSession)
               navigator.mediaSession.playbackState = "paused";
           } catch (e) {}
-          // Rilascia Wake Lock quando messo in pausa
+          // Ferma keep-alive e rilascia Wake Lock
+          stopKeepAlive();
           releaseWakeLock();
         });
 
@@ -210,11 +230,12 @@ const uid = `ap-${Math.random().toString(36).slice(2, 9)}`;
             if (navigator.mediaSession)
               navigator.mediaSession.playbackState = "none";
           } catch (e) {}
-          // Rilascia Wake Lock quando l'audio finisce
+          // Ferma keep-alive e rilascia Wake Lock
+          stopKeepAlive();
           releaseWakeLock();
         });
 
-        // Setup media session on first user play (user gesture)
+        // Setup media session on first user play
         const onFirstPlay = () => {
           audio.removeEventListener("play", onFirstPlay);
           setupMediaSession();
@@ -225,21 +246,21 @@ const uid = `ap-${Math.random().toString(36).slice(2, 9)}`;
           updatePositionState();
           setupMediaSession();
         }
+
+        // Cleanup quando il componente viene rimosso
+        window.addEventListener("beforeunload", () => {
+          stopKeepAlive();
+          releaseWakeLock();
+        });
       } catch (e) {
         console.error("Errore nel componente AudioPlayer:", e);
       }
     })();
   </script>
-  <!-- filename moved to audio[data-download-name]; visual meta removed to keep UI minimal -->
 </div>
 
 <style>
   .audio-player {
     margin: 0.75rem 0 1.25rem 0;
-  }
-  .audio-meta {
-    margin-top: 0.35rem;
-    font-size: 0.9rem;
-    color: var(--astro-content-text-muted, #666);
   }
 </style>
