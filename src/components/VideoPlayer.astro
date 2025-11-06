@@ -43,20 +43,20 @@ const encodedSrc = encodeURIComponent(videoSrc);
         <img
           src={poster}
           alt={filename || ariaLabel}
-          style="width:234px;height:52px;display:block;border-radius:6px;object-fit:cover;"
+          style="width:328px;height:73px;display:block;border-radius:6px;object-fit:cover;"
         />
       ) : (
         <div
           class="video-placeholder"
-          style="width:40px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;"
+          style="width:56px;height:39px;border-radius:6px;display:flex;align-items:center;justify-content:center;"
         >
           <div class="mini-icon" aria-hidden>
             <svg
               class="mini-icon-svg"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
-              width="18"
-              height="18"
+              width="25"
+              height="25"
               aria-hidden="true"
               focusable="false"
             >
@@ -74,17 +74,6 @@ const encodedSrc = encodeURIComponent(videoSrc);
       ) : null
     }
   </div>
-
-  {
-    filename ? (
-      <div class="video-meta">
-        <span>{filename}</span>
-        <a href={videoSrc} download style="margin-left:0.5rem">
-          Download
-        </a>
-      </div>
-    ) : null
-  }
 
   <!-- client loader script: defines a local loader and attaches listeners -->
   <script type="module">
@@ -214,9 +203,6 @@ const encodedSrc = encodeURIComponent(videoSrc);
           try {
             videoEl.focus();
           } catch (e) {}
-          try {
-            videoEl.play().catch(() => {});
-          } catch (e) {}
 
           // Setup Media Session metadata and handlers for better lock-screen controls
           try {
@@ -345,20 +331,20 @@ const encodedSrc = encodeURIComponent(videoSrc);
     overflow: hidden;
     border: 1px solid var(--video-border-color);
     background: transparent;
-    /* slightly larger footprint (+30%) */
-    padding: 8px;
+    /* slightly larger footprint (+40%) */
+    padding: 11px;
     transform-origin: left top;
     box-shadow: var(--video-box-shadow);
   }
   .play-overlay {
     position: absolute;
-    left: 12px;
-    top: 12px;
+    left: 17px;
+    top: 17px;
     background: transparent;
     color: var(--astro-content-text, inherit);
-    padding: 6px 8px;
+    padding: 8px 10px;
     border-radius: 6px;
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     line-height: 1;
     opacity: 0.95;
   }
@@ -375,11 +361,11 @@ const encodedSrc = encodeURIComponent(videoSrc);
     display: flex;
     align-items: center;
     gap: 8px;
-    /* +30% width/height */
-    width: 286px;
-    height: 52px;
+    /* +40% width/height */
+    width: 400px;
+    height: 73px;
     color: var(--astro-content-text, inherit);
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
   .mini-left {
     display: flex;
@@ -387,8 +373,8 @@ const encodedSrc = encodeURIComponent(videoSrc);
     gap: 6px;
   }
   .mini-play {
-    width: 23px;
-    height: 23px;
+    width: 32px;
+    height: 32px;
     background: rgba(0, 0, 0, 0.04);
     display: flex;
     align-items: center;
@@ -396,17 +382,17 @@ const encodedSrc = encodeURIComponent(videoSrc);
     border-radius: 4px;
     pointer-events: none;
     color: var(--astro-content-text, inherit);
-    font-size: 0.85rem;
+    font-size: 0.95rem;
   }
   .time {
     color: var(--astro-content-text-muted, #666);
     font-size: 0.78rem;
   }
   .mini-progress {
-    width: 143px;
-    height: 6px;
+    width: 200px;
+    height: 8px;
     background: rgba(0, 0, 0, 0.04);
-    border-radius: 3px;
+    border-radius: 4px;
   }
   .mini-right {
     display: flex;
@@ -422,30 +408,30 @@ const encodedSrc = encodeURIComponent(videoSrc);
     color: var(--astro-content-text, inherit);
   }
   .mini-icon {
-    width: 26px;
-    height: 26px;
+    width: 36px;
+    height: 36px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border-radius: 4px;
     background: rgba(0, 0, 0, 0.04);
     color: var(--astro-content-text, inherit);
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
   .video-active {
     position: relative;
   }
   .video-minimize {
     position: absolute;
-    right: 8px;
-    top: 8px;
+    right: 11px;
+    top: 11px;
     background: rgba(0, 0, 0, 0.45);
     color: #fff;
     border: none;
-    padding: 4px 8px;
+    padding: 5px 10px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     line-height: 1;
     z-index: 30;
     opacity: 0.95;
