@@ -3,10 +3,12 @@ const {
   src = "",
   ariaLabel = "Audio player",
   filename,
+  poster,
 } = Astro.props as {
   src?: string;
   ariaLabel?: string;
   filename?: string;
+  poster?: string;
 };
 
 // Resolve audioSrc server-side
@@ -21,13 +23,17 @@ if (!/^https?:\/\//i.test(src) && !src.startsWith("/")) {
 const uid = `ap-${Math.random().toString(36).slice(2, 9)}`;
 ---
 
-<div class="audio-player" data-audio-filename={filename || ""}>
+<div
+  class="audio-player"
+  data-audio-filename={filename || ""}
+  data-audio-poster={poster || ""}
+>
   <audio
     id={`audio-${uid}`}
     controls
     src={audioSrc}
     aria-label={ariaLabel}
-    preload="auto"
+    preload="metadata"
     style="width:100%;max-width:560px;"
   >
     <source src={audioSrc} type="audio/mp4" />
@@ -47,167 +53,226 @@ const uid = `ap-${Math.random().toString(36).slice(2, 9)}`;
         const title =
           container.dataset.audioFilename || document.title || "Audio";
 
-        let positionUpdateInterval = null;
+        let mediaSessionReady = false;
         let wakeLockSentinel = null;
+        let keepAliveTimer = null;
+        let lastUpdateTime = 0;
 
-        // Richiedi Wake Lock per impedire la sospensione (dove supportato)
         async function requestWakeLock() {
           try {
-            if ("wakeLock" in navigator) {
+            if ("wakeLock" in navigator && !wakeLockSentinel) {
               wakeLockSentinel = await navigator.wakeLock.request("screen");
+              console.log("Wake Lock attivato");
+
               wakeLockSentinel.addEventListener("release", () => {
-                console.log("Wake Lock rilasciato");
+                console.log("Wake Lock rilasciato dal sistema");
+                wakeLockSentinel = null;
               });
             }
           } catch (err) {
-            console.log("Wake Lock non disponibile:", err);
+            console.warn("Wake Lock non disponibile:", err.message);
           }
         }
 
-        // Rilascia Wake Lock
-        function releaseWakeLock() {
+        async function releaseWakeLock() {
           if (wakeLockSentinel) {
-            wakeLockSentinel.release().then(() => {
+            try {
+              await wakeLockSentinel.release();
+              console.log("Wake Lock rilasciato manualmente");
+            } catch (err) {
+              console.warn("Errore nel rilascio Wake Lock:", err.message);
+            } finally {
               wakeLockSentinel = null;
-            });
+            }
           }
         }
 
-        // Aggiorna la posizione più frequentemente durante la riproduzione
-        function startPositionUpdates() {
-          if (positionUpdateInterval) return;
+        // Keep-alive ogni 8 secondi (più aggressivo)
+        function startKeepAlive() {
+          if (keepAliveTimer) return;
 
-          // Aggiorna ogni 1 secondo per mantenere lo slider sincronizzato
-          positionUpdateInterval = setInterval(() => {
-            if (!audio.paused) {
-              updatePositionState();
+          keepAliveTimer = setInterval(() => {
+            if (
+              !audio.paused &&
+              isFinite(audio.duration) &&
+              audio.duration > 0
+            ) {
+              console.log(
+                "Keep-alive tick:",
+                audio.currentTime.toFixed(1),
+                "/",
+                audio.duration.toFixed(1)
+              );
+
+              try {
+                if (navigator.mediaSession) {
+                  navigator.mediaSession.playbackState = "playing";
+                }
+              } catch (e) {}
+
+              // Aggiorna posizione forzatamente
+              updatePositionState(true);
             }
-          }, 1000);
+          }, 8000);
         }
 
-        function stopPositionUpdates() {
-          if (positionUpdateInterval) {
-            clearInterval(positionUpdateInterval);
-            positionUpdateInterval = null;
+        function stopKeepAlive() {
+          if (keepAliveTimer) {
+            clearInterval(keepAliveTimer);
+            keepAliveTimer = null;
           }
         }
 
         function setupMediaSession() {
           if (!("mediaSession" in navigator)) return;
-          try {
-            const artworkUrl = container.dataset.audioPoster || "";
-            const metadata = {
-              title: title,
-              artist: "",
-              album: "",
-            };
+          if (mediaSessionReady) return;
 
-            if (artworkUrl) {
-              metadata.artwork = [
+          try {
+            const artworkUrl =
+              container.dataset.audioPoster ||
+              "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23667' width='100' height='100'/%3E%3Cpath fill='%23fff' d='M35 25l40 25-40 25z'/%3E%3C/svg%3E";
+
+            const metadata = {
+              title: title || "Audio Lesson",
+              artist: "Podcast",
+              album: "Learning",
+              artwork: [
                 { src: artworkUrl, sizes: "96x96", type: "image/png" },
                 { src: artworkUrl, sizes: "128x128", type: "image/png" },
                 { src: artworkUrl, sizes: "192x192", type: "image/png" },
                 { src: artworkUrl, sizes: "256x256", type: "image/png" },
                 { src: artworkUrl, sizes: "384x384", type: "image/png" },
                 { src: artworkUrl, sizes: "512x512", type: "image/png" },
-              ];
-            }
+              ],
+            };
 
             navigator.mediaSession.metadata = new MediaMetadata(metadata);
 
-            // Handler per play
             navigator.mediaSession.setActionHandler("play", () => {
-              audio.play().catch(() => {});
+              audio.play().catch((err) => {
+                console.warn("Play error:", err.message);
+              });
             });
 
-            // Handler per pause
             navigator.mediaSession.setActionHandler("pause", () => {
               audio.pause();
             });
 
-            // Handler per seek backward
             navigator.mediaSession.setActionHandler(
               "seekbackward",
               (details) => {
                 const skip = (details && details.seekOffset) || 10;
                 audio.currentTime = Math.max(0, audio.currentTime - skip);
-                updatePositionState();
+                updatePositionState(true);
               }
             );
 
-            // Handler per seek forward
             navigator.mediaSession.setActionHandler(
               "seekforward",
               (details) => {
                 const skip = (details && details.seekOffset) || 10;
                 audio.currentTime = Math.min(
-                  audio.duration || Infinity,
+                  audio.duration,
                   audio.currentTime + skip
                 );
-                updatePositionState();
+                updatePositionState(true);
               }
             );
 
-            // CRITICO: Handler per seekto (permette di trascinare lo slider)
             navigator.mediaSession.setActionHandler("seekto", (details) => {
               if (details && typeof details.seekTime === "number") {
-                audio.currentTime = details.seekTime;
-                updatePositionState();
+                const seekTime = Math.max(
+                  0,
+                  Math.min(details.seekTime, audio.duration)
+                );
+                audio.currentTime = seekTime;
+                // Aggiorna subito dopo il seek
+                setTimeout(() => updatePositionState(true), 50);
               }
             });
 
-            // Handler per stop
             navigator.mediaSession.setActionHandler("stop", () => {
               audio.pause();
               audio.currentTime = 0;
-              updatePositionState();
+              updatePositionState(true);
             });
 
-            // Handler per previous/next track (opzionale, impedisce errori)
-            navigator.mediaSession.setActionHandler("previoustrack", null);
-            navigator.mediaSession.setActionHandler("nexttrack", null);
+            try {
+              navigator.mediaSession.setActionHandler("previoustrack", null);
+              navigator.mediaSession.setActionHandler("nexttrack", null);
+            } catch (e) {}
+
+            mediaSessionReady = true;
+            console.log("Media Session configurata");
           } catch (e) {
-            console.warn("Errore setup Media Session:", e);
+            console.warn("Media Session setup error:", e);
           }
         }
 
-        function updatePositionState() {
-          try {
-            if (!("mediaSession" in navigator)) return;
-            if (!navigator.mediaSession.setPositionState) return;
+        // force = true forza l'aggiornamento anche se poco è cambiato
+        function updatePositionState(force = false) {
+          if (!("mediaSession" in navigator)) return;
+          if (!navigator.mediaSession.setPositionState) return;
+          if (!mediaSessionReady) return;
 
+          try {
             const duration = audio.duration;
-            // Verifica che la durata sia valida
-            if (!Number.isFinite(duration) || duration <= 0) {
+            const currentTime = audio.currentTime;
+            const playbackRate = audio.playbackRate;
+
+            // Validazione minima
+            if (!isFinite(duration) || duration <= 0) return;
+            if (!isFinite(currentTime) || currentTime < 0) return;
+            if (!isFinite(playbackRate) || playbackRate <= 0) return;
+
+            // Se siamo molto vicino alla fine, non aggiornare
+            if (currentTime >= duration - 0.1 && audio.ended) {
               return;
             }
 
-            const position = Math.min(audio.currentTime || 0, duration);
-            const playbackRate = audio.playbackRate || 1;
+            // Throttle: aggiorna massimo ogni 500ms
+            const now = Date.now();
+            if (!force && now - lastUpdateTime < 500) {
+              return;
+            }
+
+            lastUpdateTime = now;
 
             navigator.mediaSession.setPositionState({
               duration: duration,
               playbackRate: playbackRate,
-              position: position,
+              position: Math.max(0, Math.min(currentTime, duration)),
             });
+
+            console.log(
+              "Position updated:",
+              currentTime.toFixed(1),
+              "/",
+              duration.toFixed(1)
+            );
           } catch (e) {
-            // Ignora errori se l'API non è supportata completamente
+            console.warn("Position state error:", e.message);
           }
         }
 
-        // Event listener per play
+        // Play
         audio.addEventListener("play", () => {
+          if (!mediaSessionReady) {
+            setupMediaSession();
+          }
+
           try {
             if (navigator.mediaSession) {
               navigator.mediaSession.playbackState = "playing";
             }
           } catch (e) {}
 
-          startPositionUpdates();
           requestWakeLock();
+          startKeepAlive();
+          setTimeout(() => updatePositionState(true), 100);
         });
 
-        // Event listener per pause
+        // Pause
         audio.addEventListener("pause", () => {
           try {
             if (navigator.mediaSession) {
@@ -215,11 +280,12 @@ const uid = `ap-${Math.random().toString(36).slice(2, 9)}`;
             }
           } catch (e) {}
 
-          stopPositionUpdates();
+          stopKeepAlive();
           releaseWakeLock();
+          updatePositionState(true);
         });
 
-        // Event listener per ended
+        // Ended
         audio.addEventListener("ended", () => {
           try {
             if (navigator.mediaSession) {
@@ -227,59 +293,82 @@ const uid = `ap-${Math.random().toString(36).slice(2, 9)}`;
             }
           } catch (e) {}
 
-          stopPositionUpdates();
+          stopKeepAlive();
           releaseWakeLock();
+          updatePositionState(true);
         });
 
-        // Aggiorna posizione durante timeupdate
+        // Error
+        audio.addEventListener("error", (e) => {
+          console.error("Audio error:", e);
+          try {
+            if (navigator.mediaSession) {
+              navigator.mediaSession.playbackState = "none";
+            }
+          } catch (err) {}
+
+          stopKeepAlive();
+          releaseWakeLock();
+          mediaSessionReady = false;
+        });
+
+        // Throttled timeupdate
+        let lastTimeUpdateEvent = 0;
         audio.addEventListener("timeupdate", () => {
-          updatePositionState();
-        });
-
-        // Aggiorna dopo seek manuale
-        audio.addEventListener("seeked", () => {
-          updatePositionState();
-        });
-
-        // Aggiorna quando cambia la durata
-        audio.addEventListener("durationchange", () => {
-          updatePositionState();
-        });
-
-        // Aggiorna quando cambiano i metadati
-        audio.addEventListener("loadedmetadata", () => {
-          updatePositionState();
-        });
-
-        // Setup iniziale quando i metadati sono pronti
-        if (audio.readyState >= 1) {
-          setupMediaSession();
-          updatePositionState();
-        } else {
-          audio.addEventListener(
-            "loadedmetadata",
-            () => {
-              setupMediaSession();
-              updatePositionState();
-            },
-            { once: true }
-          );
-        }
-
-        // Riprendi Wake Lock quando la pagina torna visibile
-        document.addEventListener("visibilitychange", () => {
-          if (document.visibilityState === "visible" && !audio.paused) {
-            requestWakeLock();
+          const now = Date.now();
+          if (
+            now - lastTimeUpdateEvent > 1000 &&
+            !audio.paused &&
+            audio.readyState >= 2
+          ) {
+            lastTimeUpdateEvent = now;
+            updatePositionState();
           }
         });
 
-        // Cleanup quando il componente viene rimosso
-        window.addEventListener("beforeunload", () => {
-          stopPositionUpdates();
-          releaseWakeLock();
+        // Seeked
+        audio.addEventListener("seeked", () => {
+          console.log("Seeked to:", audio.currentTime.toFixed(1));
+          setTimeout(() => updatePositionState(true), 100);
         });
+
+        // Metadata loaded
+        audio.addEventListener("loadedmetadata", () => {
+          if (!mediaSessionReady) {
+            setupMediaSession();
+          }
+          setTimeout(() => updatePositionState(true), 200);
+        });
+
+        // Rate change
+        audio.addEventListener("ratechange", () => {
+          updatePositionState(true);
+        });
+
+        // Visibilità
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible" && !audio.paused) {
+            requestWakeLock();
+            setTimeout(() => updatePositionState(true), 100);
+          }
+        });
+
+        // Initial setup
+        if (audio.readyState >= 2) {
+          setupMediaSession();
+          setTimeout(() => updatePositionState(true), 200);
+        }
+
+        // Cleanup
+        const cleanup = () => {
+          stopKeepAlive();
+          releaseWakeLock();
+        };
+
+        window.addEventListener("beforeunload", cleanup);
+        window.addEventListener("unload", cleanup);
       } catch (e) {
-        console.error("Errore nel componente AudioPlayer:", e);
+        console.error("AudioPlayer component error:", e);
       }
     })();
   </script>
