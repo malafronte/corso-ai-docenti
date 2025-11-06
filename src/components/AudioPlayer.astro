@@ -21,11 +21,95 @@ if (!/^https?:\/\//i.test(src) && !src.startsWith("/")) {
 }
 ---
 
-<div class="audio-player">
+<div class="audio-player" data-audio-filename={filename || ""}>
   <audio controls src={audioSrc} aria-label={ariaLabel} preload="metadata">
     <source src={audioSrc} type="audio/mp4" />
     Your browser does not support the audio element.
   </audio>
+  <script type="module">
+    (function () {
+      try {
+        const script = document.currentScript;
+        const container =
+          script && script.closest && script.closest(".audio-player");
+        if (!container) return;
+        const audio = container.querySelector("audio");
+        if (!audio) return;
+
+        const title =
+          container.dataset.audioFilename || document.title || "Audio";
+
+        // Helper to safely set media session metadata and handlers
+        function setupMediaSession() {
+          if (!("mediaSession" in navigator)) return;
+          try {
+            navigator.mediaSession.metadata = new MediaMetadata({
+              title: title,
+              artist: "",
+              album: "",
+            });
+
+            navigator.mediaSession.setActionHandler("play", function () {
+              audio.play().catch(() => {});
+            });
+            navigator.mediaSession.setActionHandler("pause", function () {
+              audio.pause();
+            });
+            // optional handlers
+            try {
+              navigator.mediaSession.setActionHandler(
+                "seekbackward",
+                (details) => {
+                  const skip = (details && details.seekOffset) || 10;
+                  audio.currentTime = Math.max(0, audio.currentTime - skip);
+                }
+              );
+              navigator.mediaSession.setActionHandler(
+                "seekforward",
+                (details) => {
+                  const skip = (details && details.seekOffset) || 10;
+                  audio.currentTime = Math.min(
+                    audio.duration || Infinity,
+                    audio.currentTime + skip
+                  );
+                }
+              );
+              navigator.mediaSession.setActionHandler("stop", () => {
+                audio.pause();
+                audio.currentTime = 0;
+              });
+            } catch (err) {
+              // some browsers restrict which handlers are available
+            }
+          } catch (err) {
+            // ignore
+          }
+        }
+
+        // Setup on first play (user gesture) - ensures mediaSession is created after user interaction
+        audio.addEventListener("play", function onFirstPlay() {
+          audio.removeEventListener("play", onFirstPlay);
+          setupMediaSession();
+        });
+
+        // Also update playback state on play/pause so lockscreen shows correct state
+        audio.addEventListener("play", () => {
+          try {
+            if (navigator.mediaSession)
+              navigator.mediaSession.playbackState = "playing";
+          } catch (e) {}
+        });
+        audio.addEventListener("pause", () => {
+          try {
+            if (navigator.mediaSession)
+              navigator.mediaSession.playbackState = "paused";
+          } catch (e) {}
+        });
+      } catch (e) {
+        // avoid breaking the host page
+      }
+    })();
+  </script>
   {
     filename ? (
       <div class="audio-meta">

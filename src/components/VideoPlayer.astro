@@ -25,7 +25,12 @@ const encodedSrc = encodeURIComponent(videoSrc);
 ---
 
 <!-- Thumbnail / lazy-load container: the real <video> element is created client-side on click -->
-<div class="video-player" id={uid}>
+<div
+  class="video-player"
+  id={uid}
+  data-title={filename || ariaLabel}
+  data-poster={poster || ""}
+>
   <div
     class="video-thumb"
     role="button"
@@ -119,10 +124,30 @@ const encodedSrc = encodeURIComponent(videoSrc);
         const src = decodeURIComponent(encSrc);
         const el = createVideoElement(src);
 
+        // pause any other playing videos on the page so only one plays at a time
+        try {
+          const all = document.querySelectorAll("video");
+          all.forEach((v) => {
+            const p = v.closest(".video-player");
+            if (p && p !== container) {
+              try {
+                v.pause();
+              } catch (e) {
+                /* ignore */
+              }
+            }
+          });
+        } catch (e) {
+          /* ignore */
+        }
+
         // build active wrapper with minimize control
         const active = document.createElement("div");
         active.className = "video-active";
         const minBtn = createMinimizeButton();
+        try {
+          container.setAttribute("aria-expanded", "true");
+        } catch (e) {}
         // when minimizing, stop playback and restore thumb HTML
         minBtn.addEventListener("click", () => {
           const v = active.querySelector("video");
@@ -147,6 +172,14 @@ const encodedSrc = encodeURIComponent(videoSrc);
             }
             // reattach listeners to restored thumbnail
             attachSingle(container);
+            try {
+              restoredThumb.focus();
+            } catch (e) {
+              /* ignore */
+            }
+            try {
+              container.setAttribute("aria-expanded", "false");
+            } catch (e) {}
           }
         });
 
@@ -156,6 +189,88 @@ const encodedSrc = encodeURIComponent(videoSrc);
 
         container.innerHTML = "";
         container.appendChild(active);
+
+        // make active focusable and support ESC to minimize
+        try {
+          active.tabIndex = 0;
+          active.focus();
+          active.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" || e.key === "Esc") {
+              e.preventDefault();
+              minBtn.click();
+            }
+          });
+        } catch (e) {
+          /* ignore */
+        }
+
+        // try to autoplay after user gesture that triggered load
+        const videoEl = active.querySelector("video");
+        if (videoEl) {
+          // permit playsInline and focus
+          try {
+            videoEl.setAttribute("playsinline", "");
+          } catch (e) {}
+          try {
+            videoEl.focus();
+          } catch (e) {}
+          try {
+            videoEl.play().catch(() => {});
+          } catch (e) {}
+
+          // Setup Media Session metadata and handlers for better lock-screen controls
+          try {
+            const title = container.dataset.title || document.title || "Video";
+            const posterUrl = container.dataset.poster || "";
+            if ("mediaSession" in navigator) {
+              try {
+                const meta = {
+                  title: title,
+                  artist: "",
+                  album: "",
+                };
+                if (posterUrl) {
+                  meta.artwork = [
+                    { src: posterUrl, sizes: "512x512", type: "image/png" },
+                  ];
+                }
+                navigator.mediaSession.metadata = new MediaMetadata(meta);
+                navigator.mediaSession.setActionHandler("play", () => {
+                  videoEl.play().catch(() => {});
+                });
+                navigator.mediaSession.setActionHandler("pause", () => {
+                  videoEl.pause();
+                });
+                try {
+                  navigator.mediaSession.setActionHandler(
+                    "seekbackward",
+                    (d) => {
+                      const skip = (d && d.seekOffset) || 10;
+                      videoEl.currentTime = Math.max(
+                        0,
+                        videoEl.currentTime - skip
+                      );
+                    }
+                  );
+                  navigator.mediaSession.setActionHandler(
+                    "seekforward",
+                    (d) => {
+                      const skip = (d && d.seekOffset) || 10;
+                      videoEl.currentTime = Math.min(
+                        videoEl.duration || Infinity,
+                        videoEl.currentTime + skip
+                      );
+                    }
+                  );
+                  navigator.mediaSession.setActionHandler("stop", () => {
+                    videoEl.pause();
+                    videoEl.currentTime = 0;
+                  });
+                } catch (er) {}
+              } catch (er) {}
+            }
+          } catch (er) {}
+        }
       } catch (err) {
         // eslint-disable-next-line no-console
         console.error("Failed to load video", err);
