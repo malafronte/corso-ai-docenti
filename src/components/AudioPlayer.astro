@@ -27,7 +27,7 @@ const uid = `ap-${Math.random().toString(36).slice(2, 9)}`;
     controls
     src={audioSrc}
     aria-label={ariaLabel}
-    preload="metadata"
+    preload="auto"
     style="width:100%;max-width:560px;"
   >
     <source src={audioSrc} type="audio/mp4" />
@@ -113,7 +113,6 @@ const uid = `ap-${Math.random().toString(36).slice(2, 9)}`;
                 } else {
                   audio.currentTime = details.seekTime;
                 }
-                updatePositionState();
               }
             });
             navigator.mediaSession.setActionHandler("stop", () => {
@@ -168,6 +167,7 @@ const uid = `ap-${Math.random().toString(36).slice(2, 9)}`;
 
         audio.addEventListener("timeupdate", () => updatePositionState());
         audio.addEventListener("seeked", () => updatePositionState());
+        audio.addEventListener("durationchange", () => updatePositionState());
 
         audio.addEventListener("loadedmetadata", () => {
           updatePositionState();
