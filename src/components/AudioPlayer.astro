@@ -11,6 +11,7 @@ const {
   poster?: string;
 };
 
+// Resolve audioSrc server-side
 let audioSrc: string = src;
 if (!/^https?:\/\//i.test(src) && !src.startsWith("/")) {
   try {
@@ -51,98 +52,87 @@ const uid = `ap-${Math.random().toString(36).slice(2, 9)}`;
 
         const title =
           container.dataset.audioFilename || document.title || "Audio";
-        const poster = container.dataset.audioPoster || "";
 
         let mediaSessionReady = false;
-        let initializing = false;
-        let keepAliveTimer = null;
         let wakeLockSentinel = null;
-        let lastPositionUpdate = 0;
+        let keepAliveTimer = null;
+        let lastUpdateTime = 0;
 
-        // ---------- Wake Lock ----------
         async function requestWakeLock() {
           try {
             if ("wakeLock" in navigator && !wakeLockSentinel) {
               wakeLockSentinel = await navigator.wakeLock.request("screen");
+              console.log("Wake Lock attivato");
+
               wakeLockSentinel.addEventListener("release", () => {
+                console.log("Wake Lock rilasciato dal sistema");
                 wakeLockSentinel = null;
               });
             }
           } catch (err) {
-            console.warn(
-              "[AudioPlayer] Wake Lock non disponibile:",
-              err?.message || err
-            );
+            console.warn("Wake Lock non disponibile:", err.message);
           }
         }
+
         async function releaseWakeLock() {
-          if (!wakeLockSentinel) return;
-          try {
-            await wakeLockSentinel.release();
-          } catch (err) {
-            console.warn(
-              "[AudioPlayer] Errore rilascio Wake Lock:",
-              err?.message || err
-            );
-          } finally {
-            wakeLockSentinel = null;
+          if (wakeLockSentinel) {
+            try {
+              await wakeLockSentinel.release();
+              console.log("Wake Lock rilasciato manualmente");
+            } catch (err) {
+              console.warn("Errore nel rilascio Wake Lock:", err.message);
+            } finally {
+              wakeLockSentinel = null;
+            }
           }
         }
 
-        // ---------- Media Session ----------
-        function resetPositionState() {
-          try {
+        // Keep-alive ogni 8 secondi (più aggressivo)
+        function startKeepAlive() {
+          if (keepAliveTimer) return;
+
+          keepAliveTimer = setInterval(() => {
             if (
-              "mediaSession" in navigator &&
-              navigator.mediaSession.setPositionState
+              !audio.paused &&
+              isFinite(audio.duration) &&
+              audio.duration > 0
             ) {
-              navigator.mediaSession.setPositionState(null);
+              console.log(
+                "Keep-alive tick:",
+                audio.currentTime.toFixed(1),
+                "/",
+                audio.duration.toFixed(1)
+              );
+
+              try {
+                if (navigator.mediaSession) {
+                  navigator.mediaSession.playbackState = "playing";
+                }
+              } catch (e) {}
+
+              // Aggiorna posizione forzatamente
+              updatePositionState(true);
             }
-          } catch {}
+          }, 8000);
         }
 
-        function updatePositionState(force = false) {
-          if (!("mediaSession" in navigator)) return;
-          if (!navigator.mediaSession.setPositionState) return;
-          if (!mediaSessionReady) return;
-
-          const duration = audio.duration;
-          const currentTime = audio.currentTime;
-          const rate = audio.playbackRate || 1;
-
-          if (!isFinite(duration) || duration <= 0) return;
-          if (!isFinite(currentTime) || currentTime < 0) return;
-          if (!isFinite(rate) || rate <= 0) return;
-
-          const now = Date.now();
-          if (!force && now - lastPositionUpdate < 500) return;
-          lastPositionUpdate = now;
-
-          try {
-            navigator.mediaSession.setPositionState({
-              duration,
-              playbackRate: rate,
-              position: Math.max(0, Math.min(currentTime, duration)),
-            });
-          } catch (e) {
-            console.warn(
-              "[AudioPlayer] Position update error:",
-              e?.message || e
-            );
+        function stopKeepAlive() {
+          if (keepAliveTimer) {
+            clearInterval(keepAliveTimer);
+            keepAliveTimer = null;
           }
         }
 
         function setupMediaSession() {
           if (!("mediaSession" in navigator)) return;
-          if (mediaSessionReady || initializing) return;
-          initializing = true;
+          if (mediaSessionReady) return;
 
           try {
             const artworkUrl =
-              poster ||
+              container.dataset.audioPoster ||
               "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23667' width='100' height='100'/%3E%3Cpath fill='%23fff' d='M35 25l40 25-40 25z'/%3E%3C/svg%3E";
 
-            navigator.mediaSession.metadata = new MediaMetadata({
+            const metadata = {
               title: title || "Audio Lesson",
               artist: "Podcast",
               album: "Learning",
@@ -154,181 +144,219 @@ const uid = `ap-${Math.random().toString(36).slice(2, 9)}`;
                 { src: artworkUrl, sizes: "384x384", type: "image/png" },
                 { src: artworkUrl, sizes: "512x512", type: "image/png" },
               ],
-            });
+            };
+
+            navigator.mediaSession.metadata = new MediaMetadata(metadata);
 
             navigator.mediaSession.setActionHandler("play", () => {
               audio.play().catch((err) => {
-                console.warn(
-                  "[AudioPlayer] Play rejected:",
-                  err?.message || err
-                );
+                console.warn("Play error:", err.message);
               });
             });
-            navigator.mediaSession.setActionHandler("pause", () =>
-              audio.pause()
-            );
-            navigator.mediaSession.setActionHandler("seekbackward", (d) => {
-              const s = (d && d.seekOffset) || 10;
-              audio.currentTime = Math.max(0, audio.currentTime - s);
-              updatePositionState(true);
+
+            navigator.mediaSession.setActionHandler("pause", () => {
+              audio.pause();
             });
-            navigator.mediaSession.setActionHandler("seekforward", (d) => {
-              const s = (d && d.seekOffset) || 10;
-              audio.currentTime = Math.min(
-                audio.duration || Infinity,
-                audio.currentTime + s
-              );
-              updatePositionState(true);
-            });
-            navigator.mediaSession.setActionHandler("seekto", (d) => {
-              if (d && typeof d.seekTime === "number") {
-                const t = Math.max(
-                  0,
-                  Math.min(d.seekTime, audio.duration || 0)
-                );
-                audio.currentTime = t;
+
+            navigator.mediaSession.setActionHandler(
+              "seekbackward",
+              (details) => {
+                const skip = (details && details.seekOffset) || 10;
+                audio.currentTime = Math.max(0, audio.currentTime - skip);
                 updatePositionState(true);
-                setTimeout(() => updatePositionState(true), 60);
-                setTimeout(() => updatePositionState(true), 180);
+              }
+            );
+
+            navigator.mediaSession.setActionHandler(
+              "seekforward",
+              (details) => {
+                const skip = (details && details.seekOffset) || 10;
+                audio.currentTime = Math.min(
+                  audio.duration,
+                  audio.currentTime + skip
+                );
+                updatePositionState(true);
+              }
+            );
+
+            navigator.mediaSession.setActionHandler("seekto", (details) => {
+              if (details && typeof details.seekTime === "number") {
+                const seekTime = Math.max(
+                  0,
+                  Math.min(details.seekTime, audio.duration)
+                );
+                audio.currentTime = seekTime;
+                // Aggiorna subito dopo il seek
+                setTimeout(() => updatePositionState(true), 50);
               }
             });
+
             navigator.mediaSession.setActionHandler("stop", () => {
               audio.pause();
               audio.currentTime = 0;
               updatePositionState(true);
             });
+
             try {
               navigator.mediaSession.setActionHandler("previoustrack", null);
               navigator.mediaSession.setActionHandler("nexttrack", null);
-            } catch {}
+            } catch (e) {}
 
             mediaSessionReady = true;
+            console.log("Media Session configurata");
           } catch (e) {
-            console.warn(
-              "[AudioPlayer] Media Session setup error:",
-              e?.message || e
-            );
-          } finally {
-            initializing = false;
+            console.warn("Media Session setup error:", e);
           }
         }
 
-        // ---------- Keep-alive (uno solo) ----------
-        function startKeepAlive() {
-          if (keepAliveTimer) return;
-          keepAliveTimer = setInterval(() => {
-            if (
-              !audio.paused &&
-              isFinite(audio.duration) &&
-              audio.duration > 0
-            ) {
-              // piccolo “ping” per mantenere attiva la notifica/slider
-              try {
-                if ("mediaSession" in navigator) {
-                  navigator.mediaSession.playbackState = "playing";
-                }
-              } catch {}
-              updatePositionState(true);
-            }
-          }, 8000);
-        }
-        function stopKeepAlive() {
-          if (keepAliveTimer) {
-            clearInterval(keepAliveTimer);
-            keepAliveTimer = null;
-          }
-        }
+        // force = true forza l'aggiornamento anche se poco è cambiato
+        function updatePositionState(force = false) {
+          if (!("mediaSession" in navigator)) return;
+          if (!navigator.mediaSession.setPositionState) return;
+          if (!mediaSessionReady) return;
 
-        // ---------- Eventi ----------
-        audio.addEventListener("loadedmetadata", () => {
-          setupMediaSession();
-          resetPositionState(); // evita slider a fine barra
-          setTimeout(() => updatePositionState(true), 120);
-        });
-
-        audio.addEventListener("play", () => {
-          setupMediaSession();
           try {
-            if ("mediaSession" in navigator) {
+            const duration = audio.duration;
+            const currentTime = audio.currentTime;
+            const playbackRate = audio.playbackRate;
+
+            // Validazione minima
+            if (!isFinite(duration) || duration <= 0) return;
+            if (!isFinite(currentTime) || currentTime < 0) return;
+            if (!isFinite(playbackRate) || playbackRate <= 0) return;
+
+            // Se siamo molto vicino alla fine, non aggiornare
+            if (currentTime >= duration - 0.1 && audio.ended) {
+              return;
+            }
+
+            // Throttle: aggiorna massimo ogni 500ms
+            const now = Date.now();
+            if (!force && now - lastUpdateTime < 500) {
+              return;
+            }
+
+            lastUpdateTime = now;
+
+            navigator.mediaSession.setPositionState({
+              duration: duration,
+              playbackRate: playbackRate,
+              position: Math.max(0, Math.min(currentTime, duration)),
+            });
+
+            console.log(
+              "Position updated:",
+              currentTime.toFixed(1),
+              "/",
+              duration.toFixed(1)
+            );
+          } catch (e) {
+            console.warn("Position state error:", e.message);
+          }
+        }
+
+        // Play
+        audio.addEventListener("play", () => {
+          if (!mediaSessionReady) {
+            setupMediaSession();
+          }
+
+          try {
+            if (navigator.mediaSession) {
               navigator.mediaSession.playbackState = "playing";
             }
-          } catch {}
+          } catch (e) {}
+
           requestWakeLock();
           startKeepAlive();
           setTimeout(() => updatePositionState(true), 100);
         });
 
+        // Pause
         audio.addEventListener("pause", () => {
           try {
-            if ("mediaSession" in navigator) {
+            if (navigator.mediaSession) {
               navigator.mediaSession.playbackState = "paused";
             }
-          } catch {}
+          } catch (e) {}
+
           stopKeepAlive();
           releaseWakeLock();
           updatePositionState(true);
         });
 
+        // Ended
         audio.addEventListener("ended", () => {
           try {
-            if ("mediaSession" in navigator) {
+            if (navigator.mediaSession) {
               navigator.mediaSession.playbackState = "none";
             }
-          } catch {}
+          } catch (e) {}
+
           stopKeepAlive();
           releaseWakeLock();
-          resetPositionState();
-        });
-
-        // Aggiornamenti regolari ma “throttled”
-        audio.addEventListener("timeupdate", () => {
-          if (!audio.paused && audio.readyState >= 2) {
-            updatePositionState(); // non forzato, rispetta throttling 500ms
-          }
-        });
-
-        audio.addEventListener("seeked", () => {
-          updatePositionState(true);
-          setTimeout(() => updatePositionState(true), 100);
-          setTimeout(() => updatePositionState(true), 300);
-        });
-
-        audio.addEventListener("ratechange", () => {
           updatePositionState(true);
         });
 
-        audio.addEventListener("durationchange", () => {
-          if (isFinite(audio.duration) && audio.duration > 0) {
-            setupMediaSession();
-            setTimeout(() => updatePositionState(true), 100);
-          }
-        });
-
+        // Error
         audio.addEventListener("error", (e) => {
-          console.error("[AudioPlayer] Audio error:", e);
+          console.error("Audio error:", e);
           try {
-            if ("mediaSession" in navigator) {
+            if (navigator.mediaSession) {
               navigator.mediaSession.playbackState = "none";
             }
-          } catch {}
+          } catch (err) {}
+
           stopKeepAlive();
           releaseWakeLock();
           mediaSessionReady = false;
         });
 
-        // Visibilità pagina
-        document.addEventListener("visibilitychange", () => {
-          if (document.visibilityState === "visible" && !audio.paused) {
-            requestWakeLock();
-            updatePositionState(true);
+        // Throttled timeupdate
+        let lastTimeUpdateEvent = 0;
+        audio.addEventListener("timeupdate", () => {
+          const now = Date.now();
+          if (
+            now - lastTimeUpdateEvent > 1000 &&
+            !audio.paused &&
+            audio.readyState >= 2
+          ) {
+            lastTimeUpdateEvent = now;
+            updatePositionState();
           }
         });
 
-        // Init rapido se metadata già pronti
+        // Seeked
+        audio.addEventListener("seeked", () => {
+          console.log("Seeked to:", audio.currentTime.toFixed(1));
+          setTimeout(() => updatePositionState(true), 100);
+        });
+
+        // Metadata loaded
+        audio.addEventListener("loadedmetadata", () => {
+          if (!mediaSessionReady) {
+            setupMediaSession();
+          }
+          setTimeout(() => updatePositionState(true), 200);
+        });
+
+        // Rate change
+        audio.addEventListener("ratechange", () => {
+          updatePositionState(true);
+        });
+
+        // Visibilità
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible" && !audio.paused) {
+            requestWakeLock();
+            setTimeout(() => updatePositionState(true), 100);
+          }
+        });
+
+        // Initial setup
         if (audio.readyState >= 2) {
           setupMediaSession();
-          resetPositionState();
-          setTimeout(() => updatePositionState(true), 120);
+          setTimeout(() => updatePositionState(true), 200);
         }
 
         // Cleanup
@@ -336,10 +364,11 @@ const uid = `ap-${Math.random().toString(36).slice(2, 9)}`;
           stopKeepAlive();
           releaseWakeLock();
         };
+
         window.addEventListener("beforeunload", cleanup);
         window.addEventListener("unload", cleanup);
       } catch (e) {
-        console.error("[AudioPlayer] Component error:", e);
+        console.error("AudioPlayer component error:", e);
       }
     })();
   </script>
